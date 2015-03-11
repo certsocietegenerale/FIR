@@ -1,0 +1,95 @@
+{% load fir_plugins %}
+
+<html lang="en">
+<head>
+	<link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/custom_css/fir_followup.css" rel="stylesheet">
+    {% plugin_point 'followup_static' %}
+    <title>{% if incident.is_incident %}Incident{%else%}Event{%endif%} followup [C{{incident.confidentiality}}] [{{incident.category}}] - {{incident.subject}}</title>
+</head>
+<body>
+	<div class='frame'>
+
+		<div class='header'>
+			<img src='{{ STATIC_URL }}img/logo.jpg' />
+			<br style='clear:both' />
+			<div class='title'>
+				<h1 class='float'>{% if incident.is_incident %}Incident{%else%}Event{%endif%} followup [C{{incident.confidentiality}}] [{{incident.category}}] - {{incident.subject}}</h1>
+				<br style='clear:both' />
+				<p>Opened on {{ incident.date }} by {{ incident.opened_by|default:"someone"}}</p>
+			</div>
+		</div>
+
+
+		<table class='minitable table'>
+			<tr class='slim'>
+				{%if incident.is_incident%}
+				<td class='head'>Incident Leader</td><td class='delim'>{{ incident.actor }}</td>
+				<td class='head'>Plan</td><td class='delim'>{{ incident.plan }}</td>
+				{%endif%}
+				<td class='head'>Severity</td><td class='delim'>{{ incident.severity }}</td>
+				<td class='head'>Category</td><td class='delim'>{{ incident.category }}</td>
+				<td class='head'>Status</td><td class='delim'><span class='label {%if incident.status == "B"%}label-danger{%endif%}{%if incident.status == "C"%}label-info{%endif%}'>{{ incident.get_status_display}}</span></td>
+
+				<td class='head'>Detection</td><td class='delim'>{{ incident.detection }}</td>
+				<td class='head'>B/L</td><td>{{ incident.get_business_lines_names }}</td>
+			</tr>
+		</table>
+
+
+		<br style='clear:both' />
+
+
+		<div class='description'>
+			<h3>Summary</h3>
+			<p class='artifacts'>{{ incident.description|safe }}</p>
+		</div>
+
+		<br style='clear:both' />
+
+		<h2>Incident timeline ({{ incident.comments_set.count }})</h2>
+
+		<table class="table table-hover table-condensed">
+			<thead>
+				<tr>
+					<th style='width:20%'>Date</th>
+					<th>Author</th>
+					<th>Comment</th>
+					<th>Action</th>
+				</tr>
+			</thead>
+		{% for comment in comments.all %}
+		  <tr id="comment_id_{{comment.id}}">
+		  	<td style='width:10%'>{{ comment.date|date:"Y-m-d G:i" }}</td>
+		  	<td>{{ comment.opened_by|default:"someone" }}</td>
+		  	<td class='artifacts'>{{ comment.comment|safe }}</td>
+		  	<td>{{ comment.action }}</td>
+		  </tr>
+		{% endfor %}
+
+		</table>
+
+		{% plugin_point 'followup_main' %}
+
+		<div class='files'>
+
+			<h2>Related files</h2>
+			<br style='clear:both'/>
+			{%if incident.file_set.count > 0 %}
+				<table class='table table-condensed files' style='width:auto'>
+					{% for file in incident.file_set.all %}
+						<tr>
+							<td >{{file.date|date:"d-m-Y"}}</td>
+							<td>{{ file.getfilename }}</td>
+							<td>{{ file.description }}</td>
+						</tr>
+					{%endfor%}
+				</table>
+			{% else %}
+				No files for this incident.
+			{% endif %}
+		</div>
+	</div>
+
+</body>
+</html>

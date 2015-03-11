@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block custom_js %}
+<script src='/static/custom_js/incident_display.js'></script>
+{% endblock %}
+
+{% block content %}
+	{% if incident_view %}
+		<div id='all_incidents' class='incident_display' data-url="{% url 'incidents:all' %}">
+	{% else %}
+		<div id='all_incidents' class='incident_display' data-url="{% url 'events:all' %}">
+	{% endif %}
+			Loading ...
+		</div>
+{% endblock %}

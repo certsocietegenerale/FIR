@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% load url from future %}
+{% block header%}<h1>List of incidents including {{artifact.get_type_display}} {{artifact.value}}</h1>{%endblock%}
+{% block content %}
+	{% if incident_list %}
+	<table class="table table-hover">
+
+			<thead>
+				<tr>
+					<th>Date</th>
+					<th>Subject</th>
+					<th>Category</th>
+					<th>Business Lines</th>
+					<th>Status</th>
+					<th>Detection</th>
+					<th>Actor</th>
+					<th>Plan</th>
+					<th>Edit</th>
+
+				</tr>
+			</thead>
+		{% for incident in incident_list %}
+		<tr>
+			<td>{{ incident.date|date:"SHORT_DATE_FORMAT" }}</td>
+			<td><a href="{% url 'incidents:details' incident.id %}">{{ incident.subject }}</a></td>
+			<td>{{ incident.category }}</td>
+			<td>{{ incident.get_business_lines_names }}</td>
+			<td>{{ incident.get_status_display }}</td>
+			<td>{{ incident.detection }}</td>
+			<td>{{ incident.actor }}</td>
+			<td>{{ incident.plan }}</td>
+			<td><a href="{% url 'incidents:edit' incident.id %}"><i class="icon-pencil"></i></a></td>
+		</tr>
+		{% endfor %}
+
+	</table>
+	{% else %}
+	<p>No incidents found. Lucky you!</p>
+	{% endif %}
+	<a class="btn" href="javascript:history.back()">Back</a>
+{% endblock %}

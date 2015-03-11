@@ -1,0 +1,131 @@
+{% extends 'base.html' %}
+{% load url from future %}
+
+{% block header %}
+<h1>Yearly stats</h1>
+{%endblock%}
+
+
+{% block custom_js_top %}
+<script src="/static/js/d3.v3.min.js"></script>
+<script src='/static/custom_js/stats.js'></script>
+
+{%endblock%}
+
+{% block custom_css %}
+<style>
+
+.graph {
+  font: 12px sans-serif;
+  float:left;
+}
+
+.graph .graph {
+  float:left;
+}
+
+.graph .graph.bar {
+  margin-top:-25px;
+  margin-left:50px;
+}
+
+.graph .pie {
+  margin:10px 10px 10px 10px;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.line {
+  fill: none;
+  stroke: #6c7086;
+  stroke-width: 1.5px;
+}
+
+.bar rect {
+	fill: #6c7086;
+}
+
+.graph text {
+	color:black;
+}
+
+.arc path {
+  stroke: #fff;
+}
+
+.separator {
+  clear:both;
+  margin:30px 0 30px 0;
+}
+
+</style>
+
+{%endblock%}
+
+
+{% block content %}
+<div class='graph'>
+  <h4>Yearly incidents</h4>
+  <div class='graph' id="yearly_incidents">
+  </div>
+</div>
+
+
+<p class='separator'>&nbsp;</p>
+
+<div class='graph'>
+  <h4>Business Line by detection</h4>
+  <div class='graph' id="bl_detection">
+  </div>
+</div>
+
+
+<div class='graph'>
+  <h4>Incidents by business line</h4>
+  <div class='graph' id="bl_donut">
+  </div>
+</div>
+
+<p class='separator'>&nbsp;</p>
+
+<div class='graph'>
+  <h4>Business Line by incident severity</h4>
+  <div class='graph' id="bl_severity" style='clear:both'></div>
+  <div class='graph' id="bl_severity_bar"></div>
+  </div>
+
+<p class='separator'>&nbsp;</p>
+<div class='graph'>
+  <h4>Business Line incident category</h4>
+  <div class='graph' id="bl_category" style='clear:both'></div>
+  <div class='graph' id="bl_category_bar"></div>
+</div>
+
+<br style='clear:both' />
+
+<br style='clear:both' />
+<br style='clear:both' />
+
+<script>
+
+   generate_multiple_line_chart('#yearly_incidents', "{% url 'stats:data_yearly_incidents' %}", 1000, 300, '%Y-%m')
+   generate_donut_chart('#bl_donut', "{%url 'stats:data_yearly_bl' %}", 300, 150)
+   generate_stacked_chart('#bl_detection', "{%url 'stats:data_yearly_bl_detection' %}", 350, 300, '', 'true')
+
+   generate_multiple_donut_chart("#bl_severity", "{% url 'stats:data_yearly_bl_severity' %}", 700, 100, 50)
+   generate_stacked_chart("#bl_severity_bar", "{% url 'stats:data_yearly_bl_severity' %}", 300, 300)
+
+   generate_multiple_donut_chart("#bl_category", "{%url 'stats:data_yearly_bl_category' %}", 700, 100, 50)
+   generate_stacked_chart("#bl_category_bar", "{%url 'stats:data_yearly_bl_category' %}", 400, 350)
+
+</script>
+{% endblock %}

@@ -1,0 +1,27 @@
+<tr id="todo-{{item.id}}" class="fir_todo_item {% if item.done %} fir_todos_done {% endif %}">
+	<td class='fir_todos_status'>
+		<form action="{% url 'todos:toggle_status' item.id %}" method='POST' data-ajaxform data-action='replaceWith' data-target='#todo-{{item.id}}'>
+			{% csrf_token %}
+			<button type='submit' class='btn btn-xs btn-link icon'>
+				{% if item.done %}
+					<i class='glyphicon glyphicon-minus-sign'></i>
+				{% else %}
+					<i class='glyphicon glyphicon-ok-sign'></i>
+				{% endif %}
+			</button>
+		</form>
+	</td>
+	<td class='fir_todos_description'>{{ item.description }}</td>
+	{% if dashboard %}
+		<td class='fir_todos_incident'><a href="{% url 'incidents:details' item.incident_id %}">{{ item.incident.subject }}</a></td>
+		<td class='fir_todos_category'>{{ item.category.name }}</td>
+	{% else %}
+		<td class='fir_todos_bl'>{{ item.business_line.name }}</td>
+	{% endif %}
+	<td class='fir_todos_delete'>
+		<form action="{% url 'todos:delete' item.id %}" method='POST' data-ajaxform data-action='remove' data-target='#todo-{{item.id}}' data-hideifnone='#fir_todos' data-hideifnone-selector='.fir_todo_item'>
+			{% csrf_token %}
+			<button type='submit' class='btn btn-xs btn-link icon'><i class='glyphicon glyphicon-remove'></i></button>
+		</form>
+	</td>
+</tr>

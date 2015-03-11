@@ -1,0 +1,22 @@
+{% if artifact_values|length > 0 %}
+	<tr>
+		<td class='head'>{{ artifact_name }}</td>
+		<td>
+			{% for a in artifact_values %}
+				<a
+					{% if a.incidents__count > 1 %} class='multiple' {% endif %}
+					href="{% url 'artifacts:incidents' a.id %}"
+				>
+				{{ a.value }}
+				</a>
+				{% if a.incidents__count > 1 %} ({{ a.incidents__count }}) {% endif %}
+				<form class='icon' action="{% url 'artifacts:detach' a.id event.id %}" method='POST'>
+					{% csrf_token %}
+					<button type="submit" class='btn btn-xs btn-link icon'>
+						<i class='glyphicon glyphicon-remove'></i>
+					</button>
+				</form>
+			{% endfor %}
+		</td>
+	</tr>
+{% endif %}

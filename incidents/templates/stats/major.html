@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+{% load url from future %}
+
+{% block header %}
+<h1 style='float:left;margin-right:20px'>Major incidents in last quarter</h1>
+{%endblock%}
+
+{% block content %}
+
+<p class='separator'>&nbsp;</p>
+<h3>Bale categories</h3>
+<div class='graph'>
+	<div class='graph'>
+		<table id='table' class='table table-condensed'>
+			<tr>
+			{%for key in bale.0 %}
+				<th>{{ key }}</th>
+			{%endfor%}
+			</tr>
+			{% for cat in bale|slice:"1:" %}
+			<tr>
+				{% for key in cat %}
+					<td>{{ key }}</td>
+				{% endfor %}
+			</tr>
+			{%endfor%}
+		</table>
+	</div>
+</div>
+
+<h3>CERT categories</h3>
+<div class='graph'>
+	<div class='graph'>
+		<table id='table' class='table table-condensed'>
+			<tr>
+			{%for key in cert.0 %}
+				<th>{{ key }}</th>
+			{%endfor%}
+			</tr>
+			{% for cat in cert|slice:"1:" %}
+			<tr>
+				{% for key in cat %}
+					<td>{{key}}</td>
+				{% endfor %}
+			</tr>
+			{%endfor%}
+		</table>
+	</div>
+</div>
+
+
+<h3>Business Line ventilation</h3>
+<div class='graph'>
+	<div class='graph'>
+		<table id='table' class='table table-condensed'>
+			<tr>
+			{% for key in bls.0 %}
+				<th>{{ key }}</th>
+			{%endfor%}
+			</tr>
+			{% for bl in bls|slice:"1:" %}
+			<tr>
+				{% for key in bl %}
+					<td>{{ key }}</td>
+				{% endfor %}
+			</tr>
+			{%endfor%}
+		</table>
+	</div>
+</div>
+
+<h2>Major Incidents</h2>
+<br />
+<table class="table table-hover table-condensed sortable">
+			<thead>
+				<tr>
+					<th>Date</th>
+					<th>Subject</th>
+					<th>Category</th>
+					<th>Lvl</th>
+					<th>Severity</th>
+					<th>Business Line</th>
+					<th>Status</th>
+					<th>Detection</th>
+					<th>Incident Leader</th>
+					<th>Last action</th>
+					<th>Opened by</th>
+					<th>Plan</th>
+
+				</tr>
+			</thead>
+		{% for incident in incident_list %}
+		<tr class='{{ incident.status }}'>
+			<td>{{ incident.date|date:"d-m-Y" }}</td>
+			<td><a href="{% url 'incidents:details' incident.id %}">{{ incident.subject }}</a></td>
+			<td>{{ incident.category }}</td>
+			<td>{{ incident.get_confidentiality_display }}</td>
+			<td><span class='badge threatcon-{{incident.severity}}'>{{ incident.severity }}</span></td>
+			<td>{{ incident.concerned_business_line }}</td>
+			<td>{{ incident.get_status_display }}</td>
+			<td>{{ incident.detection }}</td>
+			<td>{{ incident.actor }}</td>
+			<td>{{ incident.get_last_comment.action }} <small class='noprint'>({{ incident.get_last_comment.date|date:"DATETIME_FORMAT" }})</small></td>
+			<td>{{ incident.opened_by }}</td>
+			<td>{{ incident.plan }}</td>
+		</tr>
+		{% endfor %}
+
+	</table>
+
+{% endblock %}
+

@@ -1,0 +1,421 @@
+{% extends 'base.html' %}
+{% load url from future %}
+{% load add_css_class %}
+
+{% block header %}
+
+{%endblock%}
+
+
+{% block custom_js_top %}
+<script src="/static/js/d3.v3.min.js"></script>
+<script src='/static/custom_js/stats.js'></script>
+
+{%endblock%}
+
+{% block custom_js %}
+<script src='/static/js/bootstrap-datetimepicker.min.js'></script>
+<script src="/static/select/select2.min.js"></script>
+
+<script>
+$(document).ready(function() {
+  $("#id_concerned_business_lines").select2({ dropdownAutoWidth: true });
+  $('#severity_comparator').select2({minimumResultsForSearch: -1});
+  $('#id_status').select2({minimumResultsForSearch: -1});
+  $('#id_detection').select2({minimumResultsForSearch: -1});
+  $('#id_severity').select2({minimumResultsForSearch: -1});
+  $('#id_actor').select2({minimumResultsForSearch: -1});
+  $('#id_plan').select2({minimumResultsForSearch: -1});
+  $('#id_confidentiality').select2({minimumResultsForSearch: -1});
+});
+
+$('#from_date').datetimepicker({
+    format: 'yyyy-mm',
+    startView: 4,
+    minView: 3,
+    autoclose: true,
+    todayBtn: true
+});
+
+$('#to_date').datetimepicker({
+    format: 'yyyy-mm',
+    startView: 4,
+    minView: 3,
+    autoclose: true,
+    todayBtn: true
+});
+
+function refresh_stats() {
+  serialized = $("#sandbox").serialize()
+
+  $("#incidents_evolution").empty()
+  $("#incidents_evolution_by_category").empty()
+  $("#by_month").empty()
+
+  $("#by_category").empty()
+  $("#by_category_stacked").empty()
+
+  $("#by_subentity").empty()
+  $("#by_subentity_stacked").empty()
+
+  $("#by_severity").empty()
+  $("#by_severity_stacked").empty()
+
+  $("#by_actor").empty()
+  $("#by_actor_stacked").empty()
+
+  $("#monitoring").empty()
+  $("#open").empty()
+  $("#blocked").empty()
+
+
+  generate_multiple_line_chart('#incidents_evolution', "/stats/data/sandbox/?divisor=all&graph_type=line&"+serialized, 1000, 400, "%Y-%m", 'All events')
+  generate_multiple_line_chart('#incidents_evolution_by_category', "/stats/data/sandbox/?divisor=category&graph_type=line&"+serialized, 1000, 400, "%Y-%m", '')
+
+  generate_bar_chart("#by_month", "/stats/data/sandbox/?divisor=months&graph_type=bar&"+serialized, 600, 500)
+
+  generate_multiple_donut_chart("#by_category", "/stats/data/sandbox/?divisor=category&graph_type=donut&"+serialized, 700, 80, 50)
+  generate_stacked_chart("#by_category_stacked", "/stats/data/sandbox/?divisor=category&graph_type=stacked&"+serialized, 500, 500)
+
+  generate_multiple_donut_chart("#by_subentity", "/stats/data/sandbox/?divisor=subentity&graph_type=donut&"+serialized, 700, 80, 50)
+  generate_stacked_chart("#by_subentity_stacked", "/stats/data/sandbox/?divisor=subentity&graph_type=stacked&"+serialized, 500, 500)
+
+  generate_multiple_donut_chart("#by_severity", "/stats/data/sandbox/?divisor=severity&graph_type=donut&"+serialized, 700, 80, 50)
+  generate_stacked_chart("#by_severity_stacked", "/stats/data/sandbox/?divisor=severity&graph_type=stacked&"+serialized, 500, 500)
+
+  generate_multiple_donut_chart("#by_actor", "/stats/data/sandbox/?divisor=actor&graph_type=donut&"+serialized, 700, 80, 50)
+  generate_stacked_chart("#by_actor_stacked", "/stats/data/sandbox/?divisor=actor&graph_type=stacked&"+serialized, 500, 500)
+
+  generate_bar_chart("#monitoring", "/stats/data/sandbox/?divisor=monitoring&graph_type=bar&"+serialized, 500, 500)
+  generate_bar_chart("#open", "/stats/data/sandbox/?divisor=open&graph_type=bar&"+serialized, 500, 500)
+  generate_bar_chart("#blocked", "/stats/data/sandbox/?divisor=blocked&graph_type=bar&"+serialized, 500, 500)
+
+  generate_table("#incident_table", "/stats/data/sandbox/?divisor=all&graph_type=table&"+serialized)
+
+}
+
+</script>
+
+{% endblock%}
+
+{% block custom_css %}
+<link href="/static/select/select2.css" rel="stylesheet"/>
+<link href="/static/css/bootstrap-datetimepicker.min.css" rel="stylesheet"/>
+
+<style>
+
+/* form */
+
+fieldset.fields {
+  float:left;
+  width:300px;
+}
+
+fieldset.categories {
+  float:left;
+}
+
+.checkbox {
+  margin-top: 0;
+}
+
+.checkbox+.checkbox {
+  margin-top: 0;
+}
+
+label.control-label {
+  display: block;
+}
+
+.categories label.checkbox {
+  width: 110px;
+  float: left;
+  padding-top: 0px !important;
+  margin-bottom: 5px;
+}
+
+div.categories {
+  padding-top: 10px;
+  width:360px;
+}
+
+#severity_comparator {
+  width:20px;
+}
+
+#sandbox input.date {
+  width:90px;
+}
+
+.btn-mini {
+  margin-top:0px;
+}
+
+.separator {
+  clear:both;
+  margin:30px 0 30px 0;
+}
+
+h4 .smaller {
+  font-size: 10px;
+  font-weight: normal;
+}
+
+/* graphs */
+
+
+
+
+.graph {
+  font: 12px sans-serif;
+  float:left;
+}
+
+.graph .graph {
+  float:left;
+}
+
+.graph .graph.bar {
+  margin-top:-25px;
+  margin-left:50px;
+}
+
+.graph .pie {
+  margin:10px 10px 10px 10px;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.line {
+  fill: none;
+  stroke: #6c7086;
+  stroke-width: 1.5px;
+}
+
+.bar rect {
+	fill: #6c7086;
+}
+
+.graph text {
+	color:black;
+}
+
+.arc path {
+  stroke: #fff;
+}
+
+.form-group {
+  margin: 0 5px 10px 5px;
+}
+
+</style>
+
+{%endblock%}
+
+
+{% block content %}
+
+<form action="{% url 'stats:sandbox' %}" method='post' id='sandbox'>
+
+  <fieldset class='fields'>
+
+  <div style='float:left' class='form-group'>
+    <label for="from_date" class="control-label">From</label>
+    <div class='controls'>
+      <input class='date form-control' id="from_date" name="from_date" type="text" value="{{ start }}"/>
+    </div>
+  </div>
+
+  <div class='form-group'>
+    <label for="to_date" class="control-label">To</label>
+    <div class='controls'>
+      <input class='date form-control' id="to_date" name="to_date" type="text" value="{{end}}" />
+    </div>
+  </div>
+
+
+
+  <div class='form-group'>
+    <label for="id_detection" class="control-label">Detection</label>
+    <div class='controls'>
+      {{ form.detection }}
+    </div>
+  </div>
+
+  <div class='form-group'>
+    <label for="id_severity" class="control-label">Severity</label>
+    <div class='controls'>
+      <select name='severity_comparator' id='severity_comparator'>
+        <option value="et">=</option>
+        <option value="lt">&lt;</option>
+        <option value="lte">&lt;=</option>
+        <option value="gt">&gt;</option>
+        <option value="gte">&gt;=</option>
+      </select>
+      {{ form.severity }}
+    </div>
+  </div>
+  </fieldset>
+
+  <fieldset class='categories'>
+    <div class='form-group'>
+      <label for="id_category" class="control-label">Categories</label>
+      <div class='controls categories checkbox'>
+        {% for c in categories %}
+          <label class="checkbox">
+            <input type="checkbox" name="category_selection" {% if c.id in categories_checked %}checked='checked'{% endif %} value="{{c.id}}">{{c.name}}
+          </label>
+        {% endfor %}
+      </div>
+    </div>
+    </fieldset>
+
+    <fieldset class='businessline'>
+      <div class='form-group'>
+        <label for="id_concerned_business_lines" class="control-label">Business lines</label>
+        <div class='controls' id='concerned_business_lines'>
+          {{ form.concerned_business_lines }}
+        </div>
+      </div>
+      <div class='form-group'>
+        <div class="checkbox">
+          <label class="checkbox">
+            <input type="checkbox" name="is_incident" value="incident">Incidents only
+          </label>
+
+          <label class="checkbox">
+            <input type="checkbox" name="is_major" value="major">Major incidents only
+          </label>
+        </div>
+      </div>
+    </fieldset>
+    <br>
+
+  {% csrf_token %}
+  <button class="btn btn-primary" type="button" onclick="javascript:refresh_stats()">Go</button>
+
+</form>
+
+<br style='clear:both'>
+
+<div class='graph'>
+  <h4>Overlapping years</h4>
+  <div class='graph' id="incidents_evolution">
+  </div>
+</div>
+
+<br style='clear:both'>
+
+<div class='graph'>
+  <h4>By category <span class='smaller'>comparison</span></h4>
+  <div class='graph' id="incidents_evolution_by_category">
+  </div>
+</div>
+
+<br style='clear:both'>
+
+<div class='graph'>
+  <h4>By category</h4>
+  <div class='graph' id="by_category">
+  </div>
+  <div class='graph bar' id="by_category_stacked">
+  </div>
+</div>
+
+<br style='clear:both'>
+
+<div class='graph'>
+  <h4>By month</h4>
+  <div class='graph' id="by_month">
+  </div>
+</div>
+
+<br style='clear:both'>
+
+<div class='graph'>
+  <h4>By subentity</h4>
+  <div class='graph' id="by_subentity">
+  </div>
+  <div class='graph bar' id="by_subentity_stacked">
+  </div>
+</div>
+
+
+
+<br style='clear:both'>
+
+<div class='graph'>
+  <h4>By severity</h4>
+  <div class='graph' id="by_severity">
+  </div>
+  <div class='graph bar' id="by_severity_stacked">
+  </div>
+</div>
+
+<br style='clear:both'>
+
+<div class='graph'>
+  <h4>By Incident Leader</h4>
+  <div class='graph' id="by_actor">
+  </div>
+  <div class='graph bar' id="by_actor_stacked">
+  </div>
+</div>
+
+<br style='clear:both' />
+
+<div class='graph'>
+  <h4>Monitored domains</h4>
+  <div class='graph' id="monitoring">
+  </div>
+</div>
+
+<br style='clear:both' />
+
+<div class='graph'>
+  <h4>Open incidents</h4>
+  <div class='graph' id="open">
+  </div>
+</div>
+
+<br style='clear:both' />
+
+<div class='graph'>
+  <h4>Blocked incidents</h4>
+  <div class='graph' id="blocked">
+  </div>
+</div>
+
+<br style='clear:both' />
+
+<h2>Matching incidents</h2><br />
+<table class="table table-hover table-condensed sortable followup-table" id='incident_table'>
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>FID</th>
+          <th>Subject</th>
+          <th>Category</th>
+          <th>Lvl</th>
+          <th>Svrt</th>
+          <th>Business&nbsp;Line</th>
+          <th>Status</th>
+          <th>Det.</th>
+          <th>Incident Leader</th>
+          <th>Last action</th>
+          <th>IH</th>
+          <th>Plan</th>
+        </tr>
+      </thead>
+  </table>
+<br style='clear:both' />
+{% endblock %}

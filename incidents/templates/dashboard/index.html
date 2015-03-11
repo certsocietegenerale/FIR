@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% load fir_plugins %}
+
+{% block custom_js %}
+<script src='/static/custom_js/incident_display.js'></script>
+
+{% plugin_point 'dashboard_static' %}
+{% endblock %}
+
+{% block content %}
+<h4>Starred Incidents</h4>
+
+<div id='starred_incidents' class='incident_display' data-url="{% url 'dashboard:starred' %}">
+Loading ...
+</div>
+
+<div class='tabbable'>
+	<ul class='nav nav-tabs'>
+		<li class='active'>
+			<a href='#tab_open' data-toggle='tab'>Open</a>
+		</li>
+		<li>
+			<a href='#tab_blocked' data-toggle='tab'>Blocked</a>
+		</li>
+		<li>
+			<a href='#tab_old' data-toggle='tab'>Old</a>
+		</li>
+		{% plugin_point 'dashboard_tab' %}
+	</ul>
+
+	<div class='tab-content tabs'>
+		<div class='tab-pane active incident_display table-responsive' id='tab_open' data-url="{% url 'dashboard:open' %}">
+			Loading ...
+		</div>
+
+		<div class='tab-pane incident_display table-responsive' id='tab_blocked' data-url="{% url 'dashboard:blocked' %}">
+			Loading ...
+		</div>
+
+		<div class='tab-pane incident_display table-responsive' id='tab_old' data-url="{% url 'dashboard:old' %}">
+			Loading ...
+		</div>
+		{% plugin_point 'dashboard_tab_content' %}
+	</div>
+</div>
+{% endblock %}

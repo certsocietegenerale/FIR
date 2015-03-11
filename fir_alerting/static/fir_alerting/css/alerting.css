@@ -1,0 +1,11 @@
+div#fir_alerting i {
+	margin: 0 5px 0 0;
+}
+
+div#fir_alerting_buttons {
+	display: none;
+}
+
+#email_form .nomargin {
+	margin-bottom:0px;
+}

@@ -1,0 +1,7 @@
+<th>
+	<a href='#' data-sort='{{ field }}'>{{ name }}
+	{% if order_param == field %}
+		<span class="glyphicon glyphicon-chevron-{% if asc == 'true' %}up{% else %}down{% endif %}"></i>
+	{% endif %}
+	</a>
+</th>

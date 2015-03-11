@@ -1,0 +1,93 @@
+{% if incident_list %}
+	<div class='incident_table' data-order-param='{{ order_param }}' data-asc='{{ asc }}'>
+		<table class='table table-hover table-condensed'>
+			<thead>
+				<tr>
+					{% include 'events/column.html' with name='Date' field='date' %}
+					<th></th>
+					{% include 'events/column.html' with name='Category' field='category' %}
+					{% include 'events/column.html' with name='Subject' field='subject' %}
+					<th>Business Lines</th>
+					{% include 'events/column.html' with name='Severity' field='severity' %}
+					{% include 'events/column.html' with name='Status' field='status' %}
+					{% if incident_view %}
+						{% include 'events/column.html' with name='Detection' field='detection' %}
+						{% include 'events/column.html' with name='Leader' field='actor' %}
+						{% include 'events/column.html' with name='Last Action' field='last_action' %}
+						{% include 'events/column.html' with name='Plan' field='plan' %}
+						{% include 'events/column.html' with name='Lvl' field='confidentiality' %}
+					{% endif %}
+					{% include 'events/column.html' with name='IH' field='opened_by' %}
+					<th>Edit</th>
+				</tr>
+			</thead>
+			<tbody>
+				{% for incident in incident_list %}
+					<tr class='{{ incident.status }}'>
+						<td class='incident_date_column'>{{ incident.date|date:'Y-m-d' }}</td>
+						<td>
+							<a href="{% url 'ajax:toggle_star' incident.id %}" class='star'>
+								{% if incident.is_starred %}
+									<i class='glyphicon glyphicon-star star'></i>
+								{% else %}
+									<i class='glyphicon glyphicon-star-empty star'></i>
+								{% endif %}
+							</a>
+						</td>
+						<td>{{ incident.category }}</td>
+						{% if incident.is_incident %}
+							<td><a href="{% url 'incidents:details' incident.id %}">{{ incident.subject }}</a></td>
+						{% else %}
+							<td><a href="{% url 'events:details' incident.id %}">{{ incident.subject }}</a></td>
+						{% endif %}
+						<td>{{ incident.get_business_lines_names }}</td>
+						<td><span class='badge threatcon-{{ incident.severity }}'>{{ incident.severity }}</span></td>
+						<td>{{ incident.get_status_display }}</td>
+
+						{% if incident_view %}
+							<td>{{ incident.detection }}</td>
+							<td>{{ incident.actor }}</td>
+							<td>
+								{{ incident.get_last_comment.action }}
+								<small class='relative-date'>
+									({{ incident.get_last_comment.date|date:'Y-m-d G:i' }})
+								</small>
+							</td>
+							<td>{{ incident.plan }}</td>
+							<td>{{ incident.get_confidentiality_display }}</td>
+						{% endif %}
+
+						<td>{{ incident.opened_by }}</td>
+						<td>
+							<a href="{% url 'incidents:edit' incident.id %}"><span class='glyphicon glyphicon-pencil'></span></a>
+						</td>
+					</tr>
+				{% endfor %}
+			</tbody>
+		</table>
+
+		{% if incident_list.paginator %}
+			<div>
+			    <span class="step-links">
+			        {% if incident_list.has_previous %}
+			        	<a href='#' class='paginate' data-page='{{ incident_list.previous_page_number }}'>
+			        		<i class='glyphicon glyphicon-backward'></i> previous
+			        	</a>
+			        {% endif %}
+
+			        <span class="current">
+			            (page {{ incident_list.number }} of {{ incident_list.paginator.num_pages }})
+			        </span>
+
+			        {% if incident_list.has_next %}
+			        	<a href='#' class='paginate' data-page='{{ incident_list.next_page_number }}'>
+			        		next <i class='glyphicon glyphicon-forward'></i>
+			        	</a>
+			        {% endif %}
+			    </span>
+			</div>
+		{% endif %}
+	</div>
+{% else %}
+	<div class='nothing_to_show'>No incidents to show.</div>
+{% endif %}

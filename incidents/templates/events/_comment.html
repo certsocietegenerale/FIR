@@ -1,0 +1,13 @@
+<tr id="comment_id_{{comment.id}}">
+	<td class='comment-date'>{{ comment.date|date:"Y-m-d G:i" }}</td>
+	<td>{{ comment.opened_by|default:"someone" }}</td>
+	<td>{{ comment.comment|safe }}</td>
+	<td>{{ comment.action }}</td>
+	<td><a href='#' class='edit-comment' data-comment-id='{{comment.id}}'>
+		<i class="glyphicon glyphicon-pencil" ></i>
+	</a></td>
+	<td><form id='delete_comment_{{comment.id}}' name='delete' action="{% url 'incidents:delete_comment' event.id comment.id %}" method='POST' data-ajaxform data-action='remove' data-target='#comment_id_{{comment.id}}'>
+		{% csrf_token %}
+		<button type='submit' class='btn btn-xs btn-link icon'><i class='glyphicon glyphicon-remove'></i></button>
+	</form></td>
+</tr>

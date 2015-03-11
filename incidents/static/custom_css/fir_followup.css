@@ -1,0 +1,350 @@
+/* print --------------------------------------*/
+@media print {
+	html{
+		zoom: 0.5;
+	}
+	.frame [class*='label-'], [class*='badge-'] {
+	background-color: #3a87ad !important;
+	}
+}
+
+/* Followup -----------------------------------*/
+
+.frame {
+	width:90%;
+	margin:20px auto;
+}
+
+.header img {
+	/*float:right;*/
+	margin: 0 auto;
+	display: block;
+}
+
+
+.header .title {
+	float:left;
+}
+
+
+body .frame, .minitable, table {
+	font-style: "Helvetica Neue";
+	font-size:12px;
+}
+
+
+/* regex --------------------------------------*/
+
+span.hostname {
+	border-bottom:1px dotted green;
+}
+
+span.ip-addr {
+	border-bottom:1px dotted red;
+}
+
+.tooltip li {
+	list-style: none;
+}
+
+.tooltip ul {
+	margin:0;
+}
+
+
+/* Upload -------------------------------------*/
+
+.files table{
+	margin-bottom:5px;
+	text-align: left;
+	vertical-align: center;
+	width:auto;
+}
+
+.files input {
+	height:10px;
+}
+
+div.files {
+
+}
+
+div.upload {
+	display:none;
+	position:relative;
+	border: 1px dashed #888;
+	width: 200px;
+	margin:5px;
+	height: 100px;
+	border-radius: 10px;
+}
+
+div.upload input {
+	opacity:0;
+	height:100%;
+	width:100%;
+	z-index:50;
+	position:relative;
+}
+
+div.upload span {
+	position:absolute;
+	font-size: 20px;
+	font-weight: bold;
+	color:#DDD;
+	top:40px;
+	left:55px;
+}
+
+
+/* Search  ------------------------------------*/
+
+.search-results {
+	margin-top:-5px;
+	margin-bottom:20px;
+}
+
+.icon-search {
+	margin: 3px 9px 0 5px;
+}
+
+
+/* Main  --------------------------------------*/
+
+input.search {
+	height:10px;
+	margin:10px;
+	background-color:black;
+	color:#DDD;
+	border:1px solid #333;
+}
+
+
+#push, #footer {
+	height:60px;
+}
+
+footer {
+	background-color:#EEE;
+	padding:10px;
+	position:fixed;
+	bottom:0;
+	left:0;
+	width:100%;
+}
+
+footer div {
+	color:#555;
+	font-size:10px;
+	margin:0 auto;
+	width:460px;
+}
+
+.container {
+	min-height: 100%
+	height: auto !important;
+
+}
+
+.usergreet {
+	float:right;
+	color:#999;
+	padding:10px 15px 10px;
+}
+
+.usergreet a {
+	color:#999;
+}
+
+
+
+/* Detail -------------------------------------*/
+
+/* break long words in artifacts */
+.artifacts {
+	word-wrap: break-word;
+}
+
+h2, h3 {
+	color:#f11;
+	font-size:21px;
+}
+
+h2 {
+	border-bottom:1px solid #f88;
+	padding-bottom:10px;
+	margin-top:60px;
+}
+
+table .artifacts {
+	max-width:1000px;
+}
+
+
+#addComment .action-label {
+	float:left;
+	margin: 5px 5px 0 0;
+}
+
+#id_comment {
+	width:97%;
+}
+
+.description {
+	padding: 10px 26px 10px 30px;
+	border:1px solid #FF8888;
+	margin:0 auto;
+}
+
+.artifact-table {
+	width:45%;
+	float:left;
+}
+
+.artifact-table .table {
+	width:auto;
+}
+
+.artifact-table td.head {
+	text-align: right;
+}
+
+h1.float {
+	float:left;
+}
+
+.minitable {
+	margin:40px 0 20px 0;
+	padding:10px;
+	float:right;
+	width:auto;
+}
+
+.minitable td {
+	border-top: 0 !important;
+	padding:0 5px;
+	line-height: 1 !important;
+}
+
+.minitable .delim {
+	border-right: 1px solid #ddd;
+	padding-right:15px;
+	padding-left:0;
+}
+
+.minitable .head {
+	font-weight: bold;
+	padding-left:15px;
+}
+
+
+
+/* Index --------------------------------------*/
+
+.sortable th a {
+	position:relative;
+}
+
+.sortable th i {
+	position:absolute;
+	margin:2px 0 0 2px;
+}
+
+
+.label, .badge {
+	font-size: 11.84px;
+}
+.table th {
+	border-top:0;
+}
+
+tr.O td {
+	background-color: white;
+}
+
+tr.C {
+	opacity: 0.3
+}
+
+tr.B td  {
+	color: #f00;
+	background-color:#fdd;
+	font-weight:bold;
+}
+
+
+/* New incident -------------------------------*/
+
+
+.collapse.in {
+	overflow:visible;
+}
+
+div.bootstrap-select .btn {
+	width:100% !important;
+}
+
+div.bootstrap-select {
+	width:85px !important;
+}
+
+.select2-container * {
+	width:200px;
+}
+
+.newincident select
+{
+	width:auto;
+}
+
+div.input-line > div
+{
+	float:left;
+}
+
+.control-group.checkbox
+{
+	margin:23px 0 0 -5px;
+}
+
+.checkbox label
+{
+	width:100%;
+}
+
+.summary
+{
+	float:left;
+	width:47%;
+	margin-right:50px;
+}
+
+.details
+{
+	width:48%;
+}
+
+.new-description, .new-description textarea
+{
+	width:99%;
+}
+
+.header .btn {
+	margin:16px 10px 0 10px;
+	float:right;
+}
+
+.header h1{
+	float:left;
+}
+
+.help-inline
+{
+	clear:both;
+}
+
+.control-group
+{
+	margin:0 5px 0 5px;
+}
+

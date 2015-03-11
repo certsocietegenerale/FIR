@@ -1,0 +1,134 @@
+{% load url from future %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>{%block title%}FIR{%endblock%}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+
+    <!-- Le styles -->
+    <link href="/static/css/jquery-ui.min.css" rel="stylesheet">
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet">
+    <link href="/static/css/bootstrap-datetimepicker.min.css" rel="stylesheet">
+    <link href="/static/custom_css/fir.css" rel="stylesheet">
+    {% block custom_js_top %}{% endblock %}
+    {% block custom_css %}{% endblock%}
+
+    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
+    <!--[if lt IE 9]>
+      <script src="/static/js/html5.js"></script>
+    <![endif]-->
+
+    <!-- Fav and touch icons -->
+    <link rel="shortcut icon" href="/static/img/favicon.png">
+
+    <!-- tinymce -->
+    <script type="text/javascript" src="/static/js/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript" src="/static/js/tinymce/config.js"></script>
+  </head>
+
+  <body>
+
+    <div class="navbar-sm">
+      <nav class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container-fluid">
+          <div class="navbar-header">
+            <button id="header-collapse" type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{% url 'dashboard:main' %}">FIR</a>
+          </div>
+
+          <div class="collapse navbar-collapse" id="navbar-collapse">
+            <ul class="nav navbar-nav">
+              <li>
+                <div class="btn-group navbar-btn">
+                  <button class="btn btn-danger" onclick="javascript:location.href='{% url 'events:new' %}'">
+                    New event <span class="glyphicon glyphicon-fire"></span>
+                  </button>
+                  {% if request.session.has_incident_templates %}
+                  <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                  </button>
+                  <ul class="dropdown-menu">
+                    {% for template in request.session.incident_templates %}
+                    <li>
+                      <a href="{% url 'events:new' %}?template={{ template.name }}">
+                        {{ template.name }}
+                      </a>
+                    </li>
+                    {% endfor %}
+                    <li class="divider"></li>
+                    <li><a href="{% url 'events:new' %}">Default</a></li>
+                  </ul>
+                  {% endif %}
+                </div>
+              </li>
+              <li id='dashboard-nav'><a href="{% url 'dashboard:main' %}">Dashboard</a></li>
+              <li id='incidents-nav'><a href="{% url 'incidents:index' %}">Incidents</a></li>
+              <li id='events-nav'><a href="{% url 'events:index' %}">Events</a></li>
+              <li id='incidents-nav' class='dropdown'>
+                <a class='dropdown-toggle' data-toggle='dropdown' href="#">Stats</a>
+                <ul class='dropdown-menu'>
+                  <li><a href="{% url 'stats:yearly' %}">Yearly</a></li>
+                  <li><a href="{% url 'stats:quarterly_bl_stats_default' %}">Quarterly</a></li>
+                  <li><a href="{% url 'stats:yearly_compare' %}">Compare with previous year</a></li>
+                  <li><a href="{%url 'stats:quarterly_major' %}">Major incidents</a></li>
+                  <li><a href="{%url 'stats:sandbox' %}">Sandbox <i class='glyphicon glyphicon-asterisk'></i></a></li>
+                  <li><a href="{%url 'stats:attributes' %}">Attributes</i></a></li>
+                </ul>
+              </li>
+              <li>
+                <form class="navbar-form" method="GET" action="{% url 'search' %}">
+                  <input type="text" class="form-control search" placeholder="search..." name="q" {% if query_string %}value='{{query_string}}'{% endif %} />
+                </form>
+              </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+              <li>
+                <div class='usergreet'>
+                  Currently logged in as <strong>{{ user }}</strong> [
+                    <a href="{% url 'logout' %}">logout</a>
+                  ]
+                  {% if user.is_staff %}
+                    [ <a href="{% url 'admin:index' %}">Admin</a> ]
+                  {% endif %}
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </div>
+
+    <div class="container-fluid">
+      {% block header %}{% endblock %}
+      {% block content %}{% endblock %}
+    </div>
+
+    <!-- Le javascript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script type="text/javascript" src="/static/js/jquery.min.js"></script>
+    <script src="/static/js/jquery-ui.min.js"></script>
+    <script type="text/javascript" src='/static/momentjs/moment.min.js'></script>
+    <script type="text/javascript" src="/static/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="/static/js/bootstrap-datetimepicker.min.js"></script>
+    <script type="text/javascript" src="/static/custom_js/ajax.js"></script>
+    <script type="text/javascript" src="/static/custom_js/auto_ajax.js"></script>
+
+    {% block custom_js %}{% endblock %}
+
+    <footer class="hidden-xs">
+      <div>
+        FIR - Fast Incident Response - <a href='https://cert.societegenerale.com/'>CERT Soci&eacute;t&eacute; G&eacute;n&eacute;rale {% now "Y"%}</a> &copy; bug reports go to <a href='https://github.com/certsocietegenerale/FIR' target='blank'>the GitHub repository</a>
+      </div>
+    </footer>
+  </body>
+</html>

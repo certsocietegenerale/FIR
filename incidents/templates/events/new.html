@@ -1,0 +1,150 @@
+{% extends "base.html" %}
+{% load url from future %}
+{% load add_css_class %}
+
+{% block custom_css %}
+<link href="/static/select/select2.css" rel="stylesheet"/>
+<link href="/static/select/select2-bootstrap.css" rel="stylesheet"/>
+<link href="/static/css/bootstrap-datetimepicker.min.css" rel="stylesheet"/>
+
+{% endblock %}
+
+{% block custom_js %}
+<script src="/static/select/select2.min.js"></script>
+<script>
+$(document).ready(function() {
+	$("select#id_concerned_business_lines").select2({ dropdownAutoWidth: true, width: '100%' });
+	$("select#id_category").select2();
+	$('select#id_status').select2({minimumResultsForSearch: -1, width: '90px'});
+	$('select#id_detection').select2({minimumResultsForSearch: -1, width: '90px'});
+	$('select#id_severity').select2({minimumResultsForSearch: -1, width: '90px'});
+	$('select#id_actor').select2({minimumResultsForSearch: -1, width: '90px'});
+	$('select#id_plan').select2({minimumResultsForSearch: -1, width: '90px'});
+	$('select#id_confidentiality').select2({minimumResultsForSearch: -1, width: '90px'});
+});
+</script>
+
+<script src='/static/js/bootstrap-datetimepicker.min.js'></script>
+
+{% endblock %}
+
+
+{% block content %}
+
+	<div class="container-fluid">
+		{% if not i %}
+			<form action="{% url 'events:new' %}" method="post">
+		{% else %}
+			<form action="{% url 'incidents:edit' i.pk %}" method="post">
+		{% endif %}
+
+			<div class="row header">
+				{% if not i %}
+					<h1 class="col-sm-11">New event</h1>
+				{% else %}
+					<h1 class="col-sm-11">{% if i.is_incident %}Incident{%else%}Event{%endif%}: {{ i.subject }}</h1>
+				{% endif %}
+				<div class="col-sm-1">
+					<button class="btn btn-primary" type="submit">Save</button>
+				</div>
+			</div>
+
+			<div class="row">
+				{% csrf_token %}
+
+				<div class="col-sm-6">
+					<fieldset>
+
+						<legend>Summary</legend>
+						{% if error_message %}
+							<p class='text-error'>{{ error_message }}</p>
+						{% endif %}
+
+						<div class="row">
+							<div class="col-sm-6 form-group{% if form.subject.errors%} has-error{%endif%}">
+								<label for="id_subject">Subject</label>
+								{{ form.subject|add_css_class:"form-control" }}
+								{% include 'events/_form_errors.html' with errors=form.subject.errors %}
+							</div>
+							<div class="col-sm-6 form-group{% if form.concerned_business_lines.errors%} has-error{%endif%}">
+								<label id="id_concerned_business_lines">Business Lines</label>
+								{{ form.concerned_business_lines|add_css_class:"form-control" }}
+								{% include 'events/_form_errors.html' with errors=form.concerned_business_lines.errors %}
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-6 form-group{% if form.category.errors%} has-error{%endif%}">
+								<label id="id_category">Category</label>
+								{{ form.category|add_css_class:"form-control" }}
+								{% include 'events/_form_errors.html' with errors=form.category.errors %}
+							</div>
+							<div class="col-sm-2 form-group{% if form.status.errors%} has-error{%endif%}">
+								<label id="id_status">Status</label>
+								{{ form.status|add_css_class:"form-control" }}
+								{% include 'events/_form_errors.html' with errors=form.status.errors %}
+							</div>
+							<div class="col-sm-2 form-group{% if form.detection.errors%} has-error{%endif%}">
+								<label id="id_detection">Detection</label>
+								{{ form.detection|add_css_class:"form-control" }}
+								{% include 'events/_form_errors.html' with errors=form.detection.errors %}
+							</div>
+							<div class="col-sm-2 form-group{% if form.severity.errors%} has-error{%endif%}">
+								<label id="id_severity">Severity</label>
+								{{ form.severity|add_css_class:"form-control" }}
+								{% include 'events/_form_errors.html' with errors=form.severity.errors %}
+							</div>
+						</div>
+						<div class="row">
+							<div class="col-sm-6 form-group{% if form.date.errors%} has-error{%endif%}">
+								<label id="id_date">Date / Time</label>
+								{{ form.date|add_css_class:"form-control datetime" }}
+								{% include 'events/_form_errors.html' with errors=form.date.errors %}
+							</div>
+							<div class="col-sm-6 checkbox aligned-with-stack{% if form.is_incident.errors%} has-error{%endif%}">
+								<label data-toggle='collapse' data-target='#incident_fields'>{{ form.is_incident }} Is an incident</label>
+								{% include 'events/_form_errors.html' with errors=form.is_incident.errors %}
+							</div>
+						</div>
+					</fieldset>
+				</div>
+				<div class="col-sm-6">
+					<fieldset id="incident_fields" class='details collapse {% if form.is_incident.value %}in{%endif%}'>
+						<legend>Incident details</legend>
+
+						<div class="row">
+							<div class="col-sm-2 form-group{% if form.actor.errors%} has-error{%endif%}">
+								<label id="id_actor">Actor</label>
+								{{ form.actor|add_css_class:"form-control" }}
+								{% include 'events/_form_errors.html' with errors=form.actor.errors %}
+							</div>
+							<div class="col-sm-2 form-group{% if form.plan.errors%} has-error{%endif%}">
+								<label id="id_plan">Plan</label>
+								{{ form.plan|add_css_class:"form-control" }}
+								{% include 'events/_form_errors.html' with errors=form.plan.errors %}
+							</div>
+							<div class="col-sm-2 form-group{% if form.confidentiality.errors%} has-error{%endif%}">
+								<label id="id_confidentiality">Confidentiality</label>
+								{{ form.confidentiality|add_css_class:"form-control" }}
+								{% include 'events/_form_errors.html' with errors=form.confidentiality.errors %}
+							</div>
+							<div class="col-sm-6 checkbox aligned-with-stack{% if form.is_major.errors%} has-error{%endif%}">
+								<label>{{ form.is_major }} Major incident</label>
+								{% include 'events/_form_errors.html' with errors=form.is_major.errors %}
+							</div>
+						</div>
+					</fieldset>
+				</div>
+			</div>
+			<div class="row">
+				<fieldset class="col-sm-12">
+					<legend>Description</legend>
+					{{ form.description|add_css_class:"form-control mce" }}
+					{% include 'events/_form_errors.html' with errors=form.description.errors %}
+				</fieldset>
+				{{ form.non_field_errors }}
+			</div>
+			<button class="btn btn-primary" type="submit">Save</button>
+		</form>
+	</div>
+{% endblock %}
+

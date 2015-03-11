@@ -1,0 +1,17 @@
+<table id='fir_todos_list_table'>
+	<thead>
+		<tr><td class='fir_todos_status'></td><td class='fir_todos_description'>Action</td><td>Accountable</td><td class='fir_todos_delete'></td></tr>
+	</thead>
+	<tbody>
+		{% for item in todos %}
+			{% include 'fir_todos/single.html' %}
+		{% endfor %}
+	</tbody>
+</table>
+
+<form action="{% url 'todos:create' incident_id %}" method='post' id='fir_todos_new' data-ajaxform data-action='append' data-target='#fir_todos_list_table' data-hide='self' class='hidden'>
+	{% csrf_token %}
+	{{ form.description }}
+	{{ form.business_line }}
+	<button type='submit' class='btn btn-link btn-xs icon'><i class='glyphicon glyphicon-plus'></i></button>
+</form>

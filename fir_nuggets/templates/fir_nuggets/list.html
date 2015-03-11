@@ -1,0 +1,18 @@
+<table class='table table-hover table-condensed'>
+<tr>
+	<th>Timestamp</th>
+	<th>Source</th>
+ 	<th>Interpretation</th>
+	<th></th>
+	<th></th>
+ </tr>
+{% for n in nuggets %}
+		<tr id='nugget_{{n.id}}'>
+		{% include 'fir_nuggets/nugget_row.html' with mode='row' %}
+		</tr>
+		<tr id='raw_{{n.id}}' style='display:none;'>
+		{% include 'fir_nuggets/nugget_row.html' with mode='raw' %}
+		</tr>
+	</div>
+{% endfor %}
+</table>

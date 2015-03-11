@@ -1,0 +1,10 @@
+{% if mode == 'row' %}
+			<td class='nugget_timestamp'><span>{{n.start_timestamp|date:"Y-m-d G:i"}} {% if n.end_timestamp%} <i class='icon-arrow-right'></i> {{n.end_timestamp|date:"Y-m-d G:i"}}{% endif%}</span></td>
+			<td><span class='nugget_source'>{{n.source}}</span></td>
+			<td class='nugget-interpretation'><a href="javascript:toggle_raw({{n.id}})"><span class='nugget_interpretation'>{{n.interpretation}}</span></a></td>
+			<td class='edit-nugget-row'><a class='edit-nugget' data-url='{% url "nuggets:edit" n.id %}' data-id='{{n.id}}' href='#'><span class='glyphicon glyphicon-pencil'></span></a></td>
+			<td class='delete-nugget-row'><a class='delete-nugget' data-url='{% url "nuggets:delete" n.id %}' data-id='{{n.id}}' href='#'><span class='glyphicon glyphicon-trash'></span></a></td>
+{% endif %}
+{% if mode == 'raw' %}
+			<td colspan='5'><div class='nugget_raw_data'><pre>{{n.raw_data}}</pre></div></td>
+{% endif %}

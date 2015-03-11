@@ -1,0 +1,16 @@
+{% if event.concerned_business_lines.count == 1 %}
+	{% with event.concerned_business_lines.all|first as bl %}
+		<li>
+			<a href='#' id='details-actions-alert' data-type='alerting' data-url="{% url 'alerting:get_template' event.id 'alerting' bl.id %}">
+				<i class="glyphicon glyphicon-send"></i>Alert
+			</a>
+		</li>
+	{% endwith %}
+{% else %}
+	<li>
+		<a href="#" id='details-actions-alert' data-type='alerting'>
+			<i class="glyphicon glyphicon-send"></i>Alert
+		</a>
+	</li>
+{% endif %}
+<li><a href="#" class='details-alert-bl' data-type='takedown' data-url="{% url 'alerting:get_template' event.id 'takedown' %}"><i class="glyphicon glyphicon-screenshot"></i>Takedown</a></li>

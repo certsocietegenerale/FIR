@@ -1,0 +1,61 @@
+#fir_todos_new input[type=submit] {
+	border: none;
+	background-color: transparent;
+	margin: 0;
+}
+
+#fir_todos_list .fir_todos_description {
+	width: 70%;
+}
+
+.fir_todos_done {
+	opacity: 0.4;
+}
+
+#fir_todos_list_table {
+	width: 100%;
+}
+
+#fir_todos_list_table thead {
+	font-weight: bold;
+}
+
+#fir_todos_list_table tr {
+	border-bottom: 1px solid #DDD;
+}
+
+#fir_todos_list_table a {
+	margin-top: 0px;
+}
+
+#fir_todos_new input[type=text] {
+	margin-top: 10px;
+	width: 45%;
+}
+
+#fir_todos_new input[type=select] {
+	height: 10px;
+}
+
+.fir_todos_status {
+	width: 20px;
+}
+
+.fir_todos_category {
+	width: 150px;
+}
+
+td.fir_todos_delete {
+	width: 15px;
+	text-align: center;
+}
+
+#fir_todos_followup .fir_todos_status,
+#fir_todos_followup .fir_todos_delete
+{
+	display: none;
+}
+
+#fir_todos_followup .fir_todos_done {
+	text-decoration: line-through;
+}

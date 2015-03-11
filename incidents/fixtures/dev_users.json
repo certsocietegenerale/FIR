@@ -1,0 +1,53 @@
+[
+{
+    "pk": 1,
+    "model": "auth.user",
+    "fields": {
+        "username": "admin",
+        "first_name": "",
+        "last_name": "",
+        "is_active": true,
+        "is_superuser": true,
+        "is_staff": true,
+        "last_login": "2014-08-22T08:21:26Z",
+        "groups": [],
+        "user_permissions": [],
+        "password": "pbkdf2_sha256$10000$pOzFa7NaEk4G$YRjAH33q0lB8nSqSRtFIhIGgCUAeewqyvu1RNoDjP7o=",
+        "email": "",
+        "date_joined": "2013-04-05T13:38:00Z"
+    }
+},
+{
+    "pk": 2,
+    "model": "auth.user",
+    "fields": {
+        "username": "dev",
+        "first_name": "",
+        "last_name": "",
+        "is_active": true,
+        "is_superuser": false,
+        "is_staff": false,
+        "last_login": "2014-08-12T13:01:38Z",
+        "groups": [
+            [
+                "Incident handlers"
+            ]
+        ],
+        "user_permissions": [],
+        "password": "pbkdf2_sha256$10000$CA7Jo24Jcbfr$SFScjspYQygUoR1hY9/pl2vwxpNQDcr3uUNdrRNPVdk=",
+        "email": "",
+        "date_joined": "2014-08-06T09:02:07Z"
+    }
+},
+{
+    "pk": 1,
+    "model": "incidents.profile",
+    "fields": {
+        "incident_number": 50,
+        "hide_closed": false,
+        "user": [
+            "dev"
+        ]
+    }
+}
+]

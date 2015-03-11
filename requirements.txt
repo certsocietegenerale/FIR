@@ -1,0 +1,6 @@
+Django==1.7.6
+flup==1.0.2
+pymongo==2.8
+pyquery==1.2.9
+python-dateutil==2.4.1
+pytz==2014.10
