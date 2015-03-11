@@ -7,6 +7,7 @@ FIR is for anyone needing to track cybersecurity incidents (CSIRTs, CERTs, SOCs,
 ![dashboard](https://github.com/certsocietegenerale/FIR/wiki/screenshots/dashboard.png)
 ![incident details](https://github.com/certsocietegenerale/FIR/wiki/screenshots/incident_details.png)
 
+See the wiki for the [user manual](https://github.com/certsocietegenerale/FIR/wiki/User-Manual) and more screenshots !
 
 # Installation
 
