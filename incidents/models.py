@@ -46,6 +46,9 @@ class Profile(models.Model):
 	incident_number = models.IntegerField(default=50)
 	hide_closed = models.BooleanField(default=False)
 
+	def __unicode__(self):
+		return u"Profile for user '{}'".format(self.user)
+
 # Audit trail ================================================================
 
 

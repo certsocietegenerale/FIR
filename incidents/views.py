@@ -2,7 +2,7 @@
 
 
 # Create your views here.
-from incidents.models import IncidentCategory, Incident, Comments, BusinessLine, Label, Artifact, File, Log, BaleCategory, Attribute, ValidAttribute, IncidentTemplate
+from incidents.models import IncidentCategory, Incident, Comments, BusinessLine, Label, Artifact, File, Log, BaleCategory, Attribute, ValidAttribute, IncidentTemplate, Profile
 from incidents.models import IncidentForm, CommentForm
 from fir_artifacts.hash import Hash
 
@@ -55,6 +55,16 @@ def user_login(request):
 		if user is not None:
 			if not request.POST.get('remember', None):
 				request.session.set_expiry(0)
+
+			try:
+				Profile.objects.get(user=user)
+			except ObjectDoesNotExist, e:
+				profile = Profile()
+				profile.user = user
+				profile.hide_closed = False
+				profile.incident_number = 50
+				profile.save()
+
 			if user.is_active:
 				login(request, user)
 				log("Login", user)
