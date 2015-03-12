@@ -9,12 +9,12 @@
         "is_active": true,
         "is_superuser": true,
         "is_staff": true,
-        "last_login": "2014-08-22T08:21:26Z",
+        "last_login": "2014-08-22T08:21:26",
         "groups": [],
         "user_permissions": [],
         "password": "pbkdf2_sha256$10000$pOzFa7NaEk4G$YRjAH33q0lB8nSqSRtFIhIGgCUAeewqyvu1RNoDjP7o=",
         "email": "",
-        "date_joined": "2013-04-05T13:38:00Z"
+        "date_joined": "2013-04-05T13:38:00"
     }
 },
 {
@@ -27,7 +27,7 @@
         "is_active": true,
         "is_superuser": false,
         "is_staff": false,
-        "last_login": "2014-08-12T13:01:38Z",
+        "last_login": "2014-08-12T13:01:38",
         "groups": [
             [
                 "Incident handlers"
@@ -36,7 +36,7 @@
         "user_permissions": [],
         "password": "pbkdf2_sha256$10000$CA7Jo24Jcbfr$SFScjspYQygUoR1hY9/pl2vwxpNQDcr3uUNdrRNPVdk=",
         "email": "",
-        "date_joined": "2014-08-06T09:02:07Z"
+        "date_joined": "2014-08-06T09:02:07"
     }
 },
 {
