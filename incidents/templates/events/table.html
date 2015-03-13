@@ -48,10 +48,14 @@
 							<td>{{ incident.detection }}</td>
 							<td>{{ incident.actor }}</td>
 							<td>
-								{{ incident.get_last_comment.action }}
-								<small class='relative-date'>
-									({{ incident.get_last_comment.date|date:'Y-m-d G:i' }})
-								</small>
+								{% if incident.comments_set.count > 0%}
+									{{ incident.get_last_comment.action }}
+									<small class='relative-date'>
+										({{ incident.get_last_comment.date|date:'Y-m-d G:i' }})
+									</small>
+								{% else %}
+									None
+								{%endif%}
 							</td>
 							<td>{{ incident.plan }}</td>
 							<td>{{ incident.get_confidentiality_display }}</td>
