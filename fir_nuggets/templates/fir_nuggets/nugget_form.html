@@ -1,11 +1,12 @@
 {% load add_css_class %}
+{% load i18n %}
 
 <div id="addNugget" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addNuggetLabel" aria-hidden="true">
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content">
 		  	<div class="modal-header">
 		    	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-		    	<h4 id="addNuggetLabel" class="modal-title">Add Nugget</h3>
+				<h4 id="addNuggetLabel" class="modal-title">{% trans "Add Nugget" %}</h4>
 		  	</div>
 		  	{% if mode == 'new' %}
 				<form id="nugget_form" action="{% url 'nuggets:new' event_id %}" method="POST">
@@ -16,7 +17,7 @@
 					{% csrf_token %}
 
 					<div id="date_control_group" class='form-group {% if nugget_form.date.errors%} error{%endif%}'>
-									<label for="id_date" class="control-label date-label">Date of finding</label>
+									<label for="id_date" class="control-label date-label">{% trans "Date of finding" %}</label>
 									<div class='controls'>
 										{{ nugget_form.date|add_css_class:'form-control' }}
 										<span class='help-block'>{% for error in nugget_form.date.errors %}{{ error }}{% endfor %}</span>
@@ -24,7 +25,7 @@
 							</div>
 
 							<div id="start_timestamp_control_group" class='form-group {% if nugget_form.start_timestamp.errors%} error{%endif%}'>
-									<label for="id_from" class="control-label from-label">Timestamp</label>
+									<label for="id_from" class="control-label from-label">{% trans "Timestamp" %}</label>
 									<div class='controls'>
 										{{ nugget_form.start_timestamp|add_css_class:'form-control' }}
 										<span class='help-block'>{% for error in nugget_form.start_timestamp.errors %}{{ error }}{% endfor %}</span>
@@ -32,7 +33,7 @@
 							</div>
 
 							<div id="end_timestamp_control_group" class='form-group {% if nugget_form.end_timestamp.errors%} error{%endif%}'>
-									<label for="id_end_timestamp" class="control-label end_timestamp-label">End timestamp</label>
+									<label for="id_end_timestamp" class="control-label end_timestamp-label">{% trans "End timestamp" %}</label>
 									<div class='controls'>
 										{{ nugget_form.end_timestamp|add_css_class:'form-control' }}
 										<span class='help-block'>{% for error in nugget_form.end_timestamp.errors %}{{ error }}{% endfor %}</span>
@@ -41,14 +42,14 @@
 
 							<div id="source_control_group" class='form-group {% if nugget_form.source.errors%} error{%endif%}'>
 									<div class='controls'>
-										<label for="id_source" class="control-label source-label">Source</label>
+										<label for="id_source" class="control-label source-label">{% trans "Source" %}</label>
 										{{ nugget_form.source|add_css_class:'form-control' }}
 										<span class='help-block'>{% for error in nugget_form.source.errors %}{{ error }}{% endfor %}</span>
 									</div>
 							</div>
 
 							<div id="interpretation_control_group" class='form-group {% if nugget_form.interpretation.errors%} error{%endif%}'>
-									<label for="id_interpretation" class="control-label interpretation-label">Interpretation</label>
+									<label for="id_interpretation" class="control-label interpretation-label">{% trans "Interpretation" %}</label>
 									<div class='controls'>
 										{{ nugget_form.interpretation|add_css_class:'form-control'}}
 										<span class='help-block'>{% for error in nugget_form.interpretation.errors %}{{ error }}{% endfor %}</span>
@@ -57,16 +58,16 @@
 
 
 							<div id="raw_data_control_group" class='form-group {% if nugget_form.raw_data.errors%} error{%endif%}'>
-									<label for="id_raw_data" class="control-label raw_data-label">Raw data</label>
+									<label for="id_raw_data" class="control-label raw_data-label">{% trans "Raw data" %}</label>
 									<div class='controls'>
 										{{ nugget_form.raw_data|add_css_class:'form-control' }}
 										<span class='help-block'>{% for error in nugget_form.raw_data.errors %}{{ error }}{% endfor %}</span>
 									</div>
 							</div>
 			  	</div>
-			  	<div class="modal-footer">
-			    	<button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cancel</button>
-			    	<button class="btn btn-primary" id='submit-nugget'>Add nugget</button>
+				<div class="modal-footer">
+					<button class="btn btn-default" data-dismiss="modal" aria-hidden="true">{% trans "Cancel" %}</button>
+					<button class="btn btn-primary" id='submit-nugget'>{% trans "Add nugget" %}</button>
 			  </div>
 		  </form>
 		</div>

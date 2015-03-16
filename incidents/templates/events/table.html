@@ -14,6 +14,7 @@
             {% trans "Plan" as t_plan %}
             {% trans "Lvl" as t_lvl %}
             {% trans "IH" as t_ih %}
+            {% trans "None" as t_none %}
 				<tr>
 					{% include 'events/column.html' with name=t_date field='date' %}
 					<th></th>
@@ -66,10 +67,10 @@
 										({{ incident.get_last_comment.date|date:'Y-m-d G:i' }})
 									</small>
 								{% else %}
-									{% trans "None" %}
+									{{ t_none }}
 								{%endif%}
 							</td>
-							<td>{{ incident.plan }}</td>
+							<td>{{ incident.plan|default:t_none }}</td>
 							<td>{{ incident.get_confidentiality_display }}</td>
 						{% endif %}
 
