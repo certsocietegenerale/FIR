@@ -3,7 +3,7 @@
 {% load i18n %}
 
 {% block title %}
-Quarterly statistics - {{bl.name}} - {% now "Y-m" %}
+{%  trans "Quarterly statistics" %} - {{bl.name}} - {% now "Y-m" %}
 {% endblock %}
 {% block header %}
 <div class='printheader print'>
@@ -14,7 +14,7 @@ Quarterly statistics - {{bl.name}} - {% now "Y-m" %}
 				<img src="/static/img/logo.jpg" alt="Logo" style="width:200px; height:auto;">
 			</td>
 			<td class='printheader-center'>
-				Quarterly statistics {% now "Y/m" %} [C2]
+				{%  trans "Quarterly statistics" %} {% now "Y/m" %} [C2]
 			</td>
 			<td class='printheader-right' style='width:10px'>
 				C2
@@ -24,7 +24,7 @@ Quarterly statistics - {{bl.name}} - {% now "Y-m" %}
 </div>
 
 <div class='print-title'>
-	<h1>Incidents quarterly statistics for <br /> {{bl.name}}</h1>
+	<h1>{% blocktrans with bl_name=bl.name %}Incidents quarterly statistics for <br /> {{bl_name}}{% endblocktrans %}</h1>
 	<div class='noprint' id='header'>
 	<select id='bl-select'>
 		{% for b in bls %}
