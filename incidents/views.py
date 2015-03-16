@@ -21,6 +21,7 @@ from json import dumps
 from django.template import Template
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import model_to_dict
+from django.utils.translation import ugettext_lazy as _
 
 import os, tempfile, zipfile, re, mimetypes, datetime
 from dateutil.relativedelta import *
@@ -168,7 +169,7 @@ def details(request, incident_id):
 def new_event(request):
 	if request.method == 'POST':
 		form = IncidentForm(request.POST)
-		form.status = 'Open'
+		form.status = _('Open')
 
 		if form.is_valid():
 			i = form.save(commit=False)
