@@ -1,12 +1,13 @@
+{% load i18n %}
 {% if todos %}
 	<table class='table table-hover table-condensed'>
 		<thead>
 			<tr>
 				<th></th>
-				<th>Task</th>
-				<th>Incident</th>
-				<th>Category</th>
-				<th>Delete</th>
+				<th>{%  trans "Task" %}</th>
+				<th>{%  trans "Incident" %}</th>
+				<th>{%  trans "Category" %}</th>
+				<th>{%  trans "Delete" %}</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -21,22 +22,22 @@
 		    <span class="step-links">
 				{% if todos.has_previous %}
 			        <a href='#' class='paginate' data-page='{{ todos.previous_page_number }}'>
-			        	<i class='glyphicon glyphicon-backward'></i> previous
+                        <i class='glyphicon glyphicon-backward'></i> {%  trans "previous" %}
 			        </a>
-			    {% endif %}
+				{% endif %}
 
-			    <span class="current">
-			    	(page {{ todos.number }} of {{ todos.paginator.num_pages }})
-			    </span>
+				<span class="current">
+					{% blocktrans with number=todos.number num_pages=todos.paginator.num_pages %}(page {{ number }} of {{ num_pages }}){% endblocktrans %}
+				</span>
 
 			    {% if todos.has_next %}
-			    	<a href='#' class='paginate' data-page='{{ todos.next_page_number }}'>
-			        	next <i class='glyphicon glyphicon-forward'></i>
+					<a href='#' class='paginate' data-page='{{ todos.next_page_number }}'>
+                        {%  trans "next" %} <i class='glyphicon glyphicon-forward'></i>
 			        </a>
 			    {% endif %}
 			</span>
 		</div>
 	{% endif %}
 {% else %}
-	<div class='nothing_to_show'>No tasks to show.</div>
+	<div class='nothing_to_show'>{%  trans "No tasks to show." %}</div>
 {% endif %}

@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load url from future %}
 {% load add_css_class %}
+{% load i18n %}
 
 {% block custom_css %}
 <link href="/static/select/select2.css" rel="stylesheet"/>
@@ -40,12 +41,12 @@ $(document).ready(function() {
 
 			<div class="row header">
 				{% if not i %}
-					<h1 class="col-sm-11">New event</h1>
+					<h1 class="col-sm-11">{% trans "New event" %}</h1>
 				{% else %}
-					<h1 class="col-sm-11">{% if i.is_incident %}Incident{%else%}Event{%endif%}: {{ i.subject }}</h1>
+					<h1 class="col-sm-11">{% if i.is_incident %}{% trans "Incident" %}{%else%}{% trans "Event" %}{%endif%}: {{ i.subject }}</h1>
 				{% endif %}
 				<div class="col-sm-1">
-					<button class="btn btn-primary" type="submit">Save</button>
+					<button class="btn btn-primary" type="submit">{% trans "Save" %}</button>
 				</div>
 			</div>
 
@@ -55,53 +56,53 @@ $(document).ready(function() {
 				<div class="col-sm-6">
 					<fieldset>
 
-						<legend>Summary</legend>
+						<legend>{% trans "Summary" %}</legend>
 						{% if error_message %}
 							<p class='text-error'>{{ error_message }}</p>
 						{% endif %}
 
 						<div class="row">
 							<div class="col-sm-6 form-group{% if form.subject.errors%} has-error{%endif%}">
-								<label for="id_subject">Subject</label>
+								<label for="id_subject">{% trans "Subject" %}</label>
 								{{ form.subject|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.subject.errors %}
 							</div>
 							<div class="col-sm-6 form-group{% if form.concerned_business_lines.errors%} has-error{%endif%}">
-								<label id="id_concerned_business_lines">Business Lines</label>
+								<label id="id_concerned_business_lines">{% trans "Business Lines" %}</label>
 								{{ form.concerned_business_lines|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.concerned_business_lines.errors %}
 							</div>
 						</div>
 						<div class="row">
 							<div class="col-sm-6 form-group{% if form.category.errors%} has-error{%endif%}">
-								<label id="id_category">Category</label>
+								<label id="id_category">{% trans "Category" %}</label>
 								{{ form.category|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.category.errors %}
 							</div>
 							<div class="col-sm-2 form-group{% if form.status.errors%} has-error{%endif%}">
-								<label id="id_status">Status</label>
+								<label id="id_status">{% trans "Status" %}</label>
 								{{ form.status|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.status.errors %}
 							</div>
 							<div class="col-sm-2 form-group{% if form.detection.errors%} has-error{%endif%}">
-								<label id="id_detection">Detection</label>
+								<label id="id_detection">{% trans "Detection" %}</label>
 								{{ form.detection|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.detection.errors %}
 							</div>
 							<div class="col-sm-2 form-group{% if form.severity.errors%} has-error{%endif%}">
-								<label id="id_severity">Severity</label>
+								<label id="id_severity">{% trans "Severity" %}</label>
 								{{ form.severity|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.severity.errors %}
 							</div>
 						</div>
 						<div class="row">
 							<div class="col-sm-6 form-group{% if form.date.errors%} has-error{%endif%}">
-								<label id="id_date">Date / Time</label>
+								<label id="id_date">{% trans "Date / Time" %}</label>
 								{{ form.date|add_css_class:"form-control datetime" }}
 								{% include 'events/_form_errors.html' with errors=form.date.errors %}
 							</div>
 							<div class="col-sm-6 checkbox aligned-with-stack{% if form.is_incident.errors%} has-error{%endif%}">
-								<label data-toggle='collapse' data-target='#incident_fields'>{{ form.is_incident }} Is an incident</label>
+								<label data-toggle='collapse' data-target='#incident_fields'>{{ form.is_incident }} {% trans "Is an incident" %}</label>
 								{% include 'events/_form_errors.html' with errors=form.is_incident.errors %}
 							</div>
 						</div>
@@ -109,26 +110,26 @@ $(document).ready(function() {
 				</div>
 				<div class="col-sm-6">
 					<fieldset id="incident_fields" class='details collapse {% if form.is_incident.value %}in{%endif%}'>
-						<legend>Incident details</legend>
+						<legend>{% trans "Incident details" %}</legend>
 
 						<div class="row">
 							<div class="col-sm-2 form-group{% if form.actor.errors%} has-error{%endif%}">
-								<label id="id_actor">Actor</label>
+								<label id="id_actor">{% trans "Actor" %}</label>
 								{{ form.actor|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.actor.errors %}
 							</div>
 							<div class="col-sm-2 form-group{% if form.plan.errors%} has-error{%endif%}">
-								<label id="id_plan">Plan</label>
+								<label id="id_plan">{% trans "Plan" %}</label>
 								{{ form.plan|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.plan.errors %}
 							</div>
 							<div class="col-sm-2 form-group{% if form.confidentiality.errors%} has-error{%endif%}">
-								<label id="id_confidentiality">Confidentiality</label>
+								<label id="id_confidentiality">{% trans "Confidentiality" %}</label>
 								{{ form.confidentiality|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.confidentiality.errors %}
 							</div>
 							<div class="col-sm-6 checkbox aligned-with-stack{% if form.is_major.errors%} has-error{%endif%}">
-								<label>{{ form.is_major }} Major incident</label>
+								<label>{{ form.is_major }} {% trans "Major incident" %}</label>
 								{% include 'events/_form_errors.html' with errors=form.is_major.errors %}
 							</div>
 						</div>
@@ -137,13 +138,13 @@ $(document).ready(function() {
 			</div>
 			<div class="row">
 				<fieldset class="col-sm-12">
-					<legend>Description</legend>
+					<legend>{% trans "Description" %}</legend>
 					{{ form.description|add_css_class:"form-control mce" }}
 					{% include 'events/_form_errors.html' with errors=form.description.errors %}
 				</fieldset>
 				{{ form.non_field_errors }}
 			</div>
-			<button class="btn btn-primary" type="submit">Save</button>
+			<button class="btn btn-primary" type="submit">{% trans "Save" %}</button>
 		</form>
 	</div>
 {% endblock %}

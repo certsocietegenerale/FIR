@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load url from future %}
+{% load i18n %}
 
 {% block custom_js_top %}
 <script src="/static/js/d3.v3.min.js"></script>
@@ -50,7 +51,7 @@ function refresh_stats() {
 	// Update main statistics
 	$.getJSON('/stats/data/attributes/basic/?' + serialized, function (data) {
 		var main = $('#main_statistics');
-		var text = 'Incidents count: ' + data.incidents + ' / With attribute set: ' + data.with_attribute;
+		var text = "{% trans 'Incidents count:' %}" + ' ' + data.incidents + ' / ' + "{% trans 'With attribute set:' %}" + ' ' + data.with_attribute;
 
 		for (attribute in data.attributes) {
 			for (type in data.attributes[attribute]) {
@@ -132,10 +133,10 @@ function refresh_stats() {
 		var thead = $('<thead>');
 		var tbody = $('<tbody>');
 		var tr = $('<tr />');
-		tr.append('<th>Date</th>');
-		tr.append('<th>Category</th>');
-		tr.append('<th>Subject</th>');
-		tr.append('<th>Business&nbsp;Lines</th>');
+		tr.append('<th>'+'{% trans "Date" %}'+'</th>');
+		tr.append('<th>'+'{% trans "Category" %}'+'</th>');
+		tr.append('<th>'+'{% trans "Subject" %}'+'</th>');
+		tr.append('<th>'+'{% trans "Business&nbsp;Lines" %}'+'</th>');
 		for (attribute in data[0].attributes) {
 			if (data[0].attributes.hasOwnProperty(attribute)) {
 				tr.append('<th>' + attribute + '</th>');
@@ -320,28 +321,28 @@ input.date {
   <fieldset class='fields'>
 
   <div style='margin-top:0;float:left' class='form-group'>
-    <label for="from_date" class="control-label">From</label>
+    <label for="from_date" class="control-label">{% trans "From" %}</label>
     <div class='controls'>
       <input class='date form-control' id="from_date" name="from_date" type="text" value="{{ start }}"/>
     </div>
   </div>
 
   <div style='margin-top:0' class='form-group'>
-    <label for="to_date" class="control-label">To</label>
+    <label for="to_date" class="control-label">{% trans "To" %}</label>
     <div class='controls'>
       <input class='date form-control' id="to_date" name="to_date" type="text" value="{{end}}" />
     </div>
   </div>
 
   <div class='form-group'>
-    <label for="id_detection" class="control-label">Detection</label>
+    <label for="id_detection" class="control-label">{% trans "Detection" %}</label>
     <div class='controls'>
       {{ form.detection }}
     </div>
   </div>
 
   <div class='form-group'>
-    <label for="id_severity" class="control-label">Severity</label>
+    <label for="id_severity" class="control-label">{% trans "Severity" %}</label>
     <div class='controls'>
       <select name='severity_comparator' id='severity_comparator'>
         <option value="et">=</option>
@@ -357,7 +358,7 @@ input.date {
   </fieldset>
   <fieldset class='categories'>
     <div class='form-group'>
-      <label for="id_category" class="control-label">Categories</label>
+      <label for="id_category" class="control-label">{% trans "Categories" %}</label>
       <div class='controls categories checkbox'>
         {% for c in categories %}
           <label class="checkbox">
@@ -370,7 +371,7 @@ input.date {
 
     <fieldset class='businessline'>
     	<div class='form-group'>
-      		<label for="id_concerned_business_lines" class="control-label">Business lines</label>
+			<label for="id_concerned_business_lines" class="control-label">{% trans "Business lines" %}</label>
 	  		<div class='controls' id='concerned_business_lines'>
 				{{ form.concerned_business_lines }}
 	  		</div>
@@ -378,11 +379,11 @@ input.date {
 
 		<div class='form-group checkbox'>
       		<label class="checkbox">
-        		<input type="checkbox" name="is_incident" value="incident">Incidents only
+				<input type="checkbox" name="is_incident" value="incident"> {% trans "Incidents only" %}
       		</label>
 
       		<label class="checkbox">
-        		<input type="checkbox" name="is_major" value="major">Major incidents only
+				<input type="checkbox" name="is_major" value="major"> {% trans "Major incidents only" %}
       		</label>
       	</div>
 
@@ -390,10 +391,10 @@ input.date {
 
   <fieldset class='bars'>
   	<div class='form-group'>
-  		<label for="bars" class="control-label">Bars</label>
+		<label for="bars" class="control-label">{% trans "Bars" %}</label>
     	<div class='controls'>
 	      	<select name='bars' id='bars'>
-	        	<option value="0">Incidents</option>
+				<option value="0">{% trans "Incidents" %}</option>
 	        	{% for attribute in attributes %}
 	        		<option value="{{attribute.id}}" data-unit="{{attribute.unit}}">{{attribute.name}}</option>
 	        	{% endfor %}
@@ -404,26 +405,26 @@ input.date {
 	<div class='form-group'>
 		<div class="checkbox">
 		    <label class="checkbox">
-	        	<input type="checkbox" name="only_with_attribute" checked="checked" />Only incidents with attribute set
+				<input type="checkbox" name="only_with_attribute" checked="checked" /> {% trans "Only incidents with attribute set" %}
 	      	</label>
 
 		    <label class="checkbox">
-	        	<input type="checkbox" name="total" value="total" checked="checked">Total
+				<input type="checkbox" name="total" value="total" checked="checked"> {% trans "Total" %}
 	      	</label>
 
 	      	<label class="checkbox">
-	        	<input type="checkbox" name="average" value="average">Average
+				<input type="checkbox" name="average" value="average"> {% trans "Average" %}
 	      	</label>
 
 	      	<label class="checkbox">
-	        	<input type="checkbox" name="deviation" value="deviation">Standard Deviation
+				<input type="checkbox" name="deviation" value="deviation"> {% trans "Standard Deviation" %}
 	      	</label>
 	    </div>
 	</div>
   </fieldset>
   <fieldset class='attributes'>
   	<div class='form-group'>
-  		<label for="id_attribute" class="control-label">Attributes</label>
+		<label for="id_attribute" class="control-label">{% trans "Attributes" %}</label>
   		<div class='controls attribute checkbox'>
   		{% for attribute in attributes %}
   			<label class='checkbox'>
@@ -437,7 +438,7 @@ input.date {
 
   {% csrf_token %}
   <div class='clear'>
-  	<button class="btn btn-primary" type="button" id="refresh">Go</button>
+	<button class="btn btn-primary" type="button" id="refresh">{% trans "Go" %}</button>
   </div>
 
 </form>
@@ -446,13 +447,13 @@ input.date {
 <div id='main_statistics'></div>
 
 <div class='graph' style='width: 1000px;'>
-	<h2>Over time</h2>
+	<h2>{% trans "Over time" %}</h2>
 	<div class='graph' id='attribute_over_time'>
 		<svg height="500px" style="display: none;" />
 	</div>
 </div>
 
-<h2>Matching incidents (<span id='incident_count'>0</span>)</h2><br />
+<h2>{% trans "Matching incidents" %} (<span id='incident_count'>0</span>)</h2><br />
 <div id='incidents_table'>
 </div>
 

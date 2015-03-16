@@ -1,5 +1,7 @@
 {% extends 'base.html' %}
 {% load url from future %}
+{% load i18n %}
+
 {% block title %}
 Quarterly statistics - {{bl.name}} - {% now "Y-m" %}
 {% endblock %}
@@ -113,7 +115,7 @@ Quarterly statistics - {{bl.name}} - {% now "Y-m" %}
 
 {% block content %}
 
-<a href="{% url 'stats:close_old' %}">Close old incidents for all BLs</a>
+<a href="{% url 'stats:close_old' %}">{% trans "Close old incidents for all BLs" %}</a>
 <p class='separator'>&nbsp;</p>
 
 
@@ -121,10 +123,10 @@ Quarterly statistics - {{bl.name}} - {% now "Y-m" %}
 
 <p class='separator noprint'>&nbsp;</p>
 
-<h2>Monthly forecast</h2>
+<h2>{% trans "Monthly forecast" %}</h2>
 
 <div class='graph'>
-	<h4>Total incidents on your Business Line</h4>
+	<h4>{% trans "Total incidents on your Business Line" %}</h4>
 	<br />
 	<div class='graph' id="incidents" style="float:left;">
 	</div>
@@ -136,7 +138,7 @@ Quarterly statistics - {{bl.name}} - {% now "Y-m" %}
 <p class='separator noprint'>&nbsp;</p>
 
 <div style='float:left;margin-top:-20px' class='graph'>
-	<h4>Incident breakdown by severity</h4><br />
+	<h4>{% trans "Incident breakdown by severity" %}</h4><br />
 	<div class='graph' id="severity">
 	</div>
 	<div class='graph bar' id="severity_bar">
@@ -147,7 +149,7 @@ Quarterly statistics - {{bl.name}} - {% now "Y-m" %}
 <p class='separator'>&nbsp;</p>
 
 <div class='graph'>
-	<h4>Incident breakdown by entity</h4><br />
+	<h4>{% trans "Incident breakdown by entity" %}</h4><br />
 	<div class='graph' id="entity">
 	</div>
 	<div class='graph bar' id="entity_bar">
@@ -157,7 +159,7 @@ Quarterly statistics - {{bl.name}} - {% now "Y-m" %}
 <p class='separator noprint'>&nbsp;</p>
 
 <div class='graph' >
-	<h4>Incident breakdown by category</h4><br />
+	<h4>{% trans "Incident breakdown by category" %}</h4><br />
 	<div class='graph' id="category">
 	</div>
 	<div class='graph bar' id="category_bar">
@@ -167,10 +169,10 @@ Quarterly statistics - {{bl.name}} - {% now "Y-m" %}
 <p class='separator newpage'>&nbsp;</p>
 <p class='separator'>&nbsp;</p>
 
-<h2>Incident Management</h2>
+<h2>{% trans "Incident Management" %}</h2>
 <p class='separator noprint'>&nbsp;</p>
 <div class='graph'>
-	<h4>Incident Management by incident leader (Business Line or CERT)</h4><br />
+	<h4>{% trans "Incident Management by incident leader (Business Line or CERT)" %}</h4><br />
 	<div class='graph' id="actor">
 	</div>
 	<div class='graph bar' id="actor_bar">
@@ -181,17 +183,17 @@ Quarterly statistics - {{bl.name}} - {% now "Y-m" %}
 <br style='clear:both' />
 
 <div style='float:left'>
-	<h4>Monitored domains</h4><br />
+	<h4>{% trans "Monitored domains" %}</h4><br />
 	<div class='graph' id="monitoring">
 	</div>
 </div>
 <div style='float:left'>
-	<h4>Open incidents</h4><br />
+	<h4>{% trans "Open incidents" %}</h4><br />
 	<div class='graph' id="open">
 	</div>
 </div>
 <div style='float:left'>
-	<h4>Blocked incidents</h4><br />
+	<h4>{% trans "Blocked incidents" %}</h4><br />
 	<div class='graph' id="blocked">
 	</div>
 </div>
@@ -199,23 +201,23 @@ Quarterly statistics - {{bl.name}} - {% now "Y-m" %}
 <p class='separator newpage'>&nbsp;</p>
 <p class='separator'>&nbsp;</p>
 
-<h2>Incident follow-up</h2><br />
+<h2>{% trans "Incident follow-up" %}</h2><br />
 <table class="table table-hover table-condensed sortable followup-table">
 			<thead>
 				<tr>
-					<th>Date</th>
-					<th>FID</th>
-					<th>Subject</th>
-					<th>Category</th>
-					<th>Lvl</th>
-					<th>Svrt</th>
-					<th>Business&nbsp;Line</th>
-					<th>Status</th>
-					<th>Det.</th>
-					<th>Incident Leader</th>
-					<th>Last action</th>
-					<th>IH</th>
-					<th>Plan</th>
+					<th>{% trans "Date" %}</th>
+					<th>{% trans "FID" %}</th>
+					<th>{% trans "Subject" %}</th>
+					<th>{% trans "Category" %}</th>
+					<th>{% trans "Lvl" %}</th>
+					<th>{% trans "Svrt" %}</th>
+					<th>{% trans "Business&nbsp;Line" %}</th>
+					<th>{% trans "Status" %}</th>
+					<th>{% trans "Det." %}</th>
+					<th>{% trans "Incident Leader" %}</th>
+					<th>{% trans "Last Action" %}</th>
+					<th>{% trans "IH" %}</th>
+					<th>{% trans "Plan" %}</th>
 
 				</tr>
 			</thead>
@@ -240,23 +242,23 @@ Quarterly statistics - {{bl.name}} - {% now "Y-m" %}
 	</table>
 
 <p class='separator newpage'>&nbsp;</p>
-<h2>Unclosed incidents older than three months</h2><br />
+<h2>{% trans "Unclosed incidents older than three months" %}</h2><br />
 <table class="table table-hover table-condensed sortable followup-table">
 			<thead>
 				<tr>
-					<th>Date</th>
-					<th>FID</th>
-					<th>Subject</th>
-					<th>Category</th>
-					<th>Lvl</th>
-					<th>Svrt</th>
-					<th>Business&nbsp;Line</th>
-					<th>Status</th>
-					<th>Det.</th>
-					<th>Incident Leader</th>
-					<th>Last action</th>
-					<th>IH</th>
-					<th>Plan</th>
+					<th>{% trans "Date" %}</th>
+					<th>{% trans "FID" %}</th>
+					<th>{% trans "Subject" %}</th>
+					<th>{% trans "Category" %}</th>
+					<th>{% trans "Lvl" %}</th>
+					<th>{% trans "Svrt" %}</th>
+					<th>{% trans "Business&nbsp;Line" %}</th>
+					<th>{% trans "Status" %}</th>
+					<th>{% trans "Det." %}</th>
+					<th>{% trans "Incident Leader" %}</th>
+					<th>{% trans "Last Action" %}</th>
+					<th>{% trans "IH" %}</th>
+					<th>{% trans "Plan" %}</th>
 
 				</tr>
 			</thead>
