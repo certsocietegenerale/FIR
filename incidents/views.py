@@ -96,7 +96,7 @@ def init_session(request):
 def log(what, user, incident=None, comment=None):
 	# dirty hack to not log when in debug mode
 	import sys
-	if sys.argv[1] == 'runserver':
+	if len(sys.argv) >= 2 and sys.argv[1] == 'runserver':
 		print "DEBUG: Not logging"
 		return
 
