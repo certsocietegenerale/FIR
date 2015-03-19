@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
 {% load url from future %}
+{% load i18n %}
 
 {% block header %}
-<h1>Comparison for {{ year }} - {{year|add:-1}}</h1>
+<h1>{% blocktrans with current_year=year previous_year=year|add:-1 %}Comparison for {{ current_year }} - {{previous_year}}{% endblocktrans %}</h1>
 {%endblock%}
 
 
@@ -75,7 +76,7 @@
 {% block content %}
 
 <div class='graph'>
-  <h3>Global activity volume (incidents+events)</h3>
+  <h3>{% trans "Global activity volume (incidents+events)" %}</h3>
   <div class='graph' id="global_activity_volume">
   </div>
 </div>
@@ -83,14 +84,14 @@
 <p class='separator'>&nbsp;</p>
 
 <div class='graph'>
-  <h4>Category incident+events evolution ({{year|add:-1}} - {{year}})</h4>
+  <h4>{% trans "Category incident+events evolution" %} ({{year|add:-1}} - {{year}})</h4>
   <div class='graph' id="bl_category_evolution">
   </div>
 </div>
 
 
 <div class='graph'>
-  <h4>Incidents+events by category ({{year}})</h4>
+  <h4>{% trans "Incidents+events by category" %} ({{year}})</h4>
   <div class='graph' id="bl_category_donut">
   </div>
 </div>
@@ -99,7 +100,7 @@
 <p class='separator'>&nbsp;</p>
 
 <div class='graph'>
-  <h3>Yearly incidents</h3>
+  <h3>{% trans "Yearly incidents" %}</h3>
   <div class='graph' id="yearly_incidents">
   </div>
 </div>
@@ -109,14 +110,14 @@
 
 
 <div class='graph'>
-  <h4>Business Line incident evolution ({{year|add:-1}} - {{year}})</h4>
+  <h4>{% trans "Business Line incident evolution" %} ({{year|add:-1}} - {{year}})</h4>
   <div class='graph' id="bl_evolution">
   </div>
 </div>
 
 
 <div class='graph'>
-  <h4>Incidents by business line ({{year}})</h4>
+  <h4>{% trans "Incidents by business line" %} ({{year}})</h4>
   <div class='graph' id="bl_donut">
   </div>
 </div>
@@ -126,7 +127,7 @@
 
 
 <div class='graph'>
-  <h3>Yearly events</h3>
+  <h3>{% trans "Yearly events" %}</h3>
   <div class='graph' id="yearly_events">
   </div>
 </div>
@@ -134,14 +135,14 @@
 <p class='separator'>&nbsp;</p>
 
 <div class='graph'>
-  <h4>Business Line event evolution ({{year|add:-1}} - {{year}})</h4>
+  <h4>{% trans "Business Line event evolution" %} ({{year|add:-1}} - {{year}})</h4>
   <div class='graph' id="bl_events_evolution">
   </div>
 </div>
 
 
 <div class='graph'>
-  <h4>Events by business line ({{year}})</h4>
+  <h4>{% trans "Events by business line" %} ({{year}})</h4>
   <div class='graph' id="bl_event_donut">
   </div>
 </div>

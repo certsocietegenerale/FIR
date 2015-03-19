@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load url from future %}
 {% load add_css_class %}
+{% load i18n %}
 
 {% block header %}
 
@@ -229,14 +230,14 @@ h4 .smaller {
   <fieldset class='fields'>
 
   <div style='float:left' class='form-group'>
-    <label for="from_date" class="control-label">From</label>
+    <label for="from_date" class="control-label">{% trans "From" %}</label>
     <div class='controls'>
       <input class='date form-control' id="from_date" name="from_date" type="text" value="{{ start }}"/>
     </div>
   </div>
 
   <div class='form-group'>
-    <label for="to_date" class="control-label">To</label>
+    <label for="to_date" class="control-label">{% trans "To" %}</label>
     <div class='controls'>
       <input class='date form-control' id="to_date" name="to_date" type="text" value="{{end}}" />
     </div>
@@ -245,14 +246,14 @@ h4 .smaller {
 
 
   <div class='form-group'>
-    <label for="id_detection" class="control-label">Detection</label>
+    <label for="id_detection" class="control-label">{% trans "Detection" %}</label>
     <div class='controls'>
       {{ form.detection }}
     </div>
   </div>
 
   <div class='form-group'>
-    <label for="id_severity" class="control-label">Severity</label>
+    <label for="id_severity" class="control-label">{% trans "Severity" %}</label>
     <div class='controls'>
       <select name='severity_comparator' id='severity_comparator'>
         <option value="et">=</option>
@@ -268,7 +269,7 @@ h4 .smaller {
 
   <fieldset class='categories'>
     <div class='form-group'>
-      <label for="id_category" class="control-label">Categories</label>
+      <label for="id_category" class="control-label">{% trans "Categories" %}</label>
       <div class='controls categories checkbox'>
         {% for c in categories %}
           <label class="checkbox">
@@ -281,7 +282,7 @@ h4 .smaller {
 
     <fieldset class='businessline'>
       <div class='form-group'>
-        <label for="id_concerned_business_lines" class="control-label">Business lines</label>
+        <label for="id_concerned_business_lines" class="control-label">{% trans "Business lines" %}</label>
         <div class='controls' id='concerned_business_lines'>
           {{ form.concerned_business_lines }}
         </div>
@@ -289,11 +290,11 @@ h4 .smaller {
       <div class='form-group'>
         <div class="checkbox">
           <label class="checkbox">
-            <input type="checkbox" name="is_incident" value="incident">Incidents only
+            <input type="checkbox" name="is_incident" value="incident">{% trans "Incidents only" %}
           </label>
 
           <label class="checkbox">
-            <input type="checkbox" name="is_major" value="major">Major incidents only
+            <input type="checkbox" name="is_major" value="major">{% trans "Major incidents only" %}
           </label>
         </div>
       </div>
@@ -301,14 +302,14 @@ h4 .smaller {
     <br>
 
   {% csrf_token %}
-  <button class="btn btn-primary" type="button" onclick="javascript:refresh_stats()">Go</button>
+  <button class="btn btn-primary" type="button" onclick="javascript:refresh_stats()">{% trans "Go" %}</button>
 
 </form>
 
 <br style='clear:both'>
 
 <div class='graph'>
-  <h4>Overlapping years</h4>
+  <h4>{% trans "Overlapping years" %}</h4>
   <div class='graph' id="incidents_evolution">
   </div>
 </div>
@@ -316,7 +317,7 @@ h4 .smaller {
 <br style='clear:both'>
 
 <div class='graph'>
-  <h4>By category <span class='smaller'>comparison</span></h4>
+  <h4>{%  blocktrans %}By category <span class='smaller'>comparison</span>{% endblocktrans %}</h4>
   <div class='graph' id="incidents_evolution_by_category">
   </div>
 </div>
@@ -324,7 +325,7 @@ h4 .smaller {
 <br style='clear:both'>
 
 <div class='graph'>
-  <h4>By category</h4>
+  <h4>{% trans "By category" %}</h4>
   <div class='graph' id="by_category">
   </div>
   <div class='graph bar' id="by_category_stacked">
@@ -334,7 +335,7 @@ h4 .smaller {
 <br style='clear:both'>
 
 <div class='graph'>
-  <h4>By month</h4>
+  <h4>{% trans "By month" %}</h4>
   <div class='graph' id="by_month">
   </div>
 </div>
@@ -342,7 +343,7 @@ h4 .smaller {
 <br style='clear:both'>
 
 <div class='graph'>
-  <h4>By subentity</h4>
+  <h4>{% trans "By subentity" %}</h4>
   <div class='graph' id="by_subentity">
   </div>
   <div class='graph bar' id="by_subentity_stacked">
@@ -354,7 +355,7 @@ h4 .smaller {
 <br style='clear:both'>
 
 <div class='graph'>
-  <h4>By severity</h4>
+  <h4>{% trans "By severity" %}</h4>
   <div class='graph' id="by_severity">
   </div>
   <div class='graph bar' id="by_severity_stacked">
@@ -364,7 +365,7 @@ h4 .smaller {
 <br style='clear:both'>
 
 <div class='graph'>
-  <h4>By Incident Leader</h4>
+  <h4>{% trans "By Incident Leader" %}</h4>
   <div class='graph' id="by_actor">
   </div>
   <div class='graph bar' id="by_actor_stacked">
@@ -374,7 +375,7 @@ h4 .smaller {
 <br style='clear:both' />
 
 <div class='graph'>
-  <h4>Monitored domains</h4>
+  <h4>{% trans "Monitored domains" %}</h4>
   <div class='graph' id="monitoring">
   </div>
 </div>
@@ -382,7 +383,7 @@ h4 .smaller {
 <br style='clear:both' />
 
 <div class='graph'>
-  <h4>Open incidents</h4>
+  <h4>{% trans "Open incidents" %}</h4>
   <div class='graph' id="open">
   </div>
 </div>
@@ -390,30 +391,30 @@ h4 .smaller {
 <br style='clear:both' />
 
 <div class='graph'>
-  <h4>Blocked incidents</h4>
+  <h4>{% trans "Blocked incidents" %}</h4>
   <div class='graph' id="blocked">
   </div>
 </div>
 
 <br style='clear:both' />
 
-<h2>Matching incidents</h2><br />
+<h2>{% trans "Matching incidents" %}</h2><br />
 <table class="table table-hover table-condensed sortable followup-table" id='incident_table'>
       <thead>
         <tr>
-          <th>Date</th>
-          <th>FID</th>
-          <th>Subject</th>
-          <th>Category</th>
-          <th>Lvl</th>
-          <th>Svrt</th>
-          <th>Business&nbsp;Line</th>
-          <th>Status</th>
-          <th>Det.</th>
-          <th>Incident Leader</th>
-          <th>Last action</th>
-          <th>IH</th>
-          <th>Plan</th>
+          <th>{% trans "Date" %}</th>
+          <th>{% trans "FID" %}</th>
+          <th>{% trans "Subject" %}</th>
+          <th>{% trans "Category" %}</th>
+          <th>{% trans "Lvl" %}</th>
+          <th>{% trans "Svrt" %}</th>
+          <th>{% trans "Business&nbsp;Line" %}</th>
+          <th>{% trans "Status" %}</th>
+          <th>{% trans "Det." %}</th>
+          <th>{% trans "Incident Leader" %}</th>
+          <th>{% trans "Last action" %}</th>
+          <th>{% trans "IH" %}</th>
+          <th>{% trans "Plan" %}</th>
         </tr>
       </thead>
   </table>

@@ -1,4 +1,5 @@
 {% load url from future %}
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -50,7 +51,7 @@
               <li>
                 <div class="btn-group navbar-btn">
                   <button class="btn btn-danger" onclick="javascript:location.href='{% url 'events:new' %}'">
-                    New event <span class="glyphicon glyphicon-fire"></span>
+                    {% trans "New event" %} <span class="glyphicon glyphicon-fire"></span>
                   </button>
                   {% if request.session.has_incident_templates %}
                   <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
@@ -65,39 +66,39 @@
                     </li>
                     {% endfor %}
                     <li class="divider"></li>
-                    <li><a href="{% url 'events:new' %}">Default</a></li>
+                    <li><a href="{% url 'events:new' %}">{% trans "Default" %}</a></li>
                   </ul>
                   {% endif %}
                 </div>
               </li>
-              <li id='dashboard-nav'><a href="{% url 'dashboard:main' %}">Dashboard</a></li>
-              <li id='incidents-nav'><a href="{% url 'incidents:index' %}">Incidents</a></li>
-              <li id='events-nav'><a href="{% url 'events:index' %}">Events</a></li>
+              <li id='dashboard-nav'><a href="{% url 'dashboard:main' %}">{% trans "Dashboard" %}</a></li>
+              <li id='incidents-nav'><a href="{% url 'incidents:index' %}">{% trans "Incidents"%}</a></li>
+              <li id='events-nav'><a href="{% url 'events:index' %}">{% trans "Events" %}</a></li>
               <li id='incidents-nav' class='dropdown'>
-                <a class='dropdown-toggle' data-toggle='dropdown' href="#">Stats</a>
+                <a class='dropdown-toggle' data-toggle='dropdown' href="#">{% trans "Stats" %}</a>
                 <ul class='dropdown-menu'>
-                  <li><a href="{% url 'stats:yearly' %}">Yearly</a></li>
-                  <li><a href="{% url 'stats:quarterly_bl_stats_default' %}">Quarterly</a></li>
-                  <li><a href="{% url 'stats:yearly_compare' %}">Compare with previous year</a></li>
-                  <li><a href="{%url 'stats:quarterly_major' %}">Major incidents</a></li>
-                  <li><a href="{%url 'stats:sandbox' %}">Sandbox <i class='glyphicon glyphicon-asterisk'></i></a></li>
-                  <li><a href="{%url 'stats:attributes' %}">Attributes</i></a></li>
+                  <li><a href="{% url 'stats:yearly' %}">{% trans "Yearly" %}</a></li>
+                  <li><a href="{% url 'stats:quarterly_bl_stats_default' %}">{% trans "Quarterly" %}</a></li>
+                  <li><a href="{% url 'stats:yearly_compare' %}">{% trans "Compare with previous year" %}</a></li>
+                  <li><a href="{%url 'stats:quarterly_major' %}">{% trans "Major incidents" %}</a></li>
+                  <li><a href="{%url 'stats:sandbox' %}">{% trans "Sandbox" %} <i class='glyphicon glyphicon-asterisk'></i></a></li>
+                  <li><a href="{%url 'stats:attributes' %}">{% trans "Attributes" %}</a></li>
                 </ul>
               </li>
               <li>
                 <form class="navbar-form" method="GET" action="{% url 'search' %}">
-                  <input type="text" class="form-control search" placeholder="search..." name="q" {% if query_string %}value='{{query_string}}'{% endif %} />
+                  <input type="text" class="form-control search" placeholder="{% trans 'search...' %}" name="q" {% if query_string %}value='{{query_string}}'{% endif %} />
                 </form>
               </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
               <li>
                 <div class='usergreet'>
-                  Currently logged in as <strong>{{ user }}</strong> [
-                    <a href="{% url 'logout' %}">logout</a>
+                  {% trans "Currently logged in as" %} <strong>{{ user }}</strong> [
+                    <a href="{% url 'logout' %}">{% trans "logout" %}</a>
                   ]
                   {% if user.is_staff %}
-                    [ <a href="{% url 'admin:index' %}">Admin</a> ]
+                    [ <a href="{% url 'admin:index' %}">{% trans "Admin" %}</a> ]
                   {% endif %}
                 </div>
               </li>

@@ -1,9 +1,10 @@
 {% load url from future %}
+{% load i18n %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>Sign in &middot; FIR</title>
+    <title>{% trans "Sign in &middot; FIR" %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -30,26 +31,26 @@
 
           {% csrf_token %}
 
-          <h2 class="form-signin-heading">Sign in to FIR</h2>
+          <h2 class="form-signin-heading">{%  trans "Sign in to FIR" %}</h2>
 
           <div class="form-group">
-            <input type="text" class="form-control" placeholder="Username" name="username" />
+            <input type="text" class="form-control" placeholder="{% trans 'Username' %}" name="username" />
           </div>
           <div class="form-group">
-            <input type="password" class="form-control" placeholder="Password" name="password" />
+            <input type="password" class="form-control" placeholder="{% trans 'Password' %}" name="password" />
           </div>
           <div class="checkbox">
             <label>
-              <input type="checkbox" value="remember-me" name="remember"> Remember me
+              <input type="checkbox" value="remember-me" name="remember"> {% trans "Remember me" %}
             </label>
           </div>
-          <button class="btn btn-large btn-primary" type="submit">Sign in</button>
+          <button class="btn btn-large btn-primary" type="submit">{% trans "Sign in" %}</button>
         </form>
 
         {% if error %}
           <div class="alert alert-warning alert-dismissible" id="error">
             <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-            <strong>Wrong username / password combination.</strong><br/>I can break the rules, too.
+            <strong>{% trans "Wrong username / password combination." %}</strong><br/>{% trans "I can break the rules, too." %}
           </div>
         {% endif %}
       </div>

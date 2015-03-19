@@ -1,5 +1,7 @@
+{% load i18n %}
+
 <li {% if event.nugget_set.count == 0 %}class="hidden"{% endif %} id="tab_nuggets_title">
 	<a href='#tab_nuggets' data-toggle='tab'>
-		Investigation timeline (<span id='nuggets-count'>{{event.nugget_set.count}}</span> elements)
+		{% blocktrans with count=event.nugget_set.count %}Investigation timeline (<span id='nuggets-count'>{{count}}</span> elements){% endblocktrans %}
 	</a>
 </li>
