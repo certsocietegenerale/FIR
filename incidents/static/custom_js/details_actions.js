@@ -1,3 +1,10 @@
+function Z(i) {
+	if (i < 10) {
+		i = "0" + i;
+	}
+	return i;
+}
+
 $(function () {
 	$('#details-actions-add-link').click(function (event) {
 		$('.details-actions-supmenu').hide();
@@ -94,7 +101,7 @@ $(function () {
     	$("#id_action").val('');
 
     	date = new Date();
-    	date = date.getFullYear() + "-" + (date.getMonth()+1) +"-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes()
+    	date = date.getFullYear() + "-" + Z((date.getMonth()+1)) +"-" + Z(date.getDate()) + " " + Z(date.getHours()) + ":" + Z(date.getMinutes())
     	$("#id_date").val(date);
 	});
 
@@ -109,7 +116,7 @@ $(function () {
       		action = comment.fields.action;
       		date = new Date(comment.fields.date);
       		// date format 1899-12-06 07:15
-      		date = date.getFullYear() + "-" + (date.getMonth()+1) +"-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes()
+      		date = date.getUTCFullYear() + "-" + (Z(date.getUTCMonth()+1)) +"-" + Z(date.getUTCDate()) + " " + Z(date.getUTCHours()) + ":" + Z(date.getUTCMinutes())
 
       		$("#id_comment").val(text);
       		$("#id_action").val(action);
