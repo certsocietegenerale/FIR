@@ -1,24 +1,37 @@
+{% load i18n %}
 {% if incident_list %}
 	<div class='incident_table' data-order-param='{{ order_param }}' data-asc='{{ asc }}'>
 		<table class='table table-hover table-condensed'>
 			<thead>
+            {% trans "Date" as t_date %}
+            {% trans "Category" as t_category %}
+            {% trans "Subject" as t_subject %}
+            {% trans "Severity" as t_severity %}
+            {% trans "Status" as t_status %}
+            {% trans "Detection" as t_detection %}
+            {% trans "Leader" as t_leader %}
+            {% trans "Last Action" as t_lastaction %}
+            {% trans "Plan" as t_plan %}
+            {% trans "Lvl" as t_lvl %}
+            {% trans "IH" as t_ih %}
+            {% trans "None" as t_none %}
 				<tr>
-					{% include 'events/column.html' with name='Date' field='date' %}
+					{% include 'events/column.html' with name=t_date field='date' %}
 					<th></th>
-					{% include 'events/column.html' with name='Category' field='category' %}
-					{% include 'events/column.html' with name='Subject' field='subject' %}
-					<th>Business Lines</th>
-					{% include 'events/column.html' with name='Severity' field='severity' %}
-					{% include 'events/column.html' with name='Status' field='status' %}
+					{% include 'events/column.html' with name=t_category field='category' %}
+					{% include 'events/column.html' with name=t_subject field='subject' %}
+					<th>{% trans "Business Lines" %}</th>
+					{% include 'events/column.html' with name=t_severity field='severity' %}
+					{% include 'events/column.html' with name=t_status field='status' %}
 					{% if incident_view %}
-						{% include 'events/column.html' with name='Detection' field='detection' %}
-						{% include 'events/column.html' with name='Leader' field='actor' %}
-						{% include 'events/column.html' with name='Last Action' field='last_action' %}
-						{% include 'events/column.html' with name='Plan' field='plan' %}
-						{% include 'events/column.html' with name='Lvl' field='confidentiality' %}
+						{% include 'events/column.html' with name=t_detection field='detection' %}
+						{% include 'events/column.html' with name=t_leader field='actor' %}
+						{% include 'events/column.html' with name=t_lastaction field='last_action' %}
+						{% include 'events/column.html' with name=t_plan field='plan' %}
+						{% include 'events/column.html' with name=t_lvl field='confidentiality' %}
 					{% endif %}
-					{% include 'events/column.html' with name='IH' field='opened_by' %}
-					<th>Edit</th>
+					{% include 'events/column.html' with name=t_ih field='opened_by' %}
+					<th>{%  trans "Edit" %}</th>
 				</tr>
 			</thead>
 			<tbody>
@@ -54,10 +67,10 @@
 										({{ incident.get_last_comment.date|date:'Y-m-d G:i' }})
 									</small>
 								{% else %}
-									None
+									{{ t_none }}
 								{%endif%}
 							</td>
-							<td>{{ incident.plan }}</td>
+							<td>{{ incident.plan|default:t_none }}</td>
 							<td>{{ incident.get_confidentiality_display }}</td>
 						{% endif %}
 
@@ -75,17 +88,17 @@
 			    <span class="step-links">
 			        {% if incident_list.has_previous %}
 			        	<a href='#' class='paginate' data-page='{{ incident_list.previous_page_number }}'>
-			        		<i class='glyphicon glyphicon-backward'></i> previous
+							<i class='glyphicon glyphicon-backward'></i> {% trans "previous" %}
 			        	</a>
 			        {% endif %}
 
 			        <span class="current">
-			            (page {{ incident_list.number }} of {{ incident_list.paginator.num_pages }})
+			            {% blocktrans with number=incident_list.number num_pages=incident_list.paginator.num_pages %}(page {{ number }} of {{ num_pages }}){% endblocktrans %}
 			        </span>
 
 			        {% if incident_list.has_next %}
 			        	<a href='#' class='paginate' data-page='{{ incident_list.next_page_number }}'>
-			        		next <i class='glyphicon glyphicon-forward'></i>
+							{% trans "next" %} <i class='glyphicon glyphicon-forward'></i>
 			        	</a>
 			        {% endif %}
 			    </span>
@@ -93,5 +106,5 @@
 		{% endif %}
 	</div>
 {% else %}
-	<div class='nothing_to_show'>No incidents to show.</div>
+	<div class='nothing_to_show'>{% trans "No incidents to show." %}</div>
 {% endif %}

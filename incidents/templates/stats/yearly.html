@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
 {% load url from future %}
+{% load i18n %}
 
 {% block header %}
-<h1>Yearly stats</h1>
+<h1>{%  trans "Yearly stats" %}</h1>
 {%endblock%}
 
 
@@ -74,7 +75,7 @@
 
 {% block content %}
 <div class='graph'>
-  <h4>Yearly incidents</h4>
+  <h4>{%  trans "Yearly incidents" %}</h4>
   <div class='graph' id="yearly_incidents">
   </div>
 </div>
@@ -83,14 +84,14 @@
 <p class='separator'>&nbsp;</p>
 
 <div class='graph'>
-  <h4>Business Line by detection</h4>
+  <h4>{%  trans "Business Line by detection" %}</h4>
   <div class='graph' id="bl_detection">
   </div>
 </div>
 
 
 <div class='graph'>
-  <h4>Incidents by business line</h4>
+  <h4>{%  trans "Incidents by business line" %}</h4>
   <div class='graph' id="bl_donut">
   </div>
 </div>
@@ -98,14 +99,14 @@
 <p class='separator'>&nbsp;</p>
 
 <div class='graph'>
-  <h4>Business Line by incident severity</h4>
+  <h4>{%  trans "Business Line by incident severity" %}</h4>
   <div class='graph' id="bl_severity" style='clear:both'></div>
   <div class='graph' id="bl_severity_bar"></div>
   </div>
 
 <p class='separator'>&nbsp;</p>
 <div class='graph'>
-  <h4>Business Line incident category</h4>
+  <h4>{%  trans "Business Line incident category" %}</h4>
   <div class='graph' id="bl_category" style='clear:both'></div>
   <div class='graph' id="bl_category_bar"></div>
 </div>

@@ -1,14 +1,16 @@
 {% load fir_nuggets %}
+{% load i18n %}
+
 {% if incident.nugget_set.count > 0 %}
 <div class='investigation-timeline'>
-<h2>Investigation timeline</h2>
+<h2>{% trans "Investigation timeline" %}</h2>
 
 <div class='remarks'>
-	<h3>General remarks</h3>
+	<h3>{% trans "General remarks" %}</h3>
 	<table class='table'>
 	<tr>
-		<th>Source</th>
-	 	<th>Remark</th>
+		<th>{% trans "Source" %}</th>
+		<th>{% trans "Remark" %}</th>
 	 </tr>
 
 	{% for n in incident.nugget_set.all|has_not:"start_timestamp"%}
@@ -21,12 +23,12 @@
 </div>
 
 <div class='timeline'>
-	<h3>Technical timeline</h3>
+	<h3>{% trans "Technical timeline" %}</h3>
 	<table class='table'>
 		<tr>
-			<th>Timestamp</th>
-			<th>Source</th>
-		 	<th>Interpretation</th>
+			<th>{% trans "Timestamp" %}</th>
+			<th>{% trans "Source" %}</th>
+			<th>{% trans "Interpretation" %}</th>
 		 </tr>
 
 		{% for n in incident.nugget_set.all|order_by:"start_timestamp"|has:"start_timestamp"%}

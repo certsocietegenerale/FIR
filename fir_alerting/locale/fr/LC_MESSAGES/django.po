@@ -1,0 +1,60 @@
+# FIR fir_alerting plugin translation.
+# Copyright (C) 2015 CERT Société Générale
+# This file is distributed under the same license as the FIR package.
+# Gaetan Crahay <gaetan@crahay.eu>, 2015.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: FIR master\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-03-15 20:24+0100\n"
+"PO-Revision-Date: 2015-03-15 20:24+0100\n"
+"Last-Translator: Gaetan Crahay <gaetan@crahay.eu>\n"
+"Language-Team: fr <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: templates/fir_alerting/emailform.html:7
+#: templates/fir_alerting/emailform.html:54
+msgid "Send email"
+msgstr "Envoyer l'email"
+
+#: templates/fir_alerting/emailform.html:14
+msgid "From:"
+msgstr "De :"
+
+#: templates/fir_alerting/emailform.html:20
+msgid "To:"
+msgstr "À :"
+
+#: templates/fir_alerting/emailform.html:26
+msgid "CC:"
+msgstr "CC :"
+
+#: templates/fir_alerting/emailform.html:32
+msgid "BCC:"
+msgstr "BCC :"
+
+#: templates/fir_alerting/emailform.html:38
+msgid "Subject"
+msgstr "Objet"
+
+#: templates/fir_alerting/emailform.html:44
+msgid "Body"
+msgstr "Corps"
+
+#: templates/fir_alerting/emailform.html:53
+msgid "Close"
+msgstr "Fermer"
+
+#: templates/fir_alerting/plugins/details_actions.html:6
+#: templates/fir_alerting/plugins/details_actions.html:13
+msgid "Alert"
+msgstr "Alerter"
+
+#: templates/fir_alerting/plugins/details_actions.html:17
+msgid "Takedown"
+msgstr "Contre-mesures"

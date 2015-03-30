@@ -1,6 +1,7 @@
+{% load i18n %}
 <table id='fir_todos_list_table'>
 	<thead>
-		<tr><td class='fir_todos_status'></td><td class='fir_todos_description'>Action</td><td>Accountable</td><td class='fir_todos_delete'></td></tr>
+		<tr><td class='fir_todos_status'></td><td class='fir_todos_description'>{% trans "Action" %}</td><td>{% trans "Accountable" %}</td><td class='fir_todos_delete'></td></tr>
 	</thead>
 	<tbody>
 		{% for item in todos %}

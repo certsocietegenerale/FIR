@@ -1,0 +1,82 @@
+# FIR fir_todos plugin translation.
+# Copyright (C) 2015 CERT Société Générale
+# This file is distributed under the same license as the FIR package.
+# Gaetan Crahay <gaetan@crahay.eu>, 2015.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: FIR master\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-03-15 20:24+0100\n"
+"PO-Revision-Date: 2015-03-15 20:24+0100\n"
+"Last-Translator: Gaetan Crahay <gaetan@crahay.eu>\n"
+"Language-Team: fr <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: templates/fir_todos/dashboard.html:7
+msgid "Task"
+msgstr "Tâche"
+
+#: templates/fir_todos/dashboard.html:8
+msgid "Incident"
+msgstr ""
+
+#: templates/fir_todos/dashboard.html:9
+msgid "Category"
+msgstr "Catégorie"
+
+#: templates/fir_todos/dashboard.html:10
+msgid "Delete"
+msgstr "Supprimer"
+
+#: templates/fir_todos/dashboard.html:25
+msgid "previous"
+msgstr "précédent"
+
+#: templates/fir_todos/dashboard.html:30
+#, python-format
+msgid "(page %(number)s of %(num_pages)s)"
+msgstr "(page %(number)s sur %(num_pages)s)"
+
+#: templates/fir_todos/dashboard.html:35
+msgid "next"
+msgstr "suivant"
+
+#: templates/fir_todos/dashboard.html:42
+msgid "No tasks to show."
+msgstr "Aucune tâche."
+
+#: templates/fir_todos/list.html:4
+msgid "Action"
+msgstr ""
+
+#: templates/fir_todos/list.html:4
+msgid "Accountable"
+msgstr "Responsable"
+
+#: templates/fir_todos/plugins/dashboard_tab.html:3
+msgid "Tasks"
+msgstr "Tâches"
+
+#: templates/fir_todos/plugins/dashboard_tab_content.html:4
+#: templates/fir_todos/plugins/details_main.html:6
+#: templates/fir_todos/plugins/followup_main.html:6
+msgid "Loading ..."
+msgstr "Chargement ..."
+
+#: templates/fir_todos/plugins/details_actions_add.html:2
+msgid "Todo"
+msgstr "Tâche"
+
+#: templates/fir_todos/plugins/details_main.html:3
+#: templates/fir_todos/plugins/followup_main.html:3
+msgid "To-Do List"
+msgstr "Liste de tâches"
+
+#: templates/fir_todos/plugins/details_main.html:9
+msgid "Add To-Do Item"
+msgstr "Ajouter une tâche"

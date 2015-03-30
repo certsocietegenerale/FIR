@@ -2,6 +2,7 @@
 {% load url from future %}
 {% load fir_plugins %}
 {% load fir_artifacts %}
+{% load i18n %}
 
 {% block custom_css %}
 {% endblock %}
@@ -17,9 +18,9 @@
 	<div id='details-actions-all'>
 	<div class="details-actions-supmenu" id="details-actions-add">
 		<ul class="list-unstyled">
-			<li><a href="#" id="details-add-file"><i class="glyphicon glyphicon-file"></i>File</a></li>
+			<li><a href="#" id="details-add-file"><i class="glyphicon glyphicon-file"></i>{%  trans "File" %}</a></li>
 			{% if valid_attributes|length > 0 %}
-				<li><a href="#" id="details-add-attribute"><i class="glyphicon glyphicon-list"></i>Attribute</a></li>
+				<li><a href="#" id="details-add-attribute"><i class="glyphicon glyphicon-list"></i>{%  trans "Attribute" %}</a></li>
 			{% endif %}
 			{% plugin_point 'details_actions_add' %}
 		</ul>
@@ -29,16 +30,16 @@
 
 	<div id="details-actions">
 		<ul class="list-unstyled">
-			<li><a href="#" id="details-actions-add-link"><i class="glyphicon glyphicon-plus"></i>Add</a></li>
+			<li><a href="#" id="details-actions-add-link"><i class="glyphicon glyphicon-plus"></i>{%  trans "Add" %}</a></li>
 			<li><a href="#" id='details-actions-comment' data-toggle='modal' data-target='#addComment'>
-				<i class="glyphicon glyphicon-comment"></i>Comment
+				<i class="glyphicon glyphicon-comment"></i>{%  trans "Comment" context "verb" %}
 			</a></li>
-			<li><a href="{% url 'incidents:edit' event.id %}"><i class="glyphicon glyphicon-pencil"></i>Edit</a></li>
+			<li><a href="{% url 'incidents:edit' event.id %}"><i class="glyphicon glyphicon-pencil"></i>{%  trans "Edit" %}</a></li>
 			{% if event.status != 'O' %}
 				<li>
 					<form action="{% url 'incidents:change_status' event.id 'O' %}" method='POST' class='icon'>
 						{% csrf_token %}
-						<a href='#' class='submit'><i class="glyphicon glyphicon-fire"></i>Open</a>
+						<a href='#' class='submit'><i class="glyphicon glyphicon-fire"></i>{% trans "Open" %}</a>
 					</form>
 				</li>
 			{% endif %}
@@ -46,7 +47,7 @@
 				<li>
 					<form action="{% url 'incidents:change_status' event.id 'B' %}" method='POST' class='icon'>
 						{% csrf_token %}
-						<a href="#" class='submit'><i class="glyphicon glyphicon-ban-circle"></i>Block</a>
+						<a href="#" class='submit'><i class="glyphicon glyphicon-ban-circle"></i>{%  trans "Block" %}</a>
 					</form>
 				</li>
 			{% endif %}
@@ -54,11 +55,11 @@
 				<li>
 					<form action="{% url 'incidents:change_status' event.id 'C' %}" method='POST' class='icon'>
 						{% csrf_token %}
-						<a href='#' class='submit'><i class="glyphicon glyphicon-ok-sign"></i>Close</a>
+						<a href='#' class='submit'><i class="glyphicon glyphicon-ok-sign"></i>{% trans "Close" %}</a>
 					</form>
 				</li>
 			{% endif %}
-			<li><a href="{% url 'incidents:followup' event.id %}"><i class="glyphicon glyphicon-retweet"></i>Incident followup</a></li>
+			<li><a href="{% url 'incidents:followup' event.id %}"><i class="glyphicon glyphicon-retweet"></i>{%  trans "Incident followup" %}</a></li>
 			{% plugin_point 'details_actions' %}
 		</ul>
 	</div>
@@ -69,12 +70,12 @@
 			<table class='minitable table'>
 				<tr class='slim'>
 					{% if event.is_incident %}
-						<td class='head'>Incident Leader</td><td class='delim'>{{ event.actor }}</td>
-						<td class='head'>Plan</td><td class='delim'>{{ event.plan }}</td>
+						<td class='head'>{%  trans "Incident Leader" %}</td><td class='delim'>{{ event.actor }}</td>
+						<td class='head'>{%  trans "Plan" %}</td><td class='delim'>{{ event.plan }}</td>
 					{% endif %}
-					<td class='head'>Severity</td><td class='delim'>{{ event.severity }}</td>
-					<td class='head'>Category</td><td class='delim'>{{ event.category }}</td>
-					<td class='head'>Status</td><td class='delim'>
+					<td class='head'>{%  trans "Severity" %}</td><td class='delim'>{{ event.severity }}</td>
+					<td class='head'>{%  trans "Category" %}</td><td class='delim'>{{ event.category }}</td>
+					<td class='head'>{%  trans "Status" %}</td><td class='delim'>
 						<span id='event-status' class='label
 							{% if event.status == "O" %}label-info
 							{% elif event.status == "B" %}label-danger
@@ -83,19 +84,20 @@
 							{{ event.get_status_display}}
 						</span>
 					</td>
-					<td class='head'>Detection</td><td class='delim'>{{ event.detection }}</td>
-					<td class='head'>B/L</td><td>{{ event.get_business_lines_names }}</td>
+					<td class='head'>{%  trans "Detection" %}</td><td class='delim'>{{ event.detection }}</td>
+					<td class='head'>{%  trans "B/L" %}</td><td>{{ event.get_business_lines_names }}</td>
 				</tr>
 			</table>
 		</div>
 
-		<h1>{% if event.is_incident %}Incident{% else %}Event{% endif %} / {{event.category}} / {{event.subject}}</h1>
+		<h1>{% if event.is_incident %}{%  trans "Incident" %}{% else %}{%  trans "Event" %}{% endif %} / {{event.category}} / {{event.subject}}</h1>
 		<div class="row">
 			<div class="col-sm-7 col-xs-12">
-				<p><i>Opened on {{ event.date }} by {{ event.opened_by|default:"someone" }}</i></p>
+                {% trans "someone" as someone %}
+				<p><i>{% blocktrans with date=event.date opened_by=event.opened_by|default:someone %}Opened on {{ date }} by {{ opened_by }}{% endblocktrans %}</i></p>
 
 				<div class='widget' id='description'>
-					<h4 class='widget'>Description</h4>
+					<h4 class='widget'>{%  trans "Description" %}</h4>
 					<p>{{ event.description|safe }}</p>
 				</div>
 
@@ -105,13 +107,13 @@
 			<div class="col-sm-5 col-xs-12" id="incident-sidebar">
 				{% if correlated_count > 0 %}
 					<div class="widget">
-						<h4 class='widget'>Correlated Artifacts</h4>
+						<h4 class='widget'>{%  trans "Correlated Artifacts" %}</h4>
 
 						<table class='table table-condensed artifacts-table artifacts fixed'>
 							<thead>
 								<tr>
-									<th class='head'>Type</th>
-									<th>Values</th>
+									<th class='head'>{%  trans "Type" %}</th>
+									<th>{%  trans "Values" %}</th>
 								</tr>
 							</thead>
 							{% for artifact_type in artifacts %}
@@ -122,14 +124,14 @@
 				{% endif %}
 
 				<div class='widget {% if event.file_set.count == 0 %}hidden{% endif%}' id='details-files'>
-					<h4 class='widget'>Related files</h4>
+					<h4 class='widget'>{%  trans "Related files" %}</h4>
 						{% if event.file_set.count > 0 %}
 							<table class='table table-condensed files fixed'>
 								<thead>
 									<tr>
-										<th class="date-column">Date</th>
-										<th>File</th>
-										<th>Description</th>
+										<th class="date-column">{%  trans "Date" %}</th>
+										<th>{%  trans "File" %}</th>
+										<th>{%  trans "Description" %}</th>
 										<th class="icon-column"></th>
 									</tr>
 								</thead>
@@ -158,33 +160,33 @@
 						<form id='upload_form' enctype="multipart/form-data" action="{% url 'incidents:upload_file' event.id %}" method='POST'>
 							{% csrf_token %}
 							<div class='upload'>
-								<span>Dropzone</span>
+								<span>{%  trans "Dropzone" %}</span>
 								<input type="file" name="file" id="id_file" multiple />
 							</div>
 							<table id='filetable' class='table table-condensed'></table>
 						</form>
 						<a class="btn btn-sm btn-default" href="#" onclick='javascript:$("#id_file").click();'>
-							<i class="glyphicon glyphicon-file"></i> Browse...
+							<i class="glyphicon glyphicon-file"></i> {%  trans "Browse..." %}
 						</a>
 						<a class="btn btn-sm btn-default" href="#" onclick='javascript:$("#upload_form").submit();'>
-							<i class="glyphicon glyphicon-upload"></i> Upload files
+							<i class="glyphicon glyphicon-upload"></i> {%  trans "Upload files" %}
 						</a>
 						{% if event.file_set.count > 0 %}
 							<a class="btn btn-sm btn-default" href="{% url 'incidents:download_archive' event.id %}">
-								<i class="glyphicon glyphicon-download-alt"></i> Download archive
+								<i class="glyphicon glyphicon-download-alt"></i> {%  trans "Download archive" %}
 							</a>
 						{% endif %}
 					</div>
 
 				{% if valid_attributes|length > 0 %}
 					<div class='widget {% if attributes.count == 0 %}hidden{% endif %}' id='attributes'>
-						<h4 class='widget'>Attributes</h4>
+						<h4 class='widget'>{%  trans "Attributes" %}</h4>
 
 						<table class='table table-condensed'>
 							<thead>
 								<tr>
-									<th>Name</th>
-									<th>Value</th>
+									<th>{%  trans "Name" %}</th>
+									<th>{%  trans "Value" %}</th>
 									<th></th>
 								</tr>
 							</thead>
@@ -194,7 +196,7 @@
 
 							<form id="add-attribute-form" action="{% url 'incidents:add_attribute' event.id %}" method="post" data-ajaxform data-action='html' data-target='#attribute_list' data-hide='#attribute_form' data-show='#show_attribute_form'>
 							<tr id="show_attribute_form">
-								<td colspan='3'><a href='#'>+ Add attribute</a></td>
+								<td colspan='3'><a href='#'>+ {%  trans "Add attribute" %}</a></td>
 							</tr>
 							<tr id="attribute_form" class='hidden'>
 							<td class="head">{% csrf_token %}
@@ -205,7 +207,7 @@
 								</select>
 							</td>
 							<td><input type="text" id="attribute-value" name="value" placeholder="value" /></td>
-							<td><button type="submit" class="btn btn-xs btn-link">Add</button></td>
+							<td><button type="submit" class="btn btn-xs btn-link">{%  trans "Add" %}</button></td>
 							</tr>
 							</form>
 						</table>
@@ -219,13 +221,13 @@
 			<ul class='nav nav-tabs'>
 				<li class='active'>
 					<a href='#tab_comments' data-toggle='tab'>
-						Comments (<span id='comment-count'>{{ comments.count }}</span>)
+						{% trans "Comments" %} (<span id='comment-count'>{{ comments.count }}</span>)
 					</a>
 				</li>
 				{% if artifacts_count > 0 %}
 					<li>
 						<a href='#tab_artifacts' data-toggle='tab'>
-							Artifacts ({{ artifacts_count }})
+							{% trans "Artifacts" %} ({{ artifacts_count }})
 						</a>
 					</li>
 				{% endif %}
@@ -240,8 +242,8 @@
 						<tr>
 							<th><i class='glyphicon glyphicon-calendar'></i></th>
 							<th><i class='glyphicon glyphicon-user'></i></th>
-							<th>Comment</th>
-							<th>Action</th>
+							<th>{%  trans "Comment" context "noun" %}</th>
+							<th>{%  trans "Action" %}</th>
 							<th></th>
 							<th></th>
 						</tr>
@@ -254,19 +256,19 @@
 			<div class='tab-pane' id='tab_artifacts'>
 				{% if event.file_set.count > 0 %}
 					<table class='table table-condensed files-table files fixed'>
-						<tr><th>Filename</th><th>SHA-256</th><th>SHA-1</th><th>MD5</th></tr>
+						<tr><th>{%  trans "Filename" %}</th><th>SHA-256</th><th>SHA-1</th><th>MD5</th></tr>
 						{% for f in event.file_set.all %}
 							<tr><td>{{ f.getfilename }}</td>{% for h in f.hashes.all %}<td>{{h}}</td>{% endfor %}</tr>
 						{% endfor %}
 					</table>
 
-					<h3>Other artifacts</h3>
+					<h3>{%  trans "Other artifacts" %}</h3>
 				{% endif %}
 
 				<table class='table table-condensed artifacts-table artifacts'>
 					<thead>
-						<th class='head'>Type</th>
-						<th>Values</th>
+						<th class='head'>{%  trans "Type" %}</th>
+						<th>{%  trans "Values" %}</th>
 					</thead>
 					{% for artifact_type in artifacts %}
 						{{ artifact_type|display_artifact:request }}
@@ -283,14 +285,14 @@
 					<form id="comment_form" method="POST" data-ajaxform data-target='#tab_comments tbody' data-action='prepend' data-new-comment-url="{% url 'incidents:comment' event.id %}">
 					 	<div class="modal-header">
 					    	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-					    	<h4 id="addCommentLabel" class="modal-title">Add comment</h4>
+							<h4 id="addCommentLabel" class="modal-title">{% trans "Add comment" %}</h4>
 					  	</div>
 					  	<div class="modal-body">
 							<div>
 								{% csrf_token %}
 								<div class="form-group row">
 									<div class="col-sm-1">
-										<label for="id_action">Action</label>
+										<label for="id_action">{%  trans "Action" %}</label>
 									</div>
 									<div class="col-sm-4">
 										{{ comment_form.action }}
@@ -301,7 +303,7 @@
 										</span>
 									</div>
 									<div class="col-sm-1">
-										<label for="id_action">Date</label>
+										<label for="id_action">{%  trans "Date" %}</label>
 									</div>
 									<div class="col-sm-3">
 										<input type="text" id="id_date" name="date" class="datetime" required />
@@ -324,9 +326,9 @@
 							</div>
 					  	</div>
 
-					  	<div class="modal-footer">
-					    	<button class="btn btn-default" data-dismiss="modal" aria-hidden="true">Cancel</button>
-					    	<button type="submit" class="btn btn-primary">Save changes</button>
+						<div class="modal-footer">
+							<button class="btn btn-default" data-dismiss="modal" aria-hidden="true">{%  trans "Cancel" %}</button>
+							<button type="submit" class="btn btn-primary">{%  trans "Save changes" %}</button>
 					  	</div>
 					</form>
 				</div>

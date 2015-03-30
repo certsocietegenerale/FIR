@@ -7,13 +7,14 @@ from django.db import models
 from django.forms import ModelForm
 from django import forms
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext_lazy as _
 
 from fir_artifacts import artifacts
 
 STATUS_CHOICES = (
-	("O", "Open"),
-	("C", "Closed"),
-	("B", "Blocked"),
+	("O", _("Open")),
+	("C", _("Closed")),
+	("B", _("Blocked")),
 	)
 
 SEVERITY_CHOICES = (
@@ -193,7 +194,7 @@ class Incident(models.Model):
 	is_major = models.BooleanField(default=False)
 	actor = models.ForeignKey(Label, limit_choices_to={'group__name': 'actor'}, related_name='actor_label', blank=True, null=True)
 	plan = models.ForeignKey(Label, limit_choices_to={'group__name': 'plan'}, related_name='plan_label', blank=True, null=True)
-	status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="Open")
+	status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=_("Open"))
 	opened_by = models.ForeignKey(User)
 	confidentiality = models.IntegerField(choices=CONFIDENTIALITY_LEVEL, default='1')
 

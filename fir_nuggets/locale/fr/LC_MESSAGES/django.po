@@ -1,0 +1,90 @@
+# FIR fir_nuggets plugin translation.
+# Copyright (C) 2015 CERT Société Générale
+# This file is distributed under the same license as the FIR package.
+# Gaetan Crahay <gaetan@crahay.eu>, 2015.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: FIR master\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-03-15 20:24+0100\n"
+"PO-Revision-Date: 2015-03-15 20:24+0100\n"
+"Last-Translator: Gaetan Crahay <gaetan@crahay.eu>\n"
+"Language-Team: fr <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: templates/fir_nuggets/list.html:5 templates/fir_nuggets/nugget_form.html:28
+#: templates/fir_nuggets/plugins/followup_main.html:29
+msgid "Timestamp"
+msgstr "Horodatage"
+
+#: templates/fir_nuggets/list.html:6 templates/fir_nuggets/nugget_form.html:45
+#: templates/fir_nuggets/plugins/followup_main.html:12
+#: templates/fir_nuggets/plugins/followup_main.html:30
+msgid "Source"
+msgstr ""
+
+#: templates/fir_nuggets/list.html:7 templates/fir_nuggets/nugget_form.html:52
+#: templates/fir_nuggets/plugins/followup_main.html:31
+msgid "Interpretation"
+msgstr "Interprétation"
+
+#: templates/fir_nuggets/nugget_form.html:9
+msgid "Add Nugget"
+msgstr "Ajouter une pépite"
+
+#: templates/fir_nuggets/nugget_form.html:20
+msgid "Date of finding"
+msgstr "Date de découverte"
+
+#: templates/fir_nuggets/nugget_form.html:36
+msgid "End timestamp"
+msgstr "Horodatage de fin"
+
+#: templates/fir_nuggets/nugget_form.html:61
+msgid "Raw data"
+msgstr "Données brutes"
+
+#: templates/fir_nuggets/nugget_form.html:69
+msgid "Cancel"
+msgstr "Annuler"
+
+#: templates/fir_nuggets/nugget_form.html:70
+msgid "Add nugget"
+msgstr "Ajouter une pépite"
+
+#: templates/fir_nuggets/plugins/details_actions_add.html:5
+msgid "Nugget"
+msgstr "Pépite"
+
+#: templates/fir_nuggets/plugins/details_tab.html:5
+#, python-format
+msgid ""
+"Investigation timeline (<span id='nuggets-count'>%(count)s</span> elements)"
+msgstr ""
+"Chronologie de l'investigation (<span id='nuggets-count'>%(count)s</span> "
+"éléments)"
+
+#: templates/fir_nuggets/plugins/details_tab_content.html:5
+msgid "Loading nuggets..."
+msgstr "Chargement des pépites..."
+
+#: templates/fir_nuggets/plugins/followup_main.html:6
+msgid "Investigation timeline"
+msgstr "Chronologie de l'investigation"
+
+#: templates/fir_nuggets/plugins/followup_main.html:9
+msgid "General remarks"
+msgstr "Remarques générales"
+
+#: templates/fir_nuggets/plugins/followup_main.html:13
+msgid "Remark"
+msgstr "Remarque"
+
+#: templates/fir_nuggets/plugins/followup_main.html:26
+msgid "Technical timeline"
+msgstr "Chronologie technique"

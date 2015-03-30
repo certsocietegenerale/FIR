@@ -1,14 +1,16 @@
 {% extends 'base.html' %}
 {% load url from future %}
+{% load url from future %}
+{% load i18n %}
 
 {% block header %}
-<h1 style='float:left;margin-right:20px'>Major incidents in last quarter</h1>
+<h1 style='float:left;margin-right:20px'>{%  trans "Major incidents in last quarter" %}</h1>
 {%endblock%}
 
 {% block content %}
 
 <p class='separator'>&nbsp;</p>
-<h3>Bale categories</h3>
+<h3>{%  trans "Basel categories" %}</h3>
 <div class='graph'>
 	<div class='graph'>
 		<table id='table' class='table table-condensed'>
@@ -28,7 +30,7 @@
 	</div>
 </div>
 
-<h3>CERT categories</h3>
+<h3>{%  trans "CERT categories" %}</h3>
 <div class='graph'>
 	<div class='graph'>
 		<table id='table' class='table table-condensed'>
@@ -49,7 +51,7 @@
 </div>
 
 
-<h3>Business Line ventilation</h3>
+<h3>{%  trans "Business Line ventilation" %}</h3>
 <div class='graph'>
 	<div class='graph'>
 		<table id='table' class='table table-condensed'>
@@ -69,23 +71,23 @@
 	</div>
 </div>
 
-<h2>Major Incidents</h2>
+<h2>{%  trans "Major Incidents" %}</h2>
 <br />
 <table class="table table-hover table-condensed sortable">
 			<thead>
 				<tr>
-					<th>Date</th>
-					<th>Subject</th>
-					<th>Category</th>
-					<th>Lvl</th>
-					<th>Severity</th>
-					<th>Business Line</th>
-					<th>Status</th>
-					<th>Detection</th>
-					<th>Incident Leader</th>
-					<th>Last action</th>
-					<th>Opened by</th>
-					<th>Plan</th>
+					<th>{%  trans "Date" %}</th>
+					<th>{%  trans "Subject" %}</th>
+					<th>{%  trans "Category" %}</th>
+					<th>{%  trans "Lvl" %}</th>
+					<th>{%  trans "Severity" %}</th>
+					<th>{%  trans "Business Line" %}</th>
+					<th>{%  trans "Status" %}</th>
+					<th>{%  trans "Detection" %}</th>
+					<th>{%  trans "Incident Leader" %}</th>
+					<th>{%  trans "Last Action" %}</th>
+					<th>{%  trans "Opened by" %}</th>
+					<th>{%  trans "Plan" %}</th>
 
 				</tr>
 			</thead>

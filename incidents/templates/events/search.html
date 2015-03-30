@@ -1,9 +1,10 @@
 {% extends "base.html" %}
 {% load fir_plugins %}
+{% load i18n %}
 
 {% block header %}
 <h4 class='search-results'>
-	<i class='glyphicon glyphicon-search'></i>Search results for: <em>{{query_string}}</em>
+	<i class='glyphicon glyphicon-search'></i>{% trans "Search results for:" %} <em>{{query_string}}</em>
 </h4>
 {% endblock %}
 
@@ -13,6 +14,6 @@
 
 {% block content %}
 	<div id='all_incidents' class='incident_display' data-url="{% url 'search' %}" data-query='{{ query_string }}'>
-		Loading ...
+		{% trans "Loading ..." %}
 	</div>
 {% endblock %}
