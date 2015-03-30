@@ -40,7 +40,7 @@ msgstr "BCC :"
 
 #: templates/fir_alerting/emailform.html:38
 msgid "Subject"
-msgstr "Sujet"
+msgstr "Objet"
 
 #: templates/fir_alerting/emailform.html:44
 msgid "Body"
@@ -57,4 +57,4 @@ msgstr "Alerter"
 
 #: templates/fir_alerting/plugins/details_actions.html:17
 msgid "Takedown"
-msgstr "Réduire"
+msgstr "Contre-mesures"
