@@ -51,7 +51,7 @@ msgstr "Données brutes"
 
 #: templates/fir_nuggets/nugget_form.html:69
 msgid "Cancel"
-msgstr ""
+msgstr "Annuler"
 
 #: templates/fir_nuggets/nugget_form.html:70
 msgid "Add nugget"
@@ -71,7 +71,7 @@ msgstr ""
 
 #: templates/fir_nuggets/plugins/details_tab_content.html:5
 msgid "Loading nuggets..."
-msgstr "Chargement de pépites..."
+msgstr "Chargement des pépites..."
 
 #: templates/fir_nuggets/plugins/followup_main.html:6
 msgid "Investigation timeline"
