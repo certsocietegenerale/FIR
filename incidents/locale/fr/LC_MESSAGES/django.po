@@ -140,7 +140,7 @@ msgstr "Par trimestre"
 
 #: templates/base.html:82
 msgid "Compare with previous year"
-msgstr "Comparer avec une année précédente"
+msgstr "Comparer avec l'année précédente"
 
 #: templates/base.html:83
 msgid "Major incidents"
@@ -173,7 +173,7 @@ msgstr ""
 
 #: templates/dashboard/index.html:12
 msgid "Starred Incidents"
-msgstr "Incidents marqués"
+msgstr "Signets"
 
 #: templates/dashboard/index.html:15 templates/dashboard/index.html.py:34
 #: templates/dashboard/index.html:38 templates/dashboard/index.html.py:42
@@ -367,7 +367,7 @@ msgstr "Incident majeur"
 
 #: templates/events/search.html:7
 msgid "Search results for:"
-msgstr "Résultat de la recherche de :"
+msgstr "Résultats de recherche pour :"
 
 #: templates/events/table.html:12
 msgid "Leader"
@@ -382,7 +382,7 @@ msgstr "Dernière Action"
 #: templates/stats/quarterly.html:212 templates/stats/quarterly.html.py:253
 #: templates/stats/sandbox.html:409
 msgid "Lvl"
-msgstr "Niveau"
+msgstr "Niv."
 
 #: templates/events/table.html:16 templates/stats/quarterly.html:219
 #: templates/stats/quarterly.html.py:260 templates/stats/sandbox.html:416
@@ -424,7 +424,7 @@ msgstr "Auteur"
 
 #: templates/incidents/followup.html:91
 msgid "No files for this incident."
-msgstr "Aucun fichier pour cet incident"
+msgstr "Aucun fichier pour cet incident."
 
 #: templates/incidents/login.html:7
 msgid "Sign in &middot; FIR"
@@ -448,7 +448,7 @@ msgstr "Se souvenir de moi"
 
 #: templates/incidents/login.html:47
 msgid "Sign in"
-msgstr "Se connecter"
+msgstr "Connexion"
 
 #: templates/incidents/login.html:53
 msgid "Wrong username / password combination."
@@ -531,8 +531,8 @@ msgid "Major incidents in last quarter"
 msgstr "Incidents majeurs du dernier trimestre"
 
 #: templates/stats/major.html:13
-msgid "Bale categories"
-msgstr "Catégories Bâle"
+msgid "Basel categories"
+msgstr "Catégories Bâloises"
 
 #: templates/stats/major.html:33
 msgid "CERT categories"
@@ -633,11 +633,11 @@ msgstr ""
 
 #: templates/stats/quarterly.html:245
 msgid "Unclosed incidents older than three months"
-msgstr "Incidents ouverts de plus de trois mois"
+msgstr "Incidents ouverts ou bloqués de plus de trois mois"
 
 #: templates/stats/sandbox.html:312
 msgid "Overlapping years"
-msgstr ""
+msgstr "Années superposées"
 
 #: templates/stats/sandbox.html:320
 msgid "By category <span class='smaller'>comparison</span>"
