@@ -1,7 +1,7 @@
 {% load url from future %}
 {% load i18n %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE }}">
   <head>
     <meta charset="utf-8">
     <title>{%block title%}FIR{%endblock%}</title>
@@ -28,7 +28,7 @@
 
     <!-- tinymce -->
     <script type="text/javascript" src="/static/js/tinymce/tinymce.min.js"></script>
-    <script type="text/javascript" src="/static/js/tinymce/config.js"></script>
+    <script type="text/javascript" src="{% url 'tools:mce_config' %}"></script>
   </head>
 
   <body>

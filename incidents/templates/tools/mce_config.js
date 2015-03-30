@@ -4,7 +4,7 @@ tinyMCE.init({
     theme: "modern",
     skin: "light",
     plugins: "paste,table,code,preview,fullscreen",
-    language: "en",
+    language: "{{ mce_lang }}",
     directionality: "ltr",
     height:'400',
     toolbar: "undo redo | styleselect | bold italic | bullist numlist outdent indent code",

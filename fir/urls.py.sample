@@ -5,6 +5,7 @@ from django.contrib import admin
 admin.autodiscover()
 
 urlpatterns = patterns('',
+	url(r'^tools/', include('incidents.custom_urls.tools', namespace='tools')),
     url(r'^incidents/', include('incidents.urls', namespace='incidents')),
     url(r'^search/$', 'incidents.views.search', name='search'),
     url(r'^events/', include('incidents.custom_urls.events', namespace='events')),
