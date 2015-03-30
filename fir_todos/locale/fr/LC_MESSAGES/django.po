@@ -27,7 +27,7 @@ msgstr ""
 
 #: templates/fir_todos/dashboard.html:9
 msgid "Category"
-msgstr ""
+msgstr "Catégorie"
 
 #: templates/fir_todos/dashboard.html:10
 msgid "Delete"
@@ -35,16 +35,16 @@ msgstr "Supprimer"
 
 #: templates/fir_todos/dashboard.html:25
 msgid "previous"
-msgstr ""
+msgstr "précédent"
 
 #: templates/fir_todos/dashboard.html:30
 #, python-format
 msgid "(page %(number)s of %(num_pages)s)"
-msgstr ""
+msgstr "(page %(number)s sur %(num_pages)s)"
 
 #: templates/fir_todos/dashboard.html:35
 msgid "next"
-msgstr ""
+msgstr "suivant"
 
 #: templates/fir_todos/dashboard.html:42
 msgid "No tasks to show."
@@ -66,7 +66,7 @@ msgstr "Tâches"
 #: templates/fir_todos/plugins/details_main.html:6
 #: templates/fir_todos/plugins/followup_main.html:6
 msgid "Loading ..."
-msgstr ""
+msgstr "Chargement ..."
 
 #: templates/fir_todos/plugins/details_actions_add.html:2
 msgid "Todo"
