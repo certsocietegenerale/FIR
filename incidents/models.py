@@ -297,6 +297,9 @@ class Comments(models.Model):
 	incident = models.ForeignKey(Incident)
 	opened_by = models.ForeignKey(User)
 
+	class Meta:
+		verbose_name_plural = 'comments'
+
 	def __unicode__(self):
 		return u"Comment for incident %s" % self.incident.id
 
