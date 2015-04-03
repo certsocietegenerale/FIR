@@ -2,16 +2,17 @@
 {% load url from future %}
 {% load add_css_class %}
 {% load i18n %}
+{% load staticfiles %}
 
 {% block custom_css %}
-<link href="/static/select/select2.css" rel="stylesheet"/>
-<link href="/static/select/select2-bootstrap.css" rel="stylesheet"/>
-<link href="/static/css/bootstrap-datetimepicker.min.css" rel="stylesheet"/>
+<link href="{% static "select/select2.css" %}" rel="stylesheet"/>
+<link href="{% static "select/select2-bootstrap.css" %}" rel="stylesheet"/>
+<link href="{% static "css/bootstrap-datetimepicker.min.css" %}" rel="stylesheet"/>
 
 {% endblock %}
 
 {% block custom_js %}
-<script src="/static/select/select2.min.js"></script>
+<script src="{% static "select/select2.min.js" %}"></script>
 <script>
 $(document).ready(function() {
 	$("select#id_concerned_business_lines").select2({ dropdownAutoWidth: true, width: '100%' });
@@ -25,7 +26,7 @@ $(document).ready(function() {
 });
 </script>
 
-<script src='/static/js/bootstrap-datetimepicker.min.js'></script>
+<script src="{% static "js/bootstrap-datetimepicker.min.js" %}"></script>
 
 {% endblock %}
 

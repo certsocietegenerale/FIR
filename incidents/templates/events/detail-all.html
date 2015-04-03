@@ -3,15 +3,16 @@
 {% load fir_plugins %}
 {% load fir_artifacts %}
 {% load i18n %}
+{% load staticfiles %}
 
 {% block custom_css %}
 {% endblock %}
 
 {% block custom_js %}
-<script type="text/javascript" src='/static/custom_js/hotkeys.js'></script>
+<script type="text/javascript" src="{% static "custom_js/hotkeys.js" %}"></script>
 {% plugin_point 'details_static' %}
 
-<script src='/static/custom_js/details_actions.js'></script>
+<script src="{% static "custom_js/details_actions.js" %}"></script>
 {% endblock %}
 
 {% block content %}
