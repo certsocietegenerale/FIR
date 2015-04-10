@@ -9,4 +9,4 @@ python-dateutil==2.4.1
 pytz==2014.10
 six==1.9.0
 wsgiref==0.1.2
-
+django-sslify==0.2.7
