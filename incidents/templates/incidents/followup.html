@@ -25,13 +25,14 @@
 
 		<table class='minitable table'>
 			<tr class='slim'>
+				{% if incident_show_id %}<td class='head'>ID</td><td class='delim'>#{{ incident.id }}</td>{% endif %}
 				{%if incident.is_incident%}
 				<td class='head'>{%  trans "Incident Leader" %}</td><td class='delim'>{{ incident.actor }}</td>
 				<td class='head'>{%  trans "Plan" %}</td><td class='delim'>{{ incident.plan }}</td>
 				{%endif%}
 				<td class='head'>{%  trans "Severity" %}</td><td class='delim'>{{ incident.severity }}</td>
 				<td class='head'>{%  trans "Category" %}</td><td class='delim'>{{ incident.category }}</td>
-				<td class='head'>{%  trans "Status" %}</td><td class='delim'><span class='label {%if incident.status == "B"%}label-danger{%endif%}{%if incident.status == "C"%}label-info{%endif%}'>{{ incident.get_status_display}}</span></td>
+				<td class='head'>{%  trans "Status" %}</td><td class='delim'><span class='label {% if incident.status == "O" %}label-info{% elif incident.status == "B" %}label-danger{% elif incident.status == "C"%}label-success{% endif %}'>{{ incident.get_status_display}}</span></td>
 
 				<td class='head'>{%  trans "Detection" %}</td><td class='delim'>{{ incident.detection }}</td>
 				<td class='head'>{%  trans "B/L" %}</td><td>{{ incident.get_business_lines_names }}</td>

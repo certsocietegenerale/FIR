@@ -16,6 +16,7 @@
             {% trans "IH" as t_ih %}
             {% trans "None" as t_none %}
 				<tr>
+                    {% if incident_show_id %}<th>ID</th>{% endif %}
 					{% include 'events/column.html' with name=t_date field='date' %}
 					<th></th>
 					{% include 'events/column.html' with name=t_category field='category' %}
@@ -37,6 +38,7 @@
 			<tbody>
 				{% for incident in incident_list %}
 					<tr class='{{ incident.status }}'>
+                        {% if incident_show_id %}<td>#{{ incident.id|stringformat:"04d" }}</td>{% endif %}
 						<td class='incident_date_column'>{{ incident.date|date:'Y-m-d' }}</td>
 						<td>
 							<a href="{% url 'ajax:toggle_star' incident.id %}" class='star'>
