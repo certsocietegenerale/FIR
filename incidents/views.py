@@ -2,6 +2,7 @@
 
 
 # Create your views here.
+from incidents.settings import settings
 from django.template.response import TemplateResponse
 from incidents.models import IncidentCategory, Incident, Comments, BusinessLine, Label, Artifact, File, Log, BaleCategory, Attribute, ValidAttribute, IncidentTemplate, Profile
 from incidents.models import IncidentForm, CommentForm
@@ -120,7 +121,8 @@ def followup(request, incident_id):
 	i = get_object_or_404(Incident, pk=incident_id)
 	comments = i.comments_set.all().order_by('date')
 
-	return render(request, 'incidents/followup.html', {'incident': i, 'comments': comments})
+	return render(request, 'incidents/followup.html', {'incident': i, 'comments': comments,
+														'incident_show_id': settings.INCIDENT_SHOW_ID})
 
 
 @login_required
@@ -162,7 +164,8 @@ def details(request, incident_id):
 														'artifacts': artifacts,
 														'attributes': attributes,
 														'valid_attributes': valid_attributes,
-														'comments' : comments
+														'comments' : comments,
+														'incident_show_id': settings.INCIDENT_SHOW_ID
 													})
 
 
@@ -750,7 +753,8 @@ def comment(request, incident_id):
 def artifacts_incidents(request, artifact_id):
 	a = get_object_or_404(Artifact, pk=artifact_id)
 	incidents = a.incidents.all()
-	return render(request, 'artifacts/incidents_index.html', {'incident_list': incidents, 'artifact': a})
+	return render(request, 'artifacts/incidents_index.html', {'incident_list': incidents, 'artifact': a,
+																'incident_show_id': settings.INCIDENT_SHOW_ID})
 
 
 @login_required
@@ -2014,7 +2018,8 @@ def incident_display(request, filter, incident_view=True, paginated=True):
 			'incident_list': incident_list,
 			'incident_view': incident_view,
 			'order_param': order_param,
-			'asc': asc
+			'asc': asc,
+			'incident_show_id': settings.INCIDENT_SHOW_ID
 		})
 
 
