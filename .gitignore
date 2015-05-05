@@ -68,3 +68,7 @@ target/
 # virtualenv
 /include
 /bin
+venv/
+
+# vim swap files
+*.swp
