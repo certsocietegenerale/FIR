@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load url from future %}
 {% load i18n %}
+{% load staticfiles %}
 
 {% block title %}
 {%  trans "Quarterly statistics" %} - {{bl.name}} - {% now "Y-m" %}
@@ -11,7 +12,7 @@
 	<table>
 		<tr>
 			<td class='printheader-left' style='width:200px'>
-				<img src="/static/img/logo.jpg" alt="Logo" style="width:200px; height:auto;">
+				<img src="{% static "img/logo.jpg" %}" alt="Logo" style="width:200px; height:auto;">
 			</td>
 			<td class='printheader-center'>
 				{%  trans "Quarterly statistics" %} {% now "Y/m" %} [C2]
@@ -37,8 +38,8 @@
 
 {% block custom_js_top %}
 
-<script src="/static/js/d3.v3.min.js"></script>
-<script src='/static/custom_js/stats.js'></script>
+<script src="{% static "js/d3.v3.min.js" %}"></script>
+<script src="{% static "custom_js/stats.js" %}"></script>
 
 {%endblock%}
 
@@ -284,7 +285,7 @@
 
 <p class='separator newpage'>&nbsp;</p>
 <div class='logo_end'>
-	<img src="/static/img/logo.jpg" width="400" alt="Logo"> <br />
+	<img src="{% static "img/logo.jpg" %}" width="400" alt="Logo"> <br />
 </div>
 
 
