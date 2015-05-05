@@ -15,6 +15,8 @@ There are two ways to install FIR. If you want to take it for a test-drive, just
 
 If you like it and want to set it up for production, [here's how to do it](https://github.com/certsocietegenerale/FIR/wiki/Installation-on-a-production-environment).
 
+A dockerfile for running a dev-quality FIR setup is also available in [docker/Dockerfile](docker/Dockerfile).
+
 # Technical specs
 
 FIR is written in Python (but you probably already knew that), using Django 1.7.6. It uses Bootstrap 3 and some Ajax and d3js to make it pretty. We use it with a MySQL back-end, but feel free to use any other DB adaptor you might want - as long as it's compatible with Django, you shouldn't run into any major issues.
