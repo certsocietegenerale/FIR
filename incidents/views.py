@@ -2,7 +2,6 @@
 
 
 # Create your views here.
-from incidents.settings import settings
 from django.template.response import TemplateResponse
 from incidents.models import IncidentCategory, Incident, Comments, BusinessLine, Label, Artifact, File, Log, BaleCategory, Attribute, ValidAttribute, IncidentTemplate, Profile
 from incidents.models import IncidentForm, CommentForm
