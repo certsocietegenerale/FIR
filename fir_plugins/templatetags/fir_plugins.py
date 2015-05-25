@@ -25,3 +25,7 @@ def plugin_point(context, name):
 			pass
 
 	return result
+
+@register.filter
+def relation_name(obj):
+	return obj.__class__.__name__.lower()+'s'
