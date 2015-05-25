@@ -1,4 +1,6 @@
 from django import template
+from django.contrib.contenttypes.models import ContentType
+from django.utils.safestring import mark_safe
 
 register = template.Library()
 
@@ -9,3 +11,21 @@ def display_artifact(artifact, request):
 @register.filter
 def display_correlated_artifact(artifact, request):
 	return artifact.display(request, True)
+
+@register.filter
+def content_type(obj):
+    if not obj:
+        return False
+    return ContentType.objects.get_for_model(obj).pk
+
+@register.filter(is_safe=True)
+def hashes_line(obj):
+    hash_list = ["", "", ""]
+    for h in obj.all():
+        if len(h.value) == 64:
+            hash_list[0] = h.value
+        elif len(h.value) == 40:
+            hash_list[1] = h.value
+        elif len(h.value) == 32:
+            hash_list[2] = h.value
+    return mark_safe("<td>%s</td><td>%s</td><td>%s</td>" % tuple(hash_list))

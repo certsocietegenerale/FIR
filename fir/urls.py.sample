@@ -11,13 +11,15 @@ urlpatterns = patterns('',
     url(r'^events/', include('incidents.custom_urls.events', namespace='events')),
     url(r'^login/', 'incidents.views.user_login', name='login'),            # have a "main module"
     url(r'^logout/', 'incidents.views.user_logout', name='logout'),         # main module
-    url(r'^artifacts/', include('incidents.custom_urls.artifacts', namespace='artifacts')),
     url(r'^stats/', include('incidents.custom_urls.stats', namespace='stats')),
     url(r'^ajax/', include('incidents.custom_urls.ajax', namespace='ajax')),
     url(r'^user/', include('incidents.custom_urls.user', namespace='user')),
     url(r'^dashboard/', include('incidents.custom_urls.dashboard', namespace='dashboard')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', 'incidents.views.index'),
+
+    # artifacts
+    url(r'^artifacts/', include('fir_artifacts.urls', namespace='artifacts')),
 
     # alerting
     url(r'^alerting/', include('fir_alerting.urls', namespace='alerting')),

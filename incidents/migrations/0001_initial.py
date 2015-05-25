@@ -78,7 +78,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('description', models.CharField(max_length=256)),
-                ('file', models.FileField(upload_to=incidents.models.upload_path)),
+                ('file', models.FileField()),
                 ('date', models.DateTimeField(auto_now_add=True)),
                 ('hashes', models.ManyToManyField(to='incidents.Artifact', null=True, blank=True)),
             ],
