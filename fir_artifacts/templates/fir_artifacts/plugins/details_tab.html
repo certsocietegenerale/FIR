@@ -1,0 +1,9 @@
+{% load i18n %}
+
+{% if artifacts_count > 0 %}
+	<li>
+		<a href='#tab_artifacts' data-toggle='tab'>
+			{% trans "Artifacts" %} ({{ artifacts_count }})
+		</a>
+	</li>
+{% endif %}

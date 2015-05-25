@@ -1,0 +1,27 @@
+{% load i18n %}
+{% load fir_artifacts %}
+
+<div class='tab-pane' id='tab_artifacts'>
+	<div class='' id='artifacts'>
+		{% if event.file_set.count > 0 %}
+	<table class='table table-condensed files-table files fixed'>
+		<tr><th>{%  trans "Filename" %}</th><th>SHA-256</th><th>SHA-1</th><th>MD5</th></tr>
+		{% for f in event.file_set.all %}
+			<tr><td>{{ f.getfilename }}</td>{{ f.hashes|hashes_line }}</tr>
+		{% endfor %}
+	</table>
+
+	<h3>{%  trans "Other artifacts" %}</h3>
+{% endif %}
+
+<table class='table table-condensed artifacts-table artifacts'>
+	<thead>
+		<th class='head'>{%  trans "Type" %}</th>
+		<th>{%  trans "Values" %}</th>
+	</thead>
+	{% for artifact_type in artifacts %}
+		{{ artifact_type|display_artifact:request }}
+	{% endfor %}
+</table>
+	</div>
+</div>
