@@ -47,6 +47,21 @@ def is_incident_handler(user):
 def can_view_statistics(user):
 	return user.has_perm('incidents.view_statistics') or user.has_perm('incidents.handle_incidents')
 
+
+# Checks if the user is in the right zone to view the incident
+def is_in_zone(request, incident):
+        if incident:
+                cur_user_zones = request.user.zone_set.all() 
+                if not cur_user_zones:
+                        # If not, generate a 404 error
+                        err = get_object_or_404(Incident, pk=0)
+                else:
+                        zones = incident.opened_by.zone_set.all()
+                        intersection = zones & cur_user_zones
+                        if not intersection:
+                                err = get_object_or_404(Incident, pk=0)
+
+
 # login / logout =================================================
 
 
@@ -112,12 +127,16 @@ def log(what, user, incident=None, comment=None):
 	log.save()
 
 # incidents =======================================================
-
+       
 
 @login_required
 @user_passes_test(is_incident_handler)
 def followup(request, incident_id):
 	i = get_object_or_404(Incident, pk=incident_id)
+
+        if settings.ENABLE_ZONES:
+                is_in_zone(request, i)
+
 	comments = i.comments_set.all().order_by('date')
 
 	return render(request, 'incidents/followup.html', {'incident': i, 'comments': comments,
@@ -146,6 +165,9 @@ def events_all(request):
 @user_passes_test(is_incident_handler)
 def details(request, incident_id):
 	i = get_object_or_404(Incident, pk=incident_id)
+
+        if settings.ENABLE_ZONES:
+                is_in_zone(request, i)
 
 	form = CommentForm()
 
@@ -262,6 +284,10 @@ def diff(incident, form):
 @user_passes_test(is_incident_handler)
 def edit_incident(request, incident_id):
 	i = get_object_or_404(Incident, pk=incident_id)
+
+        if settings.ENABLE_ZONES:
+                is_in_zone(request, i)
+
 	starred = i.is_starred
 	bls = BusinessLine.objects.all()
 
@@ -304,6 +330,10 @@ def edit_incident(request, incident_id):
 def delete_incident(request, incident_id):
 	if request.method == "POST":
 		i = get_object_or_404(Incident, pk=incident_id)
+
+                if settings.ENABLE_ZONES:
+                        is_in_zone(request, i)
+
 		msg = "Incident '%s' deleted." % i.subject
 		i.delete()
 		return HttpResponse(msg)
@@ -315,6 +345,10 @@ def delete_incident(request, incident_id):
 @user_passes_test(is_incident_handler)
 def change_status(request, incident_id, status):
 	i = get_object_or_404(Incident, pk=incident_id)
+
+        if settings.ENABLE_ZONES:
+                is_in_zone(request, i)
+
 	i.status = status
 	i.save()
 
@@ -344,6 +378,10 @@ def upload_file(request, incident_id):
 
 	if request.method == 'POST':
 		incident = get_object_or_404(Incident, pk=incident_id)
+
+                if settings.ENABLE_ZONES:
+                        is_in_zone(request, incident)
+
 		descriptions = request.POST.getlist('description')
 		files = request.FILES.getlist('file')
 
@@ -386,6 +424,9 @@ def handle_uploaded_file(file, description, incident):
 def download(request, incident_id, filename):
 	f = get_object_or_404(File, incident_id=incident_id, file="%s/%s" % (incident_id, filename))
 
+        if settings.ENABLE_ZONES:
+                is_in_zone(request, f.incident)
+
 	wrapper = FileWrapper(f.file)
 	content_type = mimetypes.guess_type(f.file.name)
 	response = HttpResponse(wrapper, content_type=content_type)
@@ -399,6 +440,10 @@ def download(request, incident_id, filename):
 @user_passes_test(is_incident_handler)
 def download_archive(request, incident_id):
 	i = get_object_or_404(Incident, pk=incident_id)
+
+        if settings.ENABLE_ZONES:
+                is_in_zone(request, i)
+
 	if i.file_set.count() == 0:
 		raise Http404
 	temp = tempfile.TemporaryFile()
@@ -423,6 +468,10 @@ def download_archive(request, incident_id):
 def remove_file(request, incident_id, file_id):
 	if request.method == "POST":
 		f = get_object_or_404(File, pk=file_id, incident_id=incident_id)
+
+                if settings.ENABLE_ZONES:
+                        is_in_zone(request, f.incident)
+
 		filename = f.file.name
 		f.file.delete()
 		f.delete()
@@ -439,6 +488,10 @@ def remove_file(request, incident_id, file_id):
 @user_passes_test(is_incident_handler)
 def add_attribute(request, incident_id):
 	i = get_object_or_404(Incident, pk=incident_id)
+
+        if settings.ENABLE_ZONES:
+                is_in_zone(request, i)
+
 	if request.method == "POST":
 		# First, check if it is a valid attribute
 		valid_attribute = get_object_or_404(ValidAttribute, name=request.POST['name'])
@@ -467,6 +520,10 @@ def add_attribute(request, incident_id):
 @user_passes_test(is_incident_handler)
 def delete_attribute(request, incident_id, attribute_id):
 	a = get_object_or_404(Attribute, pk=attribute_id)
+
+        if settings.ENABLE_ZONES:
+                is_in_zone(request, a.incident)
+
 	if request.method == "POST":
 		a.delete()
 	return redirect('incidents:details', incident_id=incident_id)
@@ -478,6 +535,10 @@ def delete_attribute(request, incident_id, attribute_id):
 @user_passes_test(is_incident_handler)
 def edit_comment(request, incident_id, comment_id):
 	c = get_object_or_404(Comments, pk=comment_id, incident_id=incident_id)
+
+        if settings.ENABLE_ZONES:
+                is_in_zone(request, c.incident)
+
 	if request.method == "POST":
 		form = CommentForm(request.POST, instance=c)
 		if form.is_valid():
@@ -496,6 +557,9 @@ def delete_comment(request, incident_id, comment_id):
 
 	if request.method == "POST":
 		c = get_object_or_404(Comments, pk=comment_id, incident_id=incident_id)
+                if settings.ENABLE_ZONES:
+                        is_in_zone(request, c.incident)
+
 		msg = "Comment '%s' deleted." % (c.comment[:20]+"...")
 		c.delete()
 		log(msg, request.user, incident=Incident.objects.get(id=incident_id))
@@ -509,11 +573,21 @@ def delete_comment(request, incident_id, comment_id):
 def update_comment(request, comment_id):
 
 	if request.method == 'GET':
+
+		c = get_object_or_404(Comments, pk=comment_id)
+
+                if settings.ENABLE_ZONES:
+                        is_in_zone(request, c.incident)
+
 		c = [get_object_or_404(Comments, pk=comment_id)]
 		serialized = serializers.serialize('json', c)
 		return HttpResponse(dumps(serialized), content_type="application/json")
 	else:
 		c = get_object_or_404(Comments, pk=comment_id)
+
+                if settings.ENABLE_ZONES:
+                        is_in_zone(request, c.incident)
+
 		comment_form = CommentForm(request.POST, instance=c)
 
 		if comment_form.is_valid():
@@ -527,6 +601,10 @@ def update_comment(request, comment_id):
 				c.incident.save()
 
 			i = get_object_or_404(Incident, pk=c.incident.id)
+                        if settings.ENABLE_ZONES:
+                                is_in_zone(request, i)
+
+
 			i.refresh_artifacts(c.comment)
 
 			return render(request, 'events/_comment.html', {'comment': c, 'event': i})
@@ -677,6 +755,19 @@ def search(request):
 			page = request.GET.get('page')
 			incident_number = request.user.profile.incident_number
 
+                        # Display only incidents that match the current user's zones
+                        if settings.ENABLE_ZONES:                        
+                                cur_user_zones = request.user.zone_set.all()
+                                if not cur_user_zones:
+                                        found_entries = []
+                                else:
+                                        for i in found_entries.all():
+                                                zones = i.opened_by.zone_set.all()
+                                                intersection = zones & cur_user_zones
+                                                if not intersection:
+                                                        found_entries = found_entries.exclude(subject=i.subject)
+                                                
+
 			p = Paginator(found_entries, incident_number)
 
 			try:
@@ -710,6 +801,9 @@ def search(request):
 def toggle_star(request, incident_id):
 	i = get_object_or_404(Incident, pk=incident_id)
 
+        if settings.ENABLE_ZONES:
+                is_in_zone(request, i)
+
 	i.is_starred = not i.is_starred
 
 	i.save()
@@ -721,6 +815,9 @@ def toggle_star(request, incident_id):
 @user_passes_test(is_incident_handler)
 def comment(request, incident_id):
 	i = get_object_or_404(Incident, pk=incident_id)
+
+        if settings.ENABLE_ZONES:
+                is_in_zone(request, i)
 
 	if request.method == "POST":
 		comment_form = CommentForm(request.POST)
@@ -752,6 +849,19 @@ def comment(request, incident_id):
 def artifacts_incidents(request, artifact_id):
 	a = get_object_or_404(Artifact, pk=artifact_id)
 	incidents = a.incidents.all()
+
+        # Display only incidents that match the current user's zones
+        if settings.ENABLE_ZONES:
+                cur_user_zones = request.user.zone_set.all()
+                if not cur_user_zones:
+                        incidents = []
+                else:
+                        for i in incidents:
+                                zones = i.opened_by.zone_set.all()
+                                intersection = zones & cur_user_zones
+                                if not intersection:
+                                        incidents = incidents.exclude(subject=i.subject)
+                
 	return render(request, 'artifacts/incidents_index.html', {'incident_list': incidents, 'artifact': a,
 																'incident_show_id': settings.INCIDENT_SHOW_ID})
 
@@ -761,6 +871,10 @@ def artifacts_incidents(request, artifact_id):
 def detach_artifact(request, artifact_id, incident_id):
 	a = get_object_or_404(Artifact, pk=artifact_id)
 	i = get_object_or_404(Incident, pk=incident_id)
+
+        if settings.ENABLE_ZONES:
+                is_in_zone(request, i)
+
 	a.incidents.remove(i)
 	if a.incidents.count() == 0:
 		a.delete()
@@ -2002,6 +2116,19 @@ def incident_display(request, filter, incident_view=True, paginated=True):
 		incident_list = Incident.objects.filter(filter).annotate(Max('comments__date')).order_by(order_by)
 	else:
 		incident_list = Incident.objects.filter(filter).order_by(order_by)
+        
+        # Display only incidents that match the current user's zones
+        if settings.ENABLE_ZONES:
+                cur_user_zones = request.user.zone_set.all()
+                if not cur_user_zones:
+                        incident_list = []
+                else:
+                        for i in incident_list.all():
+                                zones = i.opened_by.zone_set.all()
+                                intersection = zones & cur_user_zones
+                                if not intersection:
+                                        incident_list = incident_list.exclude(subject=i.subject)
+                
 
 	if paginated:
 		page = request.GET.get('page', 1)
@@ -2049,10 +2176,22 @@ def dashboard_blocked(request):
 @login_required
 @user_passes_test(is_incident_handler)
 def dashboard_old(request):
-	incident_list = Incident.objects.filter(status='O').annotate(Max('comments__date')).order_by('comments__date__max')[:20]
+	incident_list = Incident.objects.filter(status='O').annotate(Max('comments__date')).order_by('comments__date__max')
 
+        # Display only incidents that match the current user's zones
+        if settings.ENABLE_ZONES:
+                cur_user_zones = request.user.zone_set.all()
+                if not cur_user_zones:
+                        incident_list = []
+                else:
+                        for i in incident_list.all():
+                                zones = i.opened_by.zone_set.all()
+                                intersection = zones & cur_user_zones
+                                if not intersection:
+                                        incident_list = incident_list.exclude(subject=i.subject)                              
+        
 	return render(request, 'events/table.html', {
-			'incident_list': incident_list,
+			'incident_list': incident_list[:20],
 			'incident_view': True,
 			'order_param': 'last_action',
 			'asc': 'true'

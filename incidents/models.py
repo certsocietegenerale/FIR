@@ -39,6 +39,16 @@ CONFIDENTIALITY_LEVEL = (
 	(3, "C3"),
 	)
 
+# Zone =======================================================================
+
+class Zone(models.Model):
+        name = models.CharField(max_length=50)
+        users = models.ManyToManyField(User)
+
+        def __unicode__(self):
+                return self.name
+
+
 # Profile ====================================================================
 
 
