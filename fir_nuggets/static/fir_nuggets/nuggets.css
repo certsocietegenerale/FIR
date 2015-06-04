@@ -42,3 +42,7 @@
 	padding-left: 5px;
 	padding-right: 5px;
 }
+
+.nugget-interpretation {
+	white-space: pre;
+}
