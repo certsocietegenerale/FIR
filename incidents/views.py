@@ -2061,7 +2061,12 @@ def dashboard_old(request):
 # tools ==================================================================
 
 def mce_config(request):
-	lang = request.LANGUAGE_CODE
+	# if language middleware is disabled, get language code from settings
+	try:
+		lang = request.LANGUAGE_CODE
+	except AttributeError, e:
+		lang = settings.LANGUAGE_CODE
+	
 	if not finders.find("js/tinymce/langs/%s.js" % lang):
 		lang = lang.split('-')[0]
 		if not finders.find("js/tinymce/langs/%s.js" % lang):
