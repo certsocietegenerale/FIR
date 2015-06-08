@@ -1601,7 +1601,7 @@ def data_yearly_bl(request, year=datetime.date.today().year, type='all'):
 @user_passes_test(can_view_statistics)
 def data_yearly_bl_detection(request):
 	bls = BusinessLine.get_parents()
-	q = Q(is_incident=True, date__year=datetime.datetime.now().year)
+	q = Q(date__year=datetime.datetime.now().year)
 	q = q & Q(confidentiality__lte=2)
 	
 	chart_data = []
@@ -1627,7 +1627,7 @@ def data_yearly_bl_detection(request):
 def data_yearly_bl_severity(request):
 	bls = BusinessLine.get_parents()
 
-	q = Q(is_incident=True, date__year=datetime.datetime.now().year)
+	q = Q(date__year=datetime.datetime.now().year)
 	q = q & Q(confidentiality__lte=2)
 
 	chart_data = []
@@ -1657,7 +1657,7 @@ def data_yearly_bl_category(request):
 	bls = BusinessLine.get_parents()
 	categories = IncidentCategory.objects.all()
 
-	q = Q(is_incident=True, date__year=datetime.datetime.now().year)
+	q = Q(date__year=datetime.datetime.now().year)
 	q = q & Q(confidentiality__lte=2)
 
 	chart_data = []
@@ -1688,7 +1688,7 @@ def data_yearly_bl_plan(request):
 	bls = BusinessLine.get_parents()
 	plans = Label.objects.filter(group__name='plan')
 
-	q = Q(is_incident=True, date__year=datetime.datetime.now().year)
+	q = Q(date__year=datetime.datetime.now().year)
 	q = q & Q(confidentiality__lte=2)
 
 	chart_data = []
@@ -1722,7 +1722,6 @@ def data_incident_variation(request, business_line, num_months=3):
 	chart_data = []
 
 	q = Q(concerned_business_lines=bl) | Q(main_business_lines=bl) | Q(concerned_business_lines__in=bl.get_children())
-	q &= Q(is_incident=True)
 	q &= Q(confidentiality__lte=2)
 
 	total = 0
@@ -1773,7 +1772,6 @@ def data_quarterly_bl(request, business_line, divisor, num_months=3, is_incident
 
 	q = Q(main_business_lines=bl) | Q(concerned_business_lines=bl) | Q(concerned_business_lines__in=children)
 	q = q & Q(confidentiality__lte=2)
-	q = q & Q(is_incident=is_incident)
 
 	chart_data = []
 
@@ -1893,7 +1891,7 @@ def data_quarterly_bl(request, business_line, divisor, num_months=3, is_incident
 @user_passes_test(can_view_statistics)
 def quarterly_major(request, start_date=None, num_months=3):
 
-	q_major = Q(is_major=True, is_incident=True)
+	q_major = Q(is_major=True)
 	q_confid = Q(confidentiality__lte=2)
 	balecats = BaleCategory.objects.filter(Q(parent_category__isnull=False))
 	certcats = IncidentCategory.objects.all()
