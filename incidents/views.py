@@ -1461,6 +1461,8 @@ def data_yearly_compare(request, year, type='all', slide=True):
 	elif type == 'events':
 			q = Q(is_incident=False)
 
+	q = q & Q(confidentiality__lte=2)
+
 	if slide:
 		dates = []
 		today = datetime.date.today().replace(year=year)
@@ -1496,6 +1498,8 @@ def data_yearly_evolution(request, year, type='all', divisor='bl', slide=True):
 		q = Q(is_incident=True)
 	elif type == 'events':
 		q = Q(is_incident=False)
+
+	q = q & Q(confidentiality__lte=2)
 
 	if divisor == 'bl':
 		items = BusinessLine.get_parents()
@@ -1555,7 +1559,7 @@ def data_yearly_incidents(request):
 	for i in xrange(12):
 		dates.append(today-relativedelta(months=i+1))
 	for i in xrange(12):
-		chart_data.append({'date': str(dates[i].year)+"-"+str(dates[i].month), today.year-1: Incident.objects.filter(date__year=dates[i].year, date__month=dates[i].month).count()})
+		chart_data.append({'date': str(dates[i].year)+"-"+str(dates[i].month), today.year-1: Incident.objects.filter(date__year=dates[i].year, date__month=dates[i].month, confidentiality__lte=2).count()})
 
 	return HttpResponse(dumps(chart_data), content_type="application/json")
 
@@ -1575,6 +1579,8 @@ def data_yearly_bl(request, year=datetime.date.today().year, type='all'):
 	elif type == 'events':
 		q = q & Q(is_incident=False)
 
+	q = q & Q(confidentiality__lte=2)
+
 	for bl in bls:
 		d = {}
 		d['label'] = bl.name
@@ -1584,7 +1590,6 @@ def data_yearly_bl(request, year=datetime.date.today().year, type='all'):
 		total += d['value']
 
 	for d in chart_data:
-
 		d['percentage'] = float(str(round(float(d['value'])/total, 2)*100))
 
 	chart_data = delete_empty_keys(chart_data)
@@ -1597,6 +1602,8 @@ def data_yearly_bl(request, year=datetime.date.today().year, type='all'):
 def data_yearly_bl_detection(request):
 	bls = BusinessLine.get_parents()
 	q = Q(is_incident=True, date__year=datetime.datetime.now().year)
+	q = q & Q(confidentiality__lte=2)
+	
 	chart_data = []
 
 	for bl in bls:
@@ -1621,6 +1628,8 @@ def data_yearly_bl_severity(request):
 	bls = BusinessLine.get_parents()
 
 	q = Q(is_incident=True, date__year=datetime.datetime.now().year)
+	q = q & Q(confidentiality__lte=2)
+
 	chart_data = []
 
 	for bl in bls:
@@ -1649,6 +1658,8 @@ def data_yearly_bl_category(request):
 	categories = IncidentCategory.objects.all()
 
 	q = Q(is_incident=True, date__year=datetime.datetime.now().year)
+	q = q & Q(confidentiality__lte=2)
+
 	chart_data = []
 
 	for bl in bls:
@@ -1678,6 +1689,8 @@ def data_yearly_bl_plan(request):
 	plans = Label.objects.filter(group__name='plan')
 
 	q = Q(is_incident=True, date__year=datetime.datetime.now().year)
+	q = q & Q(confidentiality__lte=2)
+
 	chart_data = []
 
 	for bl in bls:
@@ -1710,6 +1723,8 @@ def data_incident_variation(request, business_line, num_months=3):
 
 	q = Q(concerned_business_lines=bl) | Q(main_business_lines=bl) | Q(concerned_business_lines__in=bl.get_children())
 	q &= Q(is_incident=True)
+	q &= Q(confidentiality__lte=2)
+
 	total = 0
 	total_previous = 0
 	for cat in categories:
@@ -1878,6 +1893,7 @@ def data_quarterly_bl(request, business_line, divisor, num_months=3, is_incident
 def quarterly_major(request, start_date=None, num_months=3):
 
 	q_major = Q(is_major=True, is_incident=True)
+	q_confid = Q(confidentiality__lte=2)
 	balecats = BaleCategory.objects.filter(Q(parent_category__isnull=False))
 	certcats = IncidentCategory.objects.all()
 	parent_bls = BusinessLine.get_parents()
@@ -1907,7 +1923,7 @@ def quarterly_major(request, start_date=None, num_months=3):
 		for i in xrange(num_months):
 			then = today - relativedelta(months=num_months-i)
 			q_date = q_certcat & Q(date__month=then.month, date__year=then.year)
-			count = Incident.objects.filter(q_date).count()
+			count = Incident.objects.filter(q_date & q_confid).count()
 			line.append(count)
 
 			if count != 0:
@@ -1932,7 +1948,7 @@ def quarterly_major(request, start_date=None, num_months=3):
 		for i in xrange(num_months):
 			then = today - relativedelta(months=num_months-i)
 			q_date = q_balecat & Q(date__month=then.month, date__year=then.year)
-			count = Incident.objects.filter(q_date).count()
+			count = Incident.objects.filter(q_date & q_confid).count()
 			line.append(count)
 			if count != 0:
 				add = True
@@ -1957,7 +1973,7 @@ def quarterly_major(request, start_date=None, num_months=3):
 			then = today - relativedelta(months=num_months-i)
 			q_date = q_bl & Q(date__month=then.month, date__year=then.year)
 
-			count = Incident.objects.filter(q_date).count()
+			count = Incident.objects.filter(q_date & q_confid).count()
 			line.append(count)
 			if count != 0:
 				add = True
@@ -1969,14 +1985,14 @@ def quarterly_major(request, start_date=None, num_months=3):
 	total_major = 0
 	for i in xrange(num_months):
 		d = today - relativedelta(months=num_months-i)
-		total_major += Incident.objects.filter(date__month=d.month, date__year=d.year).count()
+		total_major += Incident.objects.filter(date__month=d.month, date__year=d.year, confidentiality__lte=2).count()
 
 	past_months = Q()
 	for i in xrange(num_months):
 		d = today - relativedelta(months=num_months-i)
 		past_months |= Q(date__month=d.month, date__year=d.year)
 
-	return render(request, 'stats/major.html', {'bale': bale, 'cert': cert, 'total_major': total_major, 'bls': bls, 'incident_list': Incident.objects.filter(q_major & past_months).order_by('-date')})
+	return render(request, 'stats/major.html', {'bale': bale, 'cert': cert, 'total_major': total_major, 'bls': bls, 'incident_list': Incident.objects.filter(q_major & past_months & q_confid).order_by('-date')})
 
 
 # Dashboard =======================================================
