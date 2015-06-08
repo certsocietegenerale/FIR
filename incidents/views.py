@@ -1773,6 +1773,7 @@ def data_quarterly_bl(request, business_line, divisor, num_months=3, is_incident
 
 	q = Q(main_business_lines=bl) | Q(concerned_business_lines=bl) | Q(concerned_business_lines__in=children)
 	q = q & Q(confidentiality__lte=2)
+	q = q & Q(is_incident=is_incident)
 
 	chart_data = []
 
