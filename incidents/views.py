@@ -327,7 +327,7 @@ def change_status(request, incident_id, status):
 	c = Comments()
 	c.comment = "Status changed to '%s'" % status_name
 	c.date = datetime.datetime.now()
-	c.action = get_object_or_404(Label, name='Closed', group__name='action')
+	c.action = get_object_or_404(Label, name=status_name, group__name='action')
 	c.incident = i
 	c.opened_by = request.user
 	c.save()
@@ -1603,7 +1603,7 @@ def data_yearly_bl_detection(request):
 	bls = BusinessLine.get_parents()
 	q = Q(date__year=datetime.datetime.now().year)
 	q = q & Q(confidentiality__lte=2)
-	
+
 	chart_data = []
 
 	for bl in bls:
@@ -2081,7 +2081,7 @@ def mce_config(request):
 		lang = request.LANGUAGE_CODE
 	except AttributeError, e:
 		lang = settings.LANGUAGE_CODE
-	
+
 	if not finders.find("js/tinymce/langs/%s.js" % lang):
 		lang = lang.split('-')[0]
 		if not finders.find("js/tinymce/langs/%s.js" % lang):
