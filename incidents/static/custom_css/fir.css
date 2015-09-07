@@ -575,6 +575,9 @@ td.incident_date_column {
 
 /* New incident -------------------------------*/
 
+.labels-ontop label {
+	display: block;
+}
 
 .collapse.in {
 	overflow: visible;

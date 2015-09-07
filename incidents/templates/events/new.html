@@ -33,7 +33,7 @@ $(document).ready(function() {
 
 {% block content %}
 
-	<div class="container-fluid">
+	<div class="container-fluid labels-ontop">
 		{% if not i %}
 			<form action="{% url 'events:new' %}" method="post">
 		{% else %}
