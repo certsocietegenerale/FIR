@@ -1569,7 +1569,11 @@ def data_yearly_field(request, field):
 
 	field_dict = {}
 	total = 0
-	for i in Incident.objects.all():
+
+	q = Q(date__year=datetime.date.today().year)
+	q = q & Q(is_incident=True)
+
+	for i in Incident.objects.filter(q):
 		field_dict[str(getattr(i, field))] = field_dict.get(str(getattr(i, field)), 0) + 1
 		total += 1
 
