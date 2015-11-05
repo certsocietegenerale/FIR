@@ -1578,8 +1578,10 @@ def data_yearly_field(request, field):
 		total += 1
 
 	chart_data = []
-	for field, value in field_dict.items():
-		chart_data.append({'label': field, 'value': value, 'percentage': float(str(round(float(value)/total, 2)*100)) })
+	for label, value in field_dict.items():
+		if field == 'severity':
+			label += "/4"
+		chart_data.append({'label': label, 'value': value, 'percentage': float(str(round(float(value)/total, 2)*100)) })
 
 	return HttpResponse(dumps(chart_data), content_type="application/json")
 

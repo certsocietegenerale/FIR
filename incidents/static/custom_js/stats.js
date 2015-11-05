@@ -422,70 +422,79 @@ function generate_multiple_donut_chart(selector, url, widths, outer_radius, inne
 
 
 function generate_donut_chart(selector, url, dimension, radius) {
-var width = dimension,
-    height = dimension,
-    radius = radius;
+  var width = dimension,
+      height = dimension,
+      radius = radius;
 
-var arc = d3.svg.arc()
-    .outerRadius(radius - 10)
-    .innerRadius((radius - 10)/2);
+  var arc = d3.svg.arc()
+      .outerRadius(radius - 10)
+      .innerRadius((radius - 10)/2);
 
-var pie = d3.layout.pie()
-    .sort(null)
-    .value(function(d) { return d.value; });
+  var pie = d3.layout.pie()
+      .sort(null)
+      .value(function(d) { return d.value; });
 
-var svg = d3.select(selector).append("svg")
-    .attr("width", width)
-    .attr("height", height)
-  .append("g")
-    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+  var svg = d3.select(selector).append("svg")
+      .attr("width", width)
+      .attr("height", height)
+    .append("g")
+      .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
-d3.json(url, function(error, data) {
-	color.domain([]);
-  data.forEach(function(d) {
-    d.count = +d.count;
-  });
+  d3.json(url, function(error, data) {
+      if (data[0].label == "1/4") {
+		    	color_scale = color_severity;
+          console.log('toto')
+        }
+	   	else {
+	   		color_scale = color;
+      }
 
-  var g = svg.selectAll(".arc")
-      .data(pie(data))
-    .enter().append("g")
-      .attr("class", "arc");
+      color.domain([]);
 
-  g.append("path")
-      .attr("d", arc)
-      .style("fill", function(d) { return color(d.data.label); });
-
-  g.append("text")
-      .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
-      .attr("dy", ".35em")
-      .style("text-anchor", "middle")
-      .text(function(d) {
-      	return d.data.value;
+      data.forEach(function(d) {
+        d.count = +d.count;
       });
 
-      legend_height = Math.max(data.length*20, dimension)
+      var g = svg.selectAll(".arc")
+          .data(pie(data))
+        .enter().append("g")
+          .attr("class", "arc");
 
-	  var legend = d3.select(selector).append("svg")
-      .attr("class", "legend")
-      .attr("width", radius)
-      .attr("height", legend_height)
-    	.selectAll("g")
-      	.data(color.domain().slice().reverse())
-    	.enter().append("g")
-     	.attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+      g.append("path")
+          .attr("d", arc)
+          .style("fill", function(d) { return color_scale(d.data.label); });
 
-  legend.append("rect")
-      .attr("width", 18)
-      .attr("height", 18)
-      .style("fill", color);
+      g.append("text")
+          .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
+          .attr("dy", ".35em")
+          .style("text-anchor", "middle")
+          .text(function(d) {
+          	return d.data.value;
+          });
 
-  legend.append("text")
-      .attr("x", 24)
-      .attr("y", 9)
-      .attr("dy", ".35em")
-      .text(function(d) { return d; });
+          legend_height = Math.max(data.length*20, dimension)
 
-});
+    	  var legend = d3.select(selector).append("svg")
+          .attr("class", "legend")
+          .attr("width", radius)
+          .attr("height", legend_height)
+        	.selectAll("g")
+          	.data(color_scale.domain().slice().reverse())
+        	.enter().append("g")
+         	.attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+      legend.append("rect")
+          .attr("width", 18)
+          .attr("height", 18)
+          .style("fill", color_scale);
+
+      legend.append("text")
+          .attr("x", 24)
+          .attr("y", 9)
+          .attr("dy", ".35em")
+          .text(function(d) { return d; });
+
+  });
 
 }
 
