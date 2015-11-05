@@ -7,8 +7,8 @@ var color = d3.scale.ordinal()
 
 
 var color_severity = d3.scale.ordinal()
-					.domain(['1/4', '3/4', '2/4', '4/4'])
-					.range(['#468847', '#fefe00', '#f89406', '#f81920'])
+					.domain(['1/4', '2/4', '3/4', '4/4'])
+					.range(['#468847', '#f89406', '#fefe00', '#f81920'])
 
 var colors = {other: color, severity: color_severity}
 
