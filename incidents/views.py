@@ -1563,6 +1563,22 @@ def data_yearly_incidents(request):
 
 	return HttpResponse(dumps(chart_data), content_type="application/json")
 
+@login_required
+@user_passes_test(can_view_statistics)
+def data_yearly_field(request, field):
+
+	field_dict = {}
+	total = 0
+	for i in Incident.objects.all():
+		field_dict[str(getattr(i, field))] = field_dict.get(str(getattr(i, field)), 0) + 1
+		total += 1
+
+	chart_data = []
+	for field, value in field_dict.items():
+		chart_data.append({'label': field, 'value': value, 'percentage': float(str(round(float(value)/total, 2)*100)) })
+
+	return HttpResponse(dumps(chart_data), content_type="application/json")
+
 
 @login_required
 @user_passes_test(can_view_statistics)

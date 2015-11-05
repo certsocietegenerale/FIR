@@ -24,6 +24,7 @@ urlpatterns = patterns('',
     url(r'^data/yearly/compare/(?P<year>\d+)/(?P<type>\w+)$', views.data_yearly_compare, name='data_yearly_compare'),
     # evolution (by divisor and type)
     url(r'^data/yearly/compare/evolution/(?P<year>\d+)/(?P<type>\w+)/(?P<divisor>\w+)$', views.data_yearly_evolution, name='data_yearly_evolution'),
+    url(r"^data/yearly/(?P<field>\w+)$", views.data_yearly_field, name="data_yearly_field"),
 
     # major incidents
     url(r'^quarterly/major$', views.quarterly_major, name='quarterly_major'),

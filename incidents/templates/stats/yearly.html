@@ -85,11 +85,25 @@
 <p class='separator'>&nbsp;</p>
 
 <div class='graph'>
+  <h4>{% trans "Entire Group - by category" %}</h4>
+  <div class='graph' id="group_category">
+  </div>
+</div>
+
+<div class='graph'>
+    <h4>{% trans "Entire Group - by severity" %}</h4>
+  <div class='graph' id="group_severity">
+  </div>
+</div>
+
+
+<p class='separator'>&nbsp;</p>
+
+<div class='graph'>
   <h4>{%  trans "Business Line by detection" %}</h4>
   <div class='graph' id="bl_detection">
   </div>
 </div>
-
 
 <div class='graph'>
   <h4>{%  trans "Incidents by business line" %}</h4>
@@ -120,6 +134,10 @@
 <script>
 
    generate_multiple_line_chart('#yearly_incidents', "{% url 'stats:data_yearly_incidents' %}", 1000, 300, '%Y-%m')
+
+   generate_donut_chart('#group_category', "{%url 'stats:data_yearly_field' 'category' %}", 300, 150)
+   generate_donut_chart('#group_severity', "{%url 'stats:data_yearly_field' 'severity' %}", 300, 150)
+
    generate_donut_chart('#bl_donut', "{%url 'stats:data_yearly_bl' %}", 300, 150)
    generate_stacked_chart('#bl_detection', "{%url 'stats:data_yearly_bl_detection' %}", 350, 300, '', 'true')
 
