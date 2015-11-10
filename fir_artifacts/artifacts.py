@@ -3,7 +3,6 @@ import re
 from django import template
 from django.template.loader import get_template
 from django.template import RequestContext
-from django.db.models import Count
 
 register = template.Library()
 
@@ -31,16 +30,17 @@ def after_save(type, value, event):
 	return INSTALLED_ARTIFACTS[type].after_save(value, event)
 
 
-def all_for_event(event, raw=False):
-	from incidents.models import Artifact
-
+def all_for_object(obj, raw=False):
 	result = []
 	total_count = 0
 	correlated_count = 0
 
+	if not hasattr(obj, "artifacts"):
+		return (result, total_count, correlated_count)
+
 	for artifact in INSTALLED_ARTIFACTS:
-		values = Artifact.objects.annotate(Count('incidents')).filter(type=artifact, incidents=event)
-		artifact_collection = INSTALLED_ARTIFACTS[artifact](values, event)
+		values = obj.artifacts.filter(type=artifact)
+		artifact_collection = INSTALLED_ARTIFACTS[artifact](values, obj)
 		total_count += values.count()
 		correlated_count += artifact_collection.correlated_count()
 		result.append(artifact_collection)
@@ -74,7 +74,7 @@ class AbstractArtifact:
 
 		self._correlated = []
 		for artifact in self._artifacts:
-			if artifact.incidents__count > 1:
+			if artifact.relations.count() > 1:
 				self._correlated.append(artifact)
 
 	def display(self, request, correlated=False):
