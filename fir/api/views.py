@@ -1,4 +1,6 @@
 from django.contrib.auth.models import User, Group
+from rest_framework import viewsets
+
 from fir.api.serializers import UserSerializer, GroupSerializer, IncidentSerializer
 from incidents.models import Incident
 
