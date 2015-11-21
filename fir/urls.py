@@ -1,12 +1,22 @@
 from pkgutil import find_loader
 from django.conf.urls import include, url
 from django.contrib import admin
+from rest_framework import routers
 
 from fir.config.base import INSTALLED_APPS
 from incidents import views
+from fir.api import apiviews
+
+
+router = routers.DefaultRouter()
+router.register(r'api/users', apiviews.UserViewSet)
+router.register(r'api/groups', apiviews.GroupViewSet)
+router.register(r'api/incidents', apiviews.IncidentViewSet)
 
 
 urlpatterns = [
+    url(r'^', include(router.urls)),
+    url(r'^api/auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^tools/', include('incidents.custom_urls.tools', namespace='tools')),
     url(r'^incidents/', include('incidents.urls', namespace='incidents')),
     url(r'^search/$', views.search, name='search'),

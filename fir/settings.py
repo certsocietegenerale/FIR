@@ -27,6 +27,12 @@ TEMPLATES[0]['OPTIONS']['loaders'] = (
 # Dummy key for development
 SECRET_KEY = 'DUMMY_KEY_FOR_DEVELOPMENT_DO_NOT_USE_IN_PRODUCTION'
 
+# REST framework settings
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAdminUser',),
+    'PAGE_SIZE': 10
+}
+
 try:
     from fir.config.dev import *
 except ImportError:
