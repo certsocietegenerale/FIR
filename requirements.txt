@@ -1,4 +1,7 @@
 Django==1.7.6
+djangorestframework
+markdown
+django-filter
 argparse==1.2.1
 cssselect==0.9.1
 flup==1.0.2

@@ -80,6 +80,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'incidents',
     'django.contrib.admin',
+    'rest_framework',
     'fir_plugins',
     'fir_artifacts'
 )

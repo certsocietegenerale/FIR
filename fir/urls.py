@@ -1,10 +1,25 @@
 from django.conf.urls import patterns, include, url
+from rest_framework import routers, serializers, viewsets
 
 # Uncomment the next two lines to enable the admin:
 from django.contrib import admin
-admin.autodiscover()
+from django.contrib.auth.models import User
 
+# requirements for api
+from rest_framework import routers
+from fir.api import views
+
+router = routers.DefaultRouter()
+router.register(r'api/users', views.UserViewSet)
+router.register(r'api/groups', views.GroupViewSet)
+router.register(r'api/incidents', views.IncidentViewSet)
+
+# automatic URL routing for API
+# include login URLs for the browsable API.
+# urls for other FIR components
 urlpatterns = patterns('',
+    url(r'^', include(router.urls)),
+    url(r'^api/auth/', include('rest_framework.urls', namespace='rest_framework')),
 	url(r'^tools/', include('incidents.custom_urls.tools', namespace='tools')),
     url(r'^incidents/', include('incidents.urls', namespace='incidents')),
     url(r'^search/$', 'incidents.views.search', name='search'),
@@ -28,3 +43,4 @@ urlpatterns = patterns('',
     # nuggets
     url(r'^nuggets/', include('fir_nuggets.urls', namespace='nuggets')),
 )
+admin.autodiscover()
