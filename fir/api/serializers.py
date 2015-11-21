@@ -25,7 +25,7 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 class IncidentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Incident
-        fields = ('date', 'is_starred', 'subject', 'description', 'severity', 'category', 'detection', 'opened_by', 'is_incident', 'status')
+        fields = ('date', 'is_starred', 'subject', 'description', 'main_business_lines', 'severity', 'category', 'detection', 'opened_by', 'is_incident', 'status')
 
         def incident_list(request):
             """
