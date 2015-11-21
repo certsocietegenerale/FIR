@@ -1,6 +1,12 @@
 from django.contrib.auth.models import User, Group
-from incidents.models import Incident
+from django.http import HttpResponse
+from rest_framework.renderers import JSONRenderer
+from rest_framework.parsers import JSONParser
+from rest_framework import viewsets
 from rest_framework import serializers
+
+from incidents.models import Incident
+
 
 # serializes data from the FIR User model
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -16,33 +22,24 @@ class GroupSerializer(serializers.HyperlinkedModelSerializer):
 
 
 # Main FIR Incident model
-class IncidentSerializer(serializers.HyperlinkedModelSerializer):
+class IncidentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Incident
-        fields = ('date', 'is_starred', 'subject', 'description', 'severity', 'opened_by', 'is_incident', 'is_major')
+        fields = ('date', 'is_starred', 'subject', 'description', 'severity', 'category', 'detection', 'opened_by', 'is_incident')
 
+        def incident_list(request):
+            """
+            List all incidents, or create a new incident.
+            """
+            if request.method == 'GET':
+                incidents = Incident.objects.all()
+                serializer = IncidentSerializer(incidents, many=True)
+                return JSONResponse(serializer.data)
 
-    def create(self, validated_data):
-        """
-        Create and return a new `Incident` instance, given the validated data.
-        """
-        return Incident.objects.create(**validated_data)
-
-    def update(self, instance, validated_data):
-        """
-        Update and return an existing `Incident` instance, given the validated data.
-        """
-        instance.title = validated_data.get('title', instance.title)
-        instance.code = validated_data.get('code', instance.code)
-        instance.linenos = validated_data.get('linenos', instance.linenos)
-        instance.language = validated_data.get('language', instance.language)
-        instance.style = validated_data.get('style', instance.style)
-        instance.save()
-        return instance
-
-    def close(self, instance, validated_data):
-        """
-        Close and return an existing `Incident` instance
-        """
-        return Incident.objects.delete(instance)
-    
+            elif request.method == 'POST':
+                data = JSONParser().parse(request)
+                serializer = IncidentSerializer(data=request)
+                if serializer.is_valid():
+                    serializer.save()
+                    return JSONResponse(serializer.data, status=201)
+                return JSONResponse(serializer.errors, status=400)
