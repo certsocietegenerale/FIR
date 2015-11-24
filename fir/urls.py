@@ -2,23 +2,25 @@ from pkgutil import find_loader
 from django.conf.urls import include, url
 from django.contrib import admin
 from rest_framework import routers
+from rest_framework.authtoken import views as token_views
 
 from fir.config.base import INSTALLED_APPS
 from incidents import views
 from fir.api import apiviews
 
-
+# automatic URL routing for API
+# include login URLs for the browsable API.
 router = routers.DefaultRouter()
-router.register(r'api/users', views.UserViewSet)
-router.register(r'api/groups', views.GroupViewSet)
-router.register(r'api/incidents', views.IncidentViewSet)
-router.register(r'api/artifacts', views.ArtifactViewSet)
+router.register(r'api/users', apiviews.UserViewSet)
+router.register(r'api/groups', apiviews.GroupViewSet)
+router.register(r'api/incidents', apiviews.IncidentViewSet)
+router.register(r'api/artifacts', apiviews.ArtifactViewSet)
 
-
-urlpatterns = [
+# urls for core FIR components
+urlpatterns = patterns('',
     url(r'^', include(router.urls)),
-    url(r'^api/auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^tools/', include('incidents.custom_urls.tools', namespace='tools')),
+    url(r'^api/token/', token_views.obtain_auth_token),
+	url(r'^tools/', include('incidents.custom_urls.tools', namespace='tools')),
     url(r'^incidents/', include('incidents.urls', namespace='incidents')),
     url(r'^search/$', views.search, name='search'),
     url(r'^events/', include('incidents.custom_urls.events', namespace='events')),
