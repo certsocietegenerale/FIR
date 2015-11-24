@@ -13,14 +13,14 @@ from fir.api import views
 # automatic URL routing for API
 # include login URLs for the browsable API.
 router = routers.DefaultRouter()
-router.register(r'api/users', views.UserViewSet)
-router.register(r'api/groups', views.GroupViewSet)
-router.register(r'api/incidents', views.IncidentViewSet)
-router.register(r'api/artifacts', views.ArtifactViewSet)
+router.register(r'users', views.UserViewSet)
+router.register(r'groups', views.GroupViewSet)
+router.register(r'incidents', views.IncidentViewSet)
+router.register(r'artifacts', views.ArtifactViewSet)
 
 # urls for core FIR components
 urlpatterns = patterns('',
-    url(r'^', include(router.urls)),
+    url(r'^api/', include(router.urls)),
     url(r'^api/token/', token_views.obtain_auth_token),
 	url(r'^tools/', include('incidents.custom_urls.tools', namespace='tools')),
     url(r'^incidents/', include('incidents.urls', namespace='incidents')),
