@@ -1,8 +1,8 @@
 from django.contrib.auth.models import User, Group
-from rest_framework import viewsets
+from rest_framework import viewsets, generics
 
-from fir.api.serializers import UserSerializer, GroupSerializer, IncidentSerializer
-from incidents.models import Incident
+from fir.api.serializers import UserSerializer, GroupSerializer, IncidentSerializer, ArtifactSerializer
+from incidents.models import Incident, Artifact
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -26,3 +26,7 @@ class IncidentViewSet(viewsets.ModelViewSet):
     """
     queryset = Incident.objects.all()
     serializer_class = IncidentSerializer
+
+class ArtifactViewSet(viewsets.ModelViewSet):
+    queryset = Artifact.objects.all()
+    serializer_class = ArtifactSerializer

@@ -13,6 +13,7 @@ router = routers.DefaultRouter()
 router.register(r'api/users', views.UserViewSet)
 router.register(r'api/groups', views.GroupViewSet)
 router.register(r'api/incidents', views.IncidentViewSet)
+router.register(r'api/artifacts', views.ArtifactViewSet)
 
 # automatic URL routing for API
 # include login URLs for the browsable API.
