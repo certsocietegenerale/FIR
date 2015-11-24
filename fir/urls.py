@@ -9,9 +9,10 @@ from fir.api import apiviews
 
 
 router = routers.DefaultRouter()
-router.register(r'api/users', apiviews.UserViewSet)
-router.register(r'api/groups', apiviews.GroupViewSet)
-router.register(r'api/incidents', apiviews.IncidentViewSet)
+router.register(r'api/users', views.UserViewSet)
+router.register(r'api/groups', views.GroupViewSet)
+router.register(r'api/incidents', views.IncidentViewSet)
+router.register(r'api/artifacts', views.ArtifactViewSet)
 
 
 urlpatterns = [
