@@ -11,16 +11,17 @@ from fir.api import apiviews
 # automatic URL routing for API
 # include login URLs for the browsable API.
 router = routers.DefaultRouter()
-router.register(r'api/users', apiviews.UserViewSet)
-router.register(r'api/groups', apiviews.GroupViewSet)
-router.register(r'api/incidents', apiviews.IncidentViewSet)
-router.register(r'api/artifacts', apiviews.ArtifactViewSet)
+
+router.register(r'users', apiviews.UserViewSet)
+router.register(r'groups', apiviews.GroupViewSet)
+router.register(r'incidents', apiviews.IncidentViewSet)
+router.register(r'artifacts', apiviews.ArtifactViewSet)
 
 # urls for core FIR components
-urlpatterns = patterns('',
-    url(r'^', include(router.urls)),
+urlpatterns = [
+    url(r'^api/', include(router.urls)),
     url(r'^api/token/', token_views.obtain_auth_token),
-	url(r'^tools/', include('incidents.custom_urls.tools', namespace='tools')),
+    url(r'^tools/', include('incidents.custom_urls.tools', namespace='tools')),
     url(r'^incidents/', include('incidents.urls', namespace='incidents')),
     url(r'^search/$', views.search, name='search'),
     url(r'^events/', include('incidents.custom_urls.events', namespace='events')),
