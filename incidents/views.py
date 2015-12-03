@@ -361,7 +361,7 @@ def handle_uploaded_file(file, description, incident):
 	f.description = description
 	f.file = file
 	f.incident = incident
-	f.file.name = re.sub('[^\w\.\-]', '_', f.file.name)
+	# f.file.name = re.sub('[^\w\.\-]', '_', f.file.name)
 	f.save()
 
 	hashes = f.get_hashes()
