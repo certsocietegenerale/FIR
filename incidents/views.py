@@ -24,6 +24,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import model_to_dict
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.staticfiles import finders
+from django.db.models import Count
 
 import os, tempfile, zipfile, re, mimetypes, datetime
 from dateutil.relativedelta import *
@@ -32,8 +33,10 @@ from bson import json_util
 
 import copy
 import math
+import collections
 
 from fir_artifacts import artifacts as libartifacts
+from fir_todos.models import TodoItem, TodoListTemplate
 
 cal = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
 
@@ -195,6 +198,22 @@ def new_event(request):
 			comment.opened_by = request.user
 			comment.date = i.date
 			comment.save()
+
+			# todo templating
+			q = (Q(category=i.category) & Q(detection=i.detection))
+			template = TodoListTemplate.objects.filter(q).all().filter(
+					concerned_business_lines__in=i.concerned_business_lines.all()).annotate(
+					num_tags=Count('concerned_business_lines')).filter(num_tags=len(i.concerned_business_lines.all()))
+			compare = lambda x, y: collections.Counter(x) == collections.Counter(y)
+			for t in template: #acknowledging the possibility of multiple templates matching
+				#Not quite talented enough with queryset, template may contain templates that have partial BL matches
+				#Use compare lambda to skip any such templates
+				if compare(t.concerned_business_lines.all(),i.concerned_business_lines.all()):
+					for task in t.todolist.all():
+						newtask = task
+						newtask.pk = None
+						newtask.incident = i
+						newtask.save()
 
 			# logging
 			log("Created incident", request.user, incident=i)

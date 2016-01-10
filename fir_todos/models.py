@@ -1,12 +1,12 @@
 from django.db import models
 from django import forms
 
-from incidents.models import Incident, IncidentCategory, BusinessLine
-
+from incidents.models import Incident, IncidentCategory, BusinessLine, Label
+#from incidents.models import STATUS_CHOICES, SEVERITY_CHOICES
 
 class TodoItem(models.Model):
 	description = models.CharField(max_length=140)
-	incident = models.ForeignKey(Incident)
+	incident = models.ForeignKey(Incident, blank=True, null=True)
 	category = models.ForeignKey(IncidentCategory)
 	business_line = models.ForeignKey(BusinessLine)
 	done = models.BooleanField(default=False)
@@ -24,3 +24,16 @@ class TodoItemForm(forms.ModelForm):
 		widgets = {
 			'description': forms.TextInput(attrs={'placeholder': 'Task'}),
 		}
+
+# Templating =================================================================
+
+class TodoListTemplate(models.Model):
+	name = models.CharField(max_length=100)
+	category = models.ForeignKey(IncidentCategory, null=True, blank=True)
+	concerned_business_lines = models.ManyToManyField(BusinessLine, null=True, blank=True)
+	detection = models.ForeignKey(Label, limit_choices_to={'group__name': 'detection'}, null=True, blank=True)
+	todolist = models.ManyToManyField(TodoItem, null=True, blank=True)
+
+
+	def __unicode__(self):
+		return self.name
