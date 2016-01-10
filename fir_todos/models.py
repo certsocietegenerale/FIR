@@ -2,7 +2,6 @@ from django.db import models
 from django import forms
 
 from incidents.models import Incident, IncidentCategory, BusinessLine, Label
-#from incidents.models import STATUS_CHOICES, SEVERITY_CHOICES
 
 class TodoItem(models.Model):
 	description = models.CharField(max_length=140)
