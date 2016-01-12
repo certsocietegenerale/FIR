@@ -3,6 +3,7 @@ import os
 import datetime
 import hashlib
 
+from django.dispatch import Signal
 from django.db import models
 from django.forms import ModelForm
 from django import forms
@@ -38,6 +39,17 @@ CONFIDENTIALITY_LEVEL = (
 	(2, "C2"),
 	(3, "C3"),
 	)
+
+
+# Special Model class that handles signals
+
+
+model_created = Signal(providing_args=['instance'])
+
+
+class FIRModel:
+	def done_creating(self):
+		model_created.send(sender=self.__class__, instance=self)
 
 # Profile ====================================================================
 
@@ -180,7 +192,7 @@ class IncidentCategory(models.Model):
 # Core models ================================================================
 
 
-class Incident(models.Model):
+class Incident(FIRModel, models.Model):
 	date = models.DateTimeField(default=datetime.datetime.now, blank=True)
 	is_starred = models.BooleanField(default=False)
 	subject = models.CharField(max_length=256)

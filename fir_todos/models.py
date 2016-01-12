@@ -6,8 +6,8 @@ from incidents.models import Incident, IncidentCategory, BusinessLine, Label
 class TodoItem(models.Model):
 	description = models.CharField(max_length=140)
 	incident = models.ForeignKey(Incident, blank=True, null=True)
-	category = models.ForeignKey(IncidentCategory)
-	business_line = models.ForeignKey(BusinessLine)
+	category = models.ForeignKey(IncidentCategory, blank=True, null=True)
+	business_line = models.ForeignKey(BusinessLine, blank=True, null=True)
 	done = models.BooleanField(default=False)
 	done_time = models.DateTimeField(null=True, blank=True)
 	deadline = models.DateField(null=True, blank=True)

@@ -194,26 +194,11 @@ def new_event(request):
 			i.save()
 			form.save_m2m()
 			i.refresh_main_business_lines()
+			i.done_creating()
 			comment.incident = i
 			comment.opened_by = request.user
 			comment.date = i.date
 			comment.save()
-
-			# todo templating
-			q = (Q(category=i.category) & Q(detection=i.detection))
-			template = TodoListTemplate.objects.filter(q).all().filter(
-					concerned_business_lines__in=i.concerned_business_lines.all()).annotate(
-					num_tags=Count('concerned_business_lines')).filter(num_tags=len(i.concerned_business_lines.all()))
-			compare = lambda x, y: collections.Counter(x) == collections.Counter(y)
-			for t in template: #acknowledging the possibility of multiple templates matching
-				#Not quite talented enough with queryset, template may contain templates that have partial BL matches
-				#Use compare lambda to skip any such templates
-				if compare(t.concerned_business_lines.all(),i.concerned_business_lines.all()):
-					for task in t.todolist.all():
-						newtask = task
-						newtask.pk = None
-						newtask.incident = i
-						newtask.save()
 
 			# logging
 			log("Created incident", request.user, incident=i)
