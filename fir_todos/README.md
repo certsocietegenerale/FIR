@@ -1,14 +1,6 @@
 ## Install
 
 Follow the generic plugin installation instructions in [the FIR wiki](https://github.com/certsocietegenerale/FIR/wiki/Plugins).
-Make sur the following line is included in the `urlpatterns` variable in `fir/urls.py`:
-
-```
-url(r'^todos/', include('fir_todos.urls', namespace='todos')),
-```
-
-The line should already be there if you've copied the `fir/urls.py.sample` to `fir/urls.py`.
-
 
 ## Usage
 
@@ -55,8 +47,3 @@ Example: if you have a template for *BL1* with a Todo item "Do Something" with n
 ## Development
 
 Everything you need to tweak the plugin is in the `fir_todos` directory: static files (JavaScript & CSS), templates, and actions (in `views.py`) Creating a function in `views.py` for editing tasks would be interesting. :wink: :wink:
-
-
-
-
-
