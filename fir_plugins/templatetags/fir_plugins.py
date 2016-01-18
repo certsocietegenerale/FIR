@@ -1,5 +1,6 @@
 from django import template
 from django.conf import settings
+from django.utils.html import mark_safe
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
 
@@ -17,11 +18,12 @@ def plugin_point(context, name):
 	templates = [template_path(app, name) for app in apps]
 
 	result = ""
+	context = context.flatten()
 	for template in templates:
 		try:
 			t = get_template(template)
-			result += t.render(context)
+			result += t.render(context, context['request'])
 		except TemplateDoesNotExist:
 			pass
 
-	return result
+	return mark_safe(result)

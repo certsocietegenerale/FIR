@@ -112,7 +112,7 @@ class File(models.Model):
 			hashes[algo] = m.hexdigest()
 		return hashes
 
-	hashes = models.ManyToManyField('Artifact', null=True, blank=True)
+	hashes = models.ManyToManyField('Artifact', blank=True)
 	description = models.CharField(max_length=256)
 	file = models.FileField(upload_to=upload_path)
 	incident = models.ForeignKey('Incident')
@@ -198,8 +198,8 @@ class Incident(FIRModel, models.Model):
 	subject = models.CharField(max_length=256)
 	description = models.TextField()
 	category = models.ForeignKey(IncidentCategory)
-	concerned_business_lines = models.ManyToManyField(BusinessLine, null=True, blank=True)
-	main_business_lines = models.ManyToManyField(BusinessLine, related_name='incidents_affecting_main', null=True, blank=True)
+	concerned_business_lines = models.ManyToManyField(BusinessLine, blank=True)
+	main_business_lines = models.ManyToManyField(BusinessLine, related_name='incidents_affecting_main', blank=True)
 	detection = models.ForeignKey(Label, limit_choices_to={'group__name': 'detection'}, related_name='detection_label')
 	severity = models.IntegerField(choices=SEVERITY_CHOICES)
 	is_incident = models.BooleanField(default=False)
@@ -394,7 +394,7 @@ class IncidentTemplate(models.Model):
 	subject = models.CharField(max_length=256, null=True, blank=True)
 	description = models.TextField(null=True, blank=True)
 	category = models.ForeignKey(IncidentCategory, null=True, blank=True)
-	concerned_business_lines = models.ManyToManyField(BusinessLine, null=True, blank=True)
+	concerned_business_lines = models.ManyToManyField(BusinessLine, blank=True)
 	detection = models.ForeignKey(Label, limit_choices_to={'group__name': 'detection'}, null=True, blank=True)
 	severity = models.IntegerField(choices=SEVERITY_CHOICES, null=True, blank=True)
 	is_incident = models.BooleanField(default=False)

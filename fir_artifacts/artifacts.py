@@ -87,7 +87,7 @@ class AbstractArtifact:
 			context['artifact_values'] = self._artifacts
 		context['event'] = self._event
 
-		return template.render(context)
+		return template.render(context.flatten(), request)
 
 	def correlated_count(self):
 		return len(self._correlated)

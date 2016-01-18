@@ -1,8 +1,8 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
 from incidents import views
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^yearly$', views.yearly_stats, name='yearly'),
     url(r'^data/yearly/incidents$', views.data_yearly_incidents, name='data_yearly_incidents'),
 
@@ -48,4 +48,4 @@ urlpatterns = patterns('',
     url(r'^data/attributes/basic/$', views.stats_attributes_basic, name='attributes_basic'),
     url(r'^data/attributes/table/$', views.stats_attributes_table, name='attributes_table'),
     url(r'^data/attributes/over_time/$', views.stats_attributes_over_time, name='attributes_over_time'),
-)
+]

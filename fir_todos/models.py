@@ -29,9 +29,9 @@ class TodoItemForm(forms.ModelForm):
 class TodoListTemplate(models.Model):
 	name = models.CharField(max_length=100)
 	category = models.ForeignKey(IncidentCategory, null=True, blank=True)
-	concerned_business_lines = models.ManyToManyField(BusinessLine, null=True, blank=True)
+	concerned_business_lines = models.ManyToManyField(BusinessLine, blank=True)
 	detection = models.ForeignKey(Label, limit_choices_to={'group__name': 'detection'}, null=True, blank=True)
-	todolist = models.ManyToManyField(TodoItem, null=True, blank=True)
+	todolist = models.ManyToManyField(TodoItem, blank=True)
 
 
 	def __unicode__(self):

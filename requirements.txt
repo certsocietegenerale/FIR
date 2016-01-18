@@ -1,4 +1,4 @@
-Django==1.7.6
+django>=1.9,<1.10
 argparse==1.2.1
 cssselect==0.9.1
 flup==1.0.2
@@ -9,4 +9,3 @@ python-dateutil==2.4.1
 pytz==2014.10
 six==1.9.0
 wsgiref==0.1.2
-

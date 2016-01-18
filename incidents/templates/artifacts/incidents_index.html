@@ -1,5 +1,4 @@
 {% extends "base.html" %}
-{% load url from future %}
 {% load i18n %}
 {% block header%}<h1>{% blocktrans with artifact_display=artifact.get_type_display artifact_value=artifact.value %}List of incidents including {{artifact_display}} {{artifact_value}}{% endblocktrans %}</h1>{%endblock%}
 {% block content %}
