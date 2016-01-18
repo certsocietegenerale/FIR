@@ -24,6 +24,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import model_to_dict
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.staticfiles import finders
+from django.db.models import Count
 
 import os, tempfile, zipfile, re, mimetypes, datetime
 from dateutil.relativedelta import *
@@ -32,8 +33,10 @@ from bson import json_util
 
 import copy
 import math
+import collections
 
 from fir_artifacts import artifacts as libartifacts
+from fir_todos.models import TodoListTemplate
 
 cal = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
 
@@ -191,6 +194,7 @@ def new_event(request):
 			i.save()
 			form.save_m2m()
 			i.refresh_main_business_lines()
+			i.done_creating()
 			comment.incident = i
 			comment.opened_by = request.user
 			comment.date = i.date
