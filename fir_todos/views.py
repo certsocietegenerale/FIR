@@ -72,7 +72,7 @@ def toggle_status(request, todo_id):
 @login_required
 @user_passes_test(is_incident_handler)
 def dashboard(request):
-	todos = TodoItem.objects.filter(business_line__name='CERT', done=False)
+	todos = TodoItem.objects.filter(business_line__name='CERT', incident__isnull=False, done=False)
 	todos = todos.select_related('incident', 'category')
 	todos = todos.order_by('-incident__date')
 
