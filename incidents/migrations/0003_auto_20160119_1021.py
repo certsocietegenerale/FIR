@@ -13,11 +13,6 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.AlterField(
-            model_name='file',
-            name='hashes',
-            field=models.ManyToManyField(blank=True, to='incidents.Artifact'),
-        ),
-        migrations.AlterField(
             model_name='incident',
             name='concerned_business_lines',
             field=models.ManyToManyField(blank=True, to='incidents.BusinessLine'),

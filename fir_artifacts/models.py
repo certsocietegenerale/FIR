@@ -37,7 +37,7 @@ class File(OneLinkableModel):
 			hashes[algo] = m.hexdigest()
 		return hashes
 
-	hashes = models.ManyToManyField('fir_artifacts.Artifact', null=True, blank=True)
+	hashes = models.ManyToManyField('fir_artifacts.Artifact', blank=True)
 	description = models.CharField(max_length=256)
 	file = models.FileField(upload_to=upload_path)
 	date = models.DateTimeField(auto_now_add=True)
