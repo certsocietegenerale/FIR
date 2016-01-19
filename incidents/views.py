@@ -2,20 +2,21 @@
 
 
 # Create your views here.
+from django.contrib.staticfiles import finders
 from django.template.response import TemplateResponse
-from incidents.models import IncidentCategory, Incident, Comments, BusinessLine, Label, Artifact, File, Log, BaleCategory, Attribute, ValidAttribute, IncidentTemplate, Profile
+from incidents.models import IncidentCategory, Incident, Comments, BusinessLine, Label, Log, BaleCategory, \
+    Attribute, ValidAttribute, IncidentTemplate, Profile
 from incidents.models import IncidentForm, CommentForm
-from fir_artifacts.hash import Hash
 
-from django.conf import settings
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core import serializers
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.core.servers.basehttp import FileWrapper
+from django.core.files import File as FileWrapper
+
 from django.core.urlresolvers import reverse
 from django.db.models import Q, Max
-from django.http import HttpResponse, HttpResponseServerError, Http404
+from django.http import HttpResponse, HttpResponseServerError
 from django.shortcuts import get_object_or_404, render, redirect
 from django.template import RequestContext
 from json import dumps
@@ -23,17 +24,19 @@ from django.template import Template
 from django.core.exceptions import ObjectDoesNotExist
 from django.forms.models import model_to_dict
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.staticfiles import finders
+from django.conf import settings
 
-import os, tempfile, zipfile, re, mimetypes, datetime
+import re, datetime
 from dateutil.relativedelta import *
 from dateutil.parser import parse
 from bson import json_util
 
 import copy
 import math
+import collections
 
 from fir_artifacts import artifacts as libartifacts
+from fir_todos.models import TodoListTemplate
 
 cal = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
 
@@ -149,7 +152,7 @@ def details(request, incident_id):
 
 	form = CommentForm()
 
-	(artifacts, artifacts_count, correlated_count) = libartifacts.all_for_event(i)
+	(artifacts, artifacts_count, correlated_count) = libartifacts.all_for_object(i)
 
 	valid_attributes = i.category.validattribute_set.all()
 	attributes = i.attribute_set.all()
@@ -191,6 +194,7 @@ def new_event(request):
 			i.save()
 			form.save_m2m()
 			i.refresh_main_business_lines()
+			i.done_creating()
 			comment.incident = i
 			comment.opened_by = request.user
 			comment.date = i.date
@@ -333,103 +337,6 @@ def change_status(request, incident_id, status):
 	c.save()
 
 	return redirect('dashboard:main')
-
-
-# file management ===============================================================
-
-
-@login_required
-@user_passes_test(is_incident_handler)
-def upload_file(request, incident_id):
-
-	if request.method == 'POST':
-		incident = get_object_or_404(Incident, pk=incident_id)
-		descriptions = request.POST.getlist('description')
-		files = request.FILES.getlist('file')
-
-		if len(descriptions) == len(files):  # consider this as a valid upload form?
-			for i, file in enumerate(files):
-				handle_uploaded_file(file, descriptions[i], incident)
-				log("Uploaded file %s" % file.name[:80], request.user, incident=incident)
-
-	return redirect("incidents:details", incident_id=incident_id)
-
-
-def handle_uploaded_file(file, description, incident):
-
-	f = File()
-	f.description = description
-	f.file = file
-	f.incident = incident
-	f.file.name = re.sub('[^\w\.\-]', '_', f.file.name)
-	f.save()
-
-	hashes = f.get_hashes()
-	for h in hashes:
-		print "Got %s hash: %s " % (h, hashes[h])
-		try:
-			a = Artifact.objects.get(value=hashes[h])
-			a.save()
-		except Exception:
-			a = Artifact()
-			a.type = Hash.key
-			a.value = hashes[h]
-			a.save()
-
-		a.incidents.add(incident)
-		f.hashes.add(a)
-	f.save()
-
-
-@login_required
-@user_passes_test(is_incident_handler)
-def download(request, incident_id, filename):
-	f = get_object_or_404(File, incident_id=incident_id, file="%s/%s" % (incident_id, filename))
-
-	wrapper = FileWrapper(f.file)
-	content_type = mimetypes.guess_type(f.file.name)
-	response = HttpResponse(wrapper, content_type=content_type)
-	response['Content-Disposition'] = 'attachment; filename=%s' % (f.getfilename())
-	response['Content-Length'] = os.path.getsize(str(f.file.file))
-
-	return response
-
-
-@login_required
-@user_passes_test(is_incident_handler)
-def download_archive(request, incident_id):
-	i = get_object_or_404(Incident, pk=incident_id)
-	if i.file_set.count() == 0:
-		raise Http404
-	temp = tempfile.TemporaryFile()
-	archive = zipfile.ZipFile(temp, 'w', zipfile.ZIP_DEFLATED)
-	path = settings.MEDIA_ROOT + "/%s/" % incident_id
-
-	for filename in os.listdir(path):
-		archive.write(path+filename, os.path.basename(filename))
-	archive.close()
-	wrapper = FileWrapper(temp)
-	response = HttpResponse(wrapper, content_type='application/zip')
-	response['Content-Disposition'] = 'attachment; filename=%s-archive.zip' % (i.subject)
-	response['Content-Length'] = temp.tell()
-	temp.seek(0)
-	return response
-
-	pass
-
-
-@login_required
-@user_passes_test(is_incident_handler)
-def remove_file(request, incident_id, file_id):
-	if request.method == "POST":
-		f = get_object_or_404(File, pk=file_id, incident_id=incident_id)
-		filename = f.file.name
-		f.file.delete()
-		f.delete()
-		log("Deleted file %s" % filename[:70], request.user, incident=Incident.objects.get(id=incident_id))
-		return redirect('incidents:details', incident_id=f.incident_id)
-	else:
-		return redirect('incidents:details', incident_id=f.incident_id)
 
 
 # attributes ================================================================
@@ -742,36 +649,6 @@ def comment(request, incident_id):
 			return HttpResponseServerError(dumps(ret), content_type="application/json")
 
 	return redirect('incidents:details', incident_id=incident_id)
-
-
-# Artifacts ===================================================================
-
-# incidents containing a given artifact
-@login_required
-@user_passes_test(is_incident_handler)
-def artifacts_incidents(request, artifact_id):
-	a = get_object_or_404(Artifact, pk=artifact_id)
-	incidents = a.incidents.all()
-	return render(request, 'artifacts/incidents_index.html', {'incident_list': incidents, 'artifact': a,
-																'incident_show_id': settings.INCIDENT_SHOW_ID})
-
-
-@login_required
-@user_passes_test(is_incident_handler)
-def detach_artifact(request, artifact_id, incident_id):
-	a = get_object_or_404(Artifact, pk=artifact_id)
-	i = get_object_or_404(Incident, pk=incident_id)
-	a.incidents.remove(i)
-	if a.incidents.count() == 0:
-		a.delete()
-	return redirect('incidents:details', incident_id=incident_id)
-
-
-# incidents related to another incident by its artifacts
-@login_required
-@user_passes_test(is_incident_handler)
-def related_incidents(request, incident_id):
-	pass
 
 
 # User ==========================================================================

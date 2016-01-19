@@ -3,6 +3,7 @@ import os
 import datetime
 import hashlib
 
+from django.dispatch import Signal
 from django.db import models
 from django.forms import ModelForm
 from django import forms
@@ -10,6 +11,9 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
 from fir_artifacts import artifacts
+from fir_artifacts.models import Artifact, File
+from fir_plugins.models import link_to
+
 
 # for token Generation
 from django.conf import settings
@@ -44,6 +48,17 @@ CONFIDENTIALITY_LEVEL = (
 	(2, "C2"),
 	(3, "C3"),
 	)
+
+
+# Special Model class that handles signals
+
+
+model_created = Signal(providing_args=['instance'])
+
+
+class FIRModel:
+	def done_creating(self):
+		model_created.send(sender=self.__class__, instance=self)
 
 # Profile ====================================================================
 
@@ -95,29 +110,6 @@ class Label(models.Model):
 
 	def __unicode__(self):
 		return "%s" % (self.name)
-
-def upload_path(instance, filename):
-	return "%s/%s" % (instance.incident.id, filename)
-
-class File(models.Model):
-
-	def getfilename(self):
-		return os.path.basename(self.file.name)
-
-	def get_hashes(self):
-		hashes = dict((k, None) for k in ['md5', 'sha1', 'sha256'])
-		content = self.file.read()
-		for algo in hashes:
-			m = hashlib.new(algo)
-			m.update(content)
-			hashes[algo] = m.hexdigest()
-		return hashes
-
-	hashes = models.ManyToManyField('Artifact', null=True, blank=True)
-	description = models.CharField(max_length=256)
-	file = models.FileField(upload_to=upload_path)
-	incident = models.ForeignKey('Incident')
-	date = models.DateTimeField(auto_now_add=True)
 
 
 class BusinessLine(models.Model):
@@ -192,15 +184,16 @@ class IncidentCategory(models.Model):
 
 # Core models ================================================================
 
-
-class Incident(models.Model):
+@link_to(File)
+@link_to(Artifact)
+class Incident(FIRModel, models.Model):
 	date = models.DateTimeField(default=datetime.datetime.now, blank=True)
 	is_starred = models.BooleanField(default=False)
 	subject = models.CharField(max_length=256)
 	description = models.TextField()
 	category = models.ForeignKey(IncidentCategory)
-	concerned_business_lines = models.ManyToManyField(BusinessLine, null=True, blank=True)
-	main_business_lines = models.ManyToManyField(BusinessLine, related_name='incidents_affecting_main', null=True, blank=True)
+	concerned_business_lines = models.ManyToManyField(BusinessLine, blank=True)
+	main_business_lines = models.ManyToManyField(BusinessLine, related_name='incidents_affecting_main', blank=True)
 	detection = models.ForeignKey(Label, limit_choices_to={'group__name': 'detection'}, related_name='detection_label')
 	severity = models.IntegerField(choices=SEVERITY_CHOICES)
 	is_incident = models.BooleanField(default=False)
@@ -317,18 +310,6 @@ class Comments(models.Model):
 		return u"Comment for incident %s" % self.incident.id
 
 
-class Artifact(models.Model):
-	type = models.CharField(max_length=20)
-	value = models.CharField(max_length=200)
-	incidents = models.ManyToManyField(Incident)
-
-	def __unicode__(self):
-		display = self.value
-		if self.incidents.count() > 1:
-			display += " (%s)" % self.incidents.count()
-		return display
-
-
 class Attribute(models.Model):
 	name = models.CharField(max_length=50)
 	value = models.CharField(max_length=200)
@@ -366,7 +347,7 @@ class IncidentForm(ModelForm):
 
 	class Meta:
 		model = Incident
-		exclude = ('opened_by', 'main_business_lines', 'is_starred')
+		exclude = ('opened_by', 'main_business_lines', 'is_starred', 'artifacts')
 
 
 class CommentForm(ModelForm):
@@ -395,7 +376,7 @@ class IncidentTemplate(models.Model):
 	subject = models.CharField(max_length=256, null=True, blank=True)
 	description = models.TextField(null=True, blank=True)
 	category = models.ForeignKey(IncidentCategory, null=True, blank=True)
-	concerned_business_lines = models.ManyToManyField(BusinessLine, null=True, blank=True)
+	concerned_business_lines = models.ManyToManyField(BusinessLine, blank=True)
 	detection = models.ForeignKey(Label, limit_choices_to={'group__name': 'detection'}, null=True, blank=True)
 	severity = models.IntegerField(choices=SEVERITY_CHOICES, null=True, blank=True)
 	is_incident = models.BooleanField(default=False)

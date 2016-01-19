@@ -1,13 +1,6 @@
 ## Install
 
 Follow the generic plugin installation instructions in [the FIR wiki](https://github.com/certsocietegenerale/FIR/wiki/Plugins).
-Make sure the following line is included in the `urlpatterns` variable in `fir/urls.py`:
-
-```
-url(r'^alerting/', include('fir_alerting.urls', namespace='alerting')),
-```
-
-The line should already be there if you've copied the `fir/urls.py.sample` to `fir/urls.py`.
 
 You should also make sure to configure your FIR instance so that it is able to send emails (see `EMAIL_HOST`, `EMAIL_PORT` and `REPLY_TO` in the configuration file).
 

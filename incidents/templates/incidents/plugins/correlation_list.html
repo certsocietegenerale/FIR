@@ -1,0 +1,41 @@
+{% load i18n %}
+{% block content %}
+    {% with incident_list=correlations.incidents.objects %}
+        <h3>{% trans "Incidents" %}</h3>
+	{% if incident_list %}
+	<table class="table table-hover">
+
+			<thead>
+				<tr>
+					<th>{% trans "Date" %}</th>
+					<th>{% trans "Subject" %}</th>
+					<th>{% trans "Category" %}</th>
+					<th>{% trans "Business Lines" %}</th>
+					<th>{% trans "Status" %}</th>
+					<th>{% trans "Detection" %}</th>
+					<th>{% trans "Actor" %}</th>
+					<th>{% trans "Plan" %}</th>
+					<th>{% trans "Edit" %}</th>
+
+				</tr>
+			</thead>
+		{% for incident in incident_list %}
+		<tr>
+			<td>{{ incident.date|date:"SHORT_DATE_FORMAT" }}</td>
+			<td><a href="{% url 'incidents:details' incident.id %}">{{ incident.subject }}</a></td>
+			<td>{{ incident.category }}</td>
+			<td>{{ incident.get_business_lines_names }}</td>
+			<td>{{ incident.get_status_display }}</td>
+			<td>{{ incident.detection }}</td>
+			<td>{{ incident.actor }}</td>
+			<td>{{ incident.plan }}</td>
+			<td><a href="{% url 'incidents:edit' incident.id %}"><span class='glyphicon glyphicon-pencil'></span></a></td>
+		</tr>
+		{% endfor %}
+
+	</table>
+	{% else %}
+	<p>{% trans "No incidents found. Lucky you!" %}</p>
+	{% endif %}
+	{% endwith %}
+{% endblock %}

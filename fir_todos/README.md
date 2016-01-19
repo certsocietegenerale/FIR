@@ -1,14 +1,6 @@
 ## Install
 
 Follow the generic plugin installation instructions in [the FIR wiki](https://github.com/certsocietegenerale/FIR/wiki/Plugins).
-Make sur the following line is included in the `urlpatterns` variable in `fir/urls.py`:
-
-```
-url(r'^todos/', include('fir_todos.urls', namespace='todos')),
-```
-
-The line should already be there if you've copied the `fir/urls.py.sample` to `fir/urls.py`.
-
 
 ## Usage
 
@@ -24,12 +16,34 @@ Using the `fir_todos` plugin is pretty straightforward.
 
 Todo lists will show up in two places: on the incident page, and on the *Dashboard* page, under the *Tasks* tab. Todos appearing on the dashboard are those attributed to the `CERT` business line.
 
+### Todo Templates
+
+You can use Todo Templates in order to automatically create Todos when there is a new incident. You can create as many templates as you want in the *Admin* panel.
+
+Each template can specify:
+
+* A category
+* A detection
+* Concerned business lines
+
+The template will be activated for each incident matching all the criteria **that are defined (not null)**.
+
+Note that *Concerned business line* is a little bit special: you only need one business line in order to match the template, and parents are considered. This means that if you create a template with *Concerned business lines* set to *BL1* and *BL2*, the following will be true:
+
+* An incident for *BL1* will match
+* An incident for *BL2* will match
+* An incident for *BL1* and *BL2* will match
+* An incident for *BL1 > Sub BL1* will match
+
+#### Todo Items for your templates
+
+When creating Todo Items for your templates, be aware that the *business line* is optionnal. When this field is not specified, a todo item will be created for each incident *business line* that matched the template.
+
+Example: if you have a template for *BL1* with a Todo item "Do Something" with no *business line* specified, and you create an incident for *BL1 > Sub BL1*, *BL1 > Sub BL2* and *BL2*, you will have the following todos created:
+
+* Do Something (BL1 > Sub BL1)
+* Do Something (BL1 > Sub BL2)
 
 ## Development
 
 Everything you need to tweak the plugin is in the `fir_todos` directory: static files (JavaScript & CSS), templates, and actions (in `views.py`) Creating a function in `views.py` for editing tasks would be interesting. :wink: :wink:
-
-
-
-
-
