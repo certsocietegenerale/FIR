@@ -2,7 +2,6 @@
 /fir/config/prodendev.py
 /fir/config/dev.py
 /fir/config/installed_apps.txt
-fir-env/
 
 # Dev
 db.sqlite3
