@@ -8,7 +8,7 @@ from django.conf import settings
 from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.shortcuts import redirect, get_object_or_404
-from django.core.servers.basehttp import FileWrapper
+from django.core.files import File as FileWrapper
 
 from fir_artifacts import Hash
 from fir_artifacts.models import File, Artifact
@@ -35,7 +35,6 @@ def handle_uploaded_file(file, description, obj):
 	f.description = description
 	f.file = file
 	f.content_object = obj
-	f.file.name = re.sub('[^\w\.\-]', '_', f.file.name)
 	f.save()
 
 	hashes = f.get_hashes()
@@ -72,7 +71,7 @@ def do_download_archive(request, content_type, object_id):
 	obj = get_object_or_404(object_type.model_class(), pk=object_id)
 	if obj.file_set.count() == 0:
 		raise Http404
-	temp = BytesIO() #tempfile.TemporaryFile()
+	temp = BytesIO()
 	with zipfile.ZipFile(temp, 'w', zipfile.ZIP_DEFLATED) as archive:
 		media_root = settings.MEDIA_ROOT
 		for file in obj.file_set.all():

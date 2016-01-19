@@ -13,7 +13,6 @@ urlpatterns = [
     url(r'^events/', include('incidents.custom_urls.events', namespace='events')),
     url(r'^login/', views.user_login, name='login'),            # have a "main module"
     url(r'^logout/', views.user_logout, name='logout'),         # main module
-    url(r'^artifacts/', include('incidents.custom_urls.artifacts', namespace='artifacts')),
     url(r'^stats/', include('incidents.custom_urls.stats', namespace='stats')),
     url(r'^ajax/', include('incidents.custom_urls.ajax', namespace='ajax')),
     url(r'^user/', include('incidents.custom_urls.user', namespace='user')),
