@@ -1,0 +1,78 @@
+{% load i18n %}
+{% load fir_artifacts %}
+
+<div class='widget {% if event.file_set.count == 0 %}hidden{% endif%}' id='details-files'>
+<h4 class='widget'>{%  trans "Related files" %}</h4>
+    {% if event.file_set.count > 0 %}
+        <table class='table table-condensed files fixed'>
+            <thead>
+                <tr>
+                    <th class="date-column">{%  trans "Date" %}</th>
+                    <th>{%  trans "File" %}</th>
+                    <th>{%  trans "Description" %}</th>
+                    <th class="icon-column"></th>
+                </tr>
+            </thead>
+            {% for file in event.file_set.all %}
+                <tr>
+                    <td>{{file.date}}</td>
+                    <td>
+                        <a href="{% url 'artifacts:download_file' file.id %}">
+                            {{ file.getfilename }}
+                        </a>
+                    </td>
+                    <td>{{ file.description }}</td>
+                    <td class="icon-column">
+                        <form id='details-file-delete' action="{% url 'artifacts:remove_file' file.id %}" method='POST'>
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-link btn-xs icon">
+                                <i class="glyphicon glyphicon-trash"></i>
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
+
+    <form id='upload_form' enctype="multipart/form-data" action="{% url 'artifacts:upload_file' event|content_type event.id %}" method='POST'>
+        {% csrf_token %}
+        <div class='upload'>
+            <span>{%  trans "Dropzone" %}</span>
+            <input type="file" name="file" id="id_file" multiple />
+        </div>
+        <table id='filetable' class='table table-condensed'></table>
+    </form>
+    <a class="btn btn-sm btn-default" href="#" onclick='javascript:$("#id_file").click();'>
+        <i class="glyphicon glyphicon-file"></i> {%  trans "Browse..." %}
+    </a>
+    <a class="btn btn-sm btn-default" href="#" onclick='javascript:$("#upload_form").submit();'>
+        <i class="glyphicon glyphicon-upload"></i> {%  trans "Upload files" %}
+    </a>
+    {% if event.file_set.count > 0 %}
+        <a class="btn btn-sm btn-default" href="{% url 'artifacts:download_archive' event|content_type event.id %}">
+            <i class="glyphicon glyphicon-download-alt"></i> {%  trans "Download archive" %}
+        </a>
+    {% endif %}
+</div>
+
+
+{% if correlated_count > 0 %}
+	<div class="widget">
+		<h4 class='widget'>{%  trans "Correlated Artifacts" %}</h4>
+
+		<div class='' id='sidebar_artifacts'>
+			<table class='table table-condensed artifacts-table artifacts fixed'>
+    <thead>
+        <tr>
+            <th class='head'>{%  trans "Type" %}</th>
+            <th>{%  trans "Values" %}</th>
+        </tr>
+    </thead>
+    {% for artifact_type in artifacts %}
+        {{ artifact_type|display_correlated_artifact:request }}
+    {% endfor %}
+</table>
+		</div>
+	</div>
+{% endif %}

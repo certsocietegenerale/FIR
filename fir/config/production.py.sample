@@ -32,11 +32,11 @@ SECRET_KEY = 'CHANGE_DUMMY_KEY_PLEASE'
 ################################################################
 
 DEBUG = False
-TEMPLATE_DEBUG = DEBUG
+TEMPLATES[0]['OPTIONS']['debug'] = DEBUG
 
 # List of callables that know how to import templates from various sources.
 # In production, we want to cache templates in memory
-TEMPLATE_LOADERS = (
+TEMPLATES[0]['OPTIONS']['loaders'] = (
     ('django.template.loaders.cached.Loader', (
         'django.template.loaders.filesystem.Loader',
         'django.template.loaders.app_directories.Loader',

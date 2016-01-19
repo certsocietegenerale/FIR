@@ -36,8 +36,7 @@ USER fir
 ENV HOME /home/fir
 ENV USER fir
 WORKDIR /home/fir
-RUN ./manage.py syncdb --noinput && \
-    ./manage.py migrate && \
+RUN ./manage.py migrate && \
     ./manage.py loaddata incidents/fixtures/seed_data.json && \
     ./manage.py loaddata incidents/fixtures/dev_users.json && \
     cp fir/urls.py.sample fir/urls.py

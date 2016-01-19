@@ -1,14 +1,6 @@
 ## Install
 
 Follow the generic plugin installation instructions in [the FIR wiki](https://github.com/certsocietegenerale/FIR/wiki/Plugins).
-Make sur the following line is included in the `urlpatterns` variable in `fir/urls.py`:
-
-```
-url(r'^nuggets/', include('fir_nuggets.urls', namespace='nuggets')),
-```
-
-The line should already be there if you've copied the `fir/urls.py.sample` to `fir/urls.py`.
-
 
 ## Usage
 
@@ -32,8 +24,3 @@ A nugget is basically an artifact or anything noteworthy that could be found dur
 Everything you need to tweak the plugin is in the `fir_nuggets` directory: static files (JavaScript & CSS), templates, and actions (in `views.py`)
 
 TODO: Attach file to nuggets?
-
-
-
-
-
