@@ -39,7 +39,6 @@ def handle_uploaded_file(file, description, obj):
 
 	hashes = f.get_hashes()
 	for h in hashes:
-		print "Got %s hash: %s " % (h, hashes[h])
 		try:
 			a = Artifact.objects.get(value=hashes[h])
 			a.save()
@@ -77,7 +76,6 @@ def do_download_archive(request, content_type, object_id):
 		for file in obj.file_set.all():
 			path = os.path.join(media_root, file.file.path)
 			archive.write(path, os.path.basename(path))
-		archive.printdir()
 	file_size = temp.tell()
 	temp.seek(0)
 	wrapper = FileWrapper(temp)
