@@ -63,7 +63,7 @@ def get_template(request, incident_id, template_type, bl=None):
 				break
 
 	artifacts = {}
-	for a in i.artifact_set.all():
+	for a in i.artifacts.all():
 		if a.type not in artifacts:
 			artifacts[a.type] = []
 		artifacts[a.type].append(a.value.replace('http://', "hxxp://").replace('https://', 'hxxps://'))

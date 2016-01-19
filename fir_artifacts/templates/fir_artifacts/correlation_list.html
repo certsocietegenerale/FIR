@@ -1,0 +1,8 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load fir_plugins %}
+{% block header%}<h1>{% blocktrans with artifact_display=artifact.get_type_display artifact_value=artifact.value %}List of correlations including {{artifact_display}} {{artifact_value}}{% endblocktrans %}</h1>{%endblock%}
+{% block content %}
+	{% plugin_point 'correlation_list' %}
+	<a class="btn" href="javascript:history.back()">{% trans "Back" %}</a>
+{% endblock %}

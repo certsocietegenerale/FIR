@@ -1,16 +1,17 @@
+{% load fir_plugins %}
 {% if artifact_values|length > 0 %}
 	<tr>
 		<td class='head'>{{ artifact_name }}</td>
 		<td>
 			{% for a in artifact_values %}
 				<a
-					{% if a.incidents__count > 1 %} class='multiple' {% endif %}
-					href="{% url 'artifacts:incidents' a.id %}"
+					{% if a.relations.count > 1 %} class='multiple' {% endif %}
+					href="{% url 'artifacts:correlations' a.id %}"
 				>
 				{{ a.value }}
 				</a>
-				{% if a.incidents__count > 1 %} ({{ a.incidents__count }}) {% endif %}
-				<form class='icon' action="{% url 'artifacts:detach' a.id event.id %}" method='POST'>
+				{% if a.relations.count > 1 %} ({{ a.relations.count }}) {% endif %}
+				<form class='icon' action="{% url 'artifacts:detach' a.id event|relation_name event.id %}" method='POST'>
 					{% csrf_token %}
 					<button type="submit" class='btn btn-xs btn-link icon'>
 						<i class='glyphicon glyphicon-remove'></i>

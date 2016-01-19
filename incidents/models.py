@@ -11,6 +11,9 @@ from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
 from fir_artifacts import artifacts
+from fir_artifacts.models import Artifact, File
+from fir_plugins.models import link_to
+
 
 STATUS_CHOICES = (
 	("O", _("Open")),
@@ -95,29 +98,6 @@ class Label(models.Model):
 	def __unicode__(self):
 		return "%s" % (self.name)
 
-def upload_path(instance, filename):
-	return "%s/%s" % (instance.incident.id, filename)
-
-class File(models.Model):
-
-	def getfilename(self):
-		return os.path.basename(self.file.name)
-
-	def get_hashes(self):
-		hashes = dict((k, None) for k in ['md5', 'sha1', 'sha256'])
-		content = self.file.read()
-		for algo in hashes:
-			m = hashlib.new(algo)
-			m.update(content)
-			hashes[algo] = m.hexdigest()
-		return hashes
-
-	hashes = models.ManyToManyField('Artifact', blank=True)
-	description = models.CharField(max_length=256)
-	file = models.FileField(upload_to=upload_path)
-	incident = models.ForeignKey('Incident')
-	date = models.DateTimeField(auto_now_add=True)
-
 
 class BusinessLine(models.Model):
 	name = models.CharField(max_length=100)
@@ -191,7 +171,8 @@ class IncidentCategory(models.Model):
 
 # Core models ================================================================
 
-
+@link_to(File)
+@link_to(Artifact)
 class Incident(FIRModel, models.Model):
 	date = models.DateTimeField(default=datetime.datetime.now, blank=True)
 	is_starred = models.BooleanField(default=False)
@@ -316,18 +297,6 @@ class Comments(models.Model):
 		return u"Comment for incident %s" % self.incident.id
 
 
-class Artifact(models.Model):
-	type = models.CharField(max_length=20)
-	value = models.CharField(max_length=200)
-	incidents = models.ManyToManyField(Incident)
-
-	def __unicode__(self):
-		display = self.value
-		if self.incidents.count() > 1:
-			display += " (%s)" % self.incidents.count()
-		return display
-
-
 class Attribute(models.Model):
 	name = models.CharField(max_length=50)
 	value = models.CharField(max_length=200)
@@ -365,7 +334,7 @@ class IncidentForm(ModelForm):
 
 	class Meta:
 		model = Incident
-		exclude = ('opened_by', 'main_business_lines', 'is_starred')
+		exclude = ('opened_by', 'main_business_lines', 'is_starred', 'artifacts')
 
 
 class CommentForm(ModelForm):
