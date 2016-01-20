@@ -3,6 +3,9 @@
 # Production settings should go to settings/production.py
 from fir.config.base import *
 
+# To include REST Framework Token-based Auth
+from fir_api.api_settings import *
+
 # DEBUG to True to have helpful error pages
 DEBUG = True
 TEMPLATES[0]['OPTIONS']['debug'] = True

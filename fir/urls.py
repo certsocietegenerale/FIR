@@ -19,6 +19,8 @@ urlpatterns = [
     url(r'^dashboard/', include('incidents.custom_urls.dashboard', namespace='dashboard')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', views.dashboard_main),
+	# api URLs
+	url(r'^api/', include('fir_api.urls')),
 ]
 
 for app in INSTALLED_APPS:
@@ -26,4 +28,4 @@ for app in INSTALLED_APPS:
         app_name = app[4:]
         app_urls = '{}.urls'.format(app)
         if find_loader(app_urls):
-            urlpatterns.append(url('^{}/'.format(app_name), include(app_urls, namespace=app_name)))
+        	urlpatterns.append(url('^{}/'.format(app_name), include(app_urls, namespace=app_name)))
