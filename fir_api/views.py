@@ -2,8 +2,9 @@
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
-from django.contrib.auth.models import User, Group
+from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework import viewsets
 
 from fir_api.serializers import UserSerializer, IncidentSerializer, ArtifactSerializer
@@ -36,9 +37,11 @@ class IncidentViewSet(viewsets.ModelViewSet):
         instance.refresh_main_business_lines()
 
 
-class ArtifactViewSet(viewsets.ModelViewSet):
+class ArtifactViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = Artifact.objects.all()
     serializer_class = ArtifactSerializer
+    lookup_field = 'value'
+    lookup_value_regex = '.+'
 
 
 # Token Generation ===========================================================

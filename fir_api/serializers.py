@@ -15,14 +15,17 @@ class UserSerializer(serializers.ModelSerializer):
 
 # FIR Incident model
 class IncidentSerializer(serializers.ModelSerializer):
+    artifacts = serializers.SlugRelatedField(many=True, read_only=True, slug_field='value')
+
     class Meta:
         model = Incident
-        fields = ('id', 'date', 'is_starred', 'subject', 'description', 'concerned_business_lines', 'main_business_lines', 'severity', 'category', 'detection', 'opened_by', 'is_incident', 'status')
+        fields = ('id', 'date', 'is_starred', 'subject', 'description', 'concerned_business_lines', 'main_business_lines', 'severity', 'category', 'detection', 'opened_by', 'is_incident', 'status', 'artifacts')
         read_only_fields = ('id', 'opened_by', 'main_business_lines')
 
 
 # FIR Artifact model
 class ArtifactSerializer(serializers.ModelSerializer):
+    incidents = serializers.HyperlinkedRelatedField(many=True, read_only=True, view_name='api:incident-detail')
     class Meta:
         model = Artifact
         fields = ('id', 'type', 'value', 'incidents')

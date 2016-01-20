@@ -6,7 +6,7 @@ from fir_api import views
 
 # automatic URL routing for API
 # include login URLs for the browsable API.
-router = routers.DefaultRouter()
+router = routers.DefaultRouter(trailing_slash=False)
 
 router.register(r'users', views.UserViewSet)
 router.register(r'incidents', views.IncidentViewSet)
