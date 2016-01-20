@@ -3,6 +3,7 @@ import os
 from django.db import models
 from fir_plugins.models import ManyLinkableModel, OneLinkableModel
 
+
 class ArtifactBlacklistItem(models.Model):
 	type = models.CharField(max_length=20)
 	value = models.CharField(max_length=200)

@@ -1,4 +1,6 @@
 import os
+from pkgutil import find_loader
+from importlib import import_module
 
 BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
@@ -80,6 +82,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'incidents',
     'django.contrib.admin',
+    'rest_framework',
+    'rest_framework.authtoken',
     'fir_plugins',
     'fir_artifacts'
 )
@@ -92,6 +96,9 @@ if os.path.exists(apps_file):
             line = line.strip()
             if line != "":
                 apps.append(line)
+                settings = '{}.settings'.format(line)
+                if find_loader(settings):
+                    globals().update(import_module(settings).__dict__)
 
     INSTALLED_APPS = tuple(apps)
 

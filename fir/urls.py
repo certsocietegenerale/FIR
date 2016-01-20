@@ -5,7 +5,7 @@ from django.contrib import admin
 from fir.config.base import INSTALLED_APPS
 from incidents import views
 
-
+# urls for core FIR components
 urlpatterns = [
     url(r'^tools/', include('incidents.custom_urls.tools', namespace='tools')),
     url(r'^incidents/', include('incidents.urls', namespace='incidents')),

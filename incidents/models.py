@@ -3,7 +3,8 @@ import os
 import datetime
 import hashlib
 
-from django.dispatch import Signal
+from django.db.models.signals import post_save
+from django.dispatch import Signal, receiver
 from django.db import models
 from django.forms import ModelForm
 from django import forms
@@ -13,6 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 from fir_artifacts import artifacts
 from fir_artifacts.models import Artifact, File
 from fir_plugins.models import link_to
+
 
 
 STATUS_CHOICES = (
@@ -296,6 +298,46 @@ class Comments(models.Model):
 	def __unicode__(self):
 		return u"Comment for incident %s" % self.incident.id
 
+	@classmethod
+	def create_diff_comment(cls, incident, data, user):
+		comments = ''
+		for key in data:
+			# skip the following fields from diff
+			if key in ['description', 'concerned_business_lines', 'main_business_lines']:
+				continue
+
+			new = data[key]
+			old = getattr(incident, key)
+
+			if new != old:
+				label = key
+
+				if key == 'is_major':
+					label = 'major'
+				if key == 'concerned_business_lines':
+					label = "business lines"
+				if key == 'main_business_line':
+					label = "main business line"
+				if key == 'is_incident':
+					label = 'incident'
+
+				if old == "O": old = 'Open'
+				if old == "C": old = 'Closed'
+				if old == "B": old = 'Blocked'
+				if new == "O": new = 'Open'
+				if new == "C": new = 'Closed'
+				if new == "B": new = 'Blocked'
+
+				comments += u'Changed "%s" from "%s" to "%s"; ' % (label, old, new)
+
+		if comments:
+			Comments.objects.create(
+				comment=comments,
+				action=Label.objects.get(name='Info'),
+				incident=incident,
+				opened_by=user
+			)
+
 
 class Attribute(models.Model):
 	name = models.CharField(max_length=50)
@@ -372,3 +414,38 @@ class IncidentTemplate(models.Model):
 
 	def __unicode__(self):
 		return self.name
+
+###
+### Signal receivers
+###
+
+
+@receiver(post_save, sender=Incident)
+def refresh_incident(sender, instance, **kwargs):
+	instance.refresh_artifacts(instance.description)
+
+# Automatically create comments
+
+
+@receiver(post_save, sender=Incident)
+def comment_new_incident(sender, instance, created, **kwargs):
+	if created:
+		Comments.objects.create(
+			comment='Incident opened',
+			action=Label.objects.get(name='Opened'),
+			incident=instance,
+			opened_by=instance.opened_by,
+			date=instance.date,
+		)
+
+# Automatically log actions
+
+
+@receiver(post_save, sender=Incident)
+def log_new_incident(sender, instance, created, **kwargs):
+	if created:
+		what = 'Created incident'
+	else:
+		what = 'Edit incident'
+
+	Log.objects.create(who=instance.opened_by, what=what, incident=instance)
