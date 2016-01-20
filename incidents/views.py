@@ -187,23 +187,11 @@ def new_event(request):
 			if i.is_major:
 				i.is_incident = True
 
-			comment = Comments()
-			comment.comment = "Incident opened"
-			comment.action = Label.objects.get(name='Opened')
 			i.opened_by = request.user
 			i.save()
 			form.save_m2m()
 			i.refresh_main_business_lines()
 			i.done_creating()
-			comment.incident = i
-			comment.opened_by = request.user
-			comment.date = i.date
-			comment.save()
-
-			# logging
-			log("Created incident", request.user, incident=i)
-
-			i.refresh_artifacts(i.description)
 
 			if i.is_incident:
 				return redirect("incidents:details", incident_id=i.id)
@@ -273,22 +261,12 @@ def edit_incident(request, incident_id):
 		form = IncidentForm(request.POST, instance=i)
 
 		if form.is_valid():
-			extra_comments = diff(Incident.objects.get(pk=incident_id), form.cleaned_data)
-			if extra_comments != "":
-				c = Comments()
-				c.comment = extra_comments
-				c.action = Label.objects.get(name='Info')
-				c.incident = i
-				c.opened_by = request.user
-				c.save()
-
-				log("Edit incident", request.user, incident=i)
+			Comments.create_diff_comment(i, form.cleaned_data, request.user)
 
 			# update main BL
 			form.save()
 			i.refresh_main_business_lines()
 			i.is_starred = starred
-			i.refresh_artifacts(i.description)
 			i.save()
 
 			if i.is_incident:
