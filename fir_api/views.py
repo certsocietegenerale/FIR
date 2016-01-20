@@ -3,11 +3,13 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.contrib.auth.models import User
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.authtoken.models import Token
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework import viewsets
 
 from fir_api.serializers import UserSerializer, IncidentSerializer, ArtifactSerializer
+from fir_api.permissions import IsIncidentHandler
 from incidents.models import Incident, Artifact, Comments
 
 
@@ -17,6 +19,7 @@ class UserViewSet(viewsets.ModelViewSet):
     """
     queryset = User.objects.all().order_by('-date_joined')
     serializer_class = UserSerializer
+    permission_classes = (IsAuthenticated, IsAdminUser)
 
 
 class IncidentViewSet(viewsets.ModelViewSet):
@@ -25,6 +28,7 @@ class IncidentViewSet(viewsets.ModelViewSet):
     """
     queryset = Incident.objects.all()
     serializer_class = IncidentSerializer
+    permission_classes = (IsAuthenticated, IsIncidentHandler)
 
     def perform_create(self, serializer):
         instance = serializer.save(opened_by=self.request.user)
@@ -42,6 +46,7 @@ class ArtifactViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSe
     serializer_class = ArtifactSerializer
     lookup_field = 'value'
     lookup_value_regex = '.+'
+    permission_classes = (IsAuthenticated, IsIncidentHandler)
 
 
 # Token Generation ===========================================================
