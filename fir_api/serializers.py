@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from incidents.models import Incident, Artifact
+from incidents.models import Incident, Artifact, Label
 
 
 # serializes data from the FIR User model
@@ -16,6 +16,7 @@ class UserSerializer(serializers.ModelSerializer):
 # FIR Incident model
 class IncidentSerializer(serializers.ModelSerializer):
     artifacts = serializers.SlugRelatedField(many=True, read_only=True, slug_field='value')
+    detection = serializers.PrimaryKeyRelatedField(queryset=Label.objects.filter(group__name='detection'))
 
     class Meta:
         model = Incident
