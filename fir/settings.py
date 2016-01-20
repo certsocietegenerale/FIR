@@ -3,6 +3,9 @@
 # Production settings should go to settings/production.py
 from fir.config.base import *
 
+# To include REST Framework Token-based Auth
+from fir_api.api_settings import *
+
 # DEBUG to True to have helpful error pages
 DEBUG = True
 TEMPLATES[0]['OPTIONS']['debug'] = True
@@ -26,13 +29,6 @@ TEMPLATES[0]['OPTIONS']['loaders'] = (
 
 # Dummy key for development
 SECRET_KEY = 'DUMMY_KEY_FOR_DEVELOPMENT_DO_NOT_USE_IN_PRODUCTION'
-
-# REST framework settings
-REST_FRAMEWORK = {
-    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
-    'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework.authentication.TokenAuthentication',),
-    'PAGE_SIZE': 10
-}
 
 try:
     from fir.config.dev import *
