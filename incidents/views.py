@@ -36,7 +36,6 @@ import math
 import collections
 
 from fir_artifacts import artifacts as libartifacts
-from fir_todos.models import TodoListTemplate
 
 cal = ['jan', 'feb', 'mar', 'apr', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov', 'dec']
 
