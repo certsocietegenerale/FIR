@@ -38,8 +38,7 @@ ENV USER fir
 WORKDIR /home/fir
 RUN ./manage.py migrate && \
     ./manage.py loaddata incidents/fixtures/seed_data.json && \
-    ./manage.py loaddata incidents/fixtures/dev_users.json && \
-    cp fir/urls.py.sample fir/urls.py
+    ./manage.py loaddata incidents/fixtures/dev_users.json
 EXPOSE 8000
 ENTRYPOINT ["/home/fir/manage.py"]
 CMD ["runserver", "0.0.0.0:8000"]
