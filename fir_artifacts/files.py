@@ -21,7 +21,6 @@ def do_upload_file(request, content_type, object_id):
 		obj = get_object_or_404(object_type.model_class(), pk=object_id)
 		descriptions = request.POST.getlist('description')
 		files = request.FILES.getlist('file')
-
 		if len(descriptions) == len(files):  # consider this as a valid upload form?
 			for i, file in enumerate(files):
 				handle_uploaded_file(file, descriptions[i], obj)
@@ -51,6 +50,8 @@ def handle_uploaded_file(file, description, obj):
 		a.relations.add(obj)
 		f.hashes.add(a)
 	f.save()
+
+	return f
 
 
 def do_download(request, file_id):

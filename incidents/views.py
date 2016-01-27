@@ -12,7 +12,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core import serializers
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.core.files import File as FileWrapper
 
 from django.core.urlresolvers import reverse
 from django.db.models import Q, Max

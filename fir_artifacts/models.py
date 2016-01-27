@@ -26,6 +26,14 @@ def upload_path(instance, filename):
 
 class File(OneLinkableModel):
 
+	hashes = models.ManyToManyField('fir_artifacts.Artifact', blank=True)
+	description = models.CharField(max_length=256)
+	file = models.FileField(upload_to=upload_path)
+	date = models.DateTimeField(auto_now_add=True)
+
+	def __unicode__(self):
+		return unicode(self.file.name)
+
 	def getfilename(self):
 		return os.path.basename(self.file.name)
 
@@ -37,8 +45,3 @@ class File(OneLinkableModel):
 			m.update(content)
 			hashes[algo] = m.hexdigest()
 		return hashes
-
-	hashes = models.ManyToManyField('fir_artifacts.Artifact', blank=True)
-	description = models.CharField(max_length=256)
-	file = models.FileField(upload_to=upload_path)
-	date = models.DateTimeField(auto_now_add=True)

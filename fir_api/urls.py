@@ -11,6 +11,7 @@ router = routers.DefaultRouter(trailing_slash=False)
 router.register(r'users', views.UserViewSet)
 router.register(r'incidents', views.IncidentViewSet)
 router.register(r'artifacts', views.ArtifactViewSet)
+router.register(r'files', views.FileViewSet)
 
 # urls for core FIR components
 urlpatterns = [

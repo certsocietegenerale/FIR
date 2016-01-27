@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-import os
 import datetime
-import hashlib
 
 from django.db.models.signals import post_save
 from django.dispatch import Signal, receiver
@@ -14,7 +12,6 @@ from django.utils.translation import ugettext_lazy as _
 from fir_artifacts import artifacts
 from fir_artifacts.models import Artifact, File
 from fir_plugins.models import link_to
-
 
 
 STATUS_CHOICES = (
