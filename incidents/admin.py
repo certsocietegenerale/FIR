@@ -3,8 +3,8 @@ from django.contrib import admin
 
 
 class BusinessLineAdmin(admin.ModelAdmin):
-	search_fields = ('name', )
-	ordering = ('name', )
+    search_fields = ('name', )
+    ordering = ('name', )
 
 admin.site.register(Incident)
 admin.site.register(BusinessLine, BusinessLineAdmin)

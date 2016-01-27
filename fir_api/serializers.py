@@ -24,6 +24,7 @@ class ArtifactSerializer(serializers.ModelSerializer):
 
 
 # FIR File model
+
 class AttachedFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = File
@@ -40,9 +41,11 @@ class FileSerializer(serializers.ModelSerializer):
         fields = ('id', 'description', 'incident', 'url', 'file')
         read_only_fields = ('id')
         extra_kwargs = {'url': {'view_name': 'api:file-download'}}
-        depth=2
+        depth = 2
+
 
 # FIR Incident model
+
 class IncidentSerializer(serializers.ModelSerializer):
     detection = serializers.PrimaryKeyRelatedField(queryset=Label.objects.filter(group__name='detection'))
     opened_by = UserSerializer()

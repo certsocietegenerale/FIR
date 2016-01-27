@@ -1,6 +1,4 @@
 # for token Generation
-import mimetypes
-import os
 import StringIO
 
 from django.conf import settings
@@ -10,7 +8,6 @@ from django.dispatch import receiver
 from django.shortcuts import get_object_or_404
 from django.core.files import File as FileWrapper
 from django.contrib.auth.models import User
-from django.contrib.contenttypes.models import ContentType
 
 from rest_framework.renderers import JSONRenderer
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -23,7 +20,7 @@ from rest_framework import renderers
 
 from fir_api.serializers import UserSerializer, IncidentSerializer, ArtifactSerializer, FileSerializer
 from fir_api.permissions import IsIncidentHandler
-from fir_artifacts.files import handle_uploaded_file, do_download, do_upload_file
+from fir_artifacts.files import handle_uploaded_file, do_download
 from incidents.models import Incident, Artifact, Comments, File
 
 
@@ -62,6 +59,7 @@ class ArtifactViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSe
     lookup_value_regex = '.+'
     permission_classes = (IsAuthenticated, IsIncidentHandler)
 
+
 class FileViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
     queryset = File.objects.all()
     serializer_class = FileSerializer
@@ -70,7 +68,6 @@ class FileViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
     @detail_route(renderer_classes=[renderers.StaticHTMLRenderer])
     def download(self, request, pk):
         return do_download(request, pk)
-
 
     @detail_route(methods=["POST"])
     def upload(self, request, pk):
@@ -85,6 +82,7 @@ class FileViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
             files_added.append(f)
         resp_data = FileSerializer(files_added, many=True, context={'request': request}).data
         return HttpResponse(JSONRenderer().render(resp_data), content_type='application/json')
+
 
 # Token Generation ===========================================================
 

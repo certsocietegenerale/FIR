@@ -7,6 +7,7 @@ from django.db import models
 class OneLinked(OneLinkableModel):
     name = models.CharField(max_length=100)
 
+
 @link_to(OneLinked)
 class FileHolder(OneLinkableModel):
     name = models.CharField(max_length=100)
@@ -29,6 +30,7 @@ class Article(models.Model):
     name = models.CharField(max_length=100)
 
 Artifact.link_to(Incident)
+
 
 class ManyLinkableModelTest(TestCase):
     def setUp(self):
@@ -75,13 +77,13 @@ class ManyLinkableModelTest(TestCase):
         artifact.relations.add(self.article2)
         artifact.relations.add(self.incident1)
         self.assertEqual(len(artifact.relations.all()), 3)
-        self.assertEqual(len(artifact.relations.all(linked_type=[Article,])), 2)
+        self.assertEqual(len(artifact.relations.all(linked_type=[Article, ])), 2)
         artifact.relations.remove(self.article2)
-        self.assertEqual(len(artifact.relations.all(linked_type=[Article,])), 1)
+        self.assertEqual(len(artifact.relations.all(linked_type=[Article, ])), 1)
         artifact.relations.remove(self.article2)
-        self.assertEqual(len(artifact.relations.all(linked_type=[Article,])), 1)
+        self.assertEqual(len(artifact.relations.all(linked_type=[Article, ])), 1)
         artifact.relations.remove(self.article1)
-        self.assertEqual(len(artifact.relations.all(linked_type=[Article,])), 0)
+        self.assertEqual(len(artifact.relations.all(linked_type=[Article, ])), 0)
 
     def test_filter(self):
         artifact = Artifact.objects.create(name="generic artifact 4")

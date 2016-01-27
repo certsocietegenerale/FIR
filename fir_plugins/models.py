@@ -4,18 +4,22 @@ from django.contrib.contenttypes.models import ContentType
 
 from fir_plugins.managers import LinkableManager
 
+
 def get_plural(model):
     if issubclass(model, models.base.Model):
         model = model.__name__
     return model.lower() + 's'
+
 
 def get_singular(model):
     if issubclass(model, models.base.Model):
         model = model.__name__
     return model.lower()
 
+
 class LinkedModelDoesNotExist(Exception):
         pass
+
 
 class OneLinkableModel(models.Model):
 
@@ -33,6 +37,7 @@ class OneLinkableModel(models.Model):
 
     class Meta:
         abstract = True
+
 
 class ManyLinkableModel(models.Model):
     """
@@ -58,6 +63,7 @@ class ManyLinkableModel(models.Model):
 
 
 def create_link(linkable_model, linked_model, linkable_link_name=None, verbose_name=None, verbose_name_plural=None):
+
     class LinkedModel(object):
         def __init__(self, model, link_name=None, verbose_name=None, verbose_name_plural=None):
             self.model = model
@@ -77,23 +83,29 @@ def create_link(linkable_model, linked_model, linkable_link_name=None, verbose_n
     if verbose_name_plural is None:
         verbose_name_plural = linked_model._meta.verbose_name_plural
     linked_link_name = get_plural(linkable_model)
+
     if issubclass(linkable_model, ManyLinkableModel):
         field = models.ManyToManyField(linkable_model, related_name=linkable_link_name)
         setattr(linked_model, linked_link_name, field)
         field.contribute_to_class(linked_model, linked_link_name)
+
     elif issubclass(linkable_model, OneLinkableModel):
         linked_link_name = get_singular(linkable_model)+"_set"
         field = GenericRelation(linkable_model, related_query_name=linkable_link_name)
         setattr(linked_model, linked_link_name, field)
         field.contribute_to_class(linked_model, linked_link_name)
-        setattr(linkable_model,linkable_link_name, property(
-            fget=lambda x : linkable_model.get_related(x),
-            fset=lambda x, y : linkable_model.set_related(x,y)))
+        setattr(linkable_model, linkable_link_name, property(
+            fget=lambda x: linkable_model.get_related(x),
+            fset=lambda x, y: linkable_model.set_related(x, y)))
+
     if not hasattr(linkable_model, "_LINKS") or linkable_model._LINKS is None:
         setattr(linkable_model, "_LINKS", dict())
-    linkable_model._LINKS[linkable_link_name] = LinkedModel(linked_model, link_name=linkable_link_name,
-                                                   verbose_name=verbose_name, verbose_name_plural=verbose_name_plural)
+    linkable_model._LINKS[linkable_link_name] = LinkedModel(
+                                linked_model, link_name=linkable_link_name,
+                                verbose_name=verbose_name,
+                                verbose_name_plural=verbose_name_plural)
     return linkable_model
+
 
 def link_to(linkable_model, link_name=None, verbose_name=None, verbose_name_plural=None):
     def model_linker(cls):

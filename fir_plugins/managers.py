@@ -25,10 +25,12 @@ class LinkableManager(BaseManager):
 
     def group(self):
         result = dict()
+
         class Group(object):
             def __init__(self, linked, objects):
                 self.model = linked
                 self.objects = objects
+
         for link_name, linked_model in getattr(self.linkable, "_LINKS", dict()).items():
             objects = getattr(self.linkable, link_name).all()
             result[link_name] = Group(linked_model, objects)
