@@ -47,11 +47,15 @@ CONFIDENTIALITY_LEVEL = (
 
 
 model_created = Signal(providing_args=['instance'])
+model_updated = Signal(providing_args=['instance'])
 
 
 class FIRModel:
     def done_creating(self):
         model_created.send(sender=self.__class__, instance=self)
+
+    def done_updating(self):
+        model_updated.send(sender=self.__class__, instance=self)
 
 # Profile ====================================================================
 
@@ -423,7 +427,8 @@ class IncidentTemplate(models.Model):
 #
 
 
-@receiver(post_save, sender=Incident)
+@receiver(model_created, sender=Incident)
+@receiver(model_updated, sender=Incident)
 def refresh_incident(sender, instance, **kwargs):
     instance.refresh_artifacts(instance.description)
 

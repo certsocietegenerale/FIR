@@ -291,6 +291,7 @@ def edit_incident(request, incident_id):
             i.refresh_main_business_lines()
             i.is_starred = starred
             i.save()
+            i.done_updating()
 
             if i.is_incident:
                 return redirect("incidents:details", incident_id=i.id)
