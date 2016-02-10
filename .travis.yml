@@ -1,0 +1,46 @@
+language: python
+
+python:
+    - "2.7"
+      #- "3.3"
+      #- "3.4"
+      #- "3.5"
+      #- "nightly"
+
+dist: trusty
+
+group: edge
+
+addons:
+    apt:
+        packages:
+            # General dependencies
+            - python-dev
+            - python-pip
+            - python-lxml
+            - git
+            - libxml2-dev
+            - libxslt1-dev
+            - libz-dev
+
+install:
+    - pip install -U pip
+    - if [[ $TRAVIS_PYTHON_VERSION == 2* ]]; then pip install -r requirements.txt ; fi
+    - if [[ $TRAVIS_PYTHON_VERSION == 3* ]]; then pip install -r requirements_py3.txt ; fi
+    - if [[ $TRAVIS_PYTHON_VERSION == nightly ]]; then pip install -r requirements_py3.txt ; fi
+    - cp fir/config/installed_apps.txt.sample fir/config/installed_apps.txt
+    - ./manage.py migrate
+
+
+script:
+    - ./manage.py loaddata incidents/fixtures/seed_data.json
+    - ./manage.py loaddata incidents/fixtures/dev_users.json
+    - ./manage.py runserver &
+    - sleep 20
+    - curl -L http://127.0.0.1:8000
+    - sleep 10
+
+notifications:
+    email:
+        on_success: change
+        on_failure: change
