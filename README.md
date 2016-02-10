@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/certsocietegenerale/FIR.svg?branch=master)](https://travis-ci.org/certsocietegenerale/FIR)
+
 # What is FIR? Who is it for?
 
 FIR (Fast Incident Response) is an cybersecurity incident management platform designed with agility and speed in mind. It allows for easy creation, tracking, and reporting of cybersecurity incidents.
@@ -32,4 +34,4 @@ FIR is not greedy performance-wise. It will run smoothly on a Ubuntu 14.04 virtu
 * Nested Todos
 * REST API
 * Mailman
-* You name it :) 
+* You name it :)
