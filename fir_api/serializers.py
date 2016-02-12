@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from incidents.models import Incident, Artifact, Label, File
+from incidents.models import Incident, Artifact, Label, File, IncidentCategory, BusinessLine
 
 
 # serializes data from the FIR User model
@@ -48,11 +48,10 @@ class FileSerializer(serializers.ModelSerializer):
 
 class IncidentSerializer(serializers.ModelSerializer):
     detection = serializers.PrimaryKeyRelatedField(queryset=Label.objects.filter(group__name='detection'))
-    opened_by = UserSerializer()
-    file_set = AttachedFileSerializer(many=True)
+    opened_by = serializers.ReadOnlyField(source='opened_by.id')
+    file_set = AttachedFileSerializer(many=True, read_only=True)
 
     class Meta:
         model = Incident
-        exclude = ['main_business_lines']
-        read_only_fields = ('id', 'opened_by', 'main_business_lines')
-        depth = 1
+        exclude = ['main_business_lines', 'artifacts']
+        read_only_fields = ('id', 'opened_by', 'main_business_lines', 'file_set')
