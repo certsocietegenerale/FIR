@@ -48,7 +48,6 @@ class FileSerializer(serializers.ModelSerializer):
 
 class IncidentSerializer(serializers.ModelSerializer):
     detection = serializers.PrimaryKeyRelatedField(queryset=Label.objects.filter(group__name='detection'))
-    opened_by = serializers.ReadOnlyField(source='opened_by.id')
     file_set = AttachedFileSerializer(many=True, read_only=True)
 
     class Meta:
