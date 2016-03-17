@@ -28,7 +28,7 @@ def get_template(request, incident_id, template_type, bl=None):
 
     try:
         cat_template = CategoryTemplate.objects.get(incident_category=i.category, type=template_type)
-    except Exception, e:
+    except Exception as e:
         cat_template = None
 
     rec_template = None
@@ -45,8 +45,8 @@ def get_template(request, incident_id, template_type, bl=None):
 
     try:
         rec_template = RecipientTemplate.objects.get((q_bl | Q(business_line=None)) & Q(type=template_type))
-    except Exception, e:
-        print "Email template ERROR: ", e
+    except Exception as e:
+        print("Email template ERROR: ", e)
         parents = list(set(i.concerned_business_lines.all()))
 
         while not rec_template and parents != [None]:
@@ -59,7 +59,7 @@ def get_template(request, incident_id, template_type, bl=None):
                 if len(template) > 0:
                     rec_template = template[0]
             except Exception as e:
-                print "Email template ERROR 2: ", e
+                print("Email template ERROR 2: ", e)
                 break
 
     artifacts = {}
@@ -121,7 +121,7 @@ def send_email(request):
 
             return HttpResponse(dumps({'status': 'ok'}), content_type="application/json")
 
-        except Exception, e:
+        except Exception as e:
             return HttpResponse(dumps({'status': 'ko', 'error': str(e)}), content_type="application/json")
 
     return HttpResponseBadRequest(dumps({'status': 'ko'}), content_type="application/json")

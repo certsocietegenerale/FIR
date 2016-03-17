@@ -114,7 +114,7 @@ def log(what, user, incident=None, comment=None):
     # dirty hack to not log when in debug mode
     import sys
     if len(sys.argv) >= 2 and sys.argv[1] == 'runserver':
-        print "DEBUG: Not logging"
+        print("DEBUG: Not logging")
         return
 
     log = Log()
