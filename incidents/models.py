@@ -225,12 +225,12 @@ class Incident(FIRModel, models.Model):
     def concerns_business_line(self, bl_string):
         for bl in self.concerned_business_lines.all():
             if bl.name == bl_string:
-                return True
+                return bl.name
 
             parent = bl.parent
             while parent:
                 if parent.name == bl_string:
-                    return True
+                    return bl.name
                 parent = parent.parent
 
         return False
