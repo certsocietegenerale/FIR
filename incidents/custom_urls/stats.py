@@ -33,9 +33,9 @@ urlpatterns = [
     # per bl
     url(r'^data/quarterly/(?P<business_line>[\w\s]+)/variation$', views.data_incident_variation, name='data_incident_variation'),
     url(r'^data/quarterly/(?P<business_line>[\w\s]+)/(?P<divisor>\w+)$', views.data_quarterly_bl, name='data_quarterly_bl'),
+    url(r'^quarterly/close_old$', views.close_old, name='close_old'),
     url(r'^quarterly/(?P<business_line>[\w\s]+)$', views.quarterly_bl_stats, name='quarterly_bl_stats'),
     url(r'^quarterly/$', views.quarterly_bl_stats, name='quarterly_bl_stats_default'),
-    url(r'^quarterly/close_old$', views.close_old, name='close_old'),
 
     # sandbox
     url(r'^sandbox/$', views.sandbox, name='sandbox'),

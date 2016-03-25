@@ -697,12 +697,13 @@ def yearly_stats(request):
 @user_passes_test(is_incident_handler)
 def close_old(request):
     now = datetime.datetime.now()
-    old = Incident.objects.filter(date__lt=datetime.datetime(now.year, now.month, 1) - datetime.timedelta(days=90))
+    query = Q(date__lt=datetime.datetime(now.year, now.month, 1) - datetime.timedelta(days=90)) & ~Q(status="C")
+    old = Incident.objects.filter(query)
     for i in old:
         if i.status != "C":
             i.close_timeout()
 
-    return redirect('stats:quarterly_bl_stats')
+    return redirect('stats:quarterly_bl_stats_default')
 
 
 @login_required
