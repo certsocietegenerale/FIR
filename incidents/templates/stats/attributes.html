@@ -37,7 +37,7 @@ function refresh_stats() {
 		else if (d.getUTCMonth()) { format = "%B"; }
 		else { format = "%Y"; }
 
-		format = d3.time.format(format);
+		format = d3.time.format.utc(format);
 
 		if (prefix == "W") {
 			w = parseInt(format(d)) + 1;
