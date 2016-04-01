@@ -48,6 +48,8 @@ class FileSerializer(serializers.ModelSerializer):
 
 class IncidentSerializer(serializers.ModelSerializer):
     detection = serializers.PrimaryKeyRelatedField(queryset=Label.objects.filter(group__name='detection'))
+    actor = serializers.PrimaryKeyRelatedField(queryset=Label.objects.filter(group__name='actor'))
+    plan = serializers.PrimaryKeyRelatedField(queryset=Label.objects.filter(group__name='plan'))
     file_set = AttachedFileSerializer(many=True, read_only=True)
 
     class Meta:
