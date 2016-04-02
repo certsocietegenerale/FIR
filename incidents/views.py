@@ -514,6 +514,11 @@ def search(request):
             except Exception:
                 pass
 
+			opened_by = re.search("opened_by:(\S+)", query_string)
+			if opened_by:
+				q = q & Q(opened_by__username=opened_by.group(1))
+				query_string = query_string.replace('opened_by:'+opened_by.group(1), '')
+
             category = re.search("category:(\S+)", query_string)
             if category:
                 q = q & Q(category__name__icontains=category.group(1))
