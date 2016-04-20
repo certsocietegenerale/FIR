@@ -29,6 +29,14 @@ def find(data):
 def after_save(type, value, event):
     return INSTALLED_ARTIFACTS[type].after_save(value, event)
 
+def incs_for_art(art_string):
+    from fir_artifacts.models import Artifact
+    artifacts = Artifact.objects.filter(value__contains=art_string)
+    incs = []
+    for a in artifacts:
+        incs.extend(a.relations.all())
+    return incs
+
 
 def all_for_object(obj, raw=False):
     result = []

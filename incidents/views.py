@@ -514,10 +514,10 @@ def search(request):
             except Exception:
                 pass
 
-	    opened_by = re.search("opened_by:(\S+)", query_string)
-	    if opened_by:
-		q = q & Q(opened_by__username=opened_by.group(1))
-		query_string = query_string.replace('opened_by:'+opened_by.group(1), '')
+            opened_by = re.search("opened_by:(\S+)", query_string)
+            if opened_by:
+                q = q & Q(opened_by__username=opened_by.group(1))
+                query_string = query_string.replace('opened_by:'+opened_by.group(1), '')
 
             category = re.search("category:(\S+)", query_string)
             if category:
@@ -528,6 +528,12 @@ def search(request):
             if status:
                 q = q & Q(status=status.group(1)[0])
                 query_string = query_string.replace('status:'+status.group(1), '')
+
+            artifacts = re.search("art:(\S+)", query_string)
+            if artifacts:
+                artifacts = artifacts.group(1)
+                q = q & Q(id__in=[i.id for i in libartifacts.incs_for_art(artifacts)])
+                query_string = query_string.replace('art:'+artifacts, '')
 
             if query_string.count('starred') > 0:
                 q = q & Q(is_starred=True)
