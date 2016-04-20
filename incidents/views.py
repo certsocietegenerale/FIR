@@ -557,7 +557,7 @@ def search(request):
             if query_string != ['']:
                 q_other = Q()
                 for i in other:
-                    q_other |= (Q(subject__icontains=i) | Q(description__icontains=i) | Q(comments__comment__icontains=i))
+                    q_other &= (Q(subject__icontains=i) | Q(description__icontains=i) | Q(comments__comment__icontains=i))
 
             q = (q & q_other)
 
