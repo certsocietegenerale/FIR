@@ -85,7 +85,10 @@ class AbstractArtifact:
             if artifact.relations.count() > 1:
                 self._correlated.append(artifact)
 
-    def display(self, request, correlated=False):
+    def json(self, request):
+        return self.display(request, correlated=False, json=True)
+
+    def display(self, request, correlated=False, json=False):
         context = RequestContext(request)
         template = get_template(self.__class__.template)
         context['artifact_name'] = self.__class__.display_name
@@ -95,7 +98,10 @@ class AbstractArtifact:
             context['artifact_values'] = self._artifacts
         context['event'] = self._event
 
-        return template.render(context.flatten(), request)
+        if not json:
+            return template.render(context.flatten(), request)
+        else:
+            return context.flatten()
 
     def correlated_count(self):
         return len(self._correlated)
