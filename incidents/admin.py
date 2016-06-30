@@ -6,7 +6,12 @@ class BusinessLineAdmin(admin.ModelAdmin):
     search_fields = ('name', )
     ordering = ('name', )
 
-admin.site.register(Incident)
+
+class IncidentAdmin(admin.ModelAdmin):
+    exclude = ("artifacts", )
+    pass
+
+admin.site.register(Incident, IncidentAdmin)
 admin.site.register(BusinessLine, BusinessLineAdmin)
 admin.site.register(BaleCategory)
 admin.site.register(Comments)
