@@ -9,7 +9,7 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'url', 'username', 'email', 'groups')
-        read_only_fields = ('id')
+        read_only_fields = ('id',)
         extra_kwargs = {'url': {'view_name': 'api:user-detail'}}
 
 
@@ -20,7 +20,7 @@ class ArtifactSerializer(serializers.ModelSerializer):
     class Meta:
         model = Artifact
         fields = ('id', 'type', 'value', 'incidents')
-        read_only_fields = ('id')
+        read_only_fields = ('id',)
 
 
 # FIR File model
@@ -29,7 +29,7 @@ class AttachedFileSerializer(serializers.ModelSerializer):
     class Meta:
         model = File
         fields = ('id', 'description', 'url')
-        read_only_fields = ('id')
+        read_only_fields = ('id',)
         extra_kwargs = {'url': {'view_name': 'api:file-detail'}}
 
 
@@ -39,7 +39,7 @@ class FileSerializer(serializers.ModelSerializer):
     class Meta:
         model = File
         fields = ('id', 'description', 'incident', 'url', 'file')
-        read_only_fields = ('id')
+        read_only_fields = ('id',)
         extra_kwargs = {'url': {'view_name': 'api:file-download'}}
         depth = 2
 
