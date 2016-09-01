@@ -4,4 +4,14 @@
   "repository": "https://github.com/certsocietegenerale/FIR.git",
   "logo": "https://raw.githubusercontent.com/certsocietegenerale/FIR/master/incidents/static/img/logo.jpg",
   "keywords": ["security", "django", "dfir"]
+  "env": {
+    "DISABLE_COLLECTSTATIC": 1
+  },
+  "scripts": {
+    "postdeploy": [
+      "python manage.py migrate",
+      "cp fir/config/installed_apps.txt.sample fir/config/installed_apps.txt",
+      "python manage.py loaddata incidents/fixtures/seed_data.json"
+    ]
+  }  
 }
