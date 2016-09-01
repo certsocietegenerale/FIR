@@ -3,7 +3,7 @@
   "description": "Fast Incident Response",
   "repository": "https://github.com/certsocietegenerale/FIR.git",
   "logo": "https://raw.githubusercontent.com/certsocietegenerale/FIR/master/incidents/static/img/logo.jpg",
-  "keywords": ["security", "django", "dfir"]
+  "keywords": ["security", "django", "dfir"],
   "env": {
     "DISABLE_COLLECTSTATIC": 1
   },
