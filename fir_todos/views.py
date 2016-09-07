@@ -99,8 +99,8 @@ def get_todo_templates(category, detection, bl):
 
     results += TodoListTemplate.objects.filter(q)
 
-    if bl.parent:
-        results += get_todo_templates(category, detection, bl.parent)
+    if not bl.is_root():
+        results += get_todo_templates(category, detection, bl.get_parent())
 
     return results
 
