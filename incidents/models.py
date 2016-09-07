@@ -9,23 +9,24 @@ from django import forms
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
+from treebeard.mp_tree import MP_Node
+
 from fir_artifacts import artifacts
 from fir_artifacts.models import Artifact, File
 from fir_plugins.models import link_to
-
 
 STATUS_CHOICES = (
     ("O", _("Open")),
     ("C", _("Closed")),
     ("B", _("Blocked")),
-    )
+)
 
 SEVERITY_CHOICES = (
     (1, '1'),
     (2, '2'),
     (3, '3'),
     (4, '4'),
-    )
+)
 
 LOG_ACTIONS = (
     ("D", "Deleted"),
@@ -33,15 +34,14 @@ LOG_ACTIONS = (
     ("U", "Update"),
     ("LI", "Logged in"),
     ("LO", "Logged out"),
-    )
+)
 
 CONFIDENTIALITY_LEVEL = (
     (0, "C0"),
     (1, "C1"),
     (2, "C2"),
     (3, "C3"),
-    )
-
+)
 
 # Special Model class that handles signals
 
@@ -57,6 +57,7 @@ class FIRModel:
     def done_updating(self):
         model_updated.send(sender=self.__class__, instance=self)
 
+
 # Profile ====================================================================
 
 
@@ -67,6 +68,7 @@ class Profile(models.Model):
 
     def __unicode__(self):
         return u"Profile for user '{}'".format(self.user)
+
 
 # Audit trail ================================================================
 
@@ -102,47 +104,22 @@ class Label(models.Model):
         return "%s" % (self.name)
 
 
-class BusinessLine(models.Model):
+class BusinessLine(MP_Node):
     name = models.CharField(max_length=100)
-    parent = models.ForeignKey('BusinessLine', null=True, blank=True)
 
     def __unicode__(self):
-
-        ret = [self.name]
-
-        parent = self.parent
-        while parent:
-            ret.append(parent.name)
-            parent = parent.parent
-
-        ret.reverse()
-        return u" > ".join(ret)
+        parents = list(self.get_ancestors())
+        parents.append(self)
+        return u" > ".join([bl.name for bl in parents])
 
     class Meta:
-        ordering = ["parent__name", "name"]
-
-    def get_children(self):
-        return BusinessLine.objects.filter(parent=self.id)
+        verbose_name = _('business line')
 
     def get_incident_count(self, query):
         incident_count = self.incident_set.filter(query).distinct().count()
-        bls = BusinessLine.objects.filter(parent=self.id)
-
-        while len(bls) > 0:
-            incident_count += Incident.objects.filter(query).filter(concerned_business_lines__in=bls).distinct().count()
-            bls = BusinessLine.objects.filter(parent__in=bls)
-
+        incident_count += Incident.objects.filter(query).filter(
+            concerned_business_lines__in=self.get_descendants()).distinct().count()
         return incident_count
-
-    def get_top_parent(self):
-        parent = self
-        while parent.parent is not None:
-            parent = parent.parent
-        return parent
-
-    @staticmethod
-    def get_parents():
-        return BusinessLine.objects.filter(parent=None)
 
 
 class BaleCategory(models.Model):
@@ -172,6 +149,7 @@ class IncidentCategory(models.Model):
     def __unicode__(self):
         return self.name
 
+
 # Core models ================================================================
 
 @link_to(File)
@@ -188,8 +166,10 @@ class Incident(FIRModel, models.Model):
     severity = models.IntegerField(choices=SEVERITY_CHOICES)
     is_incident = models.BooleanField(default=False)
     is_major = models.BooleanField(default=False)
-    actor = models.ForeignKey(Label, limit_choices_to={'group__name': 'actor'}, related_name='actor_label', blank=True, null=True)
-    plan = models.ForeignKey(Label, limit_choices_to={'group__name': 'plan'}, related_name='plan_label', blank=True, null=True)
+    actor = models.ForeignKey(Label, limit_choices_to={'group__name': 'actor'}, related_name='actor_label', blank=True,
+                              null=True)
+    plan = models.ForeignKey(Label, limit_choices_to={'group__name': 'plan'}, related_name='plan_label', blank=True,
+                             null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=_("Open"))
     opened_by = models.ForeignKey(User)
     confidentiality = models.IntegerField(choices=CONFIDENTIALITY_LEVEL, default='1')
@@ -226,13 +206,8 @@ class Incident(FIRModel, models.Model):
         for bl in self.concerned_business_lines.all():
             if bl.name == bl_string:
                 return bl.name
-
-            parent = bl.parent
-            while parent:
-                if parent.name == bl_string:
-                    return bl.name
-                parent = parent.parent
-
+            if bl.get_descendants().filter(name=bl_string).count():
+                return bl.name
         return False
 
     def get_business_lines_names(self):
@@ -241,7 +216,7 @@ class Incident(FIRModel, models.Model):
     def refresh_main_business_lines(self):
         mainbls = set()
         for bl in self.concerned_business_lines.all():
-            mainbls.add(bl.get_top_parent())
+            mainbls.add(bl.get_root())
         self.main_business_lines = list(mainbls)
 
     def refresh_artifacts(self, data=""):
@@ -364,11 +339,11 @@ class ValidAttribute(models.Model):
     def __unicode__(self):
         return self.name
 
+
 # forms ===============================================================
 
 
 class IncidentForm(ModelForm):
-
     def __init__(self, *args, **kwargs):
         super(ModelForm, self).__init__(*args, **kwargs)
         self.fields['subject'].error_messages['required'] = 'This field is required.'
@@ -422,6 +397,7 @@ class IncidentTemplate(models.Model):
     def __unicode__(self):
         return self.name
 
+
 #
 # Signal receivers
 #
@@ -431,6 +407,7 @@ class IncidentTemplate(models.Model):
 @receiver(model_updated, sender=Incident)
 def refresh_incident(sender, instance, **kwargs):
     instance.refresh_artifacts(instance.description)
+
 
 # Automatically create comments
 
@@ -445,6 +422,7 @@ def comment_new_incident(sender, instance, created, **kwargs):
             opened_by=instance.opened_by,
             date=instance.date,
         )
+
 
 # Automatically log actions
 

@@ -1,10 +1,12 @@
 from incidents.models import *
 from django.contrib import admin
 
+from treebeard.admin import TreeAdmin
 
-class BusinessLineAdmin(admin.ModelAdmin):
+
+class BusinessLineAdmin(TreeAdmin):
     search_fields = ('name', )
-    ordering = ('name', )
+    exclude = ('path', 'depth', 'numchild')
 
 
 class IncidentAdmin(admin.ModelAdmin):

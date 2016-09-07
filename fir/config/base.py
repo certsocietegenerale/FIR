@@ -80,6 +80,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'treebeard',
     'incidents',
     'django.contrib.admin',
     'rest_framework',

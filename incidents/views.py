@@ -720,7 +720,7 @@ def close_old(request):
 @login_required
 @user_passes_test(can_view_statistics)
 def quarterly_bl_stats(request, business_line=None, num_months=3):
-    bls = BusinessLine.get_parents()
+    bls = BusinessLine.get_root_nodes()
     try:
         bl = BusinessLine.objects.get(name=business_line)
     except:
@@ -916,7 +916,7 @@ def data_sandbox(request):
 
         if divisor == 'subentity':
             if not bls:
-                children = BusinessLine.get_parents()
+                children = BusinessLine.get_root_nodes()
             else:
                 bl = BusinessLine.objects.get(id=bl)
                 children = bl.get_children()
@@ -1402,7 +1402,7 @@ def data_yearly_evolution(request, year, type='all', divisor='bl', slide=True):
     q = q & Q(confidentiality__lte=2)
 
     if divisor == 'bl':
-        items = BusinessLine.get_parents()
+        items = BusinessLine.get_root_nodes()
     elif divisor == 'category':
         items = IncidentCategory.objects.all()
 
@@ -1489,7 +1489,7 @@ def data_yearly_field(request, field):
 @login_required
 @user_passes_test(can_view_statistics)
 def data_yearly_bl(request, year=datetime.date.today().year, type='all'):
-    bls = BusinessLine.get_parents()
+    bls = BusinessLine.get_root_nodes()
 
     chart_data = []
     total = 0
@@ -1522,7 +1522,7 @@ def data_yearly_bl(request, year=datetime.date.today().year, type='all'):
 @login_required
 @user_passes_test(can_view_statistics)
 def data_yearly_bl_detection(request):
-    bls = BusinessLine.get_parents()
+    bls = BusinessLine.get_root_nodes()
     q = Q(date__year=datetime.datetime.now().year)
     q = q & Q(confidentiality__lte=2)
 
@@ -1547,7 +1547,7 @@ def data_yearly_bl_detection(request):
 @login_required
 @user_passes_test(can_view_statistics)
 def data_yearly_bl_severity(request):
-    bls = BusinessLine.get_parents()
+    bls = BusinessLine.get_root_nodes()
 
     q = Q(date__year=datetime.datetime.now().year)
     q = q & Q(confidentiality__lte=2)
@@ -1576,7 +1576,7 @@ def data_yearly_bl_severity(request):
 @login_required
 @user_passes_test(can_view_statistics)
 def data_yearly_bl_category(request):
-    bls = BusinessLine.get_parents()
+    bls = BusinessLine.get_root_nodes()
     categories = IncidentCategory.objects.all()
 
     q = Q(date__year=datetime.datetime.now().year)
@@ -1607,7 +1607,7 @@ def data_yearly_bl_category(request):
 @login_required
 @user_passes_test(can_view_statistics)
 def data_yearly_bl_plan(request):
-    bls = BusinessLine.get_parents()
+    bls = BusinessLine.get_root_nodes()
     plans = Label.objects.filter(group__name='plan')
 
     q = Q(date__year=datetime.datetime.now().year)
@@ -1748,7 +1748,7 @@ def data_quarterly_bl(request, business_line, divisor, num_months=3, is_incident
             q_date = q & Q(date__month=today.month, date__year=today.year)
             d[bl.name] = Incident.objects.filter(q_date).distinct().count()
 
-            for entity in BusinessLine.objects.filter(parent=bl).distinct():
+            for entity in bl.get_children():
                 d[entity.name] = entity.get_incident_count(q_date)
                 d[bl.name] -= d[entity.name]
 
@@ -1817,7 +1817,7 @@ def quarterly_major(request, start_date=None, num_months=3):
     q_confid = Q(confidentiality__lte=2)
     balecats = BaleCategory.objects.filter(Q(parent_category__isnull=False))
     certcats = IncidentCategory.objects.all()
-    parent_bls = BusinessLine.get_parents()
+    parent_bls = BusinessLine.get_root_nodes()
 
     num_months = int(num_months)
 
