@@ -1,12 +1,12 @@
 from incidents.models import *
 from django.contrib import admin
-
 from treebeard.admin import TreeAdmin
+from treebeard.forms import movenodeform_factory
 
 
 class BusinessLineAdmin(TreeAdmin):
     search_fields = ('name', )
-    exclude = ('path', 'depth', 'numchild')
+    form = movenodeform_factory(BusinessLine)
 
 
 class IncidentAdmin(admin.ModelAdmin):
