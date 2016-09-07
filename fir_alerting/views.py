@@ -51,7 +51,7 @@ def get_template(request, incident_id, template_type, bl=None):
 
         while not rec_template and parents != [None]:
             try:
-                parents = list(set([b.parent for b in parents]))
+                parents = list(set([b.get_parent() for b in parents if not b.is_root()]))
                 q_parent = Q()
                 for p in parents:
                     q_parent |= Q(business_line=p)
