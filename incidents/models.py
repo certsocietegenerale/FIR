@@ -8,12 +8,14 @@ from django.forms import ModelForm
 from django import forms
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
+from django.conf import settings
 
 from treebeard.mp_tree import MP_Node
 
 from fir_artifacts import artifacts
 from fir_artifacts.models import Artifact, File
 from fir_plugins.models import link_to
+from incidents.authorization import tree_authorization, AuthorizationModelMixin
 
 STATUS_CHOICES = (
     ("O", _("Open")),
@@ -104,7 +106,7 @@ class Label(models.Model):
         return "%s" % (self.name)
 
 
-class BusinessLine(MP_Node):
+class BusinessLine(MP_Node, AuthorizationModelMixin):
     name = models.CharField(max_length=100)
 
     def __unicode__(self):
@@ -120,6 +122,19 @@ class BusinessLine(MP_Node):
         incident_count += Incident.objects.filter(query).filter(
             concerned_business_lines__in=self.get_descendants()).distinct().count()
         return incident_count
+
+
+class AccessControlEntry(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'), on_delete=models.CASCADE)
+    business_line = models.ForeignKey(BusinessLine, verbose_name=_('business line'), related_name='acl')
+    role = models.ForeignKey('auth.Group', verbose_name=_('role'))
+
+    def __unicode__(self):
+        return _("{} is {} on {}").format(self.user, self.role, self.business_line)
+
+    class Meta:
+        verbose_name = _('access control entry')
+        verbose_name_plural = _('access control entries')
 
 
 class BaleCategory(models.Model):
@@ -152,6 +167,7 @@ class IncidentCategory(models.Model):
 
 # Core models ================================================================
 
+@tree_authorization(fields=['concerned_business_lines',], tree_model='incidents.BusinessLine')
 @link_to(File)
 @link_to(Artifact)
 class Incident(FIRModel, models.Model):
