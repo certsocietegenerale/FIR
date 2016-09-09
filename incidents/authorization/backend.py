@@ -6,23 +6,27 @@ Authentication backend for Django
 """
 from django.db import models
 
+import inspect
+
 
 def check_object_support(obj):
     """
-    Returns ``True`` if given ``obj`` is supported
+    Returns the permission check method for supported methods and classes
     """
-    # Backend checks only object permissions (isinstance implies that obj
-    # is not None)
-    # Backend checks only permissions for Django models
-    return isinstance(obj, models.Model) and hasattr(obj, 'has_perm')
+    if isinstance(obj, models.Model) and hasattr(obj, 'has_perm'):
+        return obj.has_perm
+    if inspect.isclass(obj) and issubclass(obj, models.Model) and hasattr(obj, 'has_model_perm'):
+        return obj.has_model_perm
+    return False
 
 
 def check_support(user_obj, obj):
     """
-    Combination of ``check_object_support`` and ``check_user_support``
+    Combination of ``check_object_support`` and user check
     """
-    obj_support = check_object_support(obj)
-    return obj_support and user_obj.is_authenticated()
+    if user_obj.is_authenticated() and user_obj.is_active:
+        return check_object_support(obj)
+    return False
 
 
 class ObjectPermissionBackend(object):
@@ -35,8 +39,11 @@ class ObjectPermissionBackend(object):
 
     def has_perm(self, user_obj, perm, obj=None):
         # check if user_obj and object are supported
-        if not check_support(user_obj, obj):
+        if obj is None:
+            return False
+        test_func = check_support(user_obj, obj)
+        if not test_func:
             return False
         if user_obj.has_perm(perm):
             return True
-        return obj.has_perm(user_obj, perm)
+        return test_func(user_obj, perm)

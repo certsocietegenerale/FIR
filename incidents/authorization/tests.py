@@ -64,6 +64,14 @@ class BusinessLineTestCase(TestCase):
         self.assertTrue(self.user1.has_perm('incidents.add_incident', obj=self.child11))
         self.assertFalse(self.user1.has_perm('incidents.add_incident', obj=self.root_2))
 
+    def test_on_model_class(self):
+        self.assertTrue(self.user1.has_perm('incidents.add_incident', obj=models.BusinessLine))
+        self.assertTrue(self.user1.has_perm('incidents.add_incident', obj=models.BusinessLine))
+        self.assertFalse(self.user1.has_perm('incidents.delete_incident', obj=models.BusinessLine))
+        self.assertTrue(self.user5.has_perm('incidents.change_incident', obj=models.BusinessLine))
+        self.assertFalse(self.user5.has_perm('incidents.add_incident', obj=models.BusinessLine))
+        self.assertTrue(self.admin.has_perm('incidents.add_incident', obj=models.BusinessLine))
+
 
 class IncidentTestCase(TestCase):
     fixtures = ['incidents/fixtures/seed_data.json', ]
@@ -157,6 +165,13 @@ class IncidentTestCase(TestCase):
         self.assertFalse(self.user1.has_perm('incidents.delete_incident', obj=self.incident_child_12))
         self.assertFalse(self.user1.has_perm('incidents.add_incident', obj=self.incident_child_22))
         self.assertFalse(self.user1.has_perm('incidents.delete_incident', obj=self.incident_child_22))
+
+    def test_on_model_class(self):
+        self.assertTrue(self.user1.has_perm('incidents.add_incident', obj=models.Incident))
+        self.assertFalse(self.user1.has_perm('incidents.delete_incident', obj=models.Incident))
+        self.assertTrue(self.user5.has_perm('incidents.change_incident', obj=models.Incident))
+        self.assertTrue(self.admin.has_perm('incidents.change_incident', obj=models.Incident))
+        self.assertFalse(self.user4.has_perm('incidents.change_incident', obj=models.Incident))
 
 
 class QuerySetBLTestCase(TestCase):

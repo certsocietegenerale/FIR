@@ -13,6 +13,24 @@ class AuthorizationModelMixin(models.Model):
         abstract = True
 
     @classmethod
+    def _get_permission_ids(cls, permission_codes):
+        permissions = list()
+        for perm in permission_codes:
+            perm_id = cls._permissions_cache.get(perm, None)
+            if perm_id is None:
+                try:
+                    app_label, codename = perm.split('.', 1)
+                except ValueError:
+                    raise ValueError("String permissions must be in"
+                                     " format: 'app_label.codename' (is %r)" % perm)
+                perm_obj = Permission.objects.get(content_type__app_label=app_label,
+                                                  codename=codename)
+                perm_id = perm_obj.pk
+                cls._permissions_cache[perm] = perm_id
+            permissions.append(perm_id)
+        return permissions
+
+    @classmethod
     def get_authorization_paths(cls, user, permission=None):
         if user.is_superuser:
             return cls.objects.all()
@@ -24,20 +42,8 @@ class AuthorizationModelMixin(models.Model):
                 permission = (permission,)
             if user_obj.has_perms(permission):
                 return cls.objects.all()
-            permissions = list()
-            for perm in permission:
-                perm_id = cls._permissions_cache.get(perm, None)
-                if perm_id is None:
-                    try:
-                        app_label, codename = perm.split('.', 1)
-                    except ValueError:
-                        raise ValueError("String permissions must be in"
-                                         " format: 'app_label.codename' (is %r)" % perm)
-                    perm_obj = Permission.objects.get(content_type__app_label=app_label,
-                                                      codename=codename)
-                    perm_id = perm_obj.pk
-                    cls._permissions_cache[perm] = perm_id
-                permissions.append(perm_id)
+
+            permissions = cls._get_permission_ids(permission)
 
             if len(permissions) == 1:
                 qs_filter['acl__role__permissions'] = permissions[0]
@@ -71,3 +77,8 @@ class AuthorizationModelMixin(models.Model):
 
     def has_perm(self, user, permission):
         return self.__class__.authorization.for_user(user, permission).filter(pk=self.pk).count() >= 1
+
+    @classmethod
+    def has_model_perm(cls, user, permission):
+        return cls.authorization.for_user(user, permission).count() >= 1
+

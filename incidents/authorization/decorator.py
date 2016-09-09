@@ -31,6 +31,10 @@ def has_perm(self, user, permission):
     return False
 
 
+def has_model_perm(cls, user, permission):
+    return cls._authorization_meta.model.has_model_perm(user, permission)
+
+
 def tree_authorization(fields=None, tree_model='incidents.BusinessLine'):
     def set_meta(cls):
         if not hasattr(cls, '_authorization_meta'):
@@ -59,5 +63,6 @@ def tree_authorization(fields=None, tree_model='incidents.BusinessLine'):
 
         cls.get_authorization_filter = classmethod(get_authorization_filter)
         cls.add_to_class('has_perm', has_perm)
+        cls.has_model_perm = classmethod(has_model_perm)
         return cls
     return set_meta
