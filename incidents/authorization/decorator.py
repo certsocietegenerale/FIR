@@ -3,6 +3,8 @@ from django.db.models import Q
 from django.utils import six
 from django.apps.registry import apps
 
+from incidents.authorization import AuthorizationManager
+
 
 def get_authorization_filter(cls, user, permission=None, fields=None):
     if not hasattr(cls, '_authorization_meta'):
@@ -64,5 +66,6 @@ def tree_authorization(fields=None, tree_model='incidents.BusinessLine'):
         cls.get_authorization_filter = classmethod(get_authorization_filter)
         cls.add_to_class('has_perm', has_perm)
         cls.has_model_perm = classmethod(has_model_perm)
+        AuthorizationManager().contribute_to_class(cls, 'authorization')
         return cls
     return set_meta
