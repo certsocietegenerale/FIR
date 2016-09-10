@@ -126,4 +126,8 @@ TEMPLATES = [
     }
 ]
 
+# If True, shows the incident ID in views (table and details)
 INCIDENT_SHOW_ID = False
+
+# Permission added to the incident created by user
+INCIDENT_CREATOR_PERMISSION = 'incidents.view_incidents'

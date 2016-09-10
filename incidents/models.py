@@ -167,7 +167,8 @@ class IncidentCategory(models.Model):
 
 # Core models ================================================================
 
-@tree_authorization(fields=['concerned_business_lines',], tree_model='incidents.BusinessLine')
+@tree_authorization(fields=['concerned_business_lines', ], tree_model='incidents.BusinessLine',
+                    owner_field='opened_by', owner_permission=settings.INCIDENT_CREATOR_PERMISSION)
 @link_to(File)
 @link_to(Artifact)
 class Incident(FIRModel, models.Model):
@@ -273,6 +274,8 @@ class Incident(FIRModel, models.Model):
     class Meta:
         permissions = (
             ('handle_incidents', 'Can handle incidents'),
+            ('report_events', 'Can report events'),
+            ('view_incidents', 'Can view incidents'),
             ('view_statistics', 'Can view statistics'),
         )
 

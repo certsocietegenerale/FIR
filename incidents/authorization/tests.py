@@ -123,7 +123,7 @@ class IncidentTestCase(TestCase):
                                                                           bale_subcategory=bale)
         self.incident_root_1, created = models.Incident.objects.get_or_create(subject="Incident Root 1",
                                                                               description="Test Incident",
-                                                                              opened_by=self.admin, category=category,
+                                                                              opened_by=self.user3, category=category,
                                                                               detection=detection, severity=1)
         self.incident_child_12, created = models.Incident.objects.get_or_create(subject="Incident Child 12",
                                                                                 description="Test Incident",
@@ -172,6 +172,10 @@ class IncidentTestCase(TestCase):
         self.assertTrue(self.user5.has_perm('incidents.change_incident', obj=models.Incident))
         self.assertTrue(self.admin.has_perm('incidents.change_incident', obj=models.Incident))
         self.assertFalse(self.user4.has_perm('incidents.change_incident', obj=models.Incident))
+
+    def test_creator(self):
+        self.assertTrue(self.user3.has_perm('incidents.view_incidents', obj=self.incident_root_1))
+        self.assertFalse(self.user3.has_perm('incidents.delete_incident', obj=self.incident_root_1))
 
 
 class QuerySetBLTestCase(TestCase):
