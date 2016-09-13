@@ -26,9 +26,8 @@
 	{% if dashboard %}
 		<td class='fir_todos_incident'><a href="{% url 'incidents:details' item.incident_id %}">{{ item.incident.subject }}</a></td>
 		<td class='fir_todos_category'>{{ item.category.name }}</td>
-	{% else %}
-		<td class='fir_todos_bl'>{{ item.business_line.name }}</td>
 	{% endif %}
+		<td class='fir_todos_bl'>{{ item.business_line.name }}</td>
 	<td class='fir_todos_delete'>
         {% if can_handle_incident %}
 		<form action="{% url 'todos:delete' item.id %}" method='POST' data-ajaxform data-action='remove' data-target='#todo-{{item.id}}' data-hideifnone='#fir_todos' data-hideifnone-selector='.fir_todo_item'>
