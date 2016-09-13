@@ -605,6 +605,77 @@
                 "view_statistics",
                 "incidents",
                 "incident"
+            ],
+            [
+                "view_incidents",
+                "incidents",
+                "incident"
+            ],
+            [
+                "report_events",
+                "incidents",
+                "incident"
+            ]
+        ]
+    }
+},
+{
+    "model": "auth.group",
+    "pk": 2,
+    "fields": {
+        "name": "Event reporters",
+        "permissions": [
+            [
+                "report_events",
+                "incidents",
+                "incident"
+            ]
+        ]
+    }
+},
+{
+    "model": "auth.group",
+    "pk": 3,
+    "fields": {
+        "name": "Statistics and incident viewers",
+        "permissions": [
+            [
+                "view_statistics",
+                "incidents",
+                "incident"
+            ],
+            [
+                "view_incidents",
+                "incidents",
+                "incident"
+            ]
+        ]
+    }
+},
+{
+    "model": "auth.group",
+    "pk": 4,
+    "fields": {
+        "name": "Incident viewers",
+        "permissions": [
+            [
+                "view_incidents",
+                "incidents",
+                "incident"
+            ]
+        ]
+    }
+},
+{
+    "model": "auth.group",
+    "pk": 5,
+    "fields": {
+        "name": "Statistics only viewers",
+        "permissions": [
+            [
+                "view_statistics",
+                "incidents",
+                "incident"
             ]
         ]
     }
