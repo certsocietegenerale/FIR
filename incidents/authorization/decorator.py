@@ -99,3 +99,34 @@ def tree_authorization(fields=None, tree_model='incidents.BusinessLine', owner_f
         return cls
 
     return set_meta
+
+
+def authorization_required(perm, model, view_arg=None):
+
+    def _decorator(view_func):
+        def _view(request, *args, **kwargs):
+            obj = model
+            if isinstance(view_arg, six.string_types):
+                try:
+                    obj_id = kwargs.get(view_arg)
+                    obj = model.authorization.for_user(request.user, perm).get(pk=obj_id)
+                except:
+                    raise PermissionDenied()
+            elif isinstance(view_arg, int):
+                try:
+                    obj = model.authorization.for_user(request.user, perm).get(pk=args[view_arg])
+                except:
+                    raise PermissionDenied()
+            else:
+                if not request.user.has_perm(perm, obj=model):
+                    raise PermissionDenied()
+            kwargs['authorization_target'] = obj
+            return view_func(request, *args, **kwargs)
+
+        _view.__name__ = view_func.__name__
+        _view.__dict__ = view_func.__dict__
+        _view.__doc__ = view_func.__doc__
+
+        return _view
+
+    return _decorator
