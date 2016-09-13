@@ -9,7 +9,7 @@ from fir_artifacts.models import Artifact
 
 
 @login_required
-@user_passes_test(is_incident_handler)
+#@user_passes_test(is_incident_handler)
 def artifacts_correlations(request, artifact_id):
     a = get_object_or_404(Artifact, pk=artifact_id)
     correlations = a.relations.group()

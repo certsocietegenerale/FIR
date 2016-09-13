@@ -1,4 +1,5 @@
 {% load fir_plugins %}
+{% load authorization %}
 {% if artifact_values|length > 0 %}
 	<tr>
 		<td class='head'>{{ artifact_name }}</td>
@@ -11,12 +12,15 @@
 				{{ a.value }}
 				</a>
 				{% if a.relations.count > 1 %} ({{ a.relations.count }}) {% endif %}
+                {%  has_perm 'incidents.handle_incidents' obj=event as can_handle_incident %}
+                {% if can_handle_incident %}
 				<form class='icon' action="{% url 'artifacts:detach' a.id event|relation_name event.id %}" method='POST'>
 					{% csrf_token %}
 					<button type="submit" class='btn btn-xs btn-link icon'>
 						<i class='glyphicon glyphicon-remove'></i>
 					</button>
 				</form>
+                {% endif %}
 			{% endfor %}
 		</td>
 	</tr>
