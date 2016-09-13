@@ -1,3 +1,4 @@
+from django.core.exceptions import PermissionDenied
 from django.db import models
 from django.db.models import Q
 from django.utils import six
@@ -24,8 +25,12 @@ def get_authorization_filter(cls, user, permission=None, fields=None):
 
 
 def has_perm(self, user, permission):
+    if user.is_superuser:
+        return True
     if isinstance(permission, six.string_types):
         permission = [permission, ]
+    if user.has_perms(permission):
+        return True
     if self._authorization_meta.owner_field and self._authorization_meta.owner_permission and \
        self._authorization_meta.owner_permission in permission and \
        user.pk == getattr(self, self._authorization_meta.owner_field).pk:
@@ -38,7 +43,7 @@ def has_perm(self, user, permission):
         relation = getattr(self, field)
         if isinstance(f, models.ManyToManyField):
             qs_filter = reduce(lambda x, y: x | y, [Q(path__startswith=path) for path in paths])
-            if relation.filter(qs_filter).count() > 0:
+            if relation.filter(qs_filter).distinct().exists():
                 return True
         elif isinstance(f, models.ForeignKey):
             if relation is not None and any(relation.path.startswith(p) for p in paths):
@@ -50,7 +55,7 @@ def has_model_perm(cls, user, permission):
     model_perm =  cls._authorization_meta.model.has_model_perm(user, permission)
     if not model_perm and cls._authorization_meta.owner_field and cls._authorization_meta.owner_permission and \
                     cls._authorization_meta.owner_permission in permission:
-        return cls.objects.filter(**{cls._authorization_meta.owner_field: user.pk}).count() > 0
+        return cls.objects.filter(**{cls._authorization_meta.owner_field: user.pk}).distinct().exists()
     return model_perm
 
 
