@@ -3,6 +3,7 @@
 {% load fir_artifacts %}
 {% load i18n %}
 {% load staticfiles %}
+{% load authorization %}
 
 {% block custom_css %}
 {% endblock %}
@@ -15,6 +16,8 @@
 {% endblock %}
 
 {% block content %}
+    {%  has_perm 'incidents.handle_incidents' obj=event as can_handle_incident %}
+    {% can_comment event as can_comment_incident %}
 	<div id='details-actions-all'>
 	<div class="details-actions-supmenu" id="details-actions-add">
 		<ul class="list-unstyled">
@@ -30,10 +33,15 @@
 
 	<div id="details-actions">
 		<ul class="list-unstyled">
+            {% if can_handle_incident %}
 			<li><a href="#" id="details-actions-add-link"><i class="glyphicon glyphicon-plus"></i>{%  trans "Add" %}</a></li>
+            {% endif %}
+            {% if can_comment_incident %}
 			<li><a href="#" id='details-actions-comment' data-toggle='modal' data-target='#addComment'>
 				<i class="glyphicon glyphicon-comment"></i>{%  trans "Comment" context "verb" %}
 			</a></li>
+            {% endif %}
+            {% if can_handle_incident %}
 			<li><a href="{% url 'incidents:edit' event.id %}"><i class="glyphicon glyphicon-pencil"></i>{%  trans "Edit" %}</a></li>
 			{% if event.status != 'O' %}
 				<li>
@@ -59,6 +67,7 @@
 					</form>
 				</li>
 			{% endif %}
+            {% endif %}
 			<li><a href="{% url 'incidents:followup' event.id %}"><i class="glyphicon glyphicon-retweet"></i>{%  trans "Incident followup" %}</a></li>
 			{% plugin_point 'details_actions' %}
 		</ul>
@@ -121,7 +130,7 @@
 							<tbody id='attribute_list'>
 								{% include 'events/_attributes.html' %}
 							</tbody>
-
+                            {% if can_handle_incident %}
 							<form id="add-attribute-form" action="{% url 'incidents:add_attribute' event.id %}" method="post" data-ajaxform data-action='html' data-target='#attribute_list' data-hide='#attribute_form' data-show='#show_attribute_form'>
 							<tr id="show_attribute_form">
 								<td colspan='3'><a href='#'>+ {%  trans "Add attribute" %}</a></td>
@@ -138,6 +147,7 @@
 							<td><button type="submit" class="btn btn-xs btn-link">{%  trans "Add" %}</button></td>
 							</tr>
 							</form>
+                            {% endif %}
 						</table>
 					</div>
 				{% endif %}
@@ -170,13 +180,12 @@
 						</tr>
 					</thead>
 					{% for comment in comments.all reversed %}
-						{% include 'events/_comment.html' %}
+						{% include 'events/_comment.html' with can_handle_incident=can_handle_incident %}
 					{% endfor %}
 				</table>
 			</div>
 			{% plugin_point 'details_tab_content' %}
 		</div>
-
 		<!-- Modal for comments -->
 		<div id="addComment" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addCommentLabel" aria-hidden="true">
 			<div class="modal-dialog">

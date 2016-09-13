@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load authorization %}
 {% if incident_list %}
 	<div class='incident_table' data-order-param='{{ order_param }}' data-asc='{{ asc }}'>
 		<table class='table table-hover table-condensed'>
@@ -78,7 +79,10 @@
 
 						<td>{{ incident.opened_by }}</td>
 						<td>
+                            {%  has_perm 'incidents.handle_incidents' obj=incident as can_handle_incident %}
+                            {% if can_handle_incident %}
 							<a href="{% url 'incidents:edit' incident.id %}"><span class='glyphicon glyphicon-pencil'></span></a>
+                            {% endif %}
 						</td>
 					</tr>
 				{% endfor %}

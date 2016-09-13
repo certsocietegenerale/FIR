@@ -8,6 +8,7 @@ from incidents.models import IncidentCategory, Incident, Comments, BusinessLine
 from incidents.models import Label, Log, BaleCategory
 from incidents.models import Attribute, ValidAttribute, IncidentTemplate, Profile
 from incidents.models import IncidentForm, CommentForm
+from incidents.authorization.decorator import authorization_required
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -21,7 +22,7 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.template import RequestContext
 from json import dumps
 from django.template import Template
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.forms.models import model_to_dict
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
@@ -49,17 +50,34 @@ cal = [
     'oct',
     'nov',
     'dec',
-    ]
+]
+
 
 # helper =========================================================
 
 
 def is_incident_handler(user):
-    return user.has_perm('incidents.handle_incidents')
+    return user.has_perm('incidents.handle_incidents', obj=Incident)
+
+
+def is_incident_reporter(user):
+    return user.has_perm('incidents.handle_incidents', obj=Incident) or user.has_perm('incidents.report_events',
+                                                                                      obj=Incident)
+
+
+def is_incident_viewer(user):
+    return user.has_perm('incidents.view_incidents', obj=Incident) or user.has_perm('incidents.report_events',
+                                                                                    obj=Incident)
 
 
 def can_view_statistics(user):
-    return user.has_perm('incidents.view_statistics') or user.has_perm('incidents.handle_incidents')
+    return user.has_perm('incidents.view_statistics', obj=Incident)
+
+
+comment_permissions = ['incidents.handle_incidents', ]
+if getattr(settings, 'INCIDENT_VIEWER_CAN_COMMENT', False):
+    comment_permissions.append('incidents.view_incidents')
+
 
 # login / logout =================================================
 
@@ -106,6 +124,9 @@ def init_session(request):
     # Put all the incident templates in the session
     request.session['incident_templates'] = list(IncidentTemplate.objects.exclude(name='default').values('name'))
     request.session['has_incident_templates'] = len(request.session['incident_templates']) > 0
+    request.session['can_report_event'] = request.user.has_perm('incidents.handle_incidents', obj=Incident) or \
+                                          request.user.has_perm('incidents.report_events', obj=Incident)
+
 
 # audit trail =====================================================
 
@@ -113,7 +134,7 @@ def init_session(request):
 def log(what, user, incident=None, comment=None):
     # dirty hack to not log when in debug mode
     import sys
-    if len(sys.argv) >= 2 and sys.argv[1] == 'runserver':
+    if getattr(settings, 'DEBUG', False):
         print "DEBUG: Not logging"
         return
 
@@ -125,13 +146,18 @@ def log(what, user, incident=None, comment=None):
 
     log.save()
 
+
 # incidents =======================================================
 
-
 @login_required
-@user_passes_test(is_incident_handler)
-def followup(request, incident_id):
-    i = get_object_or_404(Incident, pk=incident_id)
+@authorization_required('incidents.view_incidents', Incident, view_arg='incident_id')
+def followup(request, incident_id, authorization_target=None):
+    if authorization_target is None:
+        i = get_object_or_404(
+            Incident.authorization.for_user(request.user, ['incidents.view_incidents', 'incidents.handle_incidents']),
+            pk=incident_id)
+    else:
+        i = authorization_target
     comments = i.comments_set.all().order_by('date')
 
     return render(
@@ -142,29 +168,36 @@ def followup(request, incident_id):
 
 
 @login_required
-@user_passes_test(is_incident_handler)
+@user_passes_test(is_incident_viewer)
 def index(request, is_incident=False):
     return render(request, 'events/index-all.html', {'incident_view': is_incident})
 
 
 @login_required
-@user_passes_test(is_incident_handler)
+@user_passes_test(is_incident_viewer)
 def incidents_all(request):
     return incident_display(request, Q(is_incident=True))
 
 
 @login_required
-@user_passes_test(is_incident_handler)
+@user_passes_test(is_incident_viewer)
 def events_all(request):
     return incident_display(request, Q(is_incident=False), False)
 
 
 @login_required
-@user_passes_test(is_incident_handler)
-def details(request, incident_id):
-    i = get_object_or_404(Incident, pk=incident_id)
-
+@authorization_required('incidents.view_incidents', Incident, view_arg='incident_id')
+def details(request, incident_id, authorization_target=None):
+    if authorization_target is None:
+        i = get_object_or_404(
+            Incident.authorization.for_user(request.user, ['incidents.view_incidents', 'incidents.handle_incidents']),
+            pk=incident_id)
+    else:
+        i = authorization_target
     form = CommentForm()
+    if not request.user.has_perm('incidents.handle_incidents', obj=i):
+        form.fields['action'].queryset = Label.objects.filter(group__name='action').exclude(
+            name__in=['Closed', 'Opened', 'Blocked'])
 
     (artifacts, artifacts_count, correlated_count) = libartifacts.all_for_object(i)
 
@@ -185,14 +218,15 @@ def details(request, incident_id):
          "valid_attributes": valid_attributes,
          "comments": comments,
          "incident_show_id": settings.INCIDENT_SHOW_ID}
-         )
+    )
 
 
 @login_required
-@user_passes_test(is_incident_handler)
+@user_passes_test(is_incident_reporter)
 def new_event(request):
     if request.method == 'POST':
-        form = IncidentForm(request.POST)
+        form = IncidentForm(request.POST, for_user=request.user)
+
         form.status = _('Open')
 
         if form.is_valid():
@@ -216,20 +250,16 @@ def new_event(request):
                 return redirect("events:details", incident_id=i.id)
 
     else:
-        form = IncidentForm()
-
         template = request.GET.get('template', 'default')
         try:
             template = IncidentTemplate.objects.get(name=template)
             data = model_to_dict(template)
             data['description'] = Template(data['description']).render(RequestContext(request))
-            form = IncidentForm(initial=data)
         except ObjectDoesNotExist:
-            pass
+            data = {}
+        form = IncidentForm(initial=data, for_user=request.user)
 
-    bls = BusinessLine.objects.all()
-
-    return render(request, 'events/new.html', {'form': form, 'mode': 'new', 'bls': bls})
+    return render(request, 'events/new.html', {'form': form, 'mode': 'new'})
 
 
 def diff(incident, form):
@@ -274,14 +304,18 @@ def diff(incident, form):
 
 
 @login_required
-@user_passes_test(is_incident_handler)
-def edit_incident(request, incident_id):
-    i = get_object_or_404(Incident, pk=incident_id)
+@authorization_required('incidents.handle_incidents', Incident, view_arg='incident_id')
+def edit_incident(request, incident_id, authorization_target=None):
+    if authorization_target is None:
+        i = get_object_or_404(
+            Incident.authorization.for_user(request.user, 'incidents.handle_incidents'),
+            pk=incident_id)
+    else:
+        i = authorization_target
     starred = i.is_starred
-    bls = BusinessLine.objects.all()
 
     if request.method == "POST":
-        form = IncidentForm(request.POST, instance=i)
+        form = IncidentForm(request.POST, instance=i, for_user=request.user)
 
         if form.is_valid():
             Comments.create_diff_comment(i, form.cleaned_data, request.user)
@@ -295,21 +329,24 @@ def edit_incident(request, incident_id):
 
             if i.is_incident:
                 return redirect("incidents:details", incident_id=i.id)
-                return redirect("incidents:index")
             else:
                 return redirect("events:details", incident_id=i.id)
-                return redirect("events:index")
     else:
-        form = IncidentForm(instance=i)
+        form = IncidentForm(instance=i, for_user=request.user)
 
-    return render(request, 'events/new.html', {'i': i, 'form': form, 'mode': 'edit', 'bls': bls})
+    return render(request, 'events/new.html', {'i': i, 'form': form, 'mode': 'edit'})
 
 
 @login_required
-@user_passes_test(is_incident_handler)
-def delete_incident(request, incident_id):
+@authorization_required('incidents.handle_incidents', Incident, view_arg='incident_id')
+def delete_incident(request, incident_id, authorization_target=None):
     if request.method == "POST":
-        i = get_object_or_404(Incident, pk=incident_id)
+        if authorization_target is None:
+            i = get_object_or_404(
+                Incident.authorization.for_user(request.user, 'incidents.handle_incidents'),
+                pk=incident_id)
+        else:
+            i = authorization_target
         msg = "Incident '%s' deleted." % i.subject
         i.delete()
         return HttpResponse(msg)
@@ -318,9 +355,14 @@ def delete_incident(request, incident_id):
 
 
 @login_required
-@user_passes_test(is_incident_handler)
-def change_status(request, incident_id, status):
-    i = get_object_or_404(Incident, pk=incident_id)
+@authorization_required('incidents.handle_incidents', Incident, view_arg='incident_id')
+def change_status(request, incident_id, status, authorization_target=None):
+    if authorization_target is None:
+        i = get_object_or_404(
+            Incident.authorization.for_user(request.user, 'incidents.handle_incidents'),
+            pk=incident_id)
+    else:
+        i = authorization_target
     i.status = status
     i.save()
 
@@ -345,9 +387,14 @@ def change_status(request, incident_id, status):
 
 
 @login_required
-@user_passes_test(is_incident_handler)
-def add_attribute(request, incident_id):
-    i = get_object_or_404(Incident, pk=incident_id)
+@authorization_required('incidents.handle_incidents', Incident, view_arg='incident_id')
+def add_attribute(request, incident_id, authorization_target=None):
+    if authorization_target is None:
+        i = get_object_or_404(
+            Incident.authorization.for_user(request.user, 'incidents.handle_incidents'),
+            pk=incident_id)
+    else:
+        i = authorization_target
     if request.method == "POST":
         # First, check if it is a valid attribute
         valid_attribute = get_object_or_404(ValidAttribute, name=request.POST['name'])
@@ -373,8 +420,8 @@ def add_attribute(request, incident_id):
 
 
 @login_required
-@user_passes_test(is_incident_handler)
-def delete_attribute(request, incident_id, attribute_id):
+@authorization_required('incidents.handle_incidents', Incident, view_arg='incident_id')
+def delete_attribute(request, incident_id, attribute_id, authorization_target=None):
     a = get_object_or_404(Attribute, pk=attribute_id)
     if request.method == "POST":
         a.delete()
@@ -384,28 +431,43 @@ def delete_attribute(request, incident_id, attribute_id):
 # comments ==================================================================
 
 @login_required
-@user_passes_test(is_incident_handler)
 def edit_comment(request, incident_id, comment_id):
     c = get_object_or_404(Comments, pk=comment_id, incident_id=incident_id)
+    i = c.incident
+    incident_handler = False
+    if not request.user.has_perm('incidents.handle_incidents', obj=i):
+        if c.opened_by != request.user:
+            raise PermissionDenied()
+    else:
+        incident_handler = True
+
     if request.method == "POST":
         form = CommentForm(request.POST, instance=c)
+        if not incident_handler:
+            form.fields['action'].queryset = Label.objects.filter(group__name='action').exclude(
+                name__in=['Closed', 'Opened', 'Blocked'])
         if form.is_valid():
             form.save()
-            log("Edited comment %s" % (form.cleaned_data['comment'][:10]+"..."), request.user, incident=Incident.objects.get(id=incident_id))
+            log("Edited comment %s" % (form.cleaned_data['comment'][:10] + "..."), request.user,
+                incident=Incident.objects.get(id=incident_id))
             return redirect("incidents:details", incident_id=c.incident_id)
     else:
         form = CommentForm(instance=c)
+        if not incident_handler:
+            form.fields['action'].queryset = Label.objects.filter(group__name='action').exclude(
+                name__in=['Closed', 'Opened', 'Blocked'])
 
     return render(request, 'events/edit_comment.html', {'c': c, 'form': form})
 
 
 @login_required
-@user_passes_test(is_incident_handler)
 def delete_comment(request, incident_id, comment_id):
-
+    c = get_object_or_404(Comments, pk=comment_id, incident_id=incident_id)
+    i = c.incident
+    if not request.user.has_perm('incidents.handle_incidents', obj=i) and not c.opened_by == request.user:
+        raise PermissionDenied()
     if request.method == "POST":
-        c = get_object_or_404(Comments, pk=comment_id, incident_id=incident_id)
-        msg = "Comment '%s' deleted." % (c.comment[:20]+"...")
+        msg = "Comment '%s' deleted." % (c.comment[:20] + "...")
         c.delete()
         log(msg, request.user, incident=Incident.objects.get(id=incident_id))
         return redirect('incidents:details', incident_id=c.incident_id)
@@ -414,28 +476,32 @@ def delete_comment(request, incident_id, comment_id):
 
 
 @login_required
-@user_passes_test(is_incident_handler)
 def update_comment(request, comment_id):
-
+    c = get_object_or_404(Comments, pk=comment_id)
+    i = c.incident
     if request.method == 'GET':
-        c = [get_object_or_404(Comments, pk=comment_id)]
-        serialized = serializers.serialize('json', c)
+        if not request.user.has_perm('incidents.view_incidents', obj=i):
+            ret = {'status': 'error', 'errors': ['Permission denied', ]}
+            return HttpResponseServerError(dumps(ret), content_type="application/json")
+        serialized = serializers.serialize('json', [c, ])
         return HttpResponse(dumps(serialized), content_type="application/json")
     else:
-        c = get_object_or_404(Comments, pk=comment_id)
         comment_form = CommentForm(request.POST, instance=c)
+        if not request.user.has_perm('incidents.handle_incidents', obj=i):
+            comment_form.fields['action'].queryset = Label.objects.filter(group__name='action').exclude(
+                name__in=['Closed', 'Opened', 'Blocked'])
 
         if comment_form.is_valid():
 
             c = comment_form.save()
 
-            log("Comment edited: %s" % (comment_form.cleaned_data['comment'][:20]+"..."), request.user, incident=c.incident)
+            log("Comment edited: %s" % (comment_form.cleaned_data['comment'][:20] + "..."), request.user,
+                incident=c.incident)
 
             if c.action.name in ['Closed', 'Opened', 'Blocked']:
                 c.incident.status = c.action.name[0]
                 c.incident.save()
 
-            i = get_object_or_404(Incident, pk=c.incident.id)
             i.refresh_artifacts(c.comment)
 
             return render(request, 'events/_comment.html', {'comment': c, 'event': i})
@@ -447,7 +513,7 @@ def update_comment(request, comment_id):
 # events ====================================================================
 
 @login_required
-@user_passes_test(is_incident_handler)
+@user_passes_test(is_incident_viewer)
 def event_index(request):
     return index(request, False)
 
@@ -490,7 +556,7 @@ def get_query(query_string, search_fields):
 
 
 @login_required
-@user_passes_test(is_incident_handler)
+@user_passes_test(is_incident_viewer)
 def search(request):
     query_string = ''
     if ('q' in request.GET) and request.GET['q'].strip():
@@ -503,37 +569,38 @@ def search(request):
             plan = re.search("plan:(\S+)", query_string)
             if plan:
                 q = q & Q(plan__name=plan.group(1))
-                query_string = query_string.replace("plan:"+plan.group(1), '')
+                query_string = query_string.replace("plan:" + plan.group(1), '')
 
             try:
                 bl = re.search("bl:(\S+)", query_string).group(1)
-                bls = BusinessLine.objects.filter(name__icontains=bl)
+                bls = BusinessLine.authorization.for_user(request.user, 'incidents.view_incidents').filter(
+                    name__icontains=bl)
                 if bls:
                     q = q & (Q(concerned_business_lines__in=bls) | Q(main_business_lines__in=bls))
-                    query_string = query_string.replace("bl:"+bl, '')
+                    query_string = query_string.replace("bl:" + bl, '')
             except Exception:
                 pass
 
             opened_by = re.search("opened_by:(\S+)", query_string)
             if opened_by:
                 q = q & Q(opened_by__username=opened_by.group(1))
-                query_string = query_string.replace('opened_by:'+opened_by.group(1), '')
+                query_string = query_string.replace('opened_by:' + opened_by.group(1), '')
 
             category = re.search("category:(\S+)", query_string)
             if category:
                 q = q & Q(category__name__icontains=category.group(1))
-                query_string = query_string.replace('category:'+category.group(1), '')
+                query_string = query_string.replace('category:' + category.group(1), '')
 
             status = re.search("status:(\S+)", query_string)
             if status:
                 q = q & Q(status=status.group(1)[0])
-                query_string = query_string.replace('status:'+status.group(1), '')
+                query_string = query_string.replace('status:' + status.group(1), '')
 
             artifacts = re.search("art:(\S+)", query_string)
             if artifacts:
                 artifacts = artifacts.group(1)
                 q = q & Q(id__in=[i.id for i in libartifacts.incs_for_art(artifacts)])
-                query_string = query_string.replace('art:'+artifacts, '')
+                query_string = query_string.replace('art:' + artifacts, '')
 
             if query_string.count('starred') > 0:
                 q = q & Q(is_starred=True)
@@ -547,7 +614,7 @@ def search(request):
                     q = q & Q(severity__gt=severity.group("value"))
                 elif severity.group('eval') == "<":
                     q = q & Q(severity__lt=severity.group("value"))
-                query_string = query_string.replace('severity'+severity.group('eval')+severity.group("value"), '')
+                query_string = query_string.replace('severity' + severity.group('eval') + severity.group("value"), '')
 
             pattern = re.compile('\s+')
 
@@ -557,7 +624,8 @@ def search(request):
             if query_string != ['']:
                 q_other = Q()
                 for i in other:
-                    q_other &= (Q(subject__icontains=i) | Q(description__icontains=i) | Q(comments__comment__icontains=i))
+                    q_other &= (
+                        Q(subject__icontains=i) | Q(description__icontains=i) | Q(comments__comment__icontains=i))
 
             q = (q & q_other)
 
@@ -567,7 +635,8 @@ def search(request):
 
             order_by = order_param
 
-            if order_by not in ['date', 'subject', 'category', 'bl', 'severity', 'status', 'opened_by', 'detection', 'actor', 'confidentiality']:
+            if order_by not in ['date', 'subject', 'category', 'bl', 'severity', 'status', 'opened_by', 'detection',
+                                'actor', 'confidentiality']:
                 order_by = 'date'
 
             if order_by == "category":
@@ -578,23 +647,24 @@ def search(request):
                 order_by = 'actor__name'
 
             if asc == 'false':
-                order_by = "-"+order_by
+                order_by = "-" + order_by
 
+            found_entries = Incident.authorization.for_user(request.user, 'incidents.view_incidents').filter(q)
             if order_param == 'last_action':
                 if asc:
-                    found_entries = Incident.objects.filter(q).annotate(Max('comments__date')).order_by('comments__date__max')
+                    found_entries.annotate(Max('comments__date')).order_by('comments__date__max')
                 else:
-                    found_entries = Incident.objects.filter(q).annotate(Max('comments__date')).order_by('-comments__date__max')
+                    found_entries.annotate(Max('comments__date')).order_by('-comments__date__max')
 
             else:
-                found_entries = Incident.objects.filter(q).all().order_by(order_by)
+                found_entries.all().order_by(order_by)
 
             # distinct
-            found_entries = found_entries.distinct()
+            found_entries.distinct()
 
             # get hide_closed option from user profile
             if request.user.profile.hide_closed:
-                found_entries = found_entries.filter(~Q(status='C'))
+                found_entries.filter(~Q(status='C'))
 
             # get number of pages from user profile
             page = request.GET.get('page')
@@ -609,7 +679,8 @@ def search(request):
             except EmptyPage:
                 found_entries = p.page(1)
 
-            return render(request, 'events/table.html', {'incident_list': found_entries, 'order_param': order_param, 'asc': asc})
+            return render(request, 'events/table.html',
+                          {'incident_list': found_entries, 'order_param': order_param, 'asc': asc})
         else:
             return render(request, 'events/search.html', {'query_string': query_string})
     else:
@@ -629,9 +700,14 @@ def search(request):
 # ajax ======================================================================
 
 @login_required
-@user_passes_test(is_incident_handler)
-def toggle_star(request, incident_id):
-    i = get_object_or_404(Incident, pk=incident_id)
+@authorization_required('incidents.handle_incidents', Incident, view_arg='incident_id')
+def toggle_star(request, incident_id, authorization_target=None):
+    if authorization_target is None:
+        i = get_object_or_404(
+            Incident.authorization.for_user(request.user, 'incidents.handle_incidents'),
+            pk=incident_id)
+    else:
+        i = authorization_target
 
     i.is_starred = not i.is_starred
 
@@ -641,18 +717,26 @@ def toggle_star(request, incident_id):
 
 
 @login_required
-@user_passes_test(is_incident_handler)
-def comment(request, incident_id):
-    i = get_object_or_404(Incident, pk=incident_id)
+@authorization_required(comment_permissions, Incident, view_arg='incident_id')
+def comment(request, incident_id, authorization_target=None):
+    if authorization_target is None:
+        i = get_object_or_404(
+            Incident.authorization.for_user(request.user, comment_permissions),
+            pk=incident_id)
+    else:
+        i = authorization_target
 
     if request.method == "POST":
         comment_form = CommentForm(request.POST)
+        if not request.user.has_perm('incidents.handle_incidents'):
+            comment_form.fields['action'].queryset = Label.objects.filter(group__name='action').exclude(
+                name__in=['Closed', 'Opened', 'Blocked'])
         if comment_form.is_valid():
             com = comment_form.save(commit=False)
             com.incident = i
             com.opened_by = request.user
             com.save()
-            log("Comment created: %s" % (com.comment[:20]+"..."), request.user, incident=com.incident)
+            log("Comment created: %s" % (com.comment[:20] + "..."), request.user, incident=com.incident)
             i.refresh_artifacts(com.comment)
 
             if com.action.name in ['Closed', 'Opened', 'Blocked']:
@@ -670,7 +754,6 @@ def comment(request, incident_id):
 # User ==========================================================================
 
 @login_required
-@user_passes_test(is_incident_handler)
 def toggle_closed(request):
     request.user.profile.hide_closed = not request.user.profile.hide_closed
     request.user.profile.save()
@@ -709,7 +792,7 @@ def yearly_stats(request):
 def close_old(request):
     now = datetime.datetime.now()
     query = Q(date__lt=datetime.datetime(now.year, now.month, 1) - datetime.timedelta(days=90)) & ~Q(status="C")
-    old = Incident.objects.filter(query)
+    old = Incident.authorization.for_user(request.user, 'incidents.handle_incidents').filter(query)
     for i in old:
         if i.status != "C":
             i.close_timeout()
@@ -720,30 +803,37 @@ def close_old(request):
 @login_required
 @user_passes_test(can_view_statistics)
 def quarterly_bl_stats(request, business_line=None, num_months=3):
-    bls = BusinessLine.get_root_nodes()
+    bls = BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics').filter(depth=1)
     try:
-        bl = BusinessLine.objects.get(name=business_line)
+        bl = BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics').get(name=business_line)
     except:
-        bl = BusinessLine.objects.get(name=bls[0].name)
+        bl = bls[0]
 
     today = datetime.date.today()
     q_month = Q()
     for i in xrange(num_months):
-        previous = today-relativedelta(months=i+1)
+        previous = today - relativedelta(months=i + 1)
         month = previous.month
         year = previous.year
 
         q_month |= Q(date__month=month, date__year=year)
 
     q = q_month & Q(confidentiality__lte=2)
-    qbl = (Q(concerned_business_lines=bl) | Q(main_business_lines=bl) | Q(concerned_business_lines__in=bl.get_children()))
+    qbl = (
+        Q(concerned_business_lines=bl) | Q(main_business_lines=bl) | Q(concerned_business_lines__in=bl.get_children()))
     q &= qbl
 
-    incident_list = [i for i in Incident.objects.filter(q).order_by('-date').distinct()]
+    incident_list = [i for i in
+                     Incident.authorization.for_user(request.user, 'incidents.view_incidents').filter(q).order_by(
+                         '-date').distinct()]
     unclosed = qbl & Q(date__lt=today - relativedelta(months=3)) & ~Q(status='C')
-    unclosed_incident_list = [i for i in Incident.objects.filter(unclosed).order_by('-date').distinct()]
+    unclosed_incident_list = [i for i in
+                              Incident.authorization.for_user(request.user, 'incidents.view_incidents').filter(
+                                  unclosed).order_by('-date').distinct()]
 
-    return render(request, 'stats/quarterly.html', {'bl': bl, 'incident_list': incident_list, 'unclosed_incident_list': unclosed_incident_list, 'bls': bls})
+    return render(request, 'stats/quarterly.html',
+                  {'bl': bl, 'incident_list': incident_list, 'unclosed_incident_list': unclosed_incident_list,
+                   'bls': bls})
 
 
 @login_required
@@ -758,9 +848,8 @@ def yearly_compare(request, year=None):
 # comparison ===============================================================
 
 @login_required
-@user_passes_test(is_incident_handler)
+@user_passes_test(can_view_statistics)
 def data_sandbox(request):
-
     # parse request parameters from GET requests
 
     category_selection_ids = [int(c) for c in request.GET.getlist('category_selection')]
@@ -777,10 +866,10 @@ def data_sandbox(request):
 
     dates = []
     delta = relativedelta(end, start)
-    months = delta.years*12 + delta.months
+    months = delta.years * 12 + delta.months
 
     for i in xrange(months):
-            dates.append(end-relativedelta(months=i+1))
+        dates.append(end - relativedelta(months=i + 1))
 
     q_categories = Q()
     for c in category_selection:
@@ -828,7 +917,8 @@ def data_sandbox(request):
             for i in xrange(months):
                 qs |= Q(date__year=dates[i].year, date__month=dates[i].month)
 
-            incidents = Incident.objects.filter(qs & q_all).distinct()
+            incidents = Incident.authorization.for_user(request.user, 'incidents.view_incidents').filter(
+                qs & q_all).distinct()
             for inc in incidents:
                 plot = {}
                 plot['date'] = str(inc.date)
@@ -852,18 +942,22 @@ def data_sandbox(request):
         if divisor == 'all':
             for i in xrange(months):
                 plot = {}
-                plot['date'] = str(dates[i].year)+"-"+str(dates[i].month)
-                plot['N'] = Incident.objects.filter(Q(date__year=dates[i].year, date__month=dates[i].month) & q_all).distinct().count()
-                plot['N-1'] = Incident.objects.filter(Q(date__year=dates[i].year-1, date__month=dates[i].month) & q_all).distinct().count()
+                plot['date'] = str(dates[i].year) + "-" + str(dates[i].month)
+                plot['N'] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
+                    Q(date__year=dates[i].year, date__month=dates[i].month) & q_all).distinct().count()
+                plot['N-1'] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
+                    Q(date__year=dates[i].year - 1, date__month=dates[i].month) & q_all).distinct().count()
                 chart_data.append(plot)
 
         if divisor == 'category':
             for i in xrange(months):
                 plot = {}
-                plot['date'] = str(dates[i].year)+"-"+str(dates[i].month)
+                plot['date'] = str(dates[i].year) + "-" + str(dates[i].month)
 
                 for cat in category_selection:
-                    plot[cat.name] = Incident.objects.filter(Q(date__year=dates[i].year, date__month=dates[i].month, category=cat) & q_detection & q_severity & q_is_incident & q_is_major & q_bl).distinct().count()
+                    plot[cat.name] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
+                        Q(date__year=dates[i].year, date__month=dates[i].month,
+                          category=cat) & q_detection & q_severity & q_is_incident & q_is_major & q_bl).distinct().count()
                 chart_data.append(plot)
 
     if graph_type == 'bar':
@@ -872,7 +966,8 @@ def data_sandbox(request):
             for i in xrange(months):
                 plot = {}
                 plot['label'] = '%s-%s' % (dates[i].year, dates[i].month)
-                plot['value'] = Incident.objects.filter(Q(date__year=dates[i].year, date__month=dates[i].month) & q_all).distinct().count()
+                plot['value'] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
+                    Q(date__year=dates[i].year, date__month=dates[i].month) & q_all).distinct().count()
                 plot['text'] = plot['value']
                 chart_data.append(plot)
 
@@ -880,7 +975,8 @@ def data_sandbox(request):
             for i in xrange(months):
                 plot = {}
                 plot['label'] = '%s-%s' % (dates[i].year, dates[i].month)
-                plot['value'] = Incident.objects.filter(Q(date__year=dates[i].year, date__month=dates[i].month, plan__name='A') & q_all).distinct().count()
+                plot['value'] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
+                    Q(date__year=dates[i].year, date__month=dates[i].month, plan__name='A') & q_all).distinct().count()
                 plot['text'] = plot['value']
                 chart_data.append(plot)
 
@@ -888,7 +984,8 @@ def data_sandbox(request):
             for i in xrange(months):
                 plot = {}
                 plot['label'] = '%s-%s' % (dates[i].year, dates[i].month)
-                plot['value'] = Incident.objects.filter(Q(date__year=dates[i].year, date__month=dates[i].month, status='O') & q_all).distinct().count()
+                plot['value'] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
+                    Q(date__year=dates[i].year, date__month=dates[i].month, status='O') & q_all).distinct().count()
                 plot['text'] = plot['value']
                 chart_data.append(plot)
 
@@ -896,7 +993,8 @@ def data_sandbox(request):
             for i in xrange(months):
                 plot = {}
                 plot['label'] = '%s-%s' % (dates[i].year, dates[i].month)
-                plot['value'] = Incident.objects.filter(Q(date__year=dates[i].year, date__month=dates[i].month, status='B') & q_all).distinct().count()
+                plot['value'] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
+                    Q(date__year=dates[i].year, date__month=dates[i].month, status='B') & q_all).distinct().count()
                 plot['text'] = plot['value']
                 chart_data.append(plot)
 
@@ -908,7 +1006,10 @@ def data_sandbox(request):
                 plot['entry'] = '%s-%s' % (dates[i].year, dates[i].month)
                 append = False
                 for severity in xrange(1, 5):
-                    plot['%s/4' % severity] = Incident.objects.filter(Q(date__year=dates[i].year, date__month=dates[i].month, severity=severity) & q_severity & q_categories & q_detection & q_is_incident & q_is_major & q_bl).distinct().count()
+                    plot['%s/4' % severity] = Incident.authorization.for_user(request.user,
+                                                                              'incidents.view_statistics').filter(
+                        Q(date__year=dates[i].year, date__month=dates[i].month,
+                          severity=severity) & q_severity & q_categories & q_detection & q_is_incident & q_is_major & q_bl).distinct().count()
                     if plot['%s/4' % severity] > 0:
                         append = True
                 if append:
@@ -916,7 +1017,8 @@ def data_sandbox(request):
 
         if divisor == 'subentity':
             if not bls:
-                children = BusinessLine.get_root_nodes()
+                children = BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics').filter(
+                    depth=1)
             else:
                 bl = BusinessLine.objects.get(id=bl)
                 children = bl.get_children()
@@ -924,7 +1026,9 @@ def data_sandbox(request):
             for i in xrange(months):
                 plot = {}
                 for cbl in children:
-                    plot[cbl.name] = Incident.objects.filter(Q(date__year=dates[i].year, date__month=dates[i].month, concerned_business_lines=cbl) & q_categories & q_detection & q_severity & q_is_incident & q_is_major).distinct().count()
+                    plot[cbl.name] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
+                        Q(date__year=dates[i].year, date__month=dates[i].month,
+                          concerned_business_lines=cbl) & q_categories & q_detection & q_severity & q_is_incident & q_is_major).distinct().count()
 
                 plot['entry'] = '%s-%s' % (dates[i].year, dates[i].month)
                 chart_data.append(plot)
@@ -933,7 +1037,9 @@ def data_sandbox(request):
             for i in xrange(months):
                 plot = {}
                 for actor in Label.objects.filter(group__name='actor'):
-                    plot[actor.name] = Incident.objects.filter(Q(date__year=dates[i].year, date__month=dates[i].month, actor=actor) & q_all).distinct().count()
+                    plot[actor.name] = Incident.authorization.for_user(request.user,
+                                                                       'incidents.view_statistics').filter(
+                        Q(date__year=dates[i].year, date__month=dates[i].month, actor=actor) & q_all).distinct().count()
 
                 plot['entry'] = '%s-%s' % (dates[i].year, dates[i].month)
                 chart_data.append(plot)
@@ -942,7 +1048,10 @@ def data_sandbox(request):
             for i in xrange(months):
                 plot = {}
                 for category in category_selection:
-                    plot[category.name] = Incident.objects.filter(Q(date__year=dates[i].year, date__month=dates[i].month, category=category) & q_detection & q_severity & q_is_incident & q_is_major & q_bl).distinct().count()
+                    plot[category.name] = Incident.authorization.for_user(request.user,
+                                                                          'incidents.view_statistics').filter(
+                        Q(date__year=dates[i].year, date__month=dates[i].month,
+                          category=category) & q_detection & q_severity & q_is_incident & q_is_major & q_bl).distinct().count()
 
                 plot['entry'] = '%s-%s' % (dates[i].year, dates[i].month)
                 chart_data.append(plot)
@@ -951,22 +1060,20 @@ def data_sandbox(request):
 
 
 @login_required
-@user_passes_test(is_incident_handler)
+@user_passes_test(can_view_statistics)
 def sandbox(request, divisor='all'):
-    form = IncidentForm(request.POST)
+    form = IncidentForm(request.POST, for_user=request.user, permissions='incidents.view_statistics')
 
     if request.method == 'POST':
         fr = request.POST['from_date'][:7]
         to = request.POST['to_date'][:7]
     else:
         today = datetime.datetime.today()
-        fr = "%s-%s" % (today.year-1, today.month)
+        fr = "%s-%s" % (today.year - 1, today.month)
         to = "%s-%s" % (today.year, today.month)
 
     categories = IncidentCategory.objects.all()
     categories_checked = [int(c) for c in request.POST.getlist('category_selection')]
-    bls = BusinessLine.objects.all()
-    unclosed_incident_list = Incident.objects.filter(~Q(status='C'))
 
     return render(
         request,
@@ -976,15 +1083,13 @@ def sandbox(request, divisor='all'):
          'form': form,
          'categories': categories,
          'categories_checked': categories_checked,
-         'bls': bls,
-         'unclosed_incident_list': unclosed_incident_list,
          })
 
 
 @login_required
-@user_passes_test(is_incident_handler)
+@user_passes_test(can_view_statistics)
 def stats_attributes(request):
-    form = IncidentForm()
+    form = IncidentForm(for_user=request.user, permissions='incidents.view_statistics')
     categories = IncidentCategory.objects.all()
     attributes = ValidAttribute.objects.exclude(unit__isnull=True)
 
@@ -1054,8 +1159,8 @@ def stats_attributes_filter(request):
     return q_categories & q_dates & q_detection & q_severity & q_is_incident & q_is_major & q_bl
 
 
-def stats_attributes_get_data(filter, attribute_ids):
-    incidents = Incident.objects.filter(filter).order_by('date').distinct().reverse()
+def stats_attributes_get_data(filter, attribute_ids, user, permission='incidents.view_statistics'):
+    incidents = Incident.authorization.for_user(user, permission).filter(filter).order_by('date').distinct().reverse()
     incident_ids = [i.id for i in incidents]
 
     valid_attributes = ValidAttribute.objects.filter(pk__in=attribute_ids)
@@ -1142,7 +1247,8 @@ def stats_attributes_table(request):
     attribute_selection = request.GET.getlist("attribute_selection")
     if request.GET['bars'] != '0':
         attribute_selection.append(request.GET['bars'])
-    (incidents, all_attributes) = stats_attributes_get_data(main_filter, attribute_selection)
+    (incidents, all_attributes) = stats_attributes_get_data(main_filter, attribute_selection, request.user,
+                                                            permission='incidents.view_incidents')
 
     for incident in incidents:
         attribute_count = 0
@@ -1179,7 +1285,7 @@ def stats_attributes_by_time_range(request):
     attribute_selection = request.GET.getlist("attribute_selection")
     if request.GET['bars'] != '0':
         attribute_selection.append(request.GET['bars'])
-    (incidents, all_attributes) = stats_attributes_get_data(main_filter, attribute_selection)
+    (incidents, all_attributes) = stats_attributes_get_data(main_filter, attribute_selection, request.user)
     datetime_ranges = stats_attributes_date_ranges(parse(request.GET['from_date']), parse(request.GET['to_date']))
 
     for i, datetime_range in enumerate(datetime_ranges):
@@ -1231,7 +1337,8 @@ def stats_attributes_over_time(request):
         # Compute bars_attribute, if any
         if bars_attribute is not None:
             attribute_values[bars_attribute.name]['total'].append(copy.deepcopy(date_range))
-            attribute_values[bars_attribute.name]['total'][i]['y'] = sum(int(x) for x in attributes[bars_attribute.name])
+            attribute_values[bars_attribute.name]['total'][i]['y'] = sum(
+                int(x) for x in attributes[bars_attribute.name])
         # Otherwise, compute incidents
         else:
             incident_values.append(copy.deepcopy(date_range))
@@ -1255,12 +1362,14 @@ def stats_attributes_over_time(request):
                         else:
                             attribute_values[valid_attribute]['avg'][i]['y'] = average([total], len(incidents))
                     else:
-                        attribute_values[valid_attribute]['avg'][i]['y'] = average([total], attribute_values[bars_attribute.name]['total'][i]['y'])
+                        attribute_values[valid_attribute]['avg'][i]['y'] = average([total], attribute_values[
+                            bars_attribute.name]['total'][i]['y'])
                 if request.GET.get('deviation', False):
                     attribute_values[valid_attribute]['std'].append(copy.deepcopy(date_range))
                     attribute_values[valid_attribute]['avg'][i]['y'] = 0
                     if request.GET.get('average', False):
-                        deviation = map(lambda x: (int(x) - attribute_values[valid_attribute]['avg'][i]['y'])**2, attributes[valid_attribute])
+                        deviation = map(lambda x: (int(x) - attribute_values[valid_attribute]['avg'][i]['y']) ** 2,
+                                        attributes[valid_attribute])
                         attribute_values[valid_attribute]['std'][i]['y'] = math.sqrt(average(deviation, len(deviation)))
 
         i = i + 1
@@ -1269,7 +1378,8 @@ def stats_attributes_over_time(request):
 
     # Add bars attribute, if any
     if bars_attribute is not None:
-        result.append({"key": bars_attribute.name, "values": attribute_values[bars_attribute.name]['total'], "bar": True})
+        result.append(
+            {"key": bars_attribute.name, "values": attribute_values[bars_attribute.name]['total'], "bar": True})
     # Otherwise, take incidents as bars
     else:
         result.append({"key": "Incidents", "values": incident_values, "bar": True})
@@ -1302,7 +1412,7 @@ def stats_attributes_basic(request):
         attribute_selection.append(request.GET['bars'])
         bars_attribute = ValidAttribute.objects.get(pk=int(request.GET['bars']))
 
-    (incidents, all_attributes) = stats_attributes_get_data(main_filter, attribute_selection)
+    (incidents, all_attributes) = stats_attributes_get_data(main_filter, attribute_selection, request.user)
 
     incidents_with_attribute = []
     for valid_attribute in all_attributes:
@@ -1333,7 +1443,8 @@ def stats_attributes_basic(request):
             if request.GET.get('deviation', False):
                 attributes[valid_attribute]['standard deviation'] = 0
                 if request.GET.get('average', False):
-                    deviation = map(lambda x: (int(x.value) - attributes[valid_attribute]['average'])**2, all_attributes[valid_attribute])
+                    deviation = map(lambda x: (int(x.value) - attributes[valid_attribute]['average']) ** 2,
+                                    all_attributes[valid_attribute])
                     attributes[valid_attribute]['standard deviation'] = math.sqrt(average(deviation, len(deviation)))
 
     result = {
@@ -1357,9 +1468,9 @@ def data_yearly_compare(request, year, type='all', slide=True):
     q = Q()
 
     if type == 'incidents':
-            q = Q(is_incident=True)
+        q = Q(is_incident=True)
     elif type == 'events':
-            q = Q(is_incident=False)
+        q = Q(is_incident=False)
 
     q = q & Q(confidentiality__lte=2)
 
@@ -1367,19 +1478,22 @@ def data_yearly_compare(request, year, type='all', slide=True):
         dates = []
         today = datetime.date.today().replace(year=year)
         for i in xrange(12):
-            dates.append(today-relativedelta(months=i+1))
+            dates.append(today - relativedelta(months=i + 1))
 
         for i in xrange(12):
             chart_data.append({'date': str(dates[i].year) + "-" + str(dates[i].month),
-                               str(year): Incident.objects.filter(q).filter(date__year=dates[i].year, date__month=dates[i].month).count(),
-                               str(year-1): Incident.objects.filter(q).filter(date__year=dates[i].year-1, date__month=dates[i].month).count()
+                               str(year): Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(q).filter(date__year=dates[i].year,
+                                                                            date__month=dates[i].month).count(),
+                               str(year - 1): Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(q).filter(date__year=dates[i].year - 1,
+                                                                                date__month=dates[i].month).count()
                                })
 
     else:
         for i in xrange(12):
-            chart_data.append({'date': str(year)+"-"+str(i+1),
-                               str(year): Incident.objects.filter(q).filter(date__year=year, date__month=i+1).count(),
-                               str(year-1):  Incident.objects.filter(q).filter(date__year=year-1, date__month=i+1).count()
+            chart_data.append({'date': str(year) + "-" + str(i + 1),
+                               str(year): Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(q).filter(date__year=year, date__month=i + 1).count(),
+                               str(year - 1): Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(q).filter(date__year=year - 1,
+                                                                                date__month=i + 1).count()
                                })
 
     return HttpResponse(dumps(chart_data), content_type="application/json")
@@ -1402,14 +1516,15 @@ def data_yearly_evolution(request, year, type='all', divisor='bl', slide=True):
     q = q & Q(confidentiality__lte=2)
 
     if divisor == 'bl':
-        items = BusinessLine.get_root_nodes()
+        items = BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics').filter(depth=1)
     elif divisor == 'category':
         items = IncidentCategory.objects.all()
 
     for item in items:
         d = {}
         if divisor == 'bl':
-            new_q = q & (Q(concerned_business_lines=item) | Q(main_business_lines=item) | Q(concerned_business_lines__in=item.get_children()))
+            new_q = q & (Q(concerned_business_lines=item) | Q(main_business_lines=item) | Q(
+                concerned_business_lines__in=item.get_children()))
         elif divisor == 'category':
             new_q = q & Q(category=item)
 
@@ -1418,26 +1533,28 @@ def data_yearly_evolution(request, year, type='all', divisor='bl', slide=True):
             today = datetime.datetime.now().replace(day=1, year=year)
             dates = Q()
             for i in xrange(12):
-                dates |= Q(date__month=(today-relativedelta(months=i)).month, date__year=(today-relativedelta(months=i)).year)
-            d['value'] = Incident.objects.filter(new_q & dates).distinct().count()
+                dates |= Q(date__month=(today - relativedelta(months=i)).month,
+                           date__year=(today - relativedelta(months=i)).year)
+            d['value'] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(new_q & dates).distinct().count()
             dates = Q()
             for i in xrange(12):
-                dates |= Q(date__month=(today-relativedelta(months=i)).month, date__year=(today-relativedelta(months=i)).year-1)
+                dates |= Q(date__month=(today - relativedelta(months=i)).month,
+                           date__year=(today - relativedelta(months=i)).year - 1)
 
-            previous_value = Incident.objects.filter(new_q & dates).distinct().count()
+            previous_value = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(new_q & dates).distinct().count()
         else:
-            d['value'] = Incident.objects.filter(new_q & Q(date__year=year)).distinct().count()
-            previous_value = Incident.objects.filter(new_q & Q(date__year=year-1)).distinct().count()
+            d['value'] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(new_q & Q(date__year=year)).distinct().count()
+            previous_value = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(new_q & Q(date__year=year - 1)).distinct().count()
 
         if previous_value > 0:
             delta = d['value'] - previous_value
-            delta = delta/float(previous_value)
-            delta = delta*100
+            delta = delta / float(previous_value)
+            delta = delta * 100
             delta = int(round(delta))
             if delta > 0:
-                d['text'] = "+"+str(delta)+"%"
+                d['text'] = "+" + str(delta) + "%"
             else:
-                d['text'] = str(delta)+"%"
+                d['text'] = str(delta) + "%"
         else:
             d['text'] = "new!"
 
@@ -1451,29 +1568,30 @@ def data_yearly_evolution(request, year, type='all', divisor='bl', slide=True):
 @login_required
 @user_passes_test(can_view_statistics)
 def data_yearly_incidents(request):
-
     chart_data = []
 
     dates = []
     today = datetime.date.today()
     for i in xrange(12):
-        dates.append(today-relativedelta(months=i+1))
+        dates.append(today - relativedelta(months=i + 1))
     for i in xrange(12):
-        chart_data.append({'date': str(dates[i].year)+"-"+str(dates[i].month), today.year-1: Incident.objects.filter(date__year=dates[i].year, date__month=dates[i].month, confidentiality__lte=2).count()})
+        chart_data.append({'date': str(dates[i].year) + "-" + str(dates[i].month),
+                           today.year - 1: Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(date__year=dates[i].year, date__month=dates[i].month,
+                                                                   confidentiality__lte=2).count()})
 
     return HttpResponse(dumps(chart_data), content_type="application/json")
+
 
 @login_required
 @user_passes_test(can_view_statistics)
 def data_yearly_field(request, field):
-
     field_dict = {}
     total = 0
 
     q = Q(date__year=datetime.date.today().year)
     q = q & Q(is_incident=True)
 
-    for i in Incident.objects.filter(q):
+    for i in Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(q):
         field_dict[str(getattr(i, field))] = field_dict.get(str(getattr(i, field)), 0) + 1
         total += 1
 
@@ -1481,7 +1599,8 @@ def data_yearly_field(request, field):
     for label, value in field_dict.items():
         if field == 'severity':
             label += "/4"
-        chart_data.append({'label': label, 'value': value, 'percentage': float(str(round(float(value)/total, 2)*100)) })
+        chart_data.append(
+            {'label': label, 'value': value, 'percentage': float(str(round(float(value) / total, 2) * 100))})
 
     return HttpResponse(dumps(chart_data), content_type="application/json")
 
@@ -1489,7 +1608,7 @@ def data_yearly_field(request, field):
 @login_required
 @user_passes_test(can_view_statistics)
 def data_yearly_bl(request, year=datetime.date.today().year, type='all'):
-    bls = BusinessLine.get_root_nodes()
+    bls = BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics').filter(depth=1)
 
     chart_data = []
     total = 0
@@ -1512,7 +1631,7 @@ def data_yearly_bl(request, year=datetime.date.today().year, type='all'):
         total += d['value']
 
     for d in chart_data:
-        d['percentage'] = float(str(round(float(d['value'])/total, 2)*100))
+        d['percentage'] = float(str(round(float(d['value']) / total, 2) * 100))
 
     chart_data = delete_empty_keys(chart_data)
 
@@ -1522,7 +1641,7 @@ def data_yearly_bl(request, year=datetime.date.today().year, type='all'):
 @login_required
 @user_passes_test(can_view_statistics)
 def data_yearly_bl_detection(request):
-    bls = BusinessLine.get_root_nodes()
+    bls = BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics').filter(depth=1)
     q = Q(date__year=datetime.datetime.now().year)
     q = q & Q(confidentiality__lte=2)
 
@@ -1541,13 +1660,12 @@ def data_yearly_bl_detection(request):
     chart_data = delete_empty_keys(chart_data)
 
     return HttpResponse(dumps(chart_data), content_type='application/json')
-    pass
 
 
 @login_required
 @user_passes_test(can_view_statistics)
 def data_yearly_bl_severity(request):
-    bls = BusinessLine.get_root_nodes()
+    bls = BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics').filter(depth=1)
 
     q = Q(date__year=datetime.datetime.now().year)
     q = q & Q(confidentiality__lte=2)
@@ -1560,8 +1678,8 @@ def data_yearly_bl_severity(request):
 
         append = False
         for i in xrange(4):
-            d[str(i+1)+'/4'] = bl.get_incident_count(q & Q(severity=i+1))
-            if d[str(i+1)+'/4'] > 0:
+            d[str(i + 1) + '/4'] = bl.get_incident_count(q & Q(severity=i + 1))
+            if d[str(i + 1) + '/4'] > 0:
                 append = True
 
         if append:
@@ -1570,13 +1688,12 @@ def data_yearly_bl_severity(request):
     chart_data = delete_empty_keys(chart_data)
 
     return HttpResponse(dumps(chart_data), content_type='application/json')
-    pass
 
 
 @login_required
 @user_passes_test(can_view_statistics)
 def data_yearly_bl_category(request):
-    bls = BusinessLine.get_root_nodes()
+    bls = BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics').filter(depth=1)
     categories = IncidentCategory.objects.all()
 
     q = Q(date__year=datetime.datetime.now().year)
@@ -1601,13 +1718,12 @@ def data_yearly_bl_category(request):
     chart_data = delete_empty_keys(chart_data)
 
     return HttpResponse(dumps(chart_data), content_type='application/json')
-    pass
 
 
 @login_required
 @user_passes_test(can_view_statistics)
 def data_yearly_bl_plan(request):
-    bls = BusinessLine.get_root_nodes()
+    bls = BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics').filter(depth=1)
     plans = Label.objects.filter(group__name='plan')
 
     q = Q(date__year=datetime.datetime.now().year)
@@ -1637,7 +1753,7 @@ def data_yearly_bl_plan(request):
 @login_required
 @user_passes_test(can_view_statistics)
 def data_incident_variation(request, business_line, num_months=3):
-    bl = get_object_or_404(BusinessLine, name=business_line)
+    bl = get_object_or_404(BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics'), name=business_line)
 
     categories = IncidentCategory.objects.all()
 
@@ -1657,31 +1773,31 @@ def data_incident_variation(request, business_line, num_months=3):
         current_month = q & Q(date__month=current.month, date__year=current.year, category=cat)
 
         d['values'] = {}
-        d['values']['new'] = Incident.objects.filter(current_month).distinct().count()
+        d['values']['new'] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(current_month).distinct().count()
         total += d['values']['new']
 
         previous = current - relativedelta(months=1)
 
         previous_month = q & Q(date__month=previous.month, date__year=previous.year, category=cat)
-        previous_count = Incident.objects.filter(previous_month).distinct().count()
+        previous_count = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(previous_month).distinct().count()
         d['values']['variation'] = d['values']['new'] - previous_count
 
         total_previous += previous_count
 
         if d['values']['variation'] > 0:
-            d['values']['variation'] = "+"+str(d['values']['variation'])
+            d['values']['variation'] = "+" + str(d['values']['variation'])
         else:
             d['values']['variation'] = str(d['values']['variation'])
 
         if d['values']['variation'] != "0" or d['values']['new'] != 0:
             chart_data.append(d)
 
-    if total-total_previous > 0:
-        total_previous = "+"+str(total-total_previous)
+    if total - total_previous > 0:
+        total_previous = "+" + str(total - total_previous)
     else:
-        total_previous = str(total-total_previous)
+        total_previous = str(total - total_previous)
 
-    chart_data.append({'category': 'Total',  'values': {'new': total, 'variation': total_previous}})
+    chart_data.append({'category': 'Total', 'values': {'new': total, 'variation': total_previous}})
 
     return HttpResponse(dumps(chart_data), content_type='application/json')
 
@@ -1689,7 +1805,8 @@ def data_incident_variation(request, business_line, num_months=3):
 @login_required
 @user_passes_test(can_view_statistics)
 def data_quarterly_bl(request, business_line, divisor, num_months=3, is_incident=True):
-    bl = get_object_or_404(BusinessLine, name=business_line)
+    bl = get_object_or_404(BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics'),
+                           name=business_line)
     children = bl.get_children()
 
     q = Q(main_business_lines=bl) | Q(concerned_business_lines=bl) | Q(concerned_business_lines__in=children)
@@ -1701,52 +1818,59 @@ def data_quarterly_bl(request, business_line, divisor, num_months=3, is_incident
         for i in xrange(num_months):
             d = {}
 
-            today = datetime.datetime.today() - relativedelta(months=num_months-i)
-            d['label'] = cal[today.month-1]
+            today = datetime.datetime.today() - relativedelta(months=num_months - i)
+            d['label'] = cal[today.month - 1]
             date_q = q & Q(date__month=today.month, date__year=today.year)
 
-            d['value'] = Incident.objects.filter(date_q).distinct().count()
+            d['value'] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
+                date_q).distinct().count()
             d['text'] = d['value']
 
             chart_data.append(d)
 
-    if divisor == 'severity':
+    elif divisor == 'severity':
         for i in xrange(num_months):
             d = {}
 
-            today = datetime.datetime.today() - relativedelta(months=num_months-i)
-            d['entry'] = cal[today.month-1]
+            today = datetime.datetime.today() - relativedelta(months=num_months - i)
+            d['entry'] = cal[today.month - 1]
             q_date = q & Q(date__month=today.month, date__year=today.year)
 
-            d['1/4'] = Incident.objects.filter(Q(severity=1) & q_date).distinct().count()
-            d['2/4'] = Incident.objects.filter(Q(severity=2) & q_date).distinct().count()
-            d['3/4'] = Incident.objects.filter(Q(severity=3) & q_date).distinct().count()
-            d['4/4'] = Incident.objects.filter(Q(severity=4) & q_date).distinct().count()
+            d['1/4'] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
+                Q(severity=1) & q_date).distinct().count()
+            d['2/4'] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
+                Q(severity=2) & q_date).distinct().count()
+            d['3/4'] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
+                Q(severity=3) & q_date).distinct().count()
+            d['4/4'] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
+                Q(severity=4) & q_date).distinct().count()
 
             chart_data.append(d)
 
-    if divisor == 'category':
+    elif divisor == 'category':
         for i in xrange(num_months):
             d = {}
 
-            today = datetime.datetime.today() - relativedelta(months=num_months-i)
-            d['entry'] = cal[today.month-1]
+            today = datetime.datetime.today() - relativedelta(months=num_months - i)
+            d['entry'] = cal[today.month - 1]
             q_date = q & Q(date__month=today.month, date__year=today.year)
 
             for cat in IncidentCategory.objects.all():
-                d[cat.name] = Incident.objects.filter(q_date & Q(category=cat)).distinct().count()
+                d[cat.name] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
+                    q_date & Q(category=cat)).distinct().count()
 
             chart_data.append(d)
 
-    if divisor == 'entity':
+    elif divisor == 'entity':
         for i in xrange(num_months):
             d = {}
 
-            today = datetime.datetime.today() - relativedelta(months=num_months-i)
-            d['entry'] = cal[today.month-1]
+            today = datetime.datetime.today() - relativedelta(months=num_months - i)
+            d['entry'] = cal[today.month - 1]
 
             q_date = q & Q(date__month=today.month, date__year=today.year)
-            d[bl.name] = Incident.objects.filter(q_date).distinct().count()
+            d[bl.name] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
+                q_date).distinct().count()
 
             for entity in bl.get_children():
                 d[entity.name] = entity.get_incident_count(q_date)
@@ -1754,53 +1878,57 @@ def data_quarterly_bl(request, business_line, divisor, num_months=3, is_incident
 
             chart_data.append(d)
 
-    if divisor == 'actor':
+    elif divisor == 'actor':
         for i in xrange(num_months):
             d = {}
 
-            today = datetime.datetime.today() - relativedelta(months=num_months-i)
-            d['entry'] = cal[today.month-1]
+            today = datetime.datetime.today() - relativedelta(months=num_months - i)
+            d['entry'] = cal[today.month - 1]
             q_date = q & Q(date__month=today.month, date__year=today.year)
 
             for actor in Label.objects.filter(group__name='actor').distinct():
-                d[actor.name] = Incident.objects.filter(q_date & Q(actor=actor)).distinct().count()
+                d[actor.name] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
+                    q_date & Q(actor=actor)).distinct().count()
 
             chart_data.append(d)
 
-    if divisor == 'monitoring':
+    elif divisor == 'monitoring':
         for i in xrange(num_months):
             d = {}
 
-            today = datetime.datetime.today() - relativedelta(months=num_months-i)
-            d['label'] = cal[today.month-1]
+            today = datetime.datetime.today() - relativedelta(months=num_months - i)
+            d['label'] = cal[today.month - 1]
             q_date = q & Q(date__month=today.month, date__year=today.year)
 
-            d['value'] = Incident.objects.filter(q_date & Q(plan__name='A')).distinct().count()
+            d['value'] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
+                q_date & Q(plan__name='A')).distinct().count()
             d['text'] = d['value']
 
             chart_data.append(d)
 
-    if divisor == 'open':
+    elif divisor == 'open':
         for i in xrange(num_months):
             d = {}
 
-            today = datetime.datetime.today() - relativedelta(months=num_months-i)
-            d['label'] = cal[today.month-1]
+            today = datetime.datetime.today() - relativedelta(months=num_months - i)
+            d['label'] = cal[today.month - 1]
             q_date = q & Q(date__month=today.month, date__year=today.year)
 
-            d['value'] = Incident.objects.filter(q_date & Q(status='O')).distinct().count()
+            d['value'] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
+                q_date & Q(status='O')).distinct().count()
             d['text'] = d['value']
             chart_data.append(d)
 
-    if divisor == 'blocked':
+    elif divisor == 'blocked':
         for i in xrange(num_months):
             d = {}
 
-            today = datetime.datetime.today() - relativedelta(months=num_months-i)
-            d['label'] = cal[today.month-1]
+            today = datetime.datetime.today() - relativedelta(months=num_months - i)
+            d['label'] = cal[today.month - 1]
             q_date = q & Q(date__month=today.month, date__year=today.year)
 
-            d['value'] = Incident.objects.filter(q_date & Q(status='B')).distinct().count()
+            d['value'] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
+                q_date & Q(status='B')).distinct().count()
             d['text'] = d['value']
             chart_data.append(d)
 
@@ -1812,7 +1940,6 @@ def data_quarterly_bl(request, business_line, divisor, num_months=3, is_incident
 @login_required
 @user_passes_test(can_view_statistics)
 def quarterly_major(request, start_date=None, num_months=3):
-
     q_major = Q(is_major=True)
     q_confid = Q(confidentiality__lte=2)
     balecats = BaleCategory.objects.filter(Q(parent_category__isnull=False))
@@ -1832,8 +1959,8 @@ def quarterly_major(request, start_date=None, num_months=3):
 
     cert.append(['Category'])
     for i in xrange(num_months):
-        then = today - relativedelta(months=num_months-i)
-        cert[0].append(cal[then.month-1])
+        then = today - relativedelta(months=num_months - i)
+        cert[0].append(cal[then.month - 1])
     cert[0].append('Total')
     for certcat in certcats:
         line = []
@@ -1842,9 +1969,9 @@ def quarterly_major(request, start_date=None, num_months=3):
         add = False
         total = 0
         for i in xrange(num_months):
-            then = today - relativedelta(months=num_months-i)
+            then = today - relativedelta(months=num_months - i)
             q_date = q_certcat & Q(date__month=then.month, date__year=then.year)
-            count = Incident.objects.filter(q_date & q_confid).count()
+            count = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(q_date & q_confid).count()
             line.append(count)
 
             if count != 0:
@@ -1858,8 +1985,8 @@ def quarterly_major(request, start_date=None, num_months=3):
 
     bale.append(['Bale category'])
     for i in xrange(num_months):
-        then = today - relativedelta(months=num_months-i)
-        bale[0].append(cal[then.month-1])
+        then = today - relativedelta(months=num_months - i)
+        bale[0].append(cal[then.month - 1])
 
     for balecat in balecats:
         line = []
@@ -1867,9 +1994,9 @@ def quarterly_major(request, start_date=None, num_months=3):
         line.append(balecat.__unicode__)
         add = False
         for i in xrange(num_months):
-            then = today - relativedelta(months=num_months-i)
+            then = today - relativedelta(months=num_months - i)
             q_date = q_balecat & Q(date__month=then.month, date__year=then.year)
-            count = Incident.objects.filter(q_date & q_confid).count()
+            count = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(q_date & q_confid).count()
             line.append(count)
             if count != 0:
                 add = True
@@ -1879,8 +2006,8 @@ def quarterly_major(request, start_date=None, num_months=3):
 
     bls.append(['Business Line'])
     for i in xrange(num_months):
-        then = today - relativedelta(months=num_months-i)
-        bls[0].append(cal[then.month-1])
+        then = today - relativedelta(months=num_months - i)
+        bls[0].append(cal[then.month - 1])
     bls[0].append('Total')
 
     for bl in parent_bls:
@@ -1891,10 +2018,10 @@ def quarterly_major(request, start_date=None, num_months=3):
 
         total = 0
         for i in xrange(num_months):
-            then = today - relativedelta(months=num_months-i)
+            then = today - relativedelta(months=num_months - i)
             q_date = q_bl & Q(date__month=then.month, date__year=then.year)
 
-            count = Incident.objects.filter(q_date & q_confid).count()
+            count = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(q_date & q_confid).count()
             line.append(count)
             if count != 0:
                 add = True
@@ -1905,15 +2032,17 @@ def quarterly_major(request, start_date=None, num_months=3):
 
     total_major = 0
     for i in xrange(num_months):
-        d = today - relativedelta(months=num_months-i)
-        total_major += Incident.objects.filter(date__month=d.month, date__year=d.year, confidentiality__lte=2).count()
+        d = today - relativedelta(months=num_months - i)
+        total_major += Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(date__month=d.month, date__year=d.year, confidentiality__lte=2).count()
 
     past_months = Q()
     for i in xrange(num_months):
-        d = today - relativedelta(months=num_months-i)
+        d = today - relativedelta(months=num_months - i)
         past_months |= Q(date__month=d.month, date__year=d.year)
 
-    return render(request, 'stats/major.html', {'bale': bale, 'cert': cert, 'total_major': total_major, 'bls': bls, 'incident_list': Incident.objects.filter(q_major & past_months & q_confid).order_by('-date')})
+    return render(request, 'stats/major.html', {'bale': bale, 'cert': cert, 'total_major': total_major, 'bls': bls,
+                                                'incident_list': Incident.authorization.for_user(request.user, 'incidents.view_incidents').filter(
+                                                    q_major & past_months & q_confid).order_by('-date')})
 
 
 # Dashboard =======================================================
@@ -1935,10 +2064,14 @@ def incidents_order(request):
 def incident_display(request, filter, incident_view=True, paginated=True):
     (order_by, order_param, asc) = incidents_order(request)
 
+    permissions = 'incidents.view_incidents'
+
     if order_param == 'last_action':
-        incident_list = Incident.objects.filter(filter).annotate(Max('comments__date')).order_by(order_by)
+        incident_list = Incident.authorization.for_user(request.user, permissions).filter(filter).annotate(
+            Max('comments__date')).order_by(order_by)
     else:
-        incident_list = Incident.objects.filter(filter).order_by(order_by)
+        pre_list = Incident.authorization.for_user(request.user, permissions)
+        incident_list = pre_list.filter(filter).order_by(order_by)
 
     if paginated:
         page = request.GET.get('page', 1)
@@ -1951,49 +2084,52 @@ def incident_display(request, filter, incident_view=True, paginated=True):
             incident_list = p.page(1)
 
     return render(request, 'events/table.html', {
-            'incident_list': incident_list,
-            'incident_view': incident_view,
-            'order_param': order_param,
-            'asc': asc,
-            'incident_show_id': settings.INCIDENT_SHOW_ID
-        })
+        'incident_list': incident_list,
+        'incident_view': incident_view,
+        'order_param': order_param,
+        'asc': asc,
+        'incident_show_id': settings.INCIDENT_SHOW_ID
+    })
 
 
 @login_required
-@user_passes_test(is_incident_handler)
+@user_passes_test(is_incident_viewer)
 def dashboard_main(request):
     return render(request, 'dashboard/index.html')
 
 
 @login_required
-@user_passes_test(is_incident_handler)
+@user_passes_test(is_incident_viewer)
 def dashboard_starred(request):
     return incident_display(request, Q(is_starred=True) & ~Q(status='C'), True, False)
 
 
 @login_required
-@user_passes_test(is_incident_handler)
+@user_passes_test(is_incident_viewer)
 def dashboard_open(request):
     return incident_display(request, Q(status='O'))
 
 
 @login_required
-@user_passes_test(is_incident_handler)
+@user_passes_test(is_incident_viewer)
 def dashboard_blocked(request):
     return incident_display(request, Q(status='B'))
 
 
 @login_required
-@user_passes_test(is_incident_handler)
+@user_passes_test(is_incident_viewer)
 def dashboard_old(request):
-    incident_list = Incident.objects.filter(status='O').annotate(Max('comments__date')).order_by('comments__date__max')[:20]
+    permissions = ['incidents.view_incidents', 'incidents.handle_incidents']
+    incident_list = Incident.authorization.for_user(request.user, permissions).filter(status='O').annotate(
+        Max('comments__date')).order_by('comments__date__max')[
+                    :20]
 
     return render(request, 'events/table.html', {
-            'incident_list': incident_list,
-            'incident_view': True,
-            'order_param': 'last_action',
-            'asc': 'true'
-        })
+        'incident_list': incident_list,
+        'incident_view': True,
+        'order_param': 'last_action',
+        'asc': 'true'
+    })
 
 
 # tools ==================================================================
