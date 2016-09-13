@@ -49,7 +49,7 @@ class AuthorizationModelMixin(models.Model):
                 qs_filter['acl__role__permissions'] = permissions[0]
             else:
                 qs_filter['acl__role__permissions__in'] = permissions
-        return cls.objects.filter(**qs_filter).values_list('path', flat=True)
+        return cls.objects.filter(**qs_filter).distinct().values_list('path', flat=True)
 
     @classmethod
     def get_authorization_filter(cls, user, permission=None):
@@ -76,9 +76,9 @@ class AuthorizationModelMixin(models.Model):
         return lookup
 
     def has_perm(self, user, permission):
-        return self.__class__.authorization.for_user(user, permission).filter(pk=self.pk).count() >= 1
+        return self.__class__.authorization.for_user(user, permission).filter(pk=self.pk).distinct().exists()
 
     @classmethod
     def has_model_perm(cls, user, permission):
-        return cls.authorization.for_user(user, permission).count() >= 1
+        return cls.authorization.for_user(user, permission).distinct().exists()
 

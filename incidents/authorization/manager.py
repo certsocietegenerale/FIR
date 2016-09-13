@@ -11,4 +11,4 @@ class AuthorizationManager(models.Manager):
         if permission is not None and user.has_perms(permission):
             return self.get_queryset()
         qs_filter = self.model.get_authorization_filter(user, permission)
-        return self.get_queryset().filter(qs_filter)
+        return self.get_queryset().filter(qs_filter).distinct()

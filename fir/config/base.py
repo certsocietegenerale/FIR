@@ -89,6 +89,7 @@ INSTALLED_APPS = (
     'treebeard',
     'incidents',
     'django.contrib.admin',
+#'debug_toolbar',
     'rest_framework',
     'rest_framework.authtoken',
     'fir_plugins',
@@ -129,5 +130,9 @@ TEMPLATES = [
 # If True, shows the incident ID in views (table and details)
 INCIDENT_SHOW_ID = False
 
-# Permission added to the incident created by user
+# Permission added to the incident created by user, None for no permission
 INCIDENT_CREATOR_PERMISSION = 'incidents.view_incidents'
+
+# If you can see an event/incident, you can comment it!
+INCIDENT_VIEWER_CAN_COMMENT = True
+
