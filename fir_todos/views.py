@@ -73,7 +73,7 @@ def delete(request, todo_id):
 def toggle_status(request, todo_id):
     todo = get_object_or_404(TodoItem, pk=todo_id)
     if (todo.business_line and request.user.has_perm('incidents.view_incidents', obj=todo.business_line)) or \
-            request.user.has_perm('incidents.view_incidents', obj=todo.incident):
+            request.user.has_perm('incidents.handle_incidents', obj=todo.incident):
         todo.done = not todo.done
         if todo.done:
             todo.done_time = datetime.datetime.now()
