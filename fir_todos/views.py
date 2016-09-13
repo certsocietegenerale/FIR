@@ -91,7 +91,8 @@ def toggle_status(request, todo_id):
 @user_passes_test(is_incident_viewer)
 def dashboard(request):
     bls = BusinessLine.authorization.for_user(request.user, 'incidents.view_incidents')
-    todos = TodoItem.objects.filter(business_line__in=bls, incident__isnull=False, done=False)
+    bl_filter = Q(business_line__in=bls) | Q(business_line__isnull=True)
+    todos = TodoItem.objects.filter(incident__isnull=False, done=False).filter(bl_filter)
     todos = todos.select_related('incident', 'category')
     todos = todos.order_by('-incident__date')
 
