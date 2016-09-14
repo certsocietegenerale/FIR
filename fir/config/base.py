@@ -89,7 +89,6 @@ INSTALLED_APPS = (
     'treebeard',
     'incidents',
     'django.contrib.admin',
-#'debug_toolbar',
     'rest_framework',
     'rest_framework.authtoken',
     'fir_plugins',
