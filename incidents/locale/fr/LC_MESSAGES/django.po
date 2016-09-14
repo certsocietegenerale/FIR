@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FIR master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-09-13 20:40+0200\n"
+"POT-Creation-Date: 2016-09-14 09:04+0200\n"
 "PO-Revision-Date: 2015-03-15 20:24+0100\n"
 "Last-Translator: Gaetan Crahay <gaetan@crahay.eu>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -57,9 +57,24 @@ msgid "access control entries"
 msgstr "entrées de contrôle d'accès"
 
 #: models.py:403
-#| msgid "Total incidents on your Business Line"
 msgid "You cannot create incidents for these business lines"
 msgstr "Vous ne pouvez pas créer d'incidents pour ces parties prenantes"
+
+#: templates/403.html:13
+msgid "Access denied"
+msgstr "Accès refusé"
+
+#: templates/403.html:16 templates/403.html:17
+msgid "Forbidden"
+msgstr "Interdit"
+
+#: templates/403.html:18
+msgid "You don't have permission to access the requested resource."
+msgstr "Vous n'avez pas l'autorisation d'accéder à cette ressource."
+
+#: templates/403.html:19
+msgid "Go to the dashboard!"
+msgstr "Aller au tableau de bord !"
 
 #: templates/artifacts/incidents_index.html:3
 #, python-format

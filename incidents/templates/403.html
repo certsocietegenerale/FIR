@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block custom_css %}
+<style>
+  h1 { font-size: 50px; }
+  article { display: width: 650px; margin: 0 auto; text-align: center; padding: 15px; font: 20px Helvetica, sans-serif; color: #333; }
+  article a:hover { text-decoration: none; }
+</style>
+{% endblock %}
+
+{%block title%}{% trans "Access denied" %}{%endblock%}
+{% block content %}
+<article>
+    <img alt="{% trans "Forbidden" %}" src="{% static "img/403.png" %}">
+    <h1>{% trans "Forbidden" %}</h1>
+<p>{% trans "You don't have permission to access the requested resource." %}</p>
+<a href="{% url 'dashboard:main' %}">{% trans "Go to the dashboard!" %}</a>
+</article>
+{% endblock %}
