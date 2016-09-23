@@ -1,5 +1,6 @@
 from django.apps import AppConfig
 
+
 class IncidentsConfig(AppConfig):
     name = 'incidents'
 
@@ -7,4 +8,4 @@ class IncidentsConfig(AppConfig):
         from fir_plugins import links
         import re
         from django.core.urlresolvers import reverse
-        links.install(re.compile("(?:^|\s)#(\d+)", re.I|re.MULTILINE), r"%s\1/" % reverse('incidents:index'))
+        links.install(re.compile("(?:^|\s)#(\d+)"), r"%s\1/" % reverse('incidents:index'))
