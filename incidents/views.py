@@ -4,7 +4,7 @@
 # Create your views here.
 from django.contrib.staticfiles import finders
 from django.template.response import TemplateResponse
-from incidents.models import IncidentCategory, Incident, Comments, BusinessLine
+from incidents.models import IncidentCategory, Incident, Comments, BusinessLine, ProfileForm
 from incidents.models import Label, Log, BaleCategory
 from incidents.models import Attribute, ValidAttribute, IncidentTemplate, Profile
 from incidents.models import IncidentForm, CommentForm
@@ -2010,3 +2010,18 @@ def mce_config(request):
             lang = "en"
     return TemplateResponse(request, "tools/mce_config.js", context={"mce_lang": lang},
                             content_type="application/javascript")
+
+
+# User profile ============================================================
+@login_required
+def user_profile(request):
+    if request.method == "POST":
+        form = ProfileForm(request.POST, instance=request.user.profile)
+        if form.is_valid():
+            form.save()
+    else:
+        form = ProfileForm(instance=request.user.profile)
+
+    return render(request, 'user/profile.html', {
+        'form': form
+    })

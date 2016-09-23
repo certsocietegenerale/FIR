@@ -96,7 +96,7 @@
             <ul class="nav navbar-nav navbar-right">
               <li>
                 <div class='usergreet'>
-                  {% trans "Currently logged in as" %} <strong>{{ user }}</strong> [
+                  {% trans "Currently logged in as" %} <a href="{% url 'user:profile' %}"><strong>{{ user }}</strong></a> [
                     <a href="{% url 'logout' %}">{% trans "logout" %}</a>
                   ]
                   {% if user.is_staff %}

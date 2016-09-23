@@ -405,6 +405,12 @@ class UploadFileForm(forms.Form):
     file = forms.FileField()
 
 
+class ProfileForm(forms.ModelForm):
+    class Meta:
+        model = Profile
+        exclude = ('user', )
+
+
 # Templating =================================================================
 
 class IncidentTemplate(models.Model):
