@@ -119,4 +119,8 @@ TEMPLATES = [
     }
 ]
 
+# Show incident IDs in views?
 INCIDENT_SHOW_ID = False
+
+# Escape HTML when displaying markdown
+MARKDOWN_SAFE_MODE = True

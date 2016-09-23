@@ -74,25 +74,9 @@ $(function () {
 
 	update_attribute_placeholder();
 
-	//
-	// Comments
-	//
-	tinymce.init({
-		selector: "#add-comment-area textarea",
-		height: 200,
-		theme: "modern",
-    	skin: "light",
-    	plugins: "paste,table,code,preview",
-    	toolbar: "undo redo | styleselect | bold italic | bullist numlist outdent indent code",
-    	language: "en",
-    	directionality: "ltr",
-    	menubar: false,
-    	statusbar: false
-	});
-
 	// Set up form for new comment
 	$('#details-actions-comment').click(function (event) {
-		form = $('#addComment form');
+		var form = $('#addComment form');
 		form.attr('action', form.data('new-comment-url'));
 		form.data('target', '#tab_comments tbody');
 		form.data('action', 'prepend');
@@ -125,8 +109,6 @@ $(function () {
       		form.attr('action', '/ajax/comment/' + comment_id);
 			form.data('target', '#comment_id_' + comment_id);
 			form.data('action', 'replaceWith');
-
-      		tinyMCE.get('id_comment').setContent(text);
 
       		$("#addComment").modal('toggle');
 		});
