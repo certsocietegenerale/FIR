@@ -80,11 +80,11 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'incidents',
     'django.contrib.admin',
     'rest_framework',
     'rest_framework.authtoken',
     'fir_plugins',
+    'incidents',
     'fir_artifacts'
 )
 
