@@ -385,22 +385,6 @@ def delete_attribute(request, incident_id, attribute_id):
 
 @login_required
 @user_passes_test(is_incident_handler)
-def edit_comment(request, incident_id, comment_id):
-    c = get_object_or_404(Comments, pk=comment_id, incident_id=incident_id)
-    if request.method == "POST":
-        form = CommentForm(request.POST, instance=c)
-        if form.is_valid():
-            form.save()
-            log("Edited comment %s" % (form.cleaned_data['comment'][:10]+"..."), request.user, incident=Incident.objects.get(id=incident_id))
-            return redirect("incidents:details", incident_id=c.incident_id)
-    else:
-        form = CommentForm(instance=c)
-
-    return render(request, 'events/edit_comment.html', {'c': c, 'form': form})
-
-
-@login_required
-@user_passes_test(is_incident_handler)
 def delete_comment(request, incident_id, comment_id):
 
     if request.method == "POST":
@@ -2019,6 +2003,7 @@ def user_profile(request):
         form = ProfileForm(request.POST, instance=request.user.profile)
         if form.is_valid():
             form.save()
+
     else:
         form = ProfileForm(instance=request.user.profile)
 
