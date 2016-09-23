@@ -2,16 +2,19 @@
 {% load add_css_class %}
 {% load i18n %}
 {% load staticfiles %}
+{% load markdown %}
 
 {% block custom_css %}
 <link href="{% static "select/select2.css" %}" rel="stylesheet"/>
 <link href="{% static "select/select2-bootstrap.css" %}" rel="stylesheet"/>
 <link href="{% static "css/bootstrap-datetimepicker.min.css" %}" rel="stylesheet"/>
 
+
 {% endblock %}
 
 {% block custom_js %}
 <script src="{% static "select/select2.min.js" %}"></script>
+{% rich_edit_static %}
 <script>
 $(document).ready(function() {
 	$("select#id_concerned_business_lines").select2({ dropdownAutoWidth: true, width: '100%' });
@@ -139,7 +142,7 @@ $(document).ready(function() {
 			<div class="row">
 				<fieldset class="col-sm-12">
 					<legend>{% trans "Description" %}</legend>
-					{{ form.description|add_css_class:"form-control mce" }}
+					{% rich_edit form.description %}
 					{% include 'events/_form_errors.html' with errors=form.description.errors %}
 				</fieldset>
 				{{ form.non_field_errors }}

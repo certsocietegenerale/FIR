@@ -3,11 +3,13 @@
 {% load fir_artifacts %}
 {% load i18n %}
 {% load staticfiles %}
+{% load markdown %}
 
 {% block custom_css %}
 {% endblock %}
 
 {% block custom_js %}
+{% rich_edit_static %}
 <script type="text/javascript" src="{% static "custom_js/hotkeys.js" %}"></script>
 {% plugin_point 'details_static' %}
 
@@ -98,7 +100,7 @@
 
 				<div class='widget' id='description'>
 					<h4 class='widget'>{%  trans "Description" %}</h4>
-					<p>{{ event.description|safe }}</p>
+					<p>{{ event.description|markdown }}</p>
 				</div>
 
 				{% plugin_point 'details_main' %}
@@ -215,7 +217,7 @@
 								</div>
 
 								<div class="form-group" id="add-comment-area">
-									{{ comment_form.comment }}
+									{% rich_edit comment_form.comment %}
 									<span class='help-block'>
 										{% for error in comment_form.comment.errors %}
 											{{error}}
@@ -233,5 +235,7 @@
 				</div>
 			</div>
 		</div>
+    <div id='comment_edit_modals'>
+    </div>
 	</div>
 {% endblock %}
