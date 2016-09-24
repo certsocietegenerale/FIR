@@ -4,7 +4,7 @@ from django.utils.safestring import mark_safe
 from django.conf import settings
 import markdown2
 
-from ..links import INSTALLED_LINKS
+from ..links import registry
 
 register = template.Library()
 
@@ -37,7 +37,7 @@ def rich_edit(context, field):
 @register.filter(name='markdown')
 def render_markdown(data):
     html = markdown2.markdown(data, extras=["link-patterns"],
-                              link_patterns=INSTALLED_LINKS,
+                              link_patterns=registry.link_patterns(),
                               safe_mode=settings.MARKDOWN_SAFE_MODE)
     return mark_safe(html)
 

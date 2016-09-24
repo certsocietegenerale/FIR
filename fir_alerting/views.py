@@ -13,6 +13,8 @@ from incidents.models import Incident, BusinessLine
 
 from fir_alerting.models import RecipientTemplate, CategoryTemplate, EmailForm
 
+from fir_plugins.links import registry
+
 
 @login_required
 @user_passes_test(is_incident_handler)
@@ -56,7 +58,8 @@ def get_template(request, incident_id, template_type, bl=None):
                 q_parent = Q()
                 for p in parents:
                     q_parent |= Q(business_line=p)
-                template = list(RecipientTemplate.objects.filter((q_parent | Q(business_line=None)) & Q(type=template_type)))
+                template = list(
+                    RecipientTemplate.objects.filter((q_parent | Q(business_line=None)) & Q(type=template_type)))
                 if len(template) > 0:
                     rec_template = template[0]
             except Exception as e:
@@ -74,6 +77,7 @@ def get_template(request, incident_id, template_type, bl=None):
         'bl': bl_name,
         'phishing_url': i.subject.replace('http://', "hxxp://").replace('https://', 'hxxps://'),
         'artifacts': artifacts,
+        'incident_id': i.id
     })
 
     response = {
@@ -116,7 +120,9 @@ def send_email(request):
                 bcc=bcc.split(';'),
                 headers=reply_to
             )
-            e.attach_alternative(markdown2.markdown(body, safe_mode=True), 'text/html')
+            e.attach_alternative(markdown2.markdown(body, extras=["link-patterns"],
+                                                    link_patterns=registry.link_patterns(request), safe_mode=True),
+                                 'text/html')
             e.content_subtype = 'html'
             e.send()
 
