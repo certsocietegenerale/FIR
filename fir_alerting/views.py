@@ -1,3 +1,4 @@
+import markdown2
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
@@ -115,7 +116,7 @@ def send_email(request):
                 bcc=bcc.split(';'),
                 headers=reply_to
             )
-            e.attach_alternative(body, 'text/html')
+            e.attach_alternative(markdown2.markdown(body, safe_mode=True), 'text/html')
             e.content_subtype = 'html'
             e.send()
 

@@ -18,7 +18,7 @@ $(function () {
 
         $('#sendEmail').data('type', type)
 
-        tinyMCE.get('id_body').setContent(msg.body)
+        //tinyMCE.get('id_body').setContent(msg.body)
         $('#sendEmail').data('bl', msg.bl)
         $("#sendEmail").modal('show');
       }
@@ -74,8 +74,8 @@ $(function () {
     type = $('#sendEmail').data('type')
     bl = $('#sendEmail').data('bl')
 
-    var body = tinyMCE.get('id_body').getContent()
-    $("#id_body").val(body)
+    //var body = tinyMCE.get('id_body').getContent()
+    //$("#id_body").val(body)
     data = $("#email_form").serialize()
 
     $.ajax({
@@ -125,19 +125,7 @@ $(function () {
     // Add form to the page
     $('#addComment').after(data);
 
-    // Activate tinyMCE editor
-    tinymce.init({
-      selector: "#id_body",
-      height: 300,
-      theme: "modern",
-      skin: "light",
-      plugins: "paste,table,code,preview",
-      toolbar: "undo redo | styleselect | bold italic | bullist numlist outdent indent code",
-      language: "en",
-      directionality: "ltr",
-      menubar: false,
-      statusbar: false
-    });
+    $('#id_body').markdown();
 
     // Activate 'Send Email' button
     $('#send_email').click(function (event) {
