@@ -4,7 +4,7 @@ from django.utils.safestring import mark_safe
 from django.conf import settings
 import markdown2
 
-from fir_plugins.links import INSTALLED_LINKS
+from ..links import INSTALLED_LINKS
 
 register = template.Library()
 
@@ -32,6 +32,7 @@ def rich_edit(context, field):
                                   "data-language": context['LANGUAGE_CODE'],
                                   "data-hidden-buttons": "cmdImage cmdCode",
                                   "class": "form-control"})
+
 
 @register.filter(name='markdown')
 def render_markdown(data):
