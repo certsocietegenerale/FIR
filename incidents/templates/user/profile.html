@@ -176,7 +176,6 @@
     <script>
         window.onload = function(){
             $('#password_form').on('fir.form.success', function (event) {
-                console.log('sucess')
                 $('#changePassword').modal('hide');
                 $('#passwordChangedAlert').removeClass('hidden');
                 event.stopPropagation();
