@@ -11,7 +11,7 @@ function hide_element(self, selector) {
 function submit_form(form) {
 	url = form.attr('action');
 	data = form.serialize();
-	action = form.data('action') || function(){};
+	action = form.data('action');
 	hide = form.data('hide');
 	show = form.data('show');
 	target = $(form.data('target'));
@@ -34,7 +34,7 @@ function submit_form(form) {
 				}
 			}
 		}
-		else {
+		else if(target && action) {
 			target[action](data);
 		}
 
