@@ -1980,22 +1980,6 @@ def dashboard_old(request):
         })
 
 
-# tools ==================================================================
-def mce_config(request):
-    # if language middleware is disabled, get language code from settings
-    try:
-        lang = request.LANGUAGE_CODE
-    except AttributeError:
-        lang = settings.LANGUAGE_CODE
-
-    if not finders.find("js/tinymce/langs/%s.js" % lang):
-        lang = lang.split('-')[0]
-        if not finders.find("js/tinymce/langs/%s.js" % lang):
-            lang = "en"
-    return TemplateResponse(request, "tools/mce_config.js", context={"mce_lang": lang},
-                            content_type="application/javascript")
-
-
 # User profile ============================================================
 @login_required
 def user_profile(request):
