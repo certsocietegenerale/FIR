@@ -16,7 +16,7 @@
             </ul>
         </div>
     </div>
-    <div class="container-fluid ">
+    <div class="container-fluid " id="details-container">
             <div class="row" id="#action_result" class="alerts">
                 <div id="passwordChangedAlert" class="alert alert-success hidden alert-dismissible" role="alert">
                     <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "Close" %}"><span aria-hidden="true">&times;</span></button>
@@ -36,13 +36,10 @@
                     <div class="col-sm-11">
                         <fieldset>
                             <legend>{% trans "Main profile" %}</legend>
-                            {% if error_message %}
-                                <p class='text-error'>{{ error_message }}</p>
-                            {% endif %}
                             <div class="row">
                                 <div class="col-sm-6 form-group">
                                     <label for="id_username">{% trans "Username" %}</label>
-                                    <p id="id_username" class="form-control-static">{{ user.username }}</p>
+                                    <p id="id_username" class="form-control-static form-control">{{ user.username }}</p>
                                 </div>
                                 <div class="col-sm-6 form-group {% if user_form.email and user_form.email.errors%} has-error{%endif%}">
                                     <label for="id_email">{% trans "Email" %}</label>
@@ -50,7 +47,7 @@
                                         {{ user_form.email|add_css_class:"form-control" }}
                                         {% include 'events/_form_errors.html' with errors=user_form.email.errors %}
                                     {% else %}
-                                        <p id="id_email" class="form-control-static">{{ user.email }}</p>
+                                        <p id="id_email" class="form-control-static form-control">{{ user.email }}</p>
                                     {% endif %}
                                 </div>
                             </div>
@@ -62,7 +59,7 @@
                                         {{ user_form.first_name|add_css_class:"form-control" }}
                                         {% include 'events/_form_errors.html' with errors=user_form.first_name.errors %}
                                     {% else %}
-                                        <p id="id_first_name" class="form-control-static">{{ user.first_name }}</p>
+                                        <p id="id_first_name" class="form-control-static form-control">{{ user.first_name }}</p>
                                     {% endif %}
                                 </div>
                                 <div class="col-sm-6 form-group {% if user_form.last_name and user_form.last_name.errors%} has-error{%endif%}">
@@ -71,7 +68,7 @@
                                         {{ user_form.last_name|add_css_class:"form-control" }}
                                         {% include 'events/_form_errors.html' with errors=user_form.last_name.errors %}
                                     {% else %}
-                                        <p id="id_last_name" class="form-control-static">{{ user.last_name }}</p>
+                                        <p id="id_last_name" class="form-control-static form-control">{{ user.last_name }}</p>
                                     {% endif %}
                                 </div>
                             </div>
@@ -93,7 +90,7 @@
                                         {{ profile_form.incident_number|add_css_class:"form-control" }}
                                         {% include 'events/_form_errors.html' with errors=profile_form.incident_number.errors %}
                                     {% else %}
-                                        <p id="id_incident_number" class="form-control-static">{{ user.profile.incident_number }}</p>
+                                        <p id="id_incident_number" class="form-control-static form-control">{{ user.profile.incident_number }}</p>
                                     {% endif %}
                                 </div>
                                 <div class="col-sm-6 checkbox aligned-with-stack{% if profile_form.hide_closed.errors%} has-error{%endif%}">
