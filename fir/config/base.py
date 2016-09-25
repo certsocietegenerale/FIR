@@ -124,3 +124,15 @@ INCIDENT_SHOW_ID = False
 
 # Escape HTML when displaying markdown
 MARKDOWN_SAFE_MODE = True
+
+# User self-service features
+USER_SELF_SERVICE = {
+    # User can change his own email address
+    'CHANGE_EMAIL': True,
+    # User can change his first and last name
+    'CHANGE_NAMES': True,
+    # User can change his profile values (number of incidents per page, hide closed incidents)
+    'CHANGE_PROFILE': True,
+    # User can change his password
+    'CHANGE_PASSWORD': True
+}

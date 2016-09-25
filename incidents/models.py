@@ -411,6 +411,10 @@ class ProfileForm(forms.ModelForm):
         exclude = ('user', )
 
 
+class UserForm(forms.ModelForm):
+    class Meta:
+        pass
+
 # Templating =================================================================
 
 class IncidentTemplate(models.Model):
