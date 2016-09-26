@@ -8,7 +8,7 @@ from django.contrib.staticfiles import finders
 from django.template.response import TemplateResponse
 from django.views.decorators.http import require_POST
 
-from incidents.models import IncidentCategory, Incident, Comments, BusinessLine, ProfileForm
+from incidents.models import IncidentCategory, Incident, Comments, BusinessLine
 from incidents.models import Label, Log, BaleCategory
 from incidents.models import Attribute, ValidAttribute, IncidentTemplate, Profile
 from incidents.models import IncidentForm, CommentForm
