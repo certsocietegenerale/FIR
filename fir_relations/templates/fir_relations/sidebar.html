@@ -1,0 +1,33 @@
+{% load i18n %}
+{% if relations %}
+    <div class='widget'>
+        <h4 class='widget'>{{ title }}</h4>
+        <table class='table table-condensed files fixed'>
+            <thead>
+                <tr>
+                    <th class="date-column">{%  trans "ID" %}</th>
+                    <th>{%  trans "Type" %}</th>
+                    <th>{%  trans "Subject" %}</th>
+                    <th class="icon-column"></th>
+                </tr>
+            </thead>
+            {% for relation in relations %}
+                <tr id="relation_id_{{ relation.relation.id }}">
+                    <td>{{relation.id_text}}</td>
+                    <td>{{relation.object_type}}</td>
+                    <td>
+                        <a href="{% url relation.url relation.id %}">
+                            {{ relation }}
+                        </a>
+                    </td>
+                    <td class="icon-column">
+                        <form id='delete_relation_{{relation.relation.id}}' name='delete' action="{% url 'relations:remove' relation.relation.id %}" method='POST' data-ajaxform data-action='remove' data-target='#relation_id_{{relation.relation.id}}'>
+		                    {% csrf_token %}
+		                    <button type='submit' class='btn btn-xs btn-link icon'><i class='glyphicon glyphicon-remove'></i></button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+{% endif %}
