@@ -75,6 +75,12 @@
               <li id='dashboard-nav'><a href="{% url 'dashboard:main' %}">{% trans "Dashboard" %}</a></li>
               <li id='incidents-nav'><a href="{% url 'incidents:index' %}">{% trans "Incidents"%}</a></li>
               <li id='events-nav'><a href="{% url 'events:index' %}">{% trans "Events" %}</a></li>
+              <!-- Nmap 结果上传分析页面 -->
+              <li id='nmap-nav'><a href="{% url 'nmap:nmap_index' %}">{% trans "Nmap" %}</li>
+              <!-- Nessus 结果上传分析页面 -->
+              <li id='nessus-nav'><a href="{% url 'nessus:nessus_index' %}">{% trans "Nessus" %}</li>
+              <!-- AWVS 结果上传分析页面 -->
+              <li id='awvs-nav'><a href="{% url 'awvs:awvs_index' %}">{% trans "AWVS" %}</li>
             {% plugin_point 'base_navbar' %}
               <li id='incidents-nav' class='dropdown'>
                 <a class='dropdown-toggle' data-toggle='dropdown' href="#">{% trans "Stats" %}</a>
