@@ -33,6 +33,20 @@ from bson import json_util
 
 import copy
 import math
+import os
+
+from libnmap.parser import NmapParser
+from libnmap.objects.host import NmapHost
+from django.shortcuts import render_to_response
+from incidents.models import NmapFile
+from django.views.generic import ListView,View
+import time
+
+from xml.dom import minidom
+from incidents.models import NessusFile
+import urllib2
+from itertools import chain
+from incidents.models import AWVSFile
 
 from fir_artifacts import artifacts as libartifacts
 
@@ -149,6 +163,24 @@ def index(request, is_incident=False):
 
 @login_required
 @user_passes_test(is_incident_handler)
+def nmap_index1(request, is_incident=False):
+    return render(request, 'nmap/index-nmap.html', {'incident_view': is_incident})
+
+
+@login_required
+@user_passes_test(is_incident_handler)
+def nessus_index1(request, is_incident=False):
+    return render(request, 'nessus/index-nessus.html', {'incident_view': is_incident})
+
+
+@login_required
+@user_passes_test(is_incident_handler)
+def awvs_index1(request, is_incident=False):
+    return render(request, 'awvs/index-awvs.html', {'incident_view': is_incident})
+
+
+@login_required
+@user_passes_test(is_incident_handler)
 def incidents_all(request):
     return incident_display(request, Q(is_incident=True))
 
@@ -230,6 +262,282 @@ def new_event(request):
     bls = BusinessLine.objects.all()
 
     return render(request, 'events/new.html', {'form': form, 'mode': 'new', 'bls': bls})
+
+'''nmap xml上传\解析\存储'''
+@login_required
+@user_passes_test(is_incident_handler)
+def xml_upload(request):
+    if request.method == "POST":    # 请求方法为POST时，进行处理
+        myFile =request.FILES.get("myfile", None)    # 获取上传的文件，如果没有文件，则默认为None
+        if not myFile:
+            return HttpResponse("no files for upload!")
+        xmldirpath = os.getcwd() + "/uploads/xml/"           #xml文件夹路径
+#        print xmldirpath
+        myFile.name = time.strftime('%Y%m%d%H%M%S',time.localtime()) + ".xml"     #以当前系统时间+.xml取代当前文件名
+        xmlFilepath = os.path.join(xmldirpath,myFile.name)    #xml文件路径
+#        print xmlFilepath
+#        xmlFilepath = os.path.join("/Users/yp-tc-2946/Documents/FIR-master/uploads/xml/",myFile.name)
+        destination = open(xmlFilepath,'wb+')    # 打开特定的文件进行二进制的写操作
+        for chunk in myFile.chunks():      # 分块写入文件
+            destination.write(chunk)
+        destination.close()
+        '''xml解析'''
+        nmap_report = NmapParser.parse_fromfile(xmlFilepath)   #libnmap模块解析xml
+
+        '''xml内容存储'''
+        for host in nmap_report.hosts:
+            for service in host.services:
+                add_xml = NmapFile()
+                add_xml.starttime = datetime.datetime.fromtimestamp(nmap_report.started)
+                add_xml.host = host.address
+                add_xml.port = service.port
+                add_xml.service = service.banner
+                add_xml.flag = service.open()
+                add_xml.scandate = time.strftime('%Y-%m-%d',time.localtime(nmap_report.started))
+                add_xml.save()
+
+        '''xml文件名及上传年月存储'''
+#        add_xmlname = NmapXMLDATE()
+#        add_xmlname.upload_date = time.strftime('%Y-%m',time.localtime())
+#        add_xmlname.upload_filename = myFile.name
+#        add_xmlname.save()
+
+        return render(request,'nmap/index-nmap.html')
+
+'''NMAP XML 参数处理及结果返回'''
+class XMLlist(ListView):
+#    model = NmapFile
+    context_object_name = 'xml_list'
+    template_name = 'nmap/xmllist.html'
+    paginate_by = 10
+    http_method_names = [u'get',]
+    def get_queryset(self):
+        xml_list = NmapFile.objects.all()
+        xmlport = self.request.GET.get('port')
+        xmlhost = self.request.GET.get('ip')
+        xmlscandate = self.request.GET.get('time')
+
+        filterport = ['None']
+        if str(self.request.GET.get('filterport')):
+            filterport = str(self.request.GET.get('filterport')).split(',')
+        '''多条件查询'''
+        if xmlport:
+            if xmlhost:
+                if xmlscandate:
+                    xml_list = xml_list.filter(port=xmlport,host=xmlhost,scandate=xmlscandate)
+                else:
+                    xml_list = xml_list.filter(port=xmlport,host=xmlhost)
+            else:
+                if xmlscandate:
+                    xml_list = xml_list.filter(port=xmlport,scandate=xmlscandate)
+                else:
+                    xml_list = xml_list.filter(port=xmlport)
+        else:
+            if xmlhost:
+                if xmlscandate:
+                    xml_list = xml_list.filter(host=xmlhost,scandate=xmlscandate)
+                else:
+                    xml_list = xml_list.filter(host=xmlhost)
+            else:
+                if xmlscandate:
+                    xml_list = xml_list.filter(scandate=xmlscandate)
+        '''过滤特殊端口'''
+        if filterport[0] == 'None':
+            return xml_list
+        elif len(filterport):
+            for fport in filterport:
+                xml_list = xml_list.exclude(port=fport)
+
+        return xml_list
+    def get_context_data(self, **kwargs):
+        context = super(XMLlist,self).get_context_data(**kwargs)
+        timelist = NmapFile.objects.values('starttime').distinct()
+        context['nmaptimelist'] = timelist
+        return context
+
+
+'''nessus上传\解析\存储'''
+@login_required
+@user_passes_test(is_incident_handler)
+def nessus_upload(request):
+    if request.method == "POST":    # 请求方法为POST时，进行处理
+        myFile =request.FILES.get("myfile", None)    # 获取上传的文件，如果没有文件，则默认为None
+        if not myFile:
+            return HttpResponse("no files for upload!")
+        nessusdirpath = os.getcwd() + "/uploads/nessus/"           #nessus文件夹路径
+#        print xmldirpath
+        myFile.name = time.strftime('%Y%m%d%H%M%S',time.localtime()) + ".nessus"     #以当前系统时间+.nessus取代当前文件名
+        nessusFilepath = os.path.join(nessusdirpath,myFile.name)    #xml文件路径
+#        print xmlFilepath
+#        xmlFilepath = os.path.join("/Users/yp-tc-2946/Documents/FIR-master/uploads/xml/",myFile.name)
+        destination = open(nessusFilepath,'wb+')    # 打开特定的文件进行二进制的写操作
+        for chunk in myFile.chunks():      # 分块写入文件
+            destination.write(chunk)
+        destination.close()
+        '''nessus解析及存储'''
+        nessus_doc = minidom.parse(nessusFilepath)
+        root = nessus_doc.documentElement
+        for reportHost in root.getElementsByTagName("ReportHost"):
+            host_name = reportHost.attributes["name"].value
+            operating_os = reportHost.getElementsByTagName("HostProperties")[0].getElementsByTagName("tag")[12].childNodes[0].data
+            scantime = reportHost.getElementsByTagName("HostProperties")[0].getElementsByTagName("tag")[17].childNodes[0].data
+            for reportItem in reportHost.getElementsByTagName("ReportItem"):
+                add_nessus = NessusFile()
+                add_nessus.scantime = scantime
+                add_nessus.host = host_name
+                add_nessus.operatingOS = operating_os
+                add_nessus.port = reportItem.attributes['port'].value
+                add_nessus.protocol = reportItem.attributes['protocol'].value
+                add_nessus.plugin_name = reportItem.attributes['pluginName'].value
+                add_nessus.severity = reportItem.attributes['severity'].value
+                add_nessus.risk = reportItem.getElementsByTagName("risk_factor")[0].childNodes[0].data
+                add_nessus.description = reportItem.getElementsByTagName("description")[0].childNodes[0].data
+                add_nessus.solution = reportItem.getElementsByTagName("solution")[0].childNodes[0].data
+                add_nessus.existence = 1
+                add_nessus.save()
+
+        return render(request,'nessus/index-nessus.html')
+
+
+
+'''Nessus 参数处理及结果返回'''
+class Nessuslist(ListView):
+#    model = NessusFile
+    context_object_name = 'nessus_list'
+    template_name = 'nessus/nessuslist.html'
+    paginate_by = 10
+    http_method_names = [u'get',]
+    def get_queryset(self):
+        nessus_list = NessusFile.objects.all()
+        nessushost = self.request.GET.get('ip')
+        nessusscantime = self.request.GET.get('time')
+
+        filterrisk = ['None']
+        if str(self.request.GET.get('filterrisk')):
+            filterrisk = str(self.request.GET.get('filterrisk')).split(',')
+
+        '''多条件查询'''
+        if nessushost:
+            if nessusscantime:
+                nessus_list = nessus_list.filter(host=nessushost,scantime=nessusscantime)
+            else:
+                nessus_list = nessus_list.filter(host=nessushost)
+        else:
+            if nessusscantime:
+                nessus_list = nessus_list.filter(scantime=nessusscantime)
+
+        '''风险等级查询'''
+        if len(filterrisk) == 3:
+            nessus_list = nessus_list.filter(Q(risk=filterrisk[0])|Q(risk=filterrisk[1])|Q(risk=filterrisk[2]))
+        if len(filterrisk) == 2:
+            nessus_list = nessus_list.filter(Q(risk=filterrisk[0])|Q(risk=filterrisk[1]))
+        if len(filterrisk) == 1:
+            if filterrisk[0] == 'None':
+                return nessus_list
+            else:
+                nessus_list = nessus_list.filter(risk=filterrisk[0])
+
+        return nessus_list
+
+    def get_context_data(self, **kwargs):
+        context = super(Nessuslist,self).get_context_data(**kwargs)
+        timelist = NessusFile.objects.values('scantime').distinct()
+        context['nessustimelist'] = timelist
+        return context
+
+
+
+
+
+'''awvs上传\解析\存储'''
+@login_required
+@user_passes_test(is_incident_handler)
+def awvs_upload(request):
+    if request.method == "POST":    # 请求方法为POST时，进行处理
+        myFile =request.FILES.get("myfile", None)    # 获取上传的文件，如果没有文件，则默认为None
+        if not myFile:
+            return HttpResponse("no files for upload!")
+        awvsdirpath = os.getcwd() + "/uploads/awvs/"           #awvs文件夹路径
+#        print xmldirpath
+        myFile.name = time.strftime('%Y%m%d%H%M%S',time.localtime()) + ".xml"     #以当前系统时间+.xml取代当前文件名
+        awvsFilepath = os.path.join(awvsdirpath,myFile.name)    #xml文件路径
+#        print xmlFilepath
+#        xmlFilepath = os.path.join("/Users/yp-tc-2946/Documents/FIR-master/uploads/xml/",myFile.name)
+        destination = open(awvsFilepath,'wb+')    # 打开特定的文件进行二进制的写操作
+        for chunk in myFile.chunks():      # 分块写入文件
+            destination.write(chunk)
+        destination.close()
+
+        '''awvs解析及存储'''
+        awvs_doc = minidom.parse(awvsFilepath)
+        root = awvs_doc.documentElement
+        scanurl = root.getElementsByTagName("StartURL")[0].childNodes[0].data
+        scantime = root.getElementsByTagName("StartTime")[0].childNodes[0].data
+        operatingOS = root.getElementsByTagName("Os")[0].childNodes[0].data
+        webserver = root.getElementsByTagName("WebServer")[0].childNodes[0].data
+        for reportItem in root.getElementsByTagName("ReportItem"):
+            add_AWVS = AWVSFile()
+            add_AWVS.scanurl = scanurl
+            add_AWVS.scantime = scantime
+            add_AWVS.operatingOS = operatingOS
+            add_AWVS.webserver = webserver
+            add_AWVS.itemname = reportItem.getElementsByTagName("Name")[0].childNodes[0].data
+            add_AWVS.severity = reportItem.getElementsByTagName("Severity")[0].childNodes[0].data
+            add_AWVS.details = reportItem.getElementsByTagName("Details")[0].childNodes[0].data
+            add_AWVS.description = reportItem.getElementsByTagName("Description")[0].childNodes[0].data
+            add_AWVS.recommendation = reportItem.getElementsByTagName("Recommendation")[0].childNodes[0].data
+            add_AWVS.existence = 1
+            add_AWVS.save()
+
+        return render(request,'awvs/index-awvs.html')
+
+
+'''AWVS 参数处理及结果返回'''
+class AWVSlist(ListView):
+#    model = AWVSFile
+    context_object_name = 'awvs_list'
+    template_name = 'awvs/awvslist.html'
+    paginate_by = 10
+    http_method_names = [u'get',]
+    def get_queryset(self):
+        awvs_list = AWVSFile.objects.all()
+        awvshost = self.request.GET.get('scanurl')
+        awvsscantime = self.request.GET.get('time')
+        filterrisk = ['None']
+        if str(self.request.GET.get('filterrisk')):
+            filterrisk = str(self.request.GET.get('filterrisk')).split(',')
+
+        '''多条件查询'''
+        if awvshost:
+            if awvsscantime:
+                print 1
+                awvs_list = awvs_list.filter(scanurl=awvshost,scantime=awvsscantime)
+            else:
+                print 2
+                awvs_list = awvs_list.filter(scanurl=awvshost)
+        else:
+            if awvsscantime:
+                print 3
+                awvs_list = awvs_list.filter(scantime=awvsscantime)
+
+        '''风险等级查询'''
+        if len(filterrisk) == 3:
+            awvs_list = awvs_list.filter(Q(severity=filterrisk[0])|Q(severity=filterrisk[1])|Q(severity=filterrisk[2]))
+        if len(filterrisk) == 2:
+            awvs_list = awvs_list.filter(Q(severity=filterrisk[0])|Q(severity=filterrisk[1]))
+        if len(filterrisk) == 1:
+            if filterrisk[0] == 'None':
+                return awvs_list
+            else:
+                awvs_list = awvs_list.filter(severity=filterrisk[0])
+
+        return awvs_list
+    def get_context_data(self, **kwargs):
+        context = super(AWVSlist,self).get_context_data(**kwargs)
+        timelist = AWVSFile.objects.values('scantime').distinct()
+        context['awvstimelist'] = timelist
+        return context
+
 
 
 def diff(incident, form):
@@ -450,6 +758,24 @@ def update_comment(request, comment_id):
 @user_passes_test(is_incident_handler)
 def event_index(request):
     return index(request, False)
+
+
+@login_required
+@user_passes_test(is_incident_handler)
+def nmap_index(request):
+    return nmap_index1(request, False)
+
+
+@login_required
+@user_passes_test(is_incident_handler)
+def nessus_index(request):
+    return nessus_index1(request, False)
+
+
+@login_required
+@user_passes_test(is_incident_handler)
+def awvs_index(request):
+    return awvs_index1(request, False)
 
 
 def normalize_query(query_string,
@@ -1931,6 +2257,8 @@ def incidents_order(request):
 
     return (order_by, order_param, asc)
 
+def nmap_display(request):
+    return
 
 def incident_display(request, filter, incident_view=True, paginated=True):
     (order_by, order_param, asc) = incidents_order(request)
