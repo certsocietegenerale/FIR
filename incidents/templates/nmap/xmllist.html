@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+{% load add_css_class %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block custom_js_top %}
+    {# select控件 option去重 #}
+    <script type="text/javascript" src="{% static "js/jquery.min.js" %}"></script>
+    <script type="text/javascript">
+    $(function() {
+        $("select option").each(function () {
+            text = $(this).text();
+            if ($("select option:contains(" + text + ")").length > 1)
+                $("select option:contains(" + text + "):gt(0)").remove();
+        });
+    })
+    function hiddenrow(dom){
+        if(dom.checked){
+
+        }
+    }
+
+
+    </script>
+{% endblock %}
+
+{% block content %}
+        <form class="form-inline" role="form" action="" method="GET">
+		<div class="panel panel-default">
+            <div class="panel-heading">
+				  <div class="form-group">
+                        <input type="input" name="port" class="form-control" placeholder="端口号" value="{{ request.GET.port }}">
+					    <input type="input" name="ip" class="form-control" placeholder="请输入IP" value="{{ request.GET.ip }}">
+						<select name="time" class="form-control">
+							<option value="">--时间--</option>
+							{% for xml in nmaptimelist %}
+								 <option value="{{ xml.scandate }}" {% if request.GET.time  == xml.scandate %}selected{% endif %}>{{ xml.scandate }}</option>
+							{% endfor -%}
+						</select>
+                        <input type="input" name="filterport" class="form-control" placeholder="请输入过滤端口" value="{{ request.GET.filterport }}" >
+				  </div>
+
+				  <button type="submit" class="btn btn-primary">Search</button>
+			</div>
+            {% if xml_list %}
+			<table id="xmllist" class="table table-striped table-bordered table-hover table-condensed">
+				<thead>
+				  <tr>
+					<th>扫描时间</th>
+					<th>HOST</th>
+					<th>端口</th>
+					<th>服务</th>
+					<th>开启/关闭</th>
+				  </tr>
+				</thead>
+                {% for xml in xml_list %}
+				<tbody>
+					  <tr>
+						<td>{{ xml.starttime }}</td>
+						<td>{{ xml.host }}</td>
+						<td>{{ xml.port }}</td>
+						<td>{{ xml.service }}</td>
+						{% if  xml.flag  %}
+						    <td>开启</td>
+						{% else %}
+                            <td>关闭</td>
+                        {% endif %}
+					  </tr>
+				</tbody>
+                {% endfor %}
+			</table>
+            {% endif %}
+		</div>
+            {% if is_paginated %}
+            <div class="pagination">
+                <span class="page-links">
+                    {% if page_obj.has_previous %}
+                        <a href="/nmap/xmlfilelist?page={{ page_obj.previous_page_number }}&ip={{ request.GET.ip }}&port={{ request.GET.port }}&time={{ request.GET.time }}&filterport={{ request.GET.filterport }}">上一页</a>
+                    {% endif %}
+                    {% if page_obj.has_next %}
+                        <a href="/nmap/xmlfilelist?page={{ page_obj.next_page_number }}&ip={{ request.GET.ip }}&port={{ request.GET.port }}&time={{ request.GET.time }}&filterport={{ request.GET.filterport }}">下一页</a>
+                    {% endif %}
+                    <span class="page-current">
+                        第{{ page_obj.number }}页 ，共{{ page_obj.paginator.num_pages }}页。
+                    </span>
+                </span>
+            </div>
+            {% endif %}
+        {% comment %}
+        <a href="#" class="btn btn-primary" role="button">编辑</a>
+        <a href="#" class="btn btn-primary" role="button">保存</a>
+        <a href="#" class="btn btn-primary" role="button">取消</a>
+        {% endcomment %}
+        <a href="/nmap" class="btn btn-primary" role="button">返回上传页面</a>
+	</form>
+{% endblock %}
