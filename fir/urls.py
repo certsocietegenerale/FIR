@@ -5,6 +5,9 @@ from django.contrib import admin
 from fir.config.base import INSTALLED_APPS
 from incidents import views
 
+from django.views.static import serve
+from django.conf import settings
+
 # urls for core FIR components
 urlpatterns = [
     url(r'^tools/', include('incidents.custom_urls.tools', namespace='tools')),
@@ -19,6 +22,12 @@ urlpatterns = [
     url(r'^dashboard/', include('incidents.custom_urls.dashboard', namespace='dashboard')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', views.dashboard_main),
+    url(r'^nmap/', include('incidents.custom_urls.nmap', namespace='nmap')),
+    url(r'^uploads/xml/(?P<path>.*)', serve, {'document_root': settings.MEDIA_ROOT}),
+    url(r'^nessus/', include('incidents.custom_urls.nessus', namespace='nessus')),
+    url(r'^uploads/nessus/(?P<path>.*)', serve, {'document_root': settings.MEDIA_ROOT}),
+    url(r'^awvs/', include('incidents.custom_urls.awvs', namespace='awvs')),
+    url(r'^uploads/awvs/(?P<path>.*)', serve, {'document_root': settings.MEDIA_ROOT}),
 ]
 
 for app in INSTALLED_APPS:
