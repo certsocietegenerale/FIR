@@ -1,6 +1,6 @@
 # Dockerfile for FIR development instance
 # written by Robert Haist
-# 
+#
 # Mostly based on the ubuntu image by Kyle Maxwell
 #
 # build with the command:
@@ -10,8 +10,8 @@
 #
 # then access http://localhost:8000 in your browser
 
-#MAINTAINER Robert Haist, SleuthKid@mailbox.org
-FROM alpine:latest
+# MAINTAINER Robert Haist, SleuthKid@mailbox.org
+FROM alpine:3.4
 
 RUN apk add --update \
     python \
@@ -23,8 +23,8 @@ RUN apk add --update \
     libxml2-dev \
     libxslt \
     libxslt-dev \
-    libzip \
-    libzip-dev \
+    postgresql-dev \
+
     && rm -rf /var/cache/apk/*
 
 RUN addgroup fir && \
