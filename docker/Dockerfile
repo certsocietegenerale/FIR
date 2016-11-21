@@ -1,5 +1,8 @@
 # Dockerfile for FIR development instance
-# written by Kyle Maxwell
+# written by Robert Haist
+#
+# Mostly based on the ubuntu image by Kyle Maxwell
+#
 # build with the command:
 #
 # sudo docker build -t fir .
@@ -7,38 +10,44 @@
 #
 # then access http://localhost:8000 in your browser
 
-#MAINTAINER Kyle Maxwell, krmaxwell@gmail.com
-FROM ubuntu:14.04
-RUN apt-get update && \
-  apt-get dist-upgrade -y
-RUN apt-get install -y --no-install-recommends \
-  python-pip  \
-  python-dev \
-  python-lxml \
-  python-virtualenv \
-  libxml2-dev \
-  libxslt1-dev \
-  libz-dev \
-  build-essential \
-  git && \
+# MAINTAINER Robert Haist, SleuthKid@mailbox.org
+FROM alpine:3.4
 
-  groupadd -r fir && \
-  useradd -r -g fir -d /home/fir -s /sbin/nologin -c "FIR user" fir
+RUN apk add --update \
+    python \
+    python-dev \
+    py-pip \
+    build-base \
+    git \
+    libxml2 \
+    libxml2-dev \
+    libxslt \
+    libxslt-dev \
+    postgresql-dev \
 
-WORKDIR /home
+    && rm -rf /var/cache/apk/*
+
+RUN addgroup fir && \
+    adduser -D -G fir -s /sbin/nologin fir
+
+WORKDIR /app
+
 RUN git clone https://github.com/certsocietegenerale/FIR.git && \
-  mv /home/FIR /home/fir && \
-  chown -R fir:fir /home/fir && \
-  cd fir && \
-  pip install -r requirements.txt
+    chown -R fir:fir /app/FIR && \
+    cd FIR && \
+    pip install -r requirements.txt && \
+    cp fir/config/installed_apps.txt.sample fir/config/installed_apps.txt
 
 USER fir
-ENV HOME /home/fir
+ENV HOME /app/FIR
 ENV USER fir
-WORKDIR /home/fir
+
+WORKDIR /app/FIR
+
 RUN ./manage.py migrate && \
     ./manage.py loaddata incidents/fixtures/seed_data.json && \
     ./manage.py loaddata incidents/fixtures/dev_users.json
+
 EXPOSE 8000
-ENTRYPOINT ["/home/fir/manage.py"]
+ENTRYPOINT ["/app/FIR/manage.py"]
 CMD ["runserver", "0.0.0.0:8000"]
