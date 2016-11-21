@@ -8,24 +8,27 @@ from django.forms import ModelForm
 from django import forms
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
+from django.conf import settings
+
+from treebeard.mp_tree import MP_Node
 
 from fir_artifacts import artifacts
 from fir_artifacts.models import Artifact, File
 from fir_plugins.models import link_to
-
+from incidents.authorization import tree_authorization, AuthorizationModelMixin
 
 STATUS_CHOICES = (
     ("O", _("Open")),
     ("C", _("Closed")),
     ("B", _("Blocked")),
-    )
+)
 
 SEVERITY_CHOICES = (
     (1, '1'),
     (2, '2'),
     (3, '3'),
     (4, '4'),
-    )
+)
 
 LOG_ACTIONS = (
     ("D", "Deleted"),
@@ -33,15 +36,14 @@ LOG_ACTIONS = (
     ("U", "Update"),
     ("LI", "Logged in"),
     ("LO", "Logged out"),
-    )
+)
 
 CONFIDENTIALITY_LEVEL = (
     (0, "C0"),
     (1, "C1"),
     (2, "C2"),
     (3, "C3"),
-    )
-
+)
 
 # Special Model class that handles signals
 
@@ -57,6 +59,7 @@ class FIRModel:
     def done_updating(self):
         model_updated.send(sender=self.__class__, instance=self)
 
+
 # Profile ====================================================================
 
 
@@ -67,6 +70,7 @@ class Profile(models.Model):
 
     def __unicode__(self):
         return u"Profile for user '{}'".format(self.user)
+
 
 # Audit trail ================================================================
 
@@ -102,47 +106,35 @@ class Label(models.Model):
         return "%s" % (self.name)
 
 
-class BusinessLine(models.Model):
+class BusinessLine(MP_Node, AuthorizationModelMixin):
     name = models.CharField(max_length=100)
-    parent = models.ForeignKey('BusinessLine', null=True, blank=True)
 
     def __unicode__(self):
-
-        ret = [self.name]
-
-        parent = self.parent
-        while parent:
-            ret.append(parent.name)
-            parent = parent.parent
-
-        ret.reverse()
-        return u" > ".join(ret)
+        parents = list(self.get_ancestors())
+        parents.append(self)
+        return u" > ".join([bl.name for bl in parents])
 
     class Meta:
-        ordering = ["parent__name", "name"]
-
-    def get_children(self):
-        return BusinessLine.objects.filter(parent=self.id)
+        verbose_name = _('business line')
 
     def get_incident_count(self, query):
         incident_count = self.incident_set.filter(query).distinct().count()
-        bls = BusinessLine.objects.filter(parent=self.id)
-
-        while len(bls) > 0:
-            incident_count += Incident.objects.filter(query).filter(concerned_business_lines__in=bls).distinct().count()
-            bls = BusinessLine.objects.filter(parent__in=bls)
-
+        incident_count += Incident.objects.filter(query).filter(
+            concerned_business_lines__in=self.get_descendants()).distinct().count()
         return incident_count
 
-    def get_top_parent(self):
-        parent = self
-        while parent.parent is not None:
-            parent = parent.parent
-        return parent
 
-    @staticmethod
-    def get_parents():
-        return BusinessLine.objects.filter(parent=None)
+class AccessControlEntry(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'), on_delete=models.CASCADE)
+    business_line = models.ForeignKey(BusinessLine, verbose_name=_('business line'), related_name='acl')
+    role = models.ForeignKey('auth.Group', verbose_name=_('role'))
+
+    def __unicode__(self):
+        return _("{} is {} on {}").format(self.user, self.role, self.business_line)
+
+    class Meta:
+        verbose_name = _('access control entry')
+        verbose_name_plural = _('access control entries')
 
 
 class BaleCategory(models.Model):
@@ -172,8 +164,11 @@ class IncidentCategory(models.Model):
     def __unicode__(self):
         return self.name
 
+
 # Core models ================================================================
 
+@tree_authorization(fields=['concerned_business_lines', ], tree_model='incidents.BusinessLine',
+                    owner_field='opened_by', owner_permission=settings.INCIDENT_CREATOR_PERMISSION)
 @link_to(File)
 @link_to(Artifact)
 class Incident(FIRModel, models.Model):
@@ -188,8 +183,10 @@ class Incident(FIRModel, models.Model):
     severity = models.IntegerField(choices=SEVERITY_CHOICES)
     is_incident = models.BooleanField(default=False)
     is_major = models.BooleanField(default=False)
-    actor = models.ForeignKey(Label, limit_choices_to={'group__name': 'actor'}, related_name='actor_label', blank=True, null=True)
-    plan = models.ForeignKey(Label, limit_choices_to={'group__name': 'plan'}, related_name='plan_label', blank=True, null=True)
+    actor = models.ForeignKey(Label, limit_choices_to={'group__name': 'actor'}, related_name='actor_label', blank=True,
+                              null=True)
+    plan = models.ForeignKey(Label, limit_choices_to={'group__name': 'plan'}, related_name='plan_label', blank=True,
+                             null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=_("Open"))
     opened_by = models.ForeignKey(User)
     confidentiality = models.IntegerField(choices=CONFIDENTIALITY_LEVEL, default='1')
@@ -226,13 +223,8 @@ class Incident(FIRModel, models.Model):
         for bl in self.concerned_business_lines.all():
             if bl.name == bl_string:
                 return bl.name
-
-            parent = bl.parent
-            while parent:
-                if parent.name == bl_string:
-                    return bl.name
-                parent = parent.parent
-
+            if bl.get_descendants().filter(name=bl_string).count():
+                return bl.name
         return False
 
     def get_business_lines_names(self):
@@ -241,7 +233,7 @@ class Incident(FIRModel, models.Model):
     def refresh_main_business_lines(self):
         mainbls = set()
         for bl in self.concerned_business_lines.all():
-            mainbls.add(bl.get_top_parent())
+            mainbls.add(bl.get_root())
         self.main_business_lines = list(mainbls)
 
     def refresh_artifacts(self, data=""):
@@ -282,6 +274,8 @@ class Incident(FIRModel, models.Model):
     class Meta:
         permissions = (
             ('handle_incidents', 'Can handle incidents'),
+            ('report_events', 'Can report events'),
+            ('view_incidents', 'Can view incidents'),
             ('view_statistics', 'Can view statistics'),
         )
 
@@ -364,13 +358,26 @@ class ValidAttribute(models.Model):
     def __unicode__(self):
         return self.name
 
+
 # forms ===============================================================
 
 
 class IncidentForm(ModelForm):
-
     def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('for_user', None)
+        permissions = kwargs.pop('permissions', None)
+        has_permission = True
+        if permissions is None:
+            permissions = ['incidents.handle_incidents', ]
+            has_permission = False
         super(ModelForm, self).__init__(*args, **kwargs)
+        if self.user is not None:
+            if not isinstance(permissions, (list, tuple)):
+                permissions = [permissions, ]
+            if 'instance' not in kwargs and not has_permission:
+                permissions.append('incidents.report_events')
+            self.fields['concerned_business_lines'].queryset = BusinessLine.authorization.for_user(self.user,
+                                                                                                   permissions)
         self.fields['subject'].error_messages['required'] = 'This field is required.'
         self.fields['category'].error_messages['required'] = 'This field is required.'
         self.fields['concerned_business_lines'].error_messages['required'] = 'This field is required.'
@@ -380,6 +387,22 @@ class IncidentForm(ModelForm):
         self.fields['is_major'].error_messages['required'] = 'This field is required.'
 
         self.fields['is_major'].label = 'Major?'
+
+    def clean(self):
+        cleaned_data = super(IncidentForm, self).clean()
+        print 'clean', self.user, cleaned_data
+        if self.user is not None:
+            business_lines = cleaned_data.get("concerned_business_lines")
+            is_incident = cleaned_data.get("is_incident")
+            if is_incident:
+                bl_ids = business_lines.values_list('id', flat=True)
+                handling_bls = BusinessLine.authorization.for_user(self.user, 'incidents.handle_incidents').filter(
+                    pk__in=bl_ids).count()
+                if len(bl_ids) != handling_bls:
+                    self.add_error('is_incident',
+                                   forms.ValidationError(_('You cannot create incidents for these business lines')))
+
+        return cleaned_data
 
     class Meta:
         model = Incident
@@ -422,6 +445,7 @@ class IncidentTemplate(models.Model):
     def __unicode__(self):
         return self.name
 
+
 #
 # Signal receivers
 #
@@ -431,6 +455,7 @@ class IncidentTemplate(models.Model):
 @receiver(model_updated, sender=Incident)
 def refresh_incident(sender, instance, **kwargs):
     instance.refresh_artifacts(instance.description)
+
 
 # Automatically create comments
 
@@ -445,6 +470,7 @@ def comment_new_incident(sender, instance, created, **kwargs):
             opened_by=instance.opened_by,
             date=instance.date,
         )
+
 
 # Automatically log actions
 

@@ -1,15 +1,27 @@
 from incidents.models import *
 from django.contrib import admin
+from django.contrib.auth import admin as auth_admin, get_user_model
+from treebeard.admin import TreeAdmin
+from treebeard.forms import movenodeform_factory
+
+User = get_user_model()
 
 
-class BusinessLineAdmin(admin.ModelAdmin):
+class ACENestedAdmin(admin.TabularInline):
+    model = AccessControlEntry
+
+
+class UserAdmin(auth_admin.UserAdmin):
+    inlines = [ACENestedAdmin, ]
+
+
+class BusinessLineAdmin(TreeAdmin):
     search_fields = ('name', )
-    ordering = ('name', )
+    form = movenodeform_factory(BusinessLine)
 
 
 class IncidentAdmin(admin.ModelAdmin):
     exclude = ("artifacts", )
-    pass
 
 admin.site.register(Incident, IncidentAdmin)
 admin.site.register(BusinessLine, BusinessLineAdmin)
@@ -23,3 +35,5 @@ admin.site.register(Profile)
 admin.site.register(IncidentTemplate)
 admin.site.register(Attribute)
 admin.site.register(ValidAttribute)
+admin.site.unregister(User)
+admin.site.register(User, UserAdmin)

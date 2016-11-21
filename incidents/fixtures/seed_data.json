@@ -204,43 +204,53 @@
     }
 },
 {
+    "model": "incidents.businessline",
     "pk": 1,
-    "model": "incidents.businessline",
     "fields": {
-        "name": "Demo BusinessLine 1",
-        "parent": null
+        "path": "0002",
+        "depth": 1,
+        "numchild": 2,
+        "name": "Demo BusinessLine 1"
     }
 },
 {
+    "model": "incidents.businessline",
     "pk": 2,
-    "model": "incidents.businessline",
     "fields": {
-        "name": "Sub BL 1",
-        "parent": 1
+        "path": "00020002",
+        "depth": 2,
+        "numchild": 0,
+        "name": "Sub BL 1"
     }
 },
 {
+    "model": "incidents.businessline",
     "pk": 3,
-    "model": "incidents.businessline",
     "fields": {
-        "name": "Sub BL 2",
-        "parent": 1
+        "path": "00020003",
+        "depth": 2,
+        "numchild": 0,
+        "name": "Sub BL 2"
     }
 },
 {
+    "model": "incidents.businessline",
     "pk": 4,
-    "model": "incidents.businessline",
     "fields": {
-        "name": "Demo BusinessLine 2",
-        "parent": null
+        "path": "0003",
+        "depth": 1,
+        "numchild": 0,
+        "name": "Demo BusinessLine 2"
     }
 },
 {
-    "pk": 5,
     "model": "incidents.businessline",
+    "pk": 5,
     "fields": {
-        "name": "CERT",
-        "parent": null
+        "path": "0001",
+        "depth": 1,
+        "numchild": 0,
+        "name": "CERT"
     }
 },
 {
@@ -591,6 +601,77 @@
                 "incidents",
                 "incident"
             ],
+            [
+                "view_statistics",
+                "incidents",
+                "incident"
+            ],
+            [
+                "view_incidents",
+                "incidents",
+                "incident"
+            ],
+            [
+                "report_events",
+                "incidents",
+                "incident"
+            ]
+        ]
+    }
+},
+{
+    "model": "auth.group",
+    "pk": 2,
+    "fields": {
+        "name": "Event reporters",
+        "permissions": [
+            [
+                "report_events",
+                "incidents",
+                "incident"
+            ]
+        ]
+    }
+},
+{
+    "model": "auth.group",
+    "pk": 3,
+    "fields": {
+        "name": "Statistics and incident viewers",
+        "permissions": [
+            [
+                "view_statistics",
+                "incidents",
+                "incident"
+            ],
+            [
+                "view_incidents",
+                "incidents",
+                "incident"
+            ]
+        ]
+    }
+},
+{
+    "model": "auth.group",
+    "pk": 4,
+    "fields": {
+        "name": "Incident viewers",
+        "permissions": [
+            [
+                "view_incidents",
+                "incidents",
+                "incident"
+            ]
+        ]
+    }
+},
+{
+    "model": "auth.group",
+    "pk": 5,
+    "fields": {
+        "name": "Statistics only viewers",
+        "permissions": [
             [
                 "view_statistics",
                 "incidents",

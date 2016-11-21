@@ -60,6 +60,12 @@ MIDDLEWARE_CLASSES = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+# Authentication and authorization backends
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',  # default
+    'incidents.authorization.ObjectPermissionBackend',
+)
+
 # Absolute filesystem path to the directory that will hold user-uploaded files
 MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
 
@@ -80,6 +86,7 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'treebeard',
     'incidents',
     'django.contrib.admin',
     'rest_framework',
@@ -119,4 +126,12 @@ TEMPLATES = [
     }
 ]
 
+# If True, shows the incident ID in views (table and details)
 INCIDENT_SHOW_ID = False
+
+# Permission added to the incident created by user, None for no permission
+INCIDENT_CREATOR_PERMISSION = 'incidents.view_incidents'
+
+# If you can see an event/incident, you can comment it!
+INCIDENT_VIEWER_CAN_COMMENT = True
+

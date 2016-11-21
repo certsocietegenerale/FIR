@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django import forms
 
@@ -18,6 +19,13 @@ class TodoItem(models.Model):
 
 
 class TodoItemForm(forms.ModelForm):
+    def __init__(self, *args, **kwargs):
+        self.user = kwargs.pop('for_user', None)
+        super(TodoItemForm, self).__init__(*args, **kwargs)
+        if self.user is not None:
+            self.fields['business_line'].queryset = BusinessLine.authorization.for_user(self.user,
+                                                                                        'incidents.handle_incidents')
+
     class Meta:
         model = TodoItem
         exclude = ('incident', 'category', 'done_time')

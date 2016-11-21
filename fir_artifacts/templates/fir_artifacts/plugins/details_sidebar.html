@@ -1,6 +1,7 @@
 {% load i18n %}
 {% load fir_artifacts %}
-
+{% load authorization %}
+{%  has_perm 'incidents.handle_incidents' obj=event as can_handle_incident %}
 <div class='widget {% if event.file_set.count == 0 %}hidden{% endif%}' id='details-files'>
 <h4 class='widget'>{%  trans "Related files" %}</h4>
     {% if event.file_set.count > 0 %}
@@ -23,18 +24,20 @@
                     </td>
                     <td>{{ file.description }}</td>
                     <td class="icon-column">
+                        {% if can_handle_incident %}
                         <form id='details-file-delete' action="{% url 'artifacts:remove_file' file.id %}" method='POST'>
                             {% csrf_token %}
                             <button type="submit" class="btn btn-link btn-xs icon">
                                 <i class="glyphicon glyphicon-trash"></i>
                             </button>
                         </form>
+                        {% endif %}
                     </td>
                 </tr>
             {% endfor %}
         </table>
     {% endif %}
-
+    {% if can_handle_incident %}
     <form id='upload_form' enctype="multipart/form-data" action="{% url 'artifacts:upload_file' event|content_type event.id %}" method='POST'>
         {% csrf_token %}
         <div class='upload'>
@@ -49,6 +52,7 @@
     <a class="btn btn-sm btn-default" href="#" onclick='javascript:$("#upload_form").submit();'>
         <i class="glyphicon glyphicon-upload"></i> {%  trans "Upload files" %}
     </a>
+    {% endif %}
     {% if event.file_set.count > 0 %}
         <a class="btn btn-sm btn-default" href="{% url 'artifacts:download_archive' event|content_type event.id %}">
             <i class="glyphicon glyphicon-download-alt"></i> {%  trans "Download archive" %}
