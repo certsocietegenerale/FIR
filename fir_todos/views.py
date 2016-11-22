@@ -78,6 +78,8 @@ def toggle_status(request, todo_id):
         if todo.done:
             todo.done_time = datetime.datetime.now()
         todo.save()
+    else:
+        raise PermissionDenied()
 
     referer = request.META.get('HTTP_REFERER', None)
     dashboard = False
