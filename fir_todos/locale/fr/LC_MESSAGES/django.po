@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FIR master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-15 20:24+0100\n"
+"POT-Creation-Date: 2016-09-13 20:49+0200\n"
 "PO-Revision-Date: 2015-03-15 20:24+0100\n"
 "Last-Translator: Gaetan Crahay <gaetan@crahay.eu>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -30,23 +30,27 @@ msgid "Category"
 msgstr "Catégorie"
 
 #: templates/fir_todos/dashboard.html:10
+msgid "Business line"
+msgstr "Partie prenante"
+
+#: templates/fir_todos/dashboard.html:11
 msgid "Delete"
 msgstr "Supprimer"
 
-#: templates/fir_todos/dashboard.html:25
+#: templates/fir_todos/dashboard.html:26
 msgid "previous"
 msgstr "précédent"
 
-#: templates/fir_todos/dashboard.html:30
+#: templates/fir_todos/dashboard.html:31
 #, python-format
 msgid "(page %(number)s of %(num_pages)s)"
 msgstr "(page %(number)s sur %(num_pages)s)"
 
-#: templates/fir_todos/dashboard.html:35
+#: templates/fir_todos/dashboard.html:36
 msgid "next"
 msgstr "suivant"
 
-#: templates/fir_todos/dashboard.html:42
+#: templates/fir_todos/dashboard.html:43
 msgid "No tasks to show."
 msgstr "Aucune tâche."
 
@@ -63,7 +67,7 @@ msgid "Tasks"
 msgstr "Tâches"
 
 #: templates/fir_todos/plugins/dashboard_tab_content.html:4
-#: templates/fir_todos/plugins/details_main.html:6
+#: templates/fir_todos/plugins/details_main.html:9
 #: templates/fir_todos/plugins/followup_main.html:6
 msgid "Loading ..."
 msgstr "Chargement ..."
@@ -72,11 +76,11 @@ msgstr "Chargement ..."
 msgid "Todo"
 msgstr "Tâche"
 
-#: templates/fir_todos/plugins/details_main.html:3
+#: templates/fir_todos/plugins/details_main.html:6
 #: templates/fir_todos/plugins/followup_main.html:3
 msgid "To-Do List"
 msgstr "Liste de tâches"
 
-#: templates/fir_todos/plugins/details_main.html:9
+#: templates/fir_todos/plugins/details_main.html:12
 msgid "Add To-Do Item"
 msgstr "Ajouter une tâche"

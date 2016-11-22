@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load authorization %}
 {% block content %}
     {% with incident_list=correlations.incidents.objects %}
         <h3>{% trans "Incidents" %}</h3>
@@ -20,6 +21,9 @@
 				</tr>
 			</thead>
 		{% for incident in incident_list %}
+        {%  has_perm 'incidents.view_incidents' obj=incident as can_view_incident %}
+        {%  has_perm 'incidents.handle_incidents' obj=incident as can_handle_incident %}
+        {% if can_view_incident %}
 		<tr>
 			<td>{{ incident.date|date:"SHORT_DATE_FORMAT" }}</td>
 			<td><a href="{% url 'incidents:details' incident.id %}">{{ incident.subject }}</a></td>
@@ -29,8 +33,13 @@
 			<td>{{ incident.detection }}</td>
 			<td>{{ incident.actor }}</td>
 			<td>{{ incident.plan }}</td>
-			<td><a href="{% url 'incidents:edit' incident.id %}"><span class='glyphicon glyphicon-pencil'></span></a></td>
+			<td>
+                {% if can_handle_incident %}
+                <a href="{% url 'incidents:edit' incident.id %}"><span class='glyphicon glyphicon-pencil'></span></a>
+                {% endif %}
+            </td>
 		</tr>
+        {% endif %}
 		{% endfor %}
 
 	</table>

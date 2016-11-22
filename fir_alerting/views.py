@@ -7,6 +7,7 @@ from django.template import Template
 from django.conf import settings
 from json import dumps
 
+from incidents.authorization.decorator import authorization_required
 from incidents.views import is_incident_handler
 from incidents.models import Incident, BusinessLine
 
@@ -14,7 +15,6 @@ from fir_alerting.models import RecipientTemplate, CategoryTemplate, EmailForm
 
 
 @login_required
-@user_passes_test(is_incident_handler)
 def emailform(request):
     email_form = EmailForm()
 
@@ -22,9 +22,13 @@ def emailform(request):
 
 
 @login_required
-@user_passes_test(is_incident_handler)
-def get_template(request, incident_id, template_type, bl=None):
-    i = get_object_or_404(Incident, pk=incident_id)
+@authorization_required('incidents.handle_incidents', Incident, view_arg='incident_id')
+def get_template(request, incident_id, template_type, bl=None, authorization_target=None):
+    if authorization_target is None:
+        i = get_object_or_404(Incident.authorization.for_user(request.user, 'incidents.handle_incidents'),
+                              pk=incident_id)
+    else:
+        i = authorization_target
 
     try:
         cat_template = CategoryTemplate.objects.get(incident_category=i.category, type=template_type)
@@ -49,9 +53,9 @@ def get_template(request, incident_id, template_type, bl=None):
         print "Email template ERROR: ", e
         parents = list(set(i.concerned_business_lines.all()))
 
-        while not rec_template and parents != [None]:
+        while not rec_template and len(parents):
             try:
-                parents = list(set([b.parent for b in parents]))
+                parents = list(set([b.get_parent() for b in parents if not b.is_root()]))
                 q_parent = Q()
                 for p in parents:
                     q_parent |= Q(business_line=p)

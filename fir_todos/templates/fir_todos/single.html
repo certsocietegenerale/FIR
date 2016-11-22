@@ -1,27 +1,39 @@
+{% load authorization %}
+{%  has_perm 'incidents.handle_incidents' obj=item.incident as can_handle_incident %}
+{%  has_perm 'incidents.view_incidents' obj=item.business_line as can_view_incident %}
 <tr id="todo-{{item.id}}" class="fir_todo_item {% if item.done %} fir_todos_done {% endif %}">
 	<td class='fir_todos_status'>
-		<form action="{% url 'todos:toggle_status' item.id %}" method='POST' data-ajaxform data-action='replaceWith' data-target='#todo-{{item.id}}'>
-			{% csrf_token %}
-			<button type='submit' class='btn btn-xs btn-link icon'>
+			{% if can_view_incident or can_handle_incident %}
+				<form action="{% url 'todos:toggle_status' item.id %}" method='POST' data-ajaxform data-action='replaceWith' data-target='#todo-{{item.id}}'>
+				{% csrf_token %}
+				<button type='submit' class='btn btn-xs btn-link icon'>
+					{% if item.done %}
+						<i class='glyphicon glyphicon-check'></i>
+					{% else %}
+						<i class='glyphicon glyphicon-unchecked'></i>
+					{% endif %}
+				</button>
+				</form>
+			{% else %}
 				{% if item.done %}
-					<i class='glyphicon glyphicon-minus-sign'></i>
+					<i class='glyphicon glyphicon-check' style='margin-left:1px;'></i>
 				{% else %}
-					<i class='glyphicon glyphicon-ok-sign'></i>
+					<i class='glyphicon glyphicon-unchecked' style='margin-left:1px;'></i>
 				{% endif %}
-			</button>
-		</form>
+			{% endif %}
 	</td>
 	<td class='fir_todos_description'>{{ item.description }}</td>
 	{% if dashboard %}
 		<td class='fir_todos_incident'><a href="{% url 'incidents:details' item.incident_id %}">{{ item.incident.subject }}</a></td>
 		<td class='fir_todos_category'>{{ item.category.name }}</td>
-	{% else %}
-		<td class='fir_todos_bl'>{{ item.business_line.name }}</td>
 	{% endif %}
-	<td class='fir_todos_delete'>
+		<td class='fir_todos_bl'>{{ item.business_line.name }}</td>
+		<td class='fir_todos_delete'>
+	{% if can_handle_incident %}
 		<form action="{% url 'todos:delete' item.id %}" method='POST' data-ajaxform data-action='remove' data-target='#todo-{{item.id}}' data-hideifnone='#fir_todos' data-hideifnone-selector='.fir_todo_item'>
 			{% csrf_token %}
-			<button type='submit' class='btn btn-xs btn-link icon'><i class='glyphicon glyphicon-remove'></i></button>
+			<button type='submit' class='btn btn-xs btn-link icon'><i class='glyphicon glyphicon-trash'></i></button>
 		</form>
+	{% endif %}
 	</td>
 </tr>

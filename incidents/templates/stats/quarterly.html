@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load i18n %}
 {% load staticfiles %}
+{% load authorization %}
 
 {% block title %}
 {%  trans "Quarterly statistics" %} - {{bl.name}} - {% now "Y-m" %}
@@ -28,7 +29,7 @@
 	<div class='noprint' id='header'>
 	<select id='bl-select'>
 		{% for b in bls %}
-			<option value="{{ b.name }}" {%if b.name == bl.name%} selected="selected"{%endif%}>{{ b.name }}</option>
+			<option value="{{ b.name }}" {%if b.name == bl.name%} selected="selected"{%endif%}>{{ b }}</option>
 		{%endfor%}
 	</select>
 	</div>
@@ -114,10 +115,11 @@
 
 
 {% block content %}
-
+{%  has_perm 'incidents.handle_incidents' obj=event as can_handle_incident %}
+{% if can_handle_incident %}
 <a href="{% url 'stats:close_old' %}">{% trans "Close old incidents for all BLs" %}</a>
 <p class='separator'>&nbsp;</p>
-
+{% endif %}
 
 
 
@@ -222,10 +224,17 @@
 				</tr>
 			</thead>
 		{% for incident in incident_list %}
+		{% has_perm 'incidents.view_incidents' obj=incident as can_view_incident %}
 		<tr class='{{ incident.status }}'>
 			<td>{{ incident.date|date:"Y/m/d" }}</td>
 			<td>{{ incident.id }}</td>
-			<td><a href="{% url 'incidents:details' incident.id %}">{{ incident.subject }}</a></td>
+			<td>
+				{% if can_view_incident %}
+					<a href="{% url 'incidents:details' incident.id %}">{{ incident.subject }}</a>
+				{% else %}
+					{{ incident.subject }}
+				{% endif %}
+			</td>
 			<td>{{ incident.category }}</td>
 			<td>{{ incident.get_confidentiality_display }}</td>
 			<td><span class='badge threatcon-{{incident.severity}}'>{{ incident.severity }}</span></td>
@@ -263,10 +272,17 @@
 				</tr>
 			</thead>
 		{% for incident in unclosed_incident_list %}
+        {%  has_perm 'incidents.view_incidents' obj=incident as can_view_incident %}
 		<tr class='{{ incident.status }}'>
 			<td>{{ incident.date|date:"Y/m/d" }}</td>
 			<td>{{ incident.id }}</td>
-			<td><a href="{% url 'incidents:details' incident.id %}">{{ incident.subject }}</a></td>
+			<td>
+			{% if can_view_incident %}
+				<a href="{% url 'incidents:details' incident.id %}">{{ incident.subject }}</a>
+			{% else %}
+				{{ incident.subject }}
+			{% endif %}
+			</td>
 			<td>{{ incident.category }}</td>
 			<td>{{ incident.get_confidentiality_display }}</td>
 			<td><span class='badge threatcon-{{incident.severity}}'>{{ incident.severity }}</span></td>

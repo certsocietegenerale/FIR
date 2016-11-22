@@ -10,9 +10,11 @@
 	</tbody>
 </table>
 
+{% if form %}
 <form action="{% url 'todos:create' incident_id %}" method='post' id='fir_todos_new' data-ajaxform data-action='append' data-target='#fir_todos_list_table' data-hide='self' class='hidden'>
 	{% csrf_token %}
 	{{ form.description }}
 	{{ form.business_line }}
 	<button type='submit' class='btn btn-link btn-xs icon'><i class='glyphicon glyphicon-plus'></i></button>
 </form>
+{% endif %}

@@ -1,17 +1,27 @@
 {% load i18n %}
+{% load authorization %}
 {% if event.concerned_business_lines.count == 1 %}
 	{% with event.concerned_business_lines.all|first as bl %}
+        {% has_perm 'incidents.handle_incidents' obj=bl as can_handle_incident %}
+        {% if can_handle_incident %}
 		<li>
 			<a href='#' id='details-actions-alert' data-type='alerting' data-url="{% url 'alerting:get_template' event.id 'alerting' bl.id %}">
 				<i class="glyphicon glyphicon-send"></i>{% trans "Alert" %}
 			</a>
 		</li>
+        {% endif %}
 	{% endwith %}
 {% else %}
-	<li>
-		<a href="#" id='details-actions-alert' data-type='alerting'>
-			<i class="glyphicon glyphicon-send"></i>{% trans "Alert" %}
-		</a>
-	</li>
+	{% has_perm 'incidents.handle_incidents' obj=event as can_handle_incident %}
+	{% if can_handle_incident %}
+		<li>
+			<a href="#" id='details-actions-alert' data-type='alerting'>
+				<i class="glyphicon glyphicon-send"></i>{% trans "Alert" %}
+			</a>
+		</li>
+	{% endif %}
 {% endif %}
+{% has_perm 'incidents.handle_incidents' obj=event as can_handle_incident %}
+{% if can_handle_incident %}
 <li><a href="#" class='details-alert-bl' data-type='takedown' data-url="{% url 'alerting:get_template' event.id 'takedown' %}"><i class="glyphicon glyphicon-screenshot"></i>{% trans "Takedown" %}</a></li>
+{% endif %}

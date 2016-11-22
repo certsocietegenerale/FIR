@@ -1,11 +1,15 @@
+{% load authorization %}
 <div class="details-actions-supmenu" id="details-actions-alert-bls" data-url="{% url 'alerting:emailform' %}">
 	<ul class="list-unstyled">
 		{% for bl in event.concerned_business_lines.all %}
-			<li>
-				<a href="#" class='details-alert-bl' data-target='#sendEmail' data-type='alerting' data-toggle='modal' data-url="{% url 'alerting:get_template' event.id 'alerting' bl.id %}">
-					<i class="glyphicon glyphicon-send"></i>{{bl.name}}
-				</a>
-			</li>
+            {% has_perm 'incidents.handle_incidents' obj=bl as can_handle_incident %}
+            {% if can_handle_incident %}
+							<li>
+								<a href="#" class='details-alert-bl' data-target='#sendEmail' data-type='alerting' data-toggle='modal' data-url="{% url 'alerting:get_template' event.id 'alerting' bl.id %}">
+									<i class="glyphicon glyphicon-send"></i>{{bl.name}}
+								</a>
+							</li>
+            {% endif %}
 		{% endfor %}
 	</ul>
 </div>
