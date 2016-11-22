@@ -1,0 +1,9 @@
+{% load i18n %}
+
+{% if abuse_count > 0 %}
+	<li>
+		<a href='#tab_abuse' data-toggle='tab'>
+			{% trans "Abuse" %} ({{ abuse_count }})
+		</a>
+	</li>
+{% endif %}
