@@ -803,7 +803,8 @@ def close_old(request):
 @login_required
 @user_passes_test(can_view_statistics)
 def quarterly_bl_stats(request, business_line=None, num_months=3):
-    bls = BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics').filter(depth=1)
+    bls = BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics')
+
     try:
         bl = BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics').get(name=business_line)
     except:
