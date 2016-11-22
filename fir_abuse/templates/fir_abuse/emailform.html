@@ -1,0 +1,58 @@
+{% load i18n %}
+<div id="sendEmail" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="sendEmailLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 id="sendEmailLabel" class="modal-title">{% trans "Send email" %}</h4>
+			</div>
+
+			<form id="email_form" action="{% url 'alerting:send_email' %}" method="POST" class='form-horizontal'>
+				<div class="modal-body">
+					{% csrf_token %}
+					<div class='form-group nomargin'>
+						<label for="id_behalf" class="col-sm-1 text-right">{% trans "From:" %}</label>
+						<div class='col-sm-11'>
+							{{ form.behalf }}
+						</div>
+					</div>
+					<div class='form-group nomargin'>
+						<label for="id_to" class="col-sm-1 text-right">{% trans "To:" %}</label>
+						<div class='col-sm-11'>
+							{{ form.to }}
+						</div>
+					</div>
+					<div class='form-group nomargin'>
+						<label for="id_cc" class="col-sm-1 text-right">{% trans "CC:" %}</label>
+						<div class='col-sm-11'>
+							{{ form.cc }}
+						</div>
+					</div>
+					<div class='form-group nomargin'>
+						<label for="id_bcc" class="col-sm-1 text-right">{% trans "BCC:" %}</label>
+						<div class='col-sm-11'>
+							{{ form.bcc }}
+						</div>
+					</div>
+					<div class='form-group'>
+						<label for="id_subject" class="col-sm-1 text-right">{% trans "Subject" %}</label>
+						<div class='col-sm-11'>
+							{{ form.subject|safe }}
+						</div>
+					</div>
+					<div class='form-group'>
+						<label for="id_body" class="col-sm-1 text-right">{% trans "Body" %}</label>
+						<div class='col-sm-11'>
+							{{ form.body|safe }}
+						</div>
+					</div>
+				</div>
+			</form>
+
+			<div class="modal-footer">
+				<button class="btn btn-default" data-dismiss="modal" aria-hidden="true">{% trans "Close" %}</button>
+				<button data-sent-text="Message sent" data-loading-text="Sending..." id='send_email' class="btn btn-primary">{% trans "Send email" %}</button>
+			</div>
+		</div>
+	</div>
+</div>
