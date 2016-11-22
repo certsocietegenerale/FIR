@@ -12,11 +12,14 @@
         {% endif %}
 	{% endwith %}
 {% else %}
-	<li>
-		<a href="#" id='details-actions-alert' data-type='alerting'>
-			<i class="glyphicon glyphicon-send"></i>{% trans "Alert" %}
-		</a>
-	</li>
+	{% has_perm 'incidents.handle_incidents' obj=event as can_handle_incident %}
+	{% if can_handle_incident %}
+		<li>
+			<a href="#" id='details-actions-alert' data-type='alerting'>
+				<i class="glyphicon glyphicon-send"></i>{% trans "Alert" %}
+			</a>
+		</li>
+	{% endif %}
 {% endif %}
 {% has_perm 'incidents.handle_incidents' obj=event as can_handle_incident %}
 {% if can_handle_incident %}
