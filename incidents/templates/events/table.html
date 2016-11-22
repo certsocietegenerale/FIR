@@ -38,26 +38,18 @@
 			</thead>
 			<tbody>
 				{% for incident in incident_list %}
-                    {%  has_perm 'incidents.handle_incidents' obj=incident as can_handle_incident %}
+					{%  has_perm 'incidents.handle_incidents' obj=incident as can_handle_incident %}
 					<tr class='{{ incident.status }}'>
-                        {% if incident_show_id %}<td>#{{ incident.id|stringformat:"04d" }}</td>{% endif %}
+						{% if incident_show_id %}<td>#{{ incident.id|stringformat:"04d" }}</td>{% endif %}
 						<td class='incident_date_column'>{{ incident.date|date:'Y-m-d' }}</td>
 						<td>
-                            {% if can_handle_incident %}
-							<a href="{% url 'ajax:toggle_star' incident.id %}" class='star'>
-								{% if incident.is_starred %}
-									<i class='glyphicon glyphicon-star star'></i>
-								{% else %}
-									<i class='glyphicon glyphicon-star-empty star'></i>
-								{% endif %}
-							</a>
-                            {% else %}
-                                {% if incident.is_starred %}
-									<i class='glyphicon glyphicon-star star'></i>
-								{% else %}
-									<i class='glyphicon glyphicon-star-empty star'></i>
-								{% endif %}
-                            {% endif %}
+							{% if can_handle_incident %}<a href="{% url 'ajax:toggle_star' incident.id %}" class='star'>{%endif%}
+									{% if incident.is_starred %}
+										<i class='glyphicon glyphicon-star star'></i>
+									{% else %}
+										<i class='glyphicon glyphicon-star-empty star'></i>
+									{% endif %}
+							{% if can_handle_incident %}</a>{%endif%}
 						</td>
 						<td>{{ incident.category }}</td>
 						{% if incident.is_incident %}

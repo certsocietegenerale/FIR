@@ -17,7 +17,7 @@ def get_authorization_filter(cls, user, permission=None, fields=None):
         fields = cls._authorization_meta.fields
     if isinstance(fields, six.string_types):
         fields = (fields,)
-    objects =  cls._authorization_meta.model.get_authorization_objects_filter(user, fields, permission=permission)
+    objects = cls._authorization_meta.model.get_authorization_objects_filter(user, fields, permission=permission)
     if cls._authorization_meta.owner_field and cls._authorization_meta.owner_permission and \
                     cls._authorization_meta.owner_permission in permission:
         objects |= Q(**{cls._authorization_meta.owner_field: user.pk})

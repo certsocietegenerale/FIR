@@ -134,4 +134,3 @@ INCIDENT_CREATOR_PERMISSION = 'incidents.view_incidents'
 
 # If you can see an event/incident, you can comment it!
 INCIDENT_VIEWER_CAN_COMMENT = True
-

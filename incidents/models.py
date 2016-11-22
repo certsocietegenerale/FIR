@@ -390,7 +390,6 @@ class IncidentForm(ModelForm):
 
     def clean(self):
         cleaned_data = super(IncidentForm, self).clean()
-        print 'clean', self.user, cleaned_data
         if self.user is not None:
             business_lines = cleaned_data.get("concerned_business_lines")
             is_incident = cleaned_data.get("is_incident")
@@ -401,7 +400,6 @@ class IncidentForm(ModelForm):
                 if len(bl_ids) != handling_bls:
                     self.add_error('is_incident',
                                    forms.ValidationError(_('You cannot create incidents for these business lines')))
-
         return cleaned_data
 
     class Meta:

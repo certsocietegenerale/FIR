@@ -81,4 +81,3 @@ class AuthorizationModelMixin(models.Model):
     @classmethod
     def has_model_perm(cls, user, permission):
         return cls.authorization.for_user(user, permission).distinct().exists()
-
