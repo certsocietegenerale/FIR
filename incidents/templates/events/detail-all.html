@@ -4,11 +4,13 @@
 {% load i18n %}
 {% load staticfiles %}
 {% load authorization %}
+{% load markdown %}
 
 {% block custom_css %}
 {% endblock %}
 
 {% block custom_js %}
+{% rich_edit_static %}
 <script type="text/javascript" src="{% static "custom_js/hotkeys.js" %}"></script>
 {% plugin_point 'details_static' %}
 
@@ -37,7 +39,7 @@
 			<li><a href="#" id="details-actions-add-link"><i class="glyphicon glyphicon-plus"></i>{%  trans "Add" %}</a></li>
             {% endif %}
             {% if can_comment_incident %}
-			<li><a href="#" id='details-actions-comment' data-toggle='modal' data-target='#addComment'>
+			<li><a href="#" id='details-actions-comment' data-target='#addComment'>
 				<i class="glyphicon glyphicon-comment"></i>{%  trans "Comment" context "verb" %}
 			</a></li>
             {% endif %}
@@ -107,7 +109,7 @@
 
 				<div class='widget' id='description'>
 					<h4 class='widget'>{%  trans "Description" %}</h4>
-					<p>{{ event.description|safe }}</p>
+					<p>{{ event.description|markdown }}</p>
 				</div>
 
 				{% plugin_point 'details_main' %}
@@ -187,7 +189,7 @@
 			{% plugin_point 'details_tab_content' %}
 		</div>
 		<!-- Modal for comments -->
-		<div id="addComment" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addCommentLabel" aria-hidden="true">
+		<div id="addComment" class="modal" tabindex="-1" role="dialog" aria-labelledby="addCommentLabel" aria-hidden="true">
 			<div class="modal-dialog">
 				<div class="modal-content">
 					<form id="comment_form" method="POST" data-ajaxform data-target='#tab_comments tbody' data-action='prepend' data-new-comment-url="{% url 'incidents:comment' event.id %}">
@@ -224,7 +226,7 @@
 								</div>
 
 								<div class="form-group" id="add-comment-area">
-									{{ comment_form.comment }}
+									{% rich_edit comment_form.comment %}
 									<span class='help-block'>
 										{% for error in comment_form.comment.errors %}
 											{{error}}
@@ -242,5 +244,7 @@
 				</div>
 			</div>
 		</div>
+    <div id='comment_edit_modals'>
+    </div>
 	</div>
 {% endblock %}

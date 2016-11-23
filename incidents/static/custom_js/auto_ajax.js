@@ -1,5 +1,5 @@
 function hide_element(self, selector) {
-	element = self;
+	var element = self;
 	if (selector != 'self') {
 		element = $(selector);
 	}
@@ -9,12 +9,12 @@ function hide_element(self, selector) {
 
 // Submit forms over ajax
 function submit_form(form) {
-	url = form.attr('action');
-	data = form.serialize();
-	action = form.data('action');
-	hide = form.data('hide');
-	show = form.data('show');
-	target = $(form.data('target'));
+	var url = form.attr('action');
+	var data = form.serialize();
+	var action = form.data('action');
+	var hide = form.data('hide');
+	var show = form.data('show');
+	var target = $(form.data('target'));
 
 	$.post(url, data).success(function (data) {
 		// Reset form
@@ -34,7 +34,7 @@ function submit_form(form) {
 				}
 			}
 		}
-		else {
+		else if(target && action) {
 			target[action](data);
 		}
 

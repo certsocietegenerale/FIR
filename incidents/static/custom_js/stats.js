@@ -3,19 +3,19 @@ function isNumber(n) {
 }
 
 var color = d3.scale.ordinal()
-	    .range(["#e60028", "#873d67", "#3e7eaf", "#d55a39", "#1a9656", "#666666", "#d24b28", "#0ac8dc", "#82379b", "#a50041", "#a0af00", "#ffa02d", "#c30082", "#00a550", "#64a0c8", "#c864cd", "#dc4b69", "#9be173", "#ffb414", "#e1648c", "#9178d2", "#6e3c28"])
+	    .range(["#e60028", "#873d67", "#3e7eaf", "#d55a39", "#1a9656", "#666666", "#d24b28", "#0ac8dc", "#82379b", "#a50041", "#a0af00", "#ffa02d", "#c30082", "#00a550", "#64a0c8", "#c864cd", "#dc4b69", "#9be173", "#ffb414", "#e1648c", "#9178d2", "#6e3c28"]);
 
 
 var color_severity = d3.scale.ordinal()
 					.domain(['1/4', '2/4', '3/4', '4/4'])
-					.range(['#468847', '#f89406', '#fefe00', '#f81920'])
+					.range(['#468847', '#f89406', '#fefe00', '#f81920']);
 
-var colors = {other: color, severity: color_severity}
+var colors = {other: color, severity: color_severity};
 
 function generate_table(selector, url) {
 	$.getJSON(url, function(data) {
 
-		table = $(selector);
+		var table = $(selector);
 
 		$.each(data, function(key, incident) {
 			tr = $('<tr />');
@@ -41,64 +41,61 @@ function generate_variation_chart(selector, url) {
 	$.getJSON(url, function(data) {
 		  var rows = [];
 
-		  up = '<i class="icon-plus-sign"></i>'
-		  down = '<i class="icon-minus-sign"></i>'
+		  var up = '<i class="icon-plus-sign"></i>';
+		  var down = '<i class="icon-minus-sign"></i>';
 
-		  table = $(selector)
-		  table.empty()
+		  var table = $(selector);
+		  table.empty();
 
 
-		  cat = [];
-		  _new = [];
-		  _var = [];
-		  _icon = [];
+		  var cat = [];
+		  var _new = [];
+		  var _var = [];
+		  var _icon = [];
 
 		  $.each(data, function(key, val) {
 
-		  	cat.push(val.category)
-		  	_new.push(val.values.new)
-		  	_var.push(val.values.variation)
-
+		  	cat.push(val.category);
+		  	_new.push(val.values.new);
+		  	_var.push(val.values.variation);
+			var icon;
 		  	if (+val.values.variation > 0)
-		  		icon = up
+		  		icon = up;
 		  	else if (+val.values.variation < 0)
-		  		icon = down
+		  		icon = down;
 		  	else
-		  		icon = ""
+		  		icon = "";
 
-		  	_icon.push(icon)
+		  	_icon.push(icon);
 		  });
 
-		  cat_row = $("<tr/>")
-		  cat_row.append("<th></th>")
+		  var cat_row = $("<tr/>");
+		  cat_row.append("<th></th>");
 		  $.each(cat, function(key, val) {
 		  	cat_row.append("<th>"+val+"</th>")
-		  })
-		  table.append(cat_row)
+		  });
+		  table.append(cat_row);
 
-		  _new_row = $("<tr/>")
-		  _new_row.append("<th style='text-align:right'>New</th>")
+		  var _new_row = $("<tr/>");
+		  _new_row.append("<th style='text-align:right'>New</th>");
 		  $.each(_new, function(key, val) {
 		  	_new_row.append("<td>"+val+"</td>")
-		  })
-		  table.append(_new_row)
+		  });
+		  table.append(_new_row);
 
-		  _var_row = $("<tr/>")
-		  _var_row.append("<th style='text-align:right'>Variation</th>")
+		  var _var_row = $("<tr/>");
+		  _var_row.append("<th style='text-align:right'>Variation</th>");
 		  $.each(_var, function(key, val) {
 		  	_var_row.append("<td>"+val+"</td>")
-		  })
-		  table.append(_var_row)
+		  });
+		  table.append(_var_row);
 
-		  _icon_row = $("<tr/>")
-		  _icon_row.append("<th></th>")
+		  var _icon_row = $("<tr/>");
+		  _icon_row.append("<th></th>");
 		  $.each(_icon, function(key, val) {
 		  	_icon_row.append("<td>"+val+"</td>")
-		  })
-		  table.append(_icon_row)
-
-
-
+		  });
+		  table.append(_icon_row);
 		});
 }
 
@@ -111,11 +108,11 @@ function generate_stacked_chart(selector, url, width, height, label, legend) {
 
 	d3.json(url, function(error, data) {
 
-		legend_per_col = (Math.floor(height/20))
-		legend = Object.keys(data[0]).length-1
+		var legend_per_col = (Math.floor(height/20));
+		legend = Object.keys(data[0]).length-1;
 
-		width = width + margin.left + margin.right - 120 * Math.floor(legend/legend_per_col)
-		var color_scale = color
+		width = width + margin.left + margin.right - 120 * Math.floor(legend/legend_per_col);
+		var color_scale = color;
 		var svg = d3.select(selector).append("svg")
 		    .attr("width", width)
 		    .attr("height", height + margin.top + margin.bottom)
@@ -126,12 +123,13 @@ function generate_stacked_chart(selector, url, width, height, label, legend) {
 
 		  data.forEach(function(d) {
 		    var y0 = 0;
+			var type;
 		    if (d['1/4'] != undefined) {
-		    	type = 'severity'
+		    	type = 'severity';
 		    	color_scale = color_severity
 		    }
 		   	else {
-		   		type = 'other'
+		   		type = 'other';
 		   		color_scale = color
 		   	}
 		    d.values = color.domain().map(function(name) { 	return {name: name, y0: y0, y1: y0 += +d[name], type: type}; });
@@ -195,9 +193,9 @@ function generate_stacked_chart(selector, url, width, height, label, legend) {
 	    .enter().append("g")
 	      .attr("class", "legend")
 	      .attr("transform", function(d, i) {
-	      	legend_per_col = (Math.floor(height/20))
+	      	legend_per_col = (Math.floor(height/20));
 	      	w = width+60+(Math.floor(i/legend_per_col)+1)*130;
-	      	d3.select(selector).select('svg').style('width', w+'px')
+	      	d3.select(selector).select('svg').style('width', w+'px');
 	      	return "translate("+ Math.floor(i/legend_per_col) * 130 +"," + (i%legend_per_col) * 20 + ")";
 	      });
 
@@ -260,11 +258,11 @@ function generate_bar_chart(selector, url, width, height, label) {
 		y.domain([0, d3.max(data, function(d) { return d.value })]);
 
 		// axis x
-		lower_axis = svg.append("g")
+		var lower_axis = svg.append("g")
 			.attr("class", "x axis")
 			.attr("transform", "translate(0, " + height + ")")
 			.call(xAxis)
-			.selectAll('text')
+			.selectAll('text');
 
 		// axis y
 		svg.append("g")
@@ -277,9 +275,9 @@ function generate_bar_chart(selector, url, width, height, label) {
 			.style("text-anchor", "end")
 			.text(label);
 
-		bars = svg.selectAll('g.bar').data(data).enter().append("g").attr('class','bar')
+		var bars = svg.selectAll('g.bar').data(data).enter().append("g").attr('class','bar');
 
-		var column_width = 0
+		var column_width = 0;
 
 		bars.append('rect')
 			.attr('class', 'bar')
@@ -289,15 +287,15 @@ function generate_bar_chart(selector, url, width, height, label) {
 			.attr("height", function(d) { return height - y(d.value); })
 			.style("fill", function(d) { return color(d.label); });
 
-		max_len_label = d3.max(data, function(d) { return d.label.length })
+		var max_len_label = d3.max(data, function(d) { return d.label.length });
 
 		if (max_len_label*7>column_width) {
 			lower_axis.attr("transform", "rotate(-90)")
 				.style('text-anchor', 'end')
 				.attr("dy", -8)
-				.attr('dx', -10)
+				.attr('dx', -10);
 
-			frame = d3.select(selector).select("svg")
+			var frame = d3.select(selector).select("svg");
 
 			frame.attr('height', +frame.attr('height') + (max_len_label*6.5))
 
@@ -311,17 +309,17 @@ function generate_bar_chart(selector, url, width, height, label) {
 				return y(d.value) })
 			.text(function(d) {
 				if (d.text == d.value)
-					return ""
+					return "";
 				return d.text
 			})
 
 			.attr("dy", function(d){
 				if (y(d.value) > height-20)
-					return -20
+					return -20;
 				else
 					return 20
 			}) // padding-right
-			.attr('text-anchor', 'middle')
+			.attr('text-anchor', 'middle');
 
 		bars.append('text')
 			.attr('x', function(d) {
@@ -352,23 +350,23 @@ function generate_multiple_donut_chart(selector, url, widths, outer_radius, inne
 	  color.domain(d3.keys(data[0]).filter(function(key) { return key !== 'entry'; }));
 
 	  data.forEach(function(d) {
-	  	total = 0
+	  	total = 0;
 	  	for (var index in d) {
 	  		if (isNumber(d[index]))
 	  			total += d[index];
 	  	}
 	  	if (d['1/4'] != undefined) {
-		    	type = 'severity'
+		    	type = 'severity';
 		    	color_scale = color_severity
 	    }
 	   	else {
-	   		type = 'other'
+	   		type = 'other';
 	   		color_scale = color
 	   	}
 	   	if (total == 0)
-	    		na = true
+	    		na = true;
 	    	else
-	    		na = false
+	    		na = false;
 	    d.entries = color.domain().map(function(name) {
 	    	if (na) {	return {name: "N/A", value: 1, type: 'other', na: na }}
 	    	else {   	return {name: name, value: +d[name], type: type, na: na}; }
@@ -384,9 +382,9 @@ function generate_multiple_donut_chart(selector, url, widths, outer_radius, inne
 	    .append("g")
 	      .attr("transform", "translate(" + outer_radius + "," + outer_radius + ")");
 
-	g = svg.selectAll(".arc")
+	var g = svg.selectAll(".arc")
 	      .data(function(d) { return pie(d.entries); })
-	    .enter().append("g")
+	    .enter().append("g");
 
 	  g.append('path')
 	      .attr("class", "arc")
@@ -404,7 +402,7 @@ function generate_multiple_donut_chart(selector, url, widths, outer_radius, inne
 	      .style("text-anchor", "middle")
 	      .text(function(d) {
 	      	if (d.data.na)
-	      		return "N/A"
+	      		return "N/A";
 	      	if (d.data.value != 0)
 	      		return d.data.value;
 	      });
@@ -441,12 +439,11 @@ function generate_donut_chart(selector, url, dimension, radius) {
       .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
   d3.json(url, function(error, data) {
+	  var color_scale;
       if (data[0].label == "1/4") {
-		    	color_scale = color_severity;
-          console.log('toto')
-        }
-	   	else {
-	   		color_scale = color;
+		  color_scale = color_severity;
+	  } else {
+		  color_scale = color;
       }
 
       color.domain([]);
@@ -472,7 +469,7 @@ function generate_donut_chart(selector, url, dimension, radius) {
           	return d.data.value;
           });
 
-          legend_height = Math.max(data.length*20, dimension)
+          var legend_height = Math.max(data.length*20, dimension);
 
     	  var legend = d3.select(selector).append("svg")
           .attr("class", "legend")
@@ -652,7 +649,7 @@ function generate_line_chart(selector, url, width, height) {
 			      .attr("transform", "rotate(-90)")
 			      .attr("y", 6)
 			      .attr("dy", ".71em")
-			      .style("text-anchor", "end")
+			      .style("text-anchor", "end");
 
 			  svg.append("path")
 			      .datum(data)

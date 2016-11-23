@@ -1,6 +1,7 @@
 {% load fir_plugins %}
 {% load i18n %}
 {% load staticfiles %}
+{%  load markdown %}
 
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
@@ -46,7 +47,7 @@
 
 		<div class='description'>
 			<h3>{% trans "Summary" %}</h3>
-			<p class='artifacts'>{{ incident.description|safe }}</p>
+			<p class='artifacts'>{{ incident.description|markdown }}</p>
 		</div>
 
 		<br style='clear:both' />
@@ -66,7 +67,7 @@
 		  <tr id="comment_id_{{comment.id}}">
 		  	<td style='width:10%'>{{ comment.date|date:"Y-m-d G:i" }}</td>
 		  	<td>{{ comment.opened_by|default:"someone" }}</td>
-		  	<td class='artifacts'>{{ comment.comment|safe }}</td>
+		  	<td class='artifacts'>{{ comment.comment|markdown }}</td>
 		  	<td>{{ comment.action }}</td>
 		  </tr>
 		{% endfor %}

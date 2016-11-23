@@ -27,10 +27,6 @@
 
     <!-- Fav and touch icons -->
     <link rel="shortcut icon" href="{% static "img/favicon.png" %}">
-
-    <!-- tinymce -->
-    <script type="text/javascript" src="{% static "js/tinymce/tinymce.min.js" %}"></script>
-    <script type="text/javascript" src="{% url 'tools:mce_config' %}"></script>
   </head>
 
   <body>
@@ -102,7 +98,7 @@
             <ul class="nav navbar-nav navbar-right">
               <li>
                 <div class='usergreet'>
-                  {% trans "Currently logged in as" %} <strong>{{ user }}</strong> [
+                  {% trans "Currently logged in as" %} <a href="{% url 'user:profile' %}"><strong>{{ user }}</strong></a> [
                     <a href="{% url 'logout' %}">{% trans "logout" %}</a>
                   ]
                   {% if user.is_staff %}

@@ -9,18 +9,18 @@ $(function () {
       type: "GET",
       url: url,
       success: function(msg) {
+        $("#sendEmail").modal('show');
+
         $('#sendEmail #id_behalf').val(msg.behalf)
         $('#sendEmail #id_to').val(msg.to)
         $('#sendEmail #id_cc').val(msg.cc)
         $('#sendEmail #id_bcc').val(msg.bcc)
         $('#sendEmail #id_subject').val(msg.subject)
-        $('#sendEmail #id_body').val(msg.body)
+        editors["id_body"].value(msg.body)
 
         $('#sendEmail').data('type', type)
 
-        tinyMCE.get('id_body').setContent(msg.body)
         $('#sendEmail').data('bl', msg.bl)
-        $("#sendEmail").modal('show');
       }
     });
   }
@@ -74,8 +74,7 @@ $(function () {
     type = $('#sendEmail').data('type')
     bl = $('#sendEmail').data('bl')
 
-    var body = tinyMCE.get('id_body').getContent()
-    $("#id_body").val(body)
+    $("#id_body").val(editors["id_body"].value());
     data = $("#email_form").serialize()
 
     $.ajax({
@@ -125,19 +124,7 @@ $(function () {
     // Add form to the page
     $('#addComment').after(data);
 
-    // Activate tinyMCE editor
-    tinymce.init({
-      selector: "#id_body",
-      height: 300,
-      theme: "modern",
-      skin: "light",
-      plugins: "paste,table,code,preview",
-      toolbar: "undo redo | styleselect | bold italic | bullist numlist outdent indent code",
-      language: "en",
-      directionality: "ltr",
-      menubar: false,
-      statusbar: false
-    });
+    editors["id_body"] = init_simplemde($("#id_body"));
 
     // Activate 'Send Email' button
     $('#send_email').click(function (event) {

@@ -1,5 +1,6 @@
 {% load i18n %}
-<div id="sendEmail" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="sendEmailLabel" aria-hidden="true">
+{% load markdown %}
+<div id="sendEmail" class="modal" tabindex="-1" role="dialog" aria-labelledby="sendEmailLabel" aria-hidden="true">
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content">
 			<div class="modal-header">
@@ -43,7 +44,7 @@
 					<div class='form-group'>
 						<label for="id_body" class="col-sm-1 text-right">{% trans "Body" %}</label>
 						<div class='col-sm-11'>
-							{{ form.body|safe }}
+							{% rich_edit form.body %}
 						</div>
 					</div>
 				</div>

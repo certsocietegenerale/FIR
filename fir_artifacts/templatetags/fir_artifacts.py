@@ -1,22 +1,15 @@
 from django import template
-from django.contrib.contenttypes.models import ContentType
 from django.utils.safestring import mark_safe
 
 register = template.Library()
 
 @register.filter
 def display_artifact(artifact, request):
-	return artifact.display(request)
+    return artifact.display(request)
 
 @register.filter
 def display_correlated_artifact(artifact, request):
-	return artifact.display(request, True)
-
-@register.filter
-def content_type(obj):
-    if not obj:
-        return False
-    return ContentType.objects.get_for_model(obj).pk
+    return artifact.display(request, True)
 
 @register.filter(is_safe=True)
 def hashes_line(obj):

@@ -23,7 +23,7 @@ class RecipientTemplate(models.Model):
 class CategoryTemplate(models.Model):
     name = models.CharField(max_length=100)
     type = models.CharField(max_length=100)
-    body = models.TextField()
+    body = models.TextField(help_text="This is a Markdown field. You can use django templating language.")
     subject = models.TextField()
     incident_category = models.ForeignKey(IncidentCategory)
 
