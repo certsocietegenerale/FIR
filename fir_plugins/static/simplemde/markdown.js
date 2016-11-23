@@ -19,10 +19,6 @@ $(function () {
 function init_simplemde(textarea, initial_text) {
   var simplemde = new SimpleMDE({
     element: textarea[0],
-    autosave: {
-      enabled: true,
-      uniqueId: window.location.href
-    },
     renderingConfig: {
       codeSyntaxHighlighting: true
     },
