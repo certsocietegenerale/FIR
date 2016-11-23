@@ -654,22 +654,23 @@ def search(request):
             if asc == 'false':
                 order_by = "-" + order_by
 
-            found_entries = Incident.authorization.for_user(request.user, 'incidents.view_incidents').filter(q).distinct()
+            found_entries = Incident.authorization.for_user(request.user, 'incidents.view_incidents').filter(q)
+
             if order_param == 'last_action':
                 if asc:
-                    found_entries.annotate(Max('comments__date')).order_by('comments__date__max')
+                    found_entries = found_entries.annotate(Max('comments__date')).order_by('comments__date__max')
                 else:
-                    found_entries.annotate(Max('comments__date')).order_by('-comments__date__max')
+                    found_entries = found_entries.annotate(Max('comments__date')).order_by('-comments__date__max')
 
             else:
-                found_entries.all().order_by(order_by)
+                found_entries = found_entries.order_by(order_by).all()
 
             # distinct
-            found_entries.distinct()
+            found_entries = found_entries.distinct()
 
             # get hide_closed option from user profile
             if request.user.profile.hide_closed:
-                found_entries.filter(~Q(status='C'))
+                found_entries = found_entries.filter(~Q(status='C'))
 
             # get number of pages from user profile
             page = request.GET.get('page')
