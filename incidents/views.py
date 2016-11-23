@@ -654,7 +654,7 @@ def search(request):
             if asc == 'false':
                 order_by = "-" + order_by
 
-            found_entries = Incident.authorization.for_user(request.user, 'incidents.view_incidents').filter(q)
+            found_entries = Incident.authorization.for_user(request.user, 'incidents.view_incidents').filter(q).distinct()
             if order_param == 'last_action':
                 if asc:
                     found_entries.annotate(Max('comments__date')).order_by('comments__date__max')
