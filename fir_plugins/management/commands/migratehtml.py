@@ -8,7 +8,7 @@ class Command(BaseCommand):
     models = {
         'incidents': {
             'Incident': ['description', ],
-            'Comments':  ['comment', ]
+            'Comments': ['comment', ]
         },
         'fir_alerting': {
             'CategoryTemplate': ['body', ]
@@ -63,7 +63,3 @@ class Command(BaseCommand):
                         md_data = converter.handle(html_value)
                         setattr(instance, field, md_data)
                         instance.save()
-
-
-
-
