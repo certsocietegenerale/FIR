@@ -48,6 +48,15 @@
         "user": [
             "dev"
         ]
+    },
+    "pk": 2,
+    "model": "incidents.profile",
+    "fields": {
+        "incident_number": 50,
+        "hide_closed": false,
+        "user": [
+            "admin"
+        ]
     }
 }
 ]

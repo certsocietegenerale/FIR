@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load fir_plugins %}
 {% load fir_artifacts %}
 {% load authorization %}
 {%  has_perm 'incidents.handle_incidents' obj=event as can_handle_incident %}

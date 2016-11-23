@@ -1,0 +1,190 @@
+{% extends "base.html" %}
+{% load add_css_class %}
+{% load i18n %}
+{% load staticfiles %}
+{% load fir_plugins %}
+
+
+{% block content %}
+    <div id='details-actions-all'>
+        <div id="details-actions">
+            <ul class="list-unstyled">
+                {% if password_form %}
+                    <li><a href="#" id="user_change_password" data-toggle='modal' data-target='#changePassword'><i class="glyphicon glyphicon-lock"></i>{%  trans "Change password" %}</a></li>
+                {% endif %}
+                {% plugin_point "user_profile_actions" %}
+            </ul>
+        </div>
+    </div>
+    <div class="container-fluid " id="details-container">
+            <div class="row" id="#action_result" class="alerts">
+                <div id="passwordChangedAlert" class="alert alert-success hidden alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "Close" %}"><span aria-hidden="true">&times;</span></button>
+                    {% trans "Password changed!" %}
+                </div>
+                <div id="passwordNotChangedAlert" class="alert alert-danger hidden alert-dismissible" role="alert">
+                    <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "Close" %}"><span aria-hidden="true">&times;</span></button>
+                    {% trans "Error: password not changed." %}
+                </div>
+            </div>
+            <div class="row header">
+                <h1 class="col-sm-11">{% blocktrans with user_name=user.username %}{{ user_name }}'s profile{% endblocktrans %}</h1>
+            </div>
+            <form action="{% url 'user:profile' %}" method="post">
+            <div class="row">
+                    {% csrf_token %}
+                    <div class="col-sm-11">
+                        <fieldset>
+                            <legend>{% trans "Main profile" %}</legend>
+                            <div class="row">
+                                <div class="col-sm-6 form-group">
+                                    <label for="id_username">{% trans "Username" %}</label>
+                                    <p id="id_username" class="form-control-static form-control">{{ user.username }}</p>
+                                </div>
+                                <div class="col-sm-6 form-group {% if user_form.email and user_form.email.errors%} has-error{%endif%}">
+                                    <label for="id_email">{% trans "Email" %}</label>
+                                    {% if user_form.email %}
+                                        {{ user_form.email|add_css_class:"form-control" }}
+                                        {% include 'events/_form_errors.html' with errors=user_form.email.errors %}
+                                    {% else %}
+                                        <p id="id_email" class="form-control-static form-control">{{ user.email }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-sm-6 form-group{% if user_form.first_name and user_form.first_name.errors%} has-error{%endif%}">
+                                    <label for="id_first_name">{% trans "First name" %}</label>
+                                        {% if user_form.first_name %}
+                                        {{ user_form.first_name|add_css_class:"form-control" }}
+                                        {% include 'events/_form_errors.html' with errors=user_form.first_name.errors %}
+                                    {% else %}
+                                        <p id="id_first_name" class="form-control-static form-control">{{ user.first_name }}</p>
+                                    {% endif %}
+                                </div>
+                                <div class="col-sm-6 form-group {% if user_form.last_name and user_form.last_name.errors%} has-error{%endif%}">
+                                    <label for="id_last_name">{% trans "Last name" %}</label>
+                                    {% if user_form.last_name %}
+                                        {{ user_form.last_name|add_css_class:"form-control" }}
+                                        {% include 'events/_form_errors.html' with errors=user_form.last_name.errors %}
+                                    {% else %}
+                                        <p id="id_last_name" class="form-control-static form-control">{{ user.last_name }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+                    <div class="col-sm-1">
+                        {%  if user_form or profile_form %}
+                            <button class="btn btn-primary" type="submit">{% trans "Save" %}</button>
+                        {% endif %}
+                    </div>
+            </div>
+            <div class="row">
+                    <div class="col-sm-11">
+                        <fieldset>
+                            <div class="row">
+                                <div class="col-sm-6 form-group{% if profile_form.incident_number.errors%} has-error{%endif%}">
+                                    <label for="id_incident_number">{% trans "Number of incidents per page" %}</label>
+                                    {% if profile_form.incident_number %}
+                                        {{ profile_form.incident_number|add_css_class:"form-control" }}
+                                        {% include 'events/_form_errors.html' with errors=profile_form.incident_number.errors %}
+                                    {% else %}
+                                        <p id="id_incident_number" class="form-control-static form-control">{{ user.profile.incident_number }}</p>
+                                    {% endif %}
+                                </div>
+                                <div class="col-sm-6 checkbox aligned-with-stack{% if profile_form.hide_closed.errors%} has-error{%endif%}">
+                                    {% if profile_form.hide_closed %}
+                                        <label>{{ profile_form.hide_closed }} {% trans "Hide closed events?" %}</label>
+                                        {% include 'events/_form_errors.html' with errors=profile_form.hide_closed.errors %}
+                                    {% else %}
+                                        <label><input type="checkbox" disabled {% if user.profile.hide_closed %}checked{% endif %}> {% trans "Hide closed events?" %}</label>
+                                    {% endif %}
+                                    {% include 'events/_form_errors.html' with errors=profile_form.hide_closed.errors %}
+                                </div>
+                            </div>
+                        </fieldset>
+                    </div>
+            </div>
+       </form>
+    {% plugin_point "user_profile" %}
+    </div>
+    <!-- Change password modal -->
+        {% if password_form %}
+		<div id="changePassword" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="changePasswordLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<form id="password_form" method="POST" data-ajaxform action="{% url 'user:change_password' %}">
+					 	<div class="modal-header">
+					    	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+							<h4 id="changePasswordLabel" class="modal-title">{% trans "Change password" %}</h4>
+					  	</div>
+					  	<div class="modal-body">
+							<div>
+								{% csrf_token %}
+								<div class="form-group row">
+									<div class="col-sm-4">
+										<label for="id_old_password">{{ password_form.old_password.label }}</label>
+									</div>
+									<div class="col-sm-8">
+										{{ password_form.old_password|add_css_class:"form-control" }}
+										<span class='help-block'>
+											{% for error in password_form.old_password.errors %}
+												{{error}}
+											{% endfor %}
+										</span>
+									</div>
+                                </div>
+                                <div class="form-group row">
+									<div class="col-sm-4">
+										<label for="id_new_password1">{{ password_form.new_password1.label }}</label>
+									</div>
+									<div class="col-sm-8">
+										{{ password_form.new_password1|add_css_class:"form-control" }}
+										<span class='help-block'>
+											{% for error in password_form.new_password1.errors %}
+												{{error}}
+											{% endfor %}
+										</span>
+									</div>
+                                </div>
+                                <div class="form-group row">
+                                    <div class="col-sm-4">
+										<label for="id_new_password2">{{ password_form.new_password2.label }}</label>
+									</div>
+									<div class="col-sm-8">
+										{{ password_form.new_password2|add_css_class:"form-control" }}
+										<span class='help-block'>
+											{% for error in password_form.new_password2.errors %}
+												{{error}}
+											{% endfor %}
+										</span>
+									</div>
+								</div>
+							</div>
+					  	</div>
+
+						<div class="modal-footer">
+							<button class="btn btn-default" data-dismiss="modal" aria-hidden="true">{%  trans "Cancel" %}</button>
+							<button type="submit" class="btn btn-primary">{%  trans "Change password" %}</button>
+					  	</div>
+					</form>
+				</div>
+			</div>
+		</div>
+        {% endif %}
+    <script>
+        window.onload = function(){
+            $('#password_form').on('fir.form.success', function (event) {
+                $('#changePassword').modal('hide');
+                $('#passwordChangedAlert').removeClass('hidden');
+                event.stopPropagation();
+            });
+            $('#password_form').on('fir.form.error', function (event) {
+                $('#changePassword').modal('hide');
+                $('#passwordNotChangedAlert').removeClass('hidden');
+                event.stopPropagation();
+            });
+        };
+    </script>
+{% endblock %}

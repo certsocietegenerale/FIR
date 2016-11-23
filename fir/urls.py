@@ -7,7 +7,6 @@ from incidents import views
 
 # urls for core FIR components
 urlpatterns = [
-    url(r'^tools/', include('incidents.custom_urls.tools', namespace='tools')),
     url(r'^incidents/', include('incidents.urls', namespace='incidents')),
     url(r'^search/$', views.search, name='search'),
     url(r'^events/', include('incidents.custom_urls.events', namespace='events')),

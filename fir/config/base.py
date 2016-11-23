@@ -86,12 +86,11 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'treebeard',
-    'incidents',
     'django.contrib.admin',
     'rest_framework',
     'rest_framework.authtoken',
     'fir_plugins',
+    'incidents',
     'fir_artifacts'
 )
 
@@ -126,7 +125,7 @@ TEMPLATES = [
     }
 ]
 
-# If True, shows the incident ID in views (table and details)
+# Show incident IDs in views?
 INCIDENT_SHOW_ID = False
 
 # Permission added to the incident created by user, None for no permission
@@ -134,3 +133,19 @@ INCIDENT_CREATOR_PERMISSION = 'incidents.view_incidents'
 
 # If you can see an event/incident, you can comment it!
 INCIDENT_VIEWER_CAN_COMMENT = True
+
+
+# Escape HTML when displaying markdown
+MARKDOWN_SAFE_MODE = True
+
+# User self-service features
+USER_SELF_SERVICE = {
+    # User can change his own email address
+    'CHANGE_EMAIL': True,
+    # User can change his first and last name
+    'CHANGE_NAMES': True,
+    # User can change his profile values (number of incidents per page, hide closed incidents)
+    'CHANGE_PROFILE': True,
+    # User can change his password
+    'CHANGE_PASSWORD': True
+}

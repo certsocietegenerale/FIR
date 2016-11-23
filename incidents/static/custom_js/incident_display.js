@@ -11,7 +11,8 @@ $(function () {
 	}
 
 	function refresh_display(element) {
-		incident_table = element.closest('.incident_table');
+		var incident_table = element.closest('.incident_table');
+		var container;
 		if (element.hasClass('incident_display')) {
 			container = element;
 		}
@@ -19,10 +20,10 @@ $(function () {
 			container = element.closest('.incident_display');
 		}
 
-		order_by = incident_table.data('order-param') || 'date';
-		asc = incident_table.data('asc') || false;
+		var order_by = incident_table.data('order-param') || 'date';
+		var asc = incident_table.data('asc') || false;
 
-		field = element.data('sort');
+		var field = element.data('sort');
 		if (field) {
 			if (field == order_by) {
 				asc = !asc;
@@ -32,8 +33,8 @@ $(function () {
 			}
 		}
 
-		url = container.data('url');
-		q = container.data('query');
+		var url = container.data('url');
+		var q = container.data('query');
 
 		page = element.data('page') || 1;
 
@@ -42,11 +43,11 @@ $(function () {
 
 	function toggle_star(link) {
 		return function(data) {
-			i = link.find('i.star');
+			var i = link.find('i.star');
     		i.toggleClass('glyphicon-star');
     		i.toggleClass('glyphicon-star-empty');
 
-    		starred_incidents = $('#starred_incidents');
+    		var starred_incidents = $('#starred_incidents');
 			if (starred_incidents.length > 0) {
 				refresh_display(starred_incidents);
 			}
@@ -74,8 +75,8 @@ $(function () {
 
 	// Star/Unstar incidents
 	$('.incident_display').on('click', 'a.star', function(event) {
-		link = $(this);
-		url = link.attr('href');
+		var link = $(this);
+		var url = link.attr('href');
 		$.getJSON(url, toggle_star(link));
 
 		event.preventDefault();

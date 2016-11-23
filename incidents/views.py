@@ -2,8 +2,12 @@
 
 
 # Create your views here.
+from django.contrib.auth.forms import PasswordChangeForm
+from django.contrib.auth.models import User
 from django.contrib.staticfiles import finders
 from django.template.response import TemplateResponse
+from django.views.decorators.http import require_POST
+
 from incidents.models import IncidentCategory, Incident, Comments, BusinessLine
 from incidents.models import Label, Log, BaleCategory
 from incidents.models import Attribute, ValidAttribute, IncidentTemplate, Profile
@@ -22,8 +26,9 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.template import RequestContext
 from json import dumps
 from django.template import Template
-from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
-from django.forms.models import model_to_dict
+
+from django.core.exceptions import ObjectDoesNotExist
+from django.forms.models import model_to_dict, modelform_factory
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
 
@@ -2133,17 +2138,61 @@ def dashboard_old(request):
     })
 
 
-# tools ==================================================================
-def mce_config(request):
-    # if language middleware is disabled, get language code from settings
-    try:
-        lang = request.LANGUAGE_CODE
-    except AttributeError:
-        lang = settings.LANGUAGE_CODE
+# User profile ============================================================
+@login_required
+def user_self_service(request):
+    user_fields = []
+    if settings.USER_SELF_SERVICE.get('CHANGE_EMAIL', True):
+        user_fields.append('email')
+    if settings.USER_SELF_SERVICE.get('CHANGE_NAMES', True):
+        user_fields.extend(('first_name', 'last_name'))
+    if len(user_fields):
+        user_form = modelform_factory(User, fields=user_fields)
+    else:
+        user_form = False
+    if settings.USER_SELF_SERVICE.get('CHANGE_PROFILE', True):
+        profile_form = modelform_factory(Profile, exclude=('user',))
+    else:
+        profile_form = False
+    if request.method == "POST":
+        post_data = request.POST.dict()
+        if user_form:
+            user_data = {field:post_data[field] for field in user_fields if field in post_data}
+            user_form = user_form(user_data, instance=request.user)
+            if user_form.is_valid():
+                user_form.save()
+        if profile_form:
+            profile_data = {field:post_data[field] for field in profile_form.base_fields.keys() if field in post_data}
+            profile_form = profile_form(profile_data, instance=request.user.profile)
+            if profile_form.is_valid():
+                profile_form.save()
+    else:
+        if user_form:
+            user_form = user_form(instance=request.user)
+        if profile_form:
+            profile_form = profile_form(instance=request.user.profile)
+    if settings.USER_SELF_SERVICE.get('CHANGE_PASSWORD', True):
+        password_form = PasswordChangeForm(request.user)
+    else:
+        password_form = False
+    return render(request, 'user/profile.html', {
+        'user_form': user_form,
+        'profile_form': profile_form,
+        'password_form': password_form
+    })
 
-    if not finders.find("js/tinymce/langs/%s.js" % lang):
-        lang = lang.split('-')[0]
-        if not finders.find("js/tinymce/langs/%s.js" % lang):
-            lang = "en"
-    return TemplateResponse(request, "tools/mce_config.js", context={"mce_lang": lang},
-                            content_type="application/javascript")
+
+@login_required
+@require_POST
+def user_change_password(request):
+    if not settings.USER_SELF_SERVICE.get('CHANGE_PASSWORD', True):
+        return HttpResponseServerError(dumps({'status': 'error', 'errors': ['password change disabled.',]}),
+                                       content_type="application/json")
+    if request.method == "POST":
+        form = PasswordChangeForm(user=request.user, data=request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponse(dumps({'status': 'success'}), content_type="application/json")
+
+    ret = {'status': 'error', 'errors': form.errors}
+    return HttpResponseServerError(dumps(ret), content_type="application/json")

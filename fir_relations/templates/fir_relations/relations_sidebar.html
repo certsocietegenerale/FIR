@@ -1,0 +1,6 @@
+{% load i18n %}
+{% trans "References" as references_title %}
+{% trans "Referenced by" as referenced_by_title %}
+
+{% include 'fir_relations/sidebar.html' with relations=references title=references_title %}
+{% include 'fir_relations/sidebar.html' with relations=referenced_by title=referenced_by_title %}
