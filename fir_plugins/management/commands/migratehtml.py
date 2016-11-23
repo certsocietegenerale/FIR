@@ -8,6 +8,7 @@ class Command(BaseCommand):
     models = {
         'incidents': {
             'Incident': ['description', ],
+            'IncidentTemplate': ['description', ],
             'Comments': ['comment', ]
         },
         'fir_alerting': {
