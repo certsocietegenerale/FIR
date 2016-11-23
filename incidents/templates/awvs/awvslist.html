@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+{% load add_css_class %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block custom_js_top %}
+    {# select控件 option去重 #}
+    <script type="text/javascript" src="{% static "js/jquery.min.js" %}"></script>
+    <script type="text/javascript">
+    $(function() {
+        $("select option").each(function () {
+            text = $(this).text();
+            if ($("select option:contains(" + text + ")").length > 1)
+                $("select option:contains(" + text + "):gt(0)").remove();
+        });
+    })
+    function hiddenrow(dom){
+        if(dom.checked){
+
+        }
+    }
+
+
+    </script>
+{% endblock %}
+
+{% block content %}
+        <form class="form-inline" role="form" action="" method="GET">
+		<div class="panel panel-default">
+            <div class="panel-heading">
+				  <div class="form-group">
+					    <input type="input" name="scanurl" class="form-control" placeholder="请输入准确URL" value="{{ request.GET.scanurl }}">
+						<select name="time" class="form-control">
+							<option value="">--时间--</option>
+							{% for awvstime in awvstimelist %}
+								 <option value="{{ awvstime.scantime }}" {% if request.GET.time  == awvstime.scantime %}selected{% endif %}>{{ awvstime.scantime }}</option>
+							{% endfor -%}
+						</select>
+                        <input type="input" name="filterrisk" class="form-control" placeholder="high, medium or low" value="{{ request.GET.filterisk }}" >
+                  {% comment %}
+                        <input type="checkbox" name="riskhigh" class="form-control" value="High" {% if request.GET.risk1  == "High" %}checked{% endif %}>High
+                        <input type="checkbox" name="riskmedium" class="form-control" value="Medium" {% if request.GET.risk2  == "Medium" %}checked{% endif %}>Medium
+                        <input type="checkbox" name="risklow" class="form-control" value="Low" {% if request.GET.risk3  == "Low" %}checked{% endif %}>Low
+                  {% endcomment %}
+				  </div>
+
+				  <button type="submit" class="btn btn-primary">Search</button>
+			</div>
+            {% if awvs_list %}
+                <table id="awvslist" class="table table-striped table-bordered table-hover table-condensed">
+                    <thead>
+                      <tr>
+                        <th>扫描时间</th>
+                        <th>URL</th>
+                        <th>操作系统</th>
+                        <th>服务器</th>
+                        <th>漏洞名称</th>
+                        <th>漏洞风险等级</th>
+                        <th>漏洞描述</th>
+                        <th>漏洞细节</th>
+                        <th>修复方式</th>
+                        <th>是否修复</th>
+                      </tr>
+                    </thead>
+                    {% for awvs in awvs_list %}
+                    <tbody>
+                          <tr>
+                            <td>{{ awvs.scantime }}</td>
+                            <td>{{ awvs.scanurl }}</td>
+                            <td>{{ awvs.operatingOS }}</td>
+                            <td>{{ awvs.webserver }}</td>
+                            <td>{{ awvs.itemname }}</td>
+                            <td>{{ awvs.severity }}</td>
+                            <td>{{ awvs.description }}</td>
+                            <td>{{ awvs.details }}</td>
+                            <td>{{ awvs.recommendation }}</td>
+                            {% if  awvs.existence  %}
+                                <td class="danger">未修复</td>
+                            {% else %}
+                                <td>修复</td>
+                            {% endif %}
+                          </tr>
+                    </tbody>
+                    {% endfor %}
+                </table>
+		</div>
+                {% if is_paginated %}
+                <div class="pagination">
+                    <span class="page-links">
+                        {% if page_obj.has_previous %}
+                            <a href="/awvs/awvsfilelist?page={{ page_obj.previous_page_number }}&scanurl={{ request.GET.scanurl }}&time={{ request.GET.time }}&filterrisk={{ request.GET.filterrisk }}">上一页</a>
+                        {% endif %}
+                        {% if page_obj.has_next %}
+                            <a href="/awvs/awvsfilelist?page={{ page_obj.next_page_number }}&scanurl={{ request.GET.scanurl }}&time={{ request.GET.time }}&filterrisk={{ request.GET.filterrisk }}">下一页</a>
+                        {% endif %}
+                        <span class="page-current">
+                            第{{ page_obj.number }}页 ，共{{ page_obj.paginator.num_pages }}页。
+                        </span>
+                    </span>
+                </div>
+                {% endif %}
+            {% else %}
+                <p>No scanfile!</p>
+            {% endif %}
+        {% comment %}
+        <a href="#" class="btn btn-primary" role="button">编辑</a>
+        <a href="#" class="btn btn-primary" role="button">保存</a>
+        <a href="#" class="btn btn-primary" role="button">取消</a>
+        {% endcomment %}
+        <a href="/awvs" class="btn btn-primary" role="button">返回上传页面</a>
+	</form>
+{% endblock %}

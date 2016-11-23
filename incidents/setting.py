@@ -1,0 +1,1 @@
+MEDIA_ROOT = '/static/upload/xml/'

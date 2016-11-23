@@ -145,6 +145,42 @@ class BusinessLine(models.Model):
         return BusinessLine.objects.filter(parent=None)
 
 
+class NmapFile(models.Model):
+    starttime = models.DateTimeField()
+    host = models.CharField(max_length=20)
+    port = models.IntegerField()
+    service = models.CharField(max_length=200)
+    flag = models.BooleanField()
+    scandate = models.CharField(max_length=10)
+
+
+class NessusFile(models.Model):
+    scantime = models.CharField(max_length=30)
+    host = models.CharField(max_length=20)
+    operatingOS = models.CharField(max_length=50)
+    port = models.CharField(max_length=5)
+    protocol = models.CharField(max_length=10)
+    plugin_name = models.CharField(max_length=100)
+    severity = models.CharField(max_length=1)
+    risk = models.CharField(max_length=4)
+    description = models.CharField(max_length=1024)
+    solution = models.CharField(max_length=1024)
+    existence = models.BooleanField()
+
+
+class AWVSFile(models.Model):
+    scantime = models.CharField(max_length=30)
+    scanurl = models.CharField(max_length=20)
+    operatingOS = models.CharField(max_length=50)
+    webserver = models.CharField(max_length=30)
+    itemname = models.CharField(max_length=100)
+    severity = models.CharField(max_length=6)
+    details = models.CharField(max_length=1024)
+    description = models.CharField(max_length=1024)
+    recommendation = models.CharField(max_length=1024)
+    existence = models.BooleanField()
+
+
 class BaleCategory(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True, null=True)

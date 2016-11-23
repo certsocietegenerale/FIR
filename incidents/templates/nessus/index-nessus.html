@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load add_css_class %}
+{% load i18n %}
+{% load staticfiles %}
+
+
+{% block custom_css %}
+<link href="{% static "select/select2.css" %}" rel="stylesheet"/>
+<link href="{% static "select/select2-bootstrap.css" %}" rel="stylesheet"/>
+<link href="{% static "css/bootstrap-datetimepicker.min.css" %}" rel="stylesheet"/>
+
+{% endblock %}
+
+
+{% block custom_js %}
+<script src="{% static "select/select2.min.js" %}"></script>
+<script>
+$(document).ready(function() {
+	$("select#id_concerned_business_lines").select2({ dropdownAutoWidth: true, width: '100%' });
+	$("select#id_category").select2();
+	$('select#id_status').select2({minimumResultsForSearch: -1, width: '90px'});
+	$('select#id_detection').select2({minimumResultsForSearch: -1, width: '90px'});
+	$('select#id_severity').select2({minimumResultsForSearch: -1, width: '90px'});
+	$('select#id_actor').select2({minimumResultsForSearch: -1, width: '90px'});
+	$('select#id_plan').select2({minimumResultsForSearch: -1, width: '90px'});
+	$('select#id_confidentiality').select2({minimumResultsForSearch: -1, width: '90px'});
+});
+</script>
+
+<script src="{% static "js/bootstrap-datetimepicker.min.js" %}"></script>
+
+{% endblock %}
+
+{% block content %}
+
+
+	<div class="container-fluid labels-ontop">
+
+        <form enctype="multipart/form-data" action="{% url 'nessus:nessus_upload' %}" method="post" class="form">
+            {% csrf_token %}
+            <h1>NESSUS文件上传</h1>
+            <input type="file" name="myfile" />
+            <br/>
+            <button type="submit" class="btn btn-default">上传</button>
+            {{ form.non_field_errors }}
+        </form>
+        {% comment %}
+        <h1>Nmap XML结果解析</h1>
+        {% for item in xml_listing %}
+            <ul>
+                <li>{{ item.xml_host }}   {{ item.xml_service }}</li>
+            </ul>
+        {% endfor %}
+    {% endcomment %}
+        <h4>如需再次上传,请刷新本页面后上传</h4>
+        <a href="/nessus/nessusfilelist" class="btn btn-primary" role="button">显示NESSUS文件列表</a>
+    </div>
+
+
+{% endblock %}
