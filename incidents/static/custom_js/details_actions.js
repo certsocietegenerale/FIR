@@ -76,17 +76,19 @@ $(function () {
 
 	// Set up form for new comment
 	$('#details-actions-comment').click(function (event) {
+
+		$("#addComment").modal('toggle');
+
 		var form = $('#addComment form');
 		form.attr('action', form.data('new-comment-url'));
 		form.data('target', '#tab_comments tbody');
 		form.data('action', 'prepend');
 
-		$("#id_comment").val('');
-    	$("#id_action").val('');
-
-    	var date = new Date();
-    	date = date.getFullYear() + "-" + Z((date.getMonth()+1)) +"-" + Z(date.getDate()) + " " + Z(date.getHours()) + ":" + Z(date.getMinutes())
-    	$("#id_date").val(date);
+		editors["id_comment"].value("");
+		$("#id_action").val('');
+		var date = new Date();
+		date = date.getFullYear() + "-" + Z((date.getMonth()+1)) +"-" + Z(date.getDate()) + " " + Z(date.getHours()) + ":" + Z(date.getMinutes())
+		$("#id_date").val(date);
 	});
 
 	// Set up form for update
@@ -96,21 +98,21 @@ $(function () {
 
 		$.getJSON("/ajax/comment/" + comment_id, function(msg) {
 			var comment = jQuery.parseJSON(msg)[0];
-      		var text = comment.fields.comment;
-      		var action = comment.fields.action;
-      		var date = new Date(comment.fields.date);
-      		// date format 1899-12-06 07:15
-      		date = date.getUTCFullYear() + "-" + (Z(date.getUTCMonth()+1)) +"-" + Z(date.getUTCDate()) + " " + Z(date.getUTCHours()) + ":" + Z(date.getUTCMinutes())
+			var text = comment.fields.comment;
+			var action = comment.fields.action;
+			var date = new Date(comment.fields.date);
+			// date format 1899-12-06 07:15
+			date = date.getUTCFullYear() + "-" + (Z(date.getUTCMonth()+1)) +"-" + Z(date.getUTCDate()) + " " + Z(date.getUTCHours()) + ":" + Z(date.getUTCMinutes())
 
-      		$("#id_comment").val(text);
-      		$("#id_action").val(action);
-      		$("#id_date").val(date);
+			$("#addComment").modal('toggle');
 
-      		form.attr('action', '/ajax/comment/' + comment_id);
+			editors["id_comment"].value(text);
+			$("#id_action").val(action);
+			$("#id_date").val(date);
+
+			form.attr('action', '/ajax/comment/' + comment_id);
 			form.data('target', '#comment_id_' + comment_id);
 			form.data('action', 'replaceWith');
-
-      		$("#addComment").modal('toggle');
 		});
 	});
 

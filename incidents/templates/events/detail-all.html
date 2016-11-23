@@ -39,7 +39,7 @@
 			<li><a href="#" id="details-actions-add-link"><i class="glyphicon glyphicon-plus"></i>{%  trans "Add" %}</a></li>
             {% endif %}
             {% if can_comment_incident %}
-			<li><a href="#" id='details-actions-comment' data-toggle='modal' data-target='#addComment'>
+			<li><a href="#" id='details-actions-comment' data-target='#addComment'>
 				<i class="glyphicon glyphicon-comment"></i>{%  trans "Comment" context "verb" %}
 			</a></li>
             {% endif %}
@@ -189,7 +189,7 @@
 			{% plugin_point 'details_tab_content' %}
 		</div>
 		<!-- Modal for comments -->
-		<div id="addComment" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="addCommentLabel" aria-hidden="true">
+		<div id="addComment" class="modal" tabindex="-1" role="dialog" aria-labelledby="addCommentLabel" aria-hidden="true">
 			<div class="modal-dialog">
 				<div class="modal-content">
 					<form id="comment_form" method="POST" data-ajaxform data-target='#tab_comments tbody' data-action='prepend' data-new-comment-url="{% url 'incidents:comment' event.id %}">

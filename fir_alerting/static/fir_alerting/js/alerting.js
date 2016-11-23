@@ -9,18 +9,18 @@ $(function () {
       type: "GET",
       url: url,
       success: function(msg) {
+        $("#sendEmail").modal('show');
+
         $('#sendEmail #id_behalf').val(msg.behalf)
         $('#sendEmail #id_to').val(msg.to)
         $('#sendEmail #id_cc').val(msg.cc)
         $('#sendEmail #id_bcc').val(msg.bcc)
         $('#sendEmail #id_subject').val(msg.subject)
-        $('#sendEmail #id_body').val(msg.body)
+        editors["id_body"].value(msg.body)
 
         $('#sendEmail').data('type', type)
 
-        //tinyMCE.get('id_body').setContent(msg.body)
         $('#sendEmail').data('bl', msg.bl)
-        $("#sendEmail").modal('show');
       }
     });
   }
@@ -125,7 +125,7 @@ $(function () {
     // Add form to the page
     $('#addComment').after(data);
 
-    $('#id_body').markdown();
+    editors["id_body"] = init_simplemde($("#id_body"));
 
     // Activate 'Send Email' button
     $('#send_email').click(function (event) {
