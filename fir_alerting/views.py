@@ -124,7 +124,7 @@ def send_email(request):
                 bcc=bcc.split(';'),
                 headers=reply_to
             )
-            e.attach_alternative(markdown2.markdown(body, extras=["link-patterns"],
+            e.attach_alternative(markdown2.markdown(body, extras=["link-patterns", "tables"],
                                                     link_patterns=registry.link_patterns(request), safe_mode=True),
                                  'text/html')
             e.content_subtype = 'html'
