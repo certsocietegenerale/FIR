@@ -84,7 +84,6 @@ $(function () {
 		form.data('target', '#tab_comments tbody');
 		form.data('action', 'prepend');
 
-		editors["id_comment"].value("");
 		$("#id_action").val('');
 		var date = new Date();
 		date = date.getFullYear() + "-" + Z((date.getMonth()+1)) +"-" + Z(date.getDate()) + " " + Z(date.getHours()) + ":" + Z(date.getMinutes())
