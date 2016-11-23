@@ -1,5 +1,9 @@
-# for token Generation
-import StringIO
+# To be compatible with python 2&3 we us an elegant
+# import switch here.
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 from django.conf import settings
 from django.db.models.signals import post_save
