@@ -74,8 +74,7 @@ $(function () {
     type = $('#sendEmail').data('type')
     bl = $('#sendEmail').data('bl')
 
-    //var body = tinyMCE.get('id_body').getContent()
-    //$("#id_body").val(body)
+    $("#id_body").val(editors["id_body"].value());
     data = $("#email_form").serialize()
 
     $.ajax({
