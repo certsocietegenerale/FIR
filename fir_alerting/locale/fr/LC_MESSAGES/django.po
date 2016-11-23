@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FIR master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-03-15 20:24+0100\n"
+"POT-Creation-Date: 2016-11-23 11:39+0100\n"
 "PO-Revision-Date: 2015-03-15 20:24+0100\n"
 "Last-Translator: Gaetan Crahay <gaetan@crahay.eu>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -17,44 +17,44 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: templates/fir_alerting/emailform.html:7
-#: templates/fir_alerting/emailform.html:54
+#: templates/fir_alerting/emailform.html:8
+#: templates/fir_alerting/emailform.html:55
 msgid "Send email"
 msgstr "Envoyer l'email"
 
-#: templates/fir_alerting/emailform.html:14
+#: templates/fir_alerting/emailform.html:15
 msgid "From:"
 msgstr "De :"
 
-#: templates/fir_alerting/emailform.html:20
+#: templates/fir_alerting/emailform.html:21
 msgid "To:"
 msgstr "À :"
 
-#: templates/fir_alerting/emailform.html:26
+#: templates/fir_alerting/emailform.html:27
 msgid "CC:"
 msgstr "CC :"
 
-#: templates/fir_alerting/emailform.html:32
+#: templates/fir_alerting/emailform.html:33
 msgid "BCC:"
 msgstr "BCC :"
 
-#: templates/fir_alerting/emailform.html:38
+#: templates/fir_alerting/emailform.html:39
 msgid "Subject"
 msgstr "Objet"
 
-#: templates/fir_alerting/emailform.html:44
+#: templates/fir_alerting/emailform.html:45
 msgid "Body"
 msgstr "Corps"
 
-#: templates/fir_alerting/emailform.html:53
+#: templates/fir_alerting/emailform.html:54
 msgid "Close"
 msgstr "Fermer"
 
-#: templates/fir_alerting/plugins/details_actions.html:6
-#: templates/fir_alerting/plugins/details_actions.html:13
+#: templates/fir_alerting/plugins/details_actions.html:9
+#: templates/fir_alerting/plugins/details_actions.html:19
 msgid "Alert"
 msgstr "Alerter"
 
-#: templates/fir_alerting/plugins/details_actions.html:17
+#: templates/fir_alerting/plugins/details_actions.html:26
 msgid "Takedown"
 msgstr "Contre-mesures"
