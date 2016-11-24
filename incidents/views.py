@@ -607,6 +607,12 @@ def search(request):
                 q = q & Q(id__in=[i.id for i in libartifacts.incs_for_art(artifacts)])
                 query_string = query_string.replace('art:' + artifacts, '')
 
+            nugget = re.search("nugget:(\S+)", query_string)
+            if nugget:
+                nugget = nugget.group(1)
+                q = q & Q(nugget__source__icontains=nugget) | Q(nugget__raw_data__icontains=nugget) | Q(nugget__interpretation__icontains=nugget)
+                query_string = query_string.replace('nugget:' + nugget, '')
+
             if query_string.count('starred') > 0:
                 q = q & Q(is_starred=True)
                 query_string = query_string.replace('starred', '')
@@ -630,7 +636,9 @@ def search(request):
                 q_other = Q()
                 for i in other:
                     q_other &= (
-                        Q(subject__icontains=i) | Q(description__icontains=i) | Q(comments__comment__icontains=i))
+                        Q(subject__icontains=i) | Q(description__icontains=i) | Q(comments__comment__icontains=i) |
+                        Q(nugget__source__icontains=i) | Q(nugget__raw_data__icontains=i) | Q(nugget__interpretation__icontains=i)
+                    )
 
             q = (q & q_other)
 
