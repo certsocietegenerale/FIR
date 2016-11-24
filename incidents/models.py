@@ -223,7 +223,7 @@ class Incident(FIRModel, models.Model):
         for bl in self.concerned_business_lines.all():
             if bl.name == bl_string:
                 return bl.name
-            if bl.get_descendants().filter(name=bl_string).count():
+            if bl.get_ancestors().filter(name=bl_string).count():
                 return bl.name
         return False
 
