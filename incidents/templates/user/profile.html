@@ -17,96 +17,102 @@
         </div>
     </div>
     <div class="container-fluid " id="details-container">
-            <div class="row" id="#action_result" class="alerts">
-                <div id="passwordChangedAlert" class="alert alert-success hidden alert-dismissible" role="alert">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "Close" %}"><span aria-hidden="true">&times;</span></button>
-                    {% trans "Password changed!" %}
-                </div>
-                <div id="passwordNotChangedAlert" class="alert alert-danger hidden alert-dismissible" role="alert">
-                    <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "Close" %}"><span aria-hidden="true">&times;</span></button>
-                    {% trans "Error: password not changed." %}
-                </div>
-            </div>
-            <div class="row header">
-                <h1 class="col-sm-11">{% blocktrans with user_name=user.username %}{{ user_name }}'s profile{% endblocktrans %}</h1>
-            </div>
-            <form action="{% url 'user:profile' %}" method="post">
             <div class="row">
                     {% csrf_token %}
-                    <div class="col-sm-11">
-                        <fieldset>
-                            <legend>{% trans "Main profile" %}</legend>
-                            <div class="row">
-                                <div class="col-sm-6 form-group">
-                                    <label for="id_username">{% trans "Username" %}</label>
-                                    <p id="id_username" class="form-control-static form-control">{{ user.username }}</p>
-                                </div>
-                                <div class="col-sm-6 form-group {% if user_form.email and user_form.email.errors%} has-error{%endif%}">
-                                    <label for="id_email">{% trans "Email" %}</label>
-                                    {% if user_form.email %}
-                                        {{ user_form.email|add_css_class:"form-control" }}
-                                        {% include 'events/_form_errors.html' with errors=user_form.email.errors %}
-                                    {% else %}
-                                        <p id="id_email" class="form-control-static form-control">{{ user.email }}</p>
-                                    {% endif %}
-                                </div>
-                            </div>
+                    <div class="col-sm-8 col-sm-offset-2">
 
-                            <div class="row">
-                                <div class="col-sm-6 form-group{% if user_form.first_name and user_form.first_name.errors%} has-error{%endif%}">
-                                    <label for="id_first_name">{% trans "First name" %}</label>
-                                        {% if user_form.first_name %}
-                                        {{ user_form.first_name|add_css_class:"form-control" }}
-                                        {% include 'events/_form_errors.html' with errors=user_form.first_name.errors %}
-                                    {% else %}
-                                        <p id="id_first_name" class="form-control-static form-control">{{ user.first_name }}</p>
-                                    {% endif %}
-                                </div>
-                                <div class="col-sm-6 form-group {% if user_form.last_name and user_form.last_name.errors%} has-error{%endif%}">
-                                    <label for="id_last_name">{% trans "Last name" %}</label>
-                                    {% if user_form.last_name %}
-                                        {{ user_form.last_name|add_css_class:"form-control" }}
-                                        {% include 'events/_form_errors.html' with errors=user_form.last_name.errors %}
-                                    {% else %}
-                                        <p id="id_last_name" class="form-control-static form-control">{{ user.last_name }}</p>
-                                    {% endif %}
-                                </div>
-                            </div>
-                        </fieldset>
-                    </div>
-                    <div class="col-sm-1">
-                        {%  if user_form or profile_form %}
-                            <button class="btn btn-primary" type="submit">{% trans "Save" %}</button>
-                        {% endif %}
+                      <div id="#action_result" class="alerts">
+                          <div id="passwordChangedAlert" class="alert alert-success hidden alert-dismissible" role="alert">
+                              <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "Close" %}"><span aria-hidden="true">&times;</span></button>
+                              {% trans "Password changed!" %}
+                          </div>
+                          <div id="passwordNotChangedAlert" class="alert alert-danger hidden alert-dismissible" role="alert">
+                              <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "Close" %}"><span aria-hidden="true">&times;</span></button>
+                              {% trans "Error: password not changed." %}
+                          </div>
+                      </div>
+
+                      {% if messages %}
+                        {% for message in messages %}
+                          <div class="alert alert-{% if message.tags %}{{message.tags}}{%else%}{{"info"}}{%endif%} alert-dismissible" role="alert">
+                            <strong>{{message}}</strong>
+                          </div>
+                        {% endfor %}
+                      {% endif %}
+
+                      <div class="panel panel-primary">
+                        <div class="panel-heading">
+                          <h3 class="panel-title">{% blocktrans with user_name=user.username %}{{ user_name }}'s profile{% endblocktrans %}</h3>
+                        </div>
+                        <div class="panel-body">
+
+                          <form action="{% url 'user:profile' %}" method="post">
+                          <fieldset>
+                              <div class="row">
+                                  <div class="col-sm-6 form-group">
+                                      <h3>{% trans "Username" %}:<code>{{ user.username }}</code></h3>
+                                  </div>
+                                  <div class="col-sm-6 form-group {% if user_form.email and user_form.email.errors%} has-error{%endif%}">
+                                      <label for="id_email">{% trans "Email" %}</label>
+                                      {% if user_form.email %}
+                                          {{ user_form.email|add_css_class:"form-control" }}
+                                          {% include 'events/_form_errors.html' with errors=user_form.email.errors %}
+                                      {% else %}
+                                          <p id="id_email" class="form-control-static form-control">{{ user.email }}</p>
+                                      {% endif %}
+                                  </div>
+                              </div>
+
+                              <div class="row">
+                                  <div class="col-sm-6 form-group{% if user_form.first_name and user_form.first_name.errors%} has-error{%endif%}">
+                                      <label for="id_first_name">{% trans "First name" %}</label>
+                                          {% if user_form.first_name %}
+                                          {{ user_form.first_name|add_css_class:"form-control" }}
+                                          {% include 'events/_form_errors.html' with errors=user_form.first_name.errors %}
+                                      {% else %}
+                                          <p id="id_first_name" class="form-control-static form-control">{{ user.first_name }}</p>
+                                      {% endif %}
+                                  </div>
+                                  <div class="col-sm-6 form-group {% if user_form.last_name and user_form.last_name.errors%} has-error{%endif%}">
+                                      <label for="id_last_name">{% trans "Last name" %}</label>
+                                      {% if user_form.last_name %}
+                                          {{ user_form.last_name|add_css_class:"form-control" }}
+                                          {% include 'events/_form_errors.html' with errors=user_form.last_name.errors %}
+                                      {% else %}
+                                          <p id="id_last_name" class="form-control-static form-control">{{ user.last_name }}</p>
+                                      {% endif %}
+                                  </div>
+                              </div>
+                          </fieldset>
+                          <fieldset>
+                              <div class="row">
+                                  <div class="col-sm-6 form-group{% if profile_form.incident_number.errors%} has-error{%endif%}">
+                                      <label for="id_incident_number">{% trans "Number of incidents per page" %}</label>
+                                      {% if profile_form.incident_number %}
+                                          {{ profile_form.incident_number|add_css_class:"form-control" }}
+                                          {% include 'events/_form_errors.html' with errors=profile_form.incident_number.errors %}
+                                      {% else %}
+                                          <p id="id_incident_number" class="form-control-static form-control">{{ user.profile.incident_number }}</p>
+                                      {% endif %}
+                                  </div>
+                                  <div class="col-sm-6 checkbox aligned-with-stack{% if profile_form.hide_closed.errors%} has-error{%endif%}">
+                                      {% if profile_form.hide_closed %}
+                                          <label>{{ profile_form.hide_closed }} {% trans "Hide closed events?" %}</label>
+                                          {% include 'events/_form_errors.html' with errors=profile_form.hide_closed.errors %}
+                                      {% else %}
+                                          <label><input type="checkbox" disabled {% if user.profile.hide_closed %}checked{% endif %}> {% trans "Hide closed events?" %}</label>
+                                      {% endif %}
+                                      {% include 'events/_form_errors.html' with errors=profile_form.hide_closed.errors %}
+                                  </div>
+                              </div>
+                          </fieldset>
+                          {% csrf_token %}
+                          <button type="submit" class="btn btn-primary">Save</button>
+                        </form>
+                        </div>
+                      </div>
                     </div>
             </div>
-            <div class="row">
-                    <div class="col-sm-11">
-                        <fieldset>
-                            <div class="row">
-                                <div class="col-sm-6 form-group{% if profile_form.incident_number.errors%} has-error{%endif%}">
-                                    <label for="id_incident_number">{% trans "Number of incidents per page" %}</label>
-                                    {% if profile_form.incident_number %}
-                                        {{ profile_form.incident_number|add_css_class:"form-control" }}
-                                        {% include 'events/_form_errors.html' with errors=profile_form.incident_number.errors %}
-                                    {% else %}
-                                        <p id="id_incident_number" class="form-control-static form-control">{{ user.profile.incident_number }}</p>
-                                    {% endif %}
-                                </div>
-                                <div class="col-sm-6 checkbox aligned-with-stack{% if profile_form.hide_closed.errors%} has-error{%endif%}">
-                                    {% if profile_form.hide_closed %}
-                                        <label>{{ profile_form.hide_closed }} {% trans "Hide closed events?" %}</label>
-                                        {% include 'events/_form_errors.html' with errors=profile_form.hide_closed.errors %}
-                                    {% else %}
-                                        <label><input type="checkbox" disabled {% if user.profile.hide_closed %}checked{% endif %}> {% trans "Hide closed events?" %}</label>
-                                    {% endif %}
-                                    {% include 'events/_form_errors.html' with errors=profile_form.hide_closed.errors %}
-                                </div>
-                            </div>
-                        </fieldset>
-                    </div>
-            </div>
-       </form>
     {% plugin_point "user_profile" %}
     </div>
     <!-- Change password modal -->

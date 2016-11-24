@@ -1,20 +1,23 @@
 {% load i18n %}
 {% if perms.incidents.handle_incidents %}
 <div class="row">
-    <div class="col-sm-11">
-        <fieldset>
-            <legend>{% trans "API Access" %}</legend>
-            <div class="row">
-                <div class="col-sm-6 form-group">
-                    <label for="id_token">{% trans "Token" %}</label>
-                    <p id="id_token" class="form-control-static form-control">{{ user.auth_token.key }}</p>
-                </div>
-                <div class="col-sm-6 form-group">
-                    <label for="id_token_created">{% trans "Created" %}</label>
-                    <p id="id_token_created" class="form-control-static form-control">{{ user.auth_token.created }}</p>
-                </div>
-            </div>
-        </fieldset>
+
+  <div class="col-sm-8 col-sm-offset-2">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">FIR API - {% trans "API Access" %}</h3>
+      </div>
+      <div class="panel-body">
+          <p>You need to be authenticated in order to use the API. It will accept session or token based authentication.
+          Tokens can be managed in the administration interface and should be specified as a <strong>request header</strong>.</p>
+          Example:<br/>
+          <pre>Authorization: Token {{ user.auth_token.key }}</pre>
+      </div>
+      <table class='table'>
+        <tr><th>{% trans "Token" %}</th><td><code>{{ user.auth_token.key }}</code></td></tr>
+        <tr><th>{% trans "Created" %}</th><td><code>{{ user.auth_token.created }}</code></td></tr>
+      </table>
     </div>
+  </div>
 </div>
 {% endif %}

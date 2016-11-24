@@ -2195,13 +2195,16 @@ def user_self_service(request):
 @require_POST
 def user_change_password(request):
     if not settings.USER_SELF_SERVICE.get('CHANGE_PASSWORD', True):
+        messages.error(request, "Error: Password change administratively disabled.")
         return HttpResponseServerError(dumps({'status': 'error', 'errors': ['password change disabled.',]}),
                                        content_type="application/json")
     if request.method == "POST":
         form = PasswordChangeForm(user=request.user, data=request.POST)
         if form.is_valid():
             form.save()
+            messages.success(request, "Success! Password updated.")
             return HttpResponse(dumps({'status': 'success'}), content_type="application/json")
 
     ret = {'status': 'error', 'errors': form.errors}
+    messages.error(request, form.errors)
     return HttpResponseServerError(dumps(ret), content_type="application/json")
