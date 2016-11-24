@@ -47,8 +47,8 @@ def new(request, event_id, authorization_target=None):
 
             ret = {
                 'status': 'success',
-                'row': render_to_string("fir_nuggets/nugget_row.html", {'n': nugget, 'mode': 'row'}),
-                'raw': render_to_string("fir_nuggets/nugget_row.html", {'n': nugget, 'mode': 'raw'}),
+                'row': render_to_string("fir_nuggets/nugget_row.html", {'n': nugget, 'mode': 'row', "user": request.user}),
+                'raw': render_to_string("fir_nuggets/nugget_row.html", {'n': nugget, 'mode': 'raw', "user": request.user}),
                 'nugget_id': nugget.id,
                 'mode': 'new',
             }
@@ -84,8 +84,8 @@ def edit(request, nugget_id):
                 'status': 'success',
                 'mode': 'edit',
                 'nugget_id': nugget.id,
-                'row': render_to_string("fir_nuggets/nugget_row.html", {'n': nugget, 'mode': 'row'}),
-                'raw': render_to_string("fir_nuggets/nugget_row.html", {'n': nugget, 'mode': 'raw'}),
+                'row': render_to_string("fir_nuggets/nugget_row.html", {'n': nugget, 'mode': 'row', "user": request.user}),
+                'raw': render_to_string("fir_nuggets/nugget_row.html", {'n': nugget, 'mode': 'raw', "user": request.user}),
             }
             return HttpResponse(dumps(ret), content_type='application/json')
 

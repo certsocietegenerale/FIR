@@ -1,5 +1,5 @@
 {% load authorization %}
-{%  has_perm 'incidents.handle_incidents' obj=n.incident as can_handle_incident %}
+{% has_perm 'incidents.handle_incidents' obj=n.incident as can_handle_incident %}
 {% if mode == 'row' %}
 			<td class='nugget_timestamp'><span>{{n.start_timestamp|date:"Y-m-d G:i"}} {% if n.end_timestamp%} <i class='icon-arrow-right'></i> {{n.end_timestamp|date:"Y-m-d G:i"}}{% endif%}</span></td>
 			<td><span class='nugget_source'>{{n.source}}</span></td>

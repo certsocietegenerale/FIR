@@ -143,5 +143,3 @@ function submit_nugget () {
 function toggle_raw (id) {
 	$('#raw_'+id).toggle();
 }
-
-
