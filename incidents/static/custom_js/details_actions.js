@@ -118,6 +118,7 @@ $(function () {
 	// Custom behavior when comment is added
 	$('#addComment').on('fir.form.success', function (event) {
 		// Dismiss modal
+		editors["id_comment"].value("");
 		$('#addComment').modal('hide');
 
 		// Hack not to trigger on update
