@@ -32,12 +32,12 @@
 	width: 40px;
 }
 
-.form-group {
+#nugget_modals .form-group {
 	margin: 0 10px 0 5px;
 }
 
-.form-group input,
-.form-group textarea {
+#nugget_modals .form-group input,
+#nugget_modals .form-group textarea {
 	font-size: 11px;
 	padding-left: 5px;
 	padding-right: 5px;
