@@ -70,8 +70,6 @@ for app in INSTALLED_APPS:
         except ImportError as e:
             print "No module named hooks for {}".format(app_name)
 
-print APP_HOOKS
-
 
 
 
@@ -659,8 +657,6 @@ def search(request):
                     for app_name, hooks in APP_HOOKS.items():
                         if "search_filter" in hooks:
                             q_other, query_string = hooks['search_filter'](q_other, query_string)
-            print q_other
-            print q
             q = (q & q_other)
 
             # TODO a function that takes in incidents and returns them ordered
