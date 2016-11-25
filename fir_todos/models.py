@@ -41,7 +41,7 @@ class TodoListTemplate(models.Model):
     category = models.ForeignKey(IncidentCategory, null=True, blank=True)
     concerned_business_lines = models.ManyToManyField(BusinessLine, blank=True)
     detection = models.ForeignKey(Label, limit_choices_to={'group__name': 'detection'}, null=True, blank=True)
-    todolist = models.ManyToManyField(TodoItem, blank=True)
+    todolist = models.ManyToManyField(TodoItem, blank=True, limit_choices_to={"incident__isnull": True})
 
     def __unicode__(self):
         return self.name
