@@ -22,7 +22,24 @@ function init_simplemde(textarea, initial_text) {
     renderingConfig: {
       codeSyntaxHighlighting: true
     },
-    spellChecker: false
+    spellChecker: false,
+    toolbar: [
+      "bold",
+      "italic",
+      "heading-smaller",
+      "heading-bigger",
+      "|",
+      "link",
+      "code",
+      "|",
+      "unordered-list",
+      "ordered-list",
+      "table",
+      "horizontal-rule",
+      "|",
+      "preview",
+      "guide",
+    ]
   });
 
   return simplemde
