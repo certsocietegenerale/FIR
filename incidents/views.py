@@ -13,6 +13,8 @@ from incidents.models import Label, Log, BaleCategory
 from incidents.models import Attribute, ValidAttribute, IncidentTemplate, Profile
 from incidents.models import IncidentForm, CommentForm
 from incidents.authorization.decorator import authorization_required
+from fir.config.base import INSTALLED_APPS
+import importlib
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
@@ -56,6 +58,21 @@ cal = [
     'nov',
     'dec',
 ]
+
+APP_HOOKS = {}
+
+for app in INSTALLED_APPS:
+    if app.startswith('fir_'):
+        app_name = app[4:]
+        try:
+            h = importlib.import_module('{}.hooks'.format(app))
+            APP_HOOKS[app_name] = h.hooks
+        except ImportError as e:
+            print "No module named hooks for {}".format(app_name)
+
+print APP_HOOKS
+
+
 
 
 # helper =========================================================
@@ -607,12 +624,6 @@ def search(request):
                 q = q & Q(id__in=[i.id for i in libartifacts.incs_for_art(artifacts)])
                 query_string = query_string.replace('art:' + artifacts, '')
 
-            nugget = re.search("nugget:(\S+)", query_string)
-            if nugget:
-                nugget = nugget.group(1)
-                q = q & Q(nugget__source__icontains=nugget) | Q(nugget__raw_data__icontains=nugget) | Q(nugget__interpretation__icontains=nugget)
-                query_string = query_string.replace('nugget:' + nugget, '')
-
             if query_string.count('starred') > 0:
                 q = q & Q(is_starred=True)
                 query_string = query_string.replace('starred', '')
@@ -627,6 +638,11 @@ def search(request):
                     q = q & Q(severity__lt=severity.group("value"))
                 query_string = query_string.replace('severity' + severity.group('eval') + severity.group("value"), '')
 
+            # app keyword_filters go here
+            for app_name, hooks in APP_HOOKS.items():
+                if "keyword_filter" in hooks:
+                    q, query_string = hooks['keyword_filter'](q, query_string)
+
             pattern = re.compile('\s+')
 
             query_string = query_string.strip()
@@ -636,10 +652,15 @@ def search(request):
                 q_other = Q()
                 for i in other:
                     q_other &= (
-                        Q(subject__icontains=i) | Q(description__icontains=i) | Q(comments__comment__icontains=i) |
-                        Q(nugget__source__icontains=i) | Q(nugget__raw_data__icontains=i) | Q(nugget__interpretation__icontains=i)
+                        Q(subject__icontains=i) | Q(description__icontains=i) | Q(comments__comment__icontains=i)
                     )
 
+                    # app search_filters go here
+                    for app_name, hooks in APP_HOOKS.items():
+                        if "search_filter" in hooks:
+                            q_other, query_string = hooks['search_filter'](q_other, query_string)
+            print q_other
+            print q
             q = (q & q_other)
 
             # TODO a function that takes in incidents and returns them ordered
