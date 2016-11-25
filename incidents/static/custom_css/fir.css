@@ -621,3 +621,10 @@ div#concerned_business_lines {
 .tabs {
 	padding-top: 20px;
 }
+
+
+/* Simple MDE / CodeMirror CSS */
+
+.CodeMirror {
+    height: 300px !important;
+}
