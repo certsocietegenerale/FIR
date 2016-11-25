@@ -232,8 +232,20 @@ div.upload span {
 .navbar-sm .navbar .navbar-btn { margin-top: 4px; margin-bottom: 4px; }
 .navbar-sm .navbar .navbar-btn button { font-size: 12px; }
 .navbar-sm .navbar .navbar-form { margin-top: 7px; margin-bottom: 7px; }
-.navbar-sm .navbar .navbar-form input { padding-top: 2px; padding-bottom: 2px; height: 26px; }
+.navbar-sm .navbar .form-group input { padding-top: 2px; padding-bottom: 2px; height: 32px; }
+.navbar-sm .navbar .form-group .input-group { margin-top: 4px; }
 .navbar-sm .navbar-header { min-height: 40px; height: 40px; }
+
+.navbar-inverse input, .navbar-inverse .input-group-addon {
+  background: black;
+  border-color: #555;
+  color: #ddd;
+}
+
+.navbar-inverse .glyphicon {
+  color: white;
+}
+
 
 .navbar-collapse {
 	background-color: #101010;

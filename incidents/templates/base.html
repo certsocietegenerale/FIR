@@ -89,11 +89,6 @@
                 </ul>
               </li>
               {% endif %}
-              <li>
-                <form class="navbar-form" method="GET" action="{% url 'search' %}">
-                  <input type="text" class="form-control search" placeholder="{% trans 'search...' %}" name="q" {% if query_string %}value='{{query_string}}'{% endif %} />
-                </form>
-              </li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
               <li>
@@ -107,6 +102,16 @@
                 </div>
               </li>
             </ul>
+
+              <div class="form-group" style="display:inline;">
+                <div class="input-group" style="display:table;">
+                  <span class="input-group-addon" style="width:1%;"><span class="glyphicon glyphicon-search"></span></span>
+                  <form method="GET" action="{% url 'search' %}">
+                    <input class="form-control" name="q" placeholder="{% trans 'search...' %}" autocomplete="off" type="text" {% if query_string %}value='{{query_string}}'{% endif %}>
+                  </form>
+                </div>
+              </div>
+
           </div>
         </div>
       </nav>
