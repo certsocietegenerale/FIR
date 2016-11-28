@@ -91,7 +91,8 @@ INSTALLED_APPS = (
     'rest_framework.authtoken',
     'fir_plugins',
     'incidents',
-    'fir_artifacts'
+    'fir_artifacts',
+    'treebeard',
 )
 
 apps_file = os.path.join(BASE_DIR, 'fir', 'config', 'installed_apps.txt')
