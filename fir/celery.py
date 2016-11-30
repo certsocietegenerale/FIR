@@ -5,10 +5,14 @@ from celery import Celery
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'fir.settings')
 
-app = Celery('celery',
+app = Celery('fir',
         broker='redis://localhost:6379/0',
-        backend='',
-        include=[])
+        backend='redis://localhost:6379/0'
+        )
+
+# load task module from all registered plugin
+app.autodiscover_tasks(['fir_artifacts'])
+
 
 if __name__ == '__main__':
     app.start()
