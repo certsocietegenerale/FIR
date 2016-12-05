@@ -4,6 +4,9 @@ from pythonwhois.net import get_whois_raw
 from pythonwhois.parse import parse_raw_whois
 from tldextract import extract
 
+from celery import shared_task
+import sys
+
 """
 def link_from_contact_info(hostname, contact, field, klass, description):
     if contact is not None and field in contact:
@@ -18,7 +21,11 @@ class Whois:
 
 
     @staticmethod
+    @shared_task
     def analyze(hostname):
+        """Perform a Whois
+        domain name lookup and extract relevant information
+        """
         links = set()
 
         parts = extract(hostname)
@@ -34,11 +41,11 @@ class Whois:
                 context = {'source': 'whois'}
             """
             data = get_whois_raw(hostname)
-            print data[0]
+
             """results.update(raw=data[0])"""
             parsed = parse_raw_whois(data, normalized=True)
             """context['raw'] = data[0]"""
-            print data[0]
+            print parsed
 
             if 'creation_date' in parsed:
                 print parsed['creation_date'][0]
@@ -66,5 +73,10 @@ class Whois:
             else:
                 hostname.save()
             """
-        import ipdb; ipdb.set_trace()
+        #import ipdb; ipdb.set_trace()
         return list(links)
+
+
+if __name__ == "__main__":
+    #tool = Whois()
+    Whois.analyze(sys.argv[1])
