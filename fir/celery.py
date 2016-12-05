@@ -11,8 +11,8 @@ app = Celery('fir',
         )
 
 # load task module from all registered plugin
-app.autodiscover_tasks(['fir_artifacts'])
-
+#app.autodiscover_tasks(['fir.whois', 'fir_artifacts'])
+imports = ('fir.whois')
 
 if __name__ == '__main__':
     app.start()

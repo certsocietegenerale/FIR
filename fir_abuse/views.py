@@ -1,6 +1,8 @@
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.template import Context
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.template import Template
@@ -11,6 +13,8 @@ from incidents.views import is_incident_handler
 from incidents.models import Incident, BusinessLine
 
 from fir_abuse.models import Abuse, EmailForm
+
+from fir.whois import Whois
 
 
 @login_required
@@ -58,6 +62,23 @@ def send_email(request):
             return HttpResponse(dumps({'status': 'ko', 'error': str(e)}), content_type="application/json")
 
     return HttpResponseBadRequest(dumps({'status': 'ko'}), content_type="application/json")
+
+
+@login_required
+@user_passes_test(is_incident_handler)
+@receiver(post_save, sender=Incident)
+def analyze_artifacts(sender, instance=None, created=False, **kwargs):
+    """TODO: Docstring for analyze_artifacts.
+
+    :arg1: TODO
+    :returns: TODO
+
+    """
+    if created:
+        print("new Incident")
+        Whois.analyze.delay("y9monix.com")
+        import ipdb; ipdb.set_trace()
+
 
 '''
 @login_required
