@@ -11,6 +11,7 @@ from json import dumps
 
 from incidents.views import is_incident_handler
 from incidents.models import Incident, BusinessLine
+from fir_artifacts.models import Artifact 
 
 from fir_abuse.models import Abuse, EmailForm
 
@@ -66,7 +67,7 @@ def send_email(request):
 
 @login_required
 @user_passes_test(is_incident_handler)
-@receiver(post_save, sender=Incident)
+@receiver(post_save, sender=Artifact)
 def analyze_artifacts(sender, instance=None, created=False, **kwargs):
     """TODO: Docstring for analyze_artifacts.
 
@@ -75,8 +76,8 @@ def analyze_artifacts(sender, instance=None, created=False, **kwargs):
 
     """
     if created:
-        print("new Incident")
-        Whois.analyze.delay("y9monix.com")
+        print("new Artifact")
+        Whois.analyze.delay(instance.value)
         import ipdb; ipdb.set_trace()
 
 
