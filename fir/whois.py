@@ -7,15 +7,6 @@ from tldextract import extract
 from celery import shared_task
 import sys
 
-"""
-def link_from_contact_info(hostname, contact, field, klass, description):
-    if contact is not None and field in contact:
-        node = klass.get_or_create(value=contact[field])
-
-        return hostname.active_link_to(node, description, 'Whois')
-    else:
-        return ()
-"""
 
 class Whois:
 
@@ -26,57 +17,24 @@ class Whois:
         """Perform a Whois
         domain name lookup and extract relevant information
         """
-        links = set()
 
         parts = extract(hostname)
 
         if parts.subdomain == '':
-            should_add_context = False
-            """
-            for context in hostname.context:
-                if context['source'] == 'whois':
-                    break
-            else:
-                should_add_context = True
-                context = {'source': 'whois'}
-            """
             data = get_whois_raw(hostname)
 
-            """results.update(raw=data[0])"""
             parsed = parse_raw_whois(data, normalized=True)
-            """context['raw'] = data[0]"""
-            print parsed
 
+            #import ipdb; ipdb.set_trace()
             if 'creation_date' in parsed:
-                print parsed['creation_date'][0]
-
-                """context['creation_date'] = parsed['creation_date'][0]"""
+                pass
 
             if 'registrant' in parsed['contacts']:
-                print parsed['contacts']['registrant']
+                pass
 
-            """
-                fields_to_extract = [
-                    ('email', Email, 'Registrant Email'),
-                    ('name', Text, 'Registrant Name'),
-                    ('organization', Text, 'Registrant Organization'),
-                    ('phone', Text, 'Registrant Phone Number'),
-                ]
-            """
-            """
-                for field, klass, description in fields_to_extract:
-                    links.update(link_from_contact_info(hostname, parsed['contacts']['registrant'], field, klass, description))
-                """
-            """
-            if should_add_context:
-                hostname.add_context(context)
-            else:
-                hostname.save()
-            """
+            if 'emails' in parsed:
+                print parsed['emails']
         #import ipdb; ipdb.set_trace()
-        return list(links)
-
-
+"""
 if __name__ == "__main__":
-    #tool = Whois()
-    Whois.analyze(sys.argv[1])
+    Whois.analyze(sys.argv[1])"""

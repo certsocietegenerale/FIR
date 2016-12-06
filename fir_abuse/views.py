@@ -75,10 +75,14 @@ def analyze_artifacts(sender, instance=None, created=False, **kwargs):
     :returns: TODO
 
     """
+    tasks = {
+            'hostname': Whois.analyze.delay
+            }
+
     if created:
-        print("new Artifact")
-        Whois.analyze.delay(instance.value)
-        import ipdb; ipdb.set_trace()
+        if instance.type in tasks:
+            result = tasks[instance.type](instance.value)
+    #import ipdb; ipdb.set_trace()
 
 
 '''
