@@ -17,6 +17,15 @@ from fir_alerting.models import RecipientTemplate, CategoryTemplate, EmailForm
 from fir_plugins.links import registry
 
 
+def get_rec_template(query):
+    template = list(RecipientTemplate.objects.filter(query))
+
+    if len(template) > 0:
+        return template[0]
+    else:
+        return None
+
+
 @login_required
 def emailform(request):
     email_form = EmailForm()
@@ -39,36 +48,27 @@ def get_template(request, incident_id, template_type, bl=None, authorization_tar
         cat_template = None
 
     rec_template = None
+
     if not bl:
-        q_bl = Q()
-        bls = i.concerned_business_lines.all()
-        for b in bls:
-            q_bl |= Q(business_line=b)
+        q_bl = Q(business_line__in=i.concerned_business_lines.all())
         bl_name = i.get_business_lines_names()
     else:
         bl = get_object_or_404(BusinessLine, pk=bl)
         q_bl = Q(business_line=bl)
         bl_name = bl.name
 
-    try:
-        rec_template = RecipientTemplate.objects.get((q_bl | Q(business_line=None)) & Q(type=template_type))
-    except Exception, e:
-        print "Email template ERROR: ", e
-        parents = list(set(i.concerned_business_lines.all()))
+    rec_template = get_rec_template(q_bl & Q(type=template_type))
 
-        while not rec_template and len(parents):
-            try:
-                parents = list(set([b.get_parent() for b in parents if not b.is_root()]))
-                q_parent = Q()
-                for p in parents:
-                    q_parent |= Q(business_line=p)
-                template = list(
-                    RecipientTemplate.objects.filter((q_parent | Q(business_line=None)) & Q(type=template_type)))
-                if len(template) > 0:
-                    rec_template = template[0]
-            except Exception as e:
-                print "Email template ERROR 2: ", e
-                break
+    parents = list(set(i.concerned_business_lines.all()))
+
+    while not rec_template and len(parents):
+        parents = list(set([b.get_parent() for b in parents if not b.is_root()]))
+        q_parents = Q(business_line__in=parents)
+
+        rec_template = get_rec_template(q_parents & Q(type=template_type))
+
+    if rec_template is None:
+        rec_template = get_rec_template(Q(business_line=None) & Q(type=template_type))
 
     artifacts = {}
     for a in i.artifacts.all():
