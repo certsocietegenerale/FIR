@@ -907,9 +907,16 @@ def data_sandbox(request):
     for c in category_selection:
         q_categories |= Q(category=c)
 
-    bls = [int(bl) for bl in request.GET.getlist('concerned_business_lines')]
+    bls = []
+    child_bls = []
+
+    for bl in request.GET.getlist('concerned_business_lines'):
+        bls.append(int(bl))
+        bl = BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics').get(id=bl)
+        child_bls += bl.get_descendants()
+
     if len(bls) > 0:
-        q_bl = Q(concerned_business_lines__in=bls) | Q(main_business_lines__in=bls)
+        q_bl = Q(concerned_business_lines__in=bls + child_bls) | Q(main_business_lines__in=bls)
     else:
         bls = None
         q_bl = Q()
@@ -1155,9 +1162,16 @@ def stats_attributes_filter(request):
 
     # Only specified business lines
     q_bl = Q()
-    bls = [int(bl) for bl in request.GET.getlist('concerned_business_lines')]
+    bls = []
+    child_bls = []
+
+    for bl in request.GET.getlist('concerned_business_lines'):
+        bls.append(int(bl))
+        bl = BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics').get(id=bl)
+        child_bls += bl.get_descendants()
+
     if len(bls) > 0:
-        q_bl = Q(concerned_business_lines__in=bls) | Q(main_business_lines__in=bls)
+        q_bl = Q(concerned_business_lines__in=bls + child_bls) | Q(main_business_lines__in=bls)
 
     # Only the ones detected by specified entity
     q_detection = Q()
