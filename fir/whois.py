@@ -6,6 +6,7 @@ from tldextract import extract
 
 from celery import shared_task
 import sys
+import re
 
 
 class Whois:
@@ -13,28 +14,50 @@ class Whois:
 
     @staticmethod
     @shared_task
-    def analyze(hostname):
+    def analyze(artifact):
         """Perform a Whois
         domain name lookup and extract relevant information
         """
-
-        parts = extract(hostname)
+        abuse_email = []
+        parts = extract(artifact['value'])
 
         if parts.subdomain == '':
-            data = get_whois_raw(hostname)
+            if artifact['type'] == 'email':
+                artifact['value'] = ''.join([parts[1], '.', parts[2]])
+
+            data = get_whois_raw(artifact['value'])
 
             parsed = parse_raw_whois(data, normalized=True)
 
-            #import ipdb; ipdb.set_trace()
-            if 'creation_date' in parsed:
-                pass
+            if artifact['type'] == 'hostname':
+                if 'registrar' in parsed:
+                    registrar = parsed['registrar']
 
-            if 'registrant' in parsed['contacts']:
-                pass
+            if artifact['type'] == 'email':
+                if 'registrant' in parsed['contacts']:
+                    if 'organization' in parsed['contacts']['registrant']:
+                        organization = parsed['contacts']['registrant']['organization']
 
-            if 'emails' in parsed:
-                print parsed['emails']
-        #import ipdb; ipdb.set_trace()
+            for key in parsed['contacts']:
+                if parsed['contacts'][key] and 'email' in parsed['contacts'][key]:
+                    match = re.search(r'abuse', parsed['contacts'][key]['email'])
+                    if match and match.group() == "abuse":
+                        abuse_email.append(parsed['contacts'][key]['email'])
+
+            if len(abuse_email) == 0:
+                for email in parsed['emails']:
+                    match = re.search(r'abuse', email)
+                    if match.group() == "abuse":
+                        abuse_email.append(email)
+
+
+            """import ipdb; ipdb.set_trace()"""
+
 """
 if __name__ == "__main__":
-    Whois.analyze(sys.argv[1])"""
+    Whois.analyze({'type': 'email', 'value': 'eric.dasilva@epitech.eu'})
+    Whois.analyze({'type': 'hostname', 'value': 'amazon.com'})
+    Whois.analyze({'type': 'hostname', 'value': 'ovh.com'})
+    Whois.analyze({'type': 'email', 'value': 'tupaccu@hotmail.com'})
+    Whois.analyze({'type': 'email', 'value': 'yemo.dasilva@gmail.com'})
+"""

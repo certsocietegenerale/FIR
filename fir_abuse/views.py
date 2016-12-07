@@ -76,10 +76,11 @@ def analyze_artifacts(sender, instance=None, created=False, **kwargs):
 
     """
     tasks = {
-            'hostname': Whois.analyze.delay
+            'hostname': Whois.analyze.delay,
+            'email': Whois.analyze.delay
             }
 
     if created:
         if instance.type in tasks:
-            result = tasks[instance.type](instance.value)
-    #import ipdb; ipdb.set_trace()
+            result = tasks[instance.type]({'type':instance.type, 'value':instance.value})
+    import ipdb; ipdb.set_trace()
