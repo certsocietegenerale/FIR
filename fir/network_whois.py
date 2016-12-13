@@ -1,84 +1,64 @@
-from pprint import pformat
-from ipwhois import IPWhois
+from __future__ import absolute_import, unicode_literals
 
+from ipwhois import IPWhois
+from operator import itemgetter
+import re
+
+from celery import shared_task
+from pprint import pprint
 
 """https://ipwhois.readthedocs.io/en/latest/RDAP.html
 """
 
 class NetworkWhois:
 
-
     @staticmethod
-    def analyze(ip):
-        links = set()
+    @shared_task
+    def analyze(artifact):
+        abuse_email = {}
 
-        obj = IPWhois(ip)
+        obj = IPWhois(artifact['value'])
         results = obj.lookup_rdap(depth=1)
-        #IPWhois.lookup_whois()
-        print "=============== NETWHOIS ================="
-        import ipdb; ipdb.set_trace()
-        n = 0
-        smallest_subnet = None
 
-        for network in results['network']:
-            import ipdb; ipdb.set_trace()
-            cidr_bits = int(results['network']['cidr'].split('/')[1].split(',')[0])
-            if cidr_bits > n:
-                n = cidr_bits
-                smallest_subnet = network
+        s = {'abuse': 4, 'registrant': 3, 'registrar': 2, 'inmail': 1, 'none': 0}
 
-        import ipdb; ipdb.set_trace()
-        if smallest_subnet:
-            # Create the company
-            #print smallest_subnet
-            #print smallest_subnet['description']
-            """company = Company.get_or_create(name=smallest_subnet['description'].split("\n")[0])"""
-            """links.update(ip.active_link_to(company, 'hosting', 'Network Whois'))"""
+        for k in results['objects']:
+            r = -1
+            if results['objects'][k]['roles']:
+                for role in results['objects'][k]['roles']:
+                    if re.search('abuse', role):
+                        r = s['abuse']
+                        break
+            if r < 0:
+                r = s['none']
 
-            # Link it to every email address referenced
-            print smallest_subnet
-            print "\n"
-            if smallest_subnet['emails']:pass
-            """    for email_address in smallest_subnet['emails'].split("\n"):
-                    print email_address"""
-            """email = Email.get_or_create(value=email_address)"""
-            """links.update(company.link_to(email, None, 'Network Whois'))"""
+            if results['objects'][k]['contact']['email']:
+                email = results['objects'][k]['contact']['email'][0]['value']
+                if r == 0 and re.search('abuse', email):
+                    r = s['inmail']
+                abuse_email[email] = r
+            #import ipdb; ipdb.set_trace()
+        #pprint(results)
+        #pprint(results['network']['name'])
+        print "=============== NETWHOIS EMAIL ABUSE PROPOSAL ================="
+        abuse_email= sorted(abuse_email.items(), key=itemgetter(1) , reverse=True)
+        """for key in abuse_email:
+            abuses.append(key)
+        pprint(abuses)"""
+        pprint(abuse_email[0][0])
 
-            # Copy the subnet info into the main dict
-            for key in smallest_subnet:
-                if smallest_subnet[key]:
-                    results["net_{}".format(key)] = smallest_subnet[key]
-
-        """
-        # Add the network whois to the context if not already present
-        for context in ip.context:
-            if context['source'] == 'network_whois':
-                break
-        else:
-            # Remove the nets info (the main one was copied)
-            results.pop("nets", None)
-            results.pop("raw", None)
-            results.pop("raw_referral", None)
-            results.pop("referral", None)
-            results.pop("query", None)
-
-            results['source'] = 'network_whois'
-            ip.add_context(results)
-        """
-        #import ipdb; ipdb.set_trace()
-        return list(links)
-
-
+"""
 if __name__ == "__main__":
     ip_pool = [
-            "74.125.225.229"
-            "54.239.25.192",
-            "54.239.26.128",
-            "206.190.36.45",
-            "98.138.253.109",
-            "69.147.76.173",
-            "54.195.239.248",
-            "91.212.202.12"
+            "80.247.227.20", #RIPE
+            "35.156.105.176", #APNIC
+            "216.58.213.101",
+            "183.79.200.194",  #APNIC
+            "217.12.15.37",    #RIPE
+            "187.111.97.27",   #LACNIC
+            "196.12.225.227",  #AFRINIC
+            "74.125.225.229"  #ARIN
             ]
     for ip in ip_pool:
         NetworkWhois.analyze(ip)
+"""

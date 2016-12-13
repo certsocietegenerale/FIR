@@ -5,7 +5,7 @@ from pythonwhois.parse import parse_raw_whois
 from tldextract import extract
 
 from celery import shared_task
-import sys
+#import sys
 import re
 
 
