@@ -1,0 +1,11 @@
+.env
+.git
+.gitignore
+.travis.yml
+Dockerfile
+LICENSE
+README.md
+dev
+docker
+docker-compose.yml
+venv
