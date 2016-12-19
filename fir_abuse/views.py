@@ -15,8 +15,8 @@ from fir_artifacts.models import Artifact
 
 from fir_abuse.models import Abuse, EmailForm
 
-from fir.whois import Whois
-from fir.network_whois import NetworkWhois
+from fir_celery.whois import Whois
+from fir_celery.network_whois import NetworkWhois
 
 
 @login_required
@@ -77,12 +77,13 @@ def analyze_artifacts(sender, instance=None, created=False, **kwargs):
 
     """
     tasks = {
-            'hostname': Whois.analyze.delay,
-            'email': Whois.analyze.delay,
-            'ip': NetworkWhois.analyze.delay
+            'hostname': Whois.analyze.apply_async,
+            'email': Whois.analyze.apply_async,
+            'ip': NetworkWhois.analyze.apply_async
             }
 
     if created:
         if instance.type in tasks:
-            result = tasks[instance.type]({'type': instance.type, 'value': instance.value})
+            artifact = {'type': instance.type, 'value': instance.value}
+            result = tasks[instance.type](artifact, task_id=instance.id)
     #import ipdb; ipdb.set_trace()

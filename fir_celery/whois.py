@@ -4,16 +4,15 @@ from pythonwhois.net import get_whois_raw
 from pythonwhois.parse import parse_raw_whois
 from tldextract import extract
 
-from celery import shared_task
+from fir_celery.celeryconf import celery_app
 #import sys
 import re
 
 
 class Whois:
 
-
     @staticmethod
-    @shared_task
+    @celery_app.task
     def analyze(artifact):
         """Perform a Whois
         domain name lookup and extract relevant information
