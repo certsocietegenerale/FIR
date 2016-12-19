@@ -36,7 +36,7 @@ def rich_edit(context, field):
 
 @register.filter(name='markdown')
 def render_markdown(data):
-    html = markdown2.markdown(data, extras=["link-patterns", "tables"],
+    html = markdown2.markdown(data, extras=["link-patterns", "tables", "code-friendly"],
                               link_patterns=registry.link_patterns(),
                               safe_mode=settings.MARKDOWN_SAFE_MODE)
     return mark_safe(html)
