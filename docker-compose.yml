@@ -22,7 +22,7 @@ services:
     ports:
       - "6379:6379"
 
-  celery_wokrer:
+  celery_worker:
     build: 
       context: .
       dockerfile: Dockerfile

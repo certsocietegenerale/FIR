@@ -4,7 +4,7 @@ from ipwhois import IPWhois
 from operator import itemgetter
 import re
 
-from celery import shared_task
+from fir_celery.celeryconf import celery_app
 from pprint import pprint
 
 """https://ipwhois.readthedocs.io/en/latest/RDAP.html
@@ -13,7 +13,7 @@ from pprint import pprint
 class NetworkWhois:
 
     @staticmethod
-    @shared_task
+    @celery_app.task
     def analyze(artifact):
         abuse_email = {}
 
