@@ -64,4 +64,8 @@ $(function () {
     });*/
  
   }
+
+  function getTaskState(argument) {
+    
+  }
 });

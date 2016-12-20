@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-cp fir/config/installed_apps.txt.sample fir/config/installed_apps.txt
+#cp fir/config/installed_apps.txt.sample fir/config/installed_apps.txt
 
 ./manage.py migrate
 

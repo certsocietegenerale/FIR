@@ -37,9 +37,7 @@ class NetworkWhois:
                 if r == 0 and re.search('abuse', email):
                     r = s['inmail']
                 abuse_email[email] = r
-            #import ipdb; ipdb.set_trace()
-        #pprint(results)
-        #pprint(results['network']['name'])
+
         print "=============== NETWHOIS EMAIL ABUSE PROPOSAL ================="
         abuse_email= sorted(abuse_email.items(), key=itemgetter(1) , reverse=True)
         """for key in abuse_email:

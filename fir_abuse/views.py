@@ -9,6 +9,8 @@ from django.template import Template
 from django.conf import settings
 from json import dumps
 
+from celery.result import AsyncResult
+
 from incidents.views import is_incident_handler
 from incidents.models import Incident, BusinessLine
 from fir_artifacts.models import Artifact 
@@ -70,12 +72,7 @@ def send_email(request):
 @user_passes_test(is_incident_handler)
 @receiver(post_save, sender=Artifact)
 def analyze_artifacts(sender, instance=None, created=False, **kwargs):
-    """TODO: Docstring for analyze_artifacts.
 
-    :arg1: TODO
-    :returns: TODO
-
-    """
     tasks = {
             'hostname': Whois.analyze.apply_async,
             'email': Whois.analyze.apply_async,
@@ -85,5 +82,13 @@ def analyze_artifacts(sender, instance=None, created=False, **kwargs):
     if created:
         if instance.type in tasks:
             artifact = {'type': instance.type, 'value': instance.value}
-            result = tasks[instance.type](artifact, task_id=instance.id)
-    #import ipdb; ipdb.set_trace()
+            result = tasks[instance.type](args=[artifact], task_id=str(instance.id))
+
+
+@login_required
+@user_passes_test(is_incident_handler)
+def task_state(request, task_id):
+    if request.method == 'POST' and task_id:
+        task = AsyncResult(task_id)
+        print(task.result)
+
