@@ -4,6 +4,21 @@ $(function () {
   // Trigger action when the contextual menu is about to be shown
   $(".artifacts-table a").bind("contextmenu", function(e) {
 
+
+    url = "/abuse/task/" + $(this).attr('id') + "/";
+
+    $.ajax({
+      method: "GET",
+      url: url,
+      headers: {'X-CSRFToken': getCookie('csrftoken')},
+      success: function (argument) {
+        console.log('yay')
+      },
+      error: function (argument) {
+        console.log(':(')
+      }
+    });
+
     // Avoid showing the real one
     e.preventDefault();
 

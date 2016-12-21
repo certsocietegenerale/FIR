@@ -25,6 +25,7 @@ from fir_celery.network_whois import NetworkWhois
 @user_passes_test(is_incident_handler)
 def emailform(request):
     email_form = EmailForm()
+    print "emailformSHIT"
 
     return render(request, 'fir_abuse/emailform.html', {'form': email_form})
 
@@ -88,6 +89,7 @@ def analyze_artifacts(sender, instance=None, created=False, **kwargs):
 @login_required
 @user_passes_test(is_incident_handler)
 def task_state(request, task_id):
+    print "this here looking for task info right"
     if request.method == 'POST' and task_id:
         task = AsyncResult(task_id)
         print(task.result)
