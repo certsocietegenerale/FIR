@@ -7,14 +7,26 @@ $(function () {
 
     url = "/abuse/task/" + $(this).attr('id') + "/";
 
+    state = {
+      SUCCESS: '"glyphicon glyphicon-ok" style="color:#00FF00;"',
+      FAILURE: '"glyphicon glyphicon-remove" style="color:#FF0000;"',
+      PENDING: '"glyphicon glyphicon-option-horizontal"',
+      UNKNOWN: '"glyphicon glyphicon-question-sign"'
+    }
+
+    if ($(".custom-menu li a span:eq(1)").length == 1) {
+      $(".custom-menu li a span:eq(0)").remove();
+    }
+
     $.ajax({
       method: "GET",
       url: url,
       headers: {'X-CSRFToken': getCookie('csrftoken')},
-      success: function (argument) {
-        console.log('yay')
+      success: function(response) {
+        visualIndicator = '<span class=' + state[response.state] + '></span>'
+        $(".custom-menu li a").prepend(visualIndicator)
       },
-      error: function (argument) {
+      error: function(response) {
         console.log(':(')
       }
     });

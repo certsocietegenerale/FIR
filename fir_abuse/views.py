@@ -80,17 +80,16 @@ def analyze_artifacts(sender, instance=None, created=False, **kwargs):
             'ip': NetworkWhois.analyze.apply_async
             }
 
-    if created:
-        if instance.type in tasks:
-            artifact = {'type': instance.type, 'value': instance.value}
-            result = tasks[instance.type](args=[artifact], task_id=str(instance.id))
+    if created and instance.type in tasks:
+        artifact = {'type': instance.type, 'value': instance.value}
+        result = tasks[instance.type](args=[artifact], task_id=str(instance.id))
 
 
 @login_required
 @user_passes_test(is_incident_handler)
 def task_state(request, task_id):
-    print "this here looking for task info right"
-    if request.method == 'POST' and task_id:
+    if request.method == 'GET' and task_id:
         task = AsyncResult(task_id)
-        print(task.result)
+        return HttpResponse(dumps({'state': task.state}), content_type="application/json")
+    return HttpResponseBadRequest(dumps({'state': 'UNKNOWN'}), content_type="application/json")
 
