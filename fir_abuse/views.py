@@ -13,9 +13,9 @@ from celery.result import AsyncResult
 
 from incidents.views import is_incident_handler
 from incidents.models import Incident, BusinessLine
-from fir_artifacts.models import Artifact 
+from fir_artifacts.models import Artifact
 
-from fir_abuse.models import Abuse, EmailForm
+from fir_abuse.models import AbuseTemplate, ArtifactEnrichment, AbuseContact
 
 from fir_celery.whois import Whois
 from fir_celery.network_whois import NetworkWhois
@@ -92,4 +92,34 @@ def task_state(request, task_id):
         task = AsyncResult(task_id)
         return HttpResponse(dumps({'state': task.state}), content_type="application/json")
     return HttpResponseBadRequest(dumps({'state': 'UNKNOWN'}), content_type="application/json")
+
+
+@login_required
+@user_passes_test(is_incident_handler)
+def get_template(request, incident_id, template_type):
+    i = get_object_or_404(Incident, pk=incident_id)
+
+
+    artifacts = {}
+    for a in i.artifacts.all():
+        if a.type not in artifacts:
+            artifacts[a.type] = []
+        artifacts[a.type].append(a.value.replace('http://', "hxxp://").replace('https://', 'hxxps://'))
+
+    c = Context({
+        'subject': i.subject.replace('http://', "hxxp://").replace('https://', 'hxxps://'),
+        'phishing_url': i.subject.replace('http://', "hxxp://").replace('https://', 'hxxps://'),
+        'artifacts': artifacts,
+    })
+
+    response = {
+        'to': rec_template.recipient_to if rec_template else "",
+        'cc': rec_template.recipient_cc if rec_template else "",
+        'bcc': rec_template.recipient_bcc if rec_template else "",
+        'subject': Template(cat_template.subject).render(c) if cat_template else "",
+        'body': Template(cat_template.body).render(c) if cat_template else "",
+    }
+
+    return HttpResponse(dumps(response), content_type="application/json")
+
 
