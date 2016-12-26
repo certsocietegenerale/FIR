@@ -2,7 +2,7 @@ $(function () {
 
   // Contextmenu on ROW
   // Trigger action when the contextual menu is about to be shown
-  $(".artifacts-table a").bind("contextmenu", function(e) {
+  $(".artifacts-table a").bind("contextmenu", function (e) {
 
 
     url = "/abuse/task/" + $(this).attr('id') + "/";
@@ -11,7 +11,8 @@ $(function () {
       SUCCESS: '"glyphicon glyphicon-ok" style="color:#00FF00;"',
       FAILURE: '"glyphicon glyphicon-remove" style="color:#FF0000;"',
       PENDING: '"glyphicon glyphicon-option-horizontal"',
-      UNKNOWN: '"glyphicon glyphicon-question-sign"'
+      UNKNOWN: '"glyphicon glyphicon-question-sign"',
+      ERROR: '"glyphicon glyphicon-warning-sign" style="color:#FF0000"'
     }
 
     if ($(".custom-menu li a span:eq(1)").length == 1) {
@@ -22,12 +23,13 @@ $(function () {
       method: "GET",
       url: url,
       headers: {'X-CSRFToken': getCookie('csrftoken')},
-      success: function(response) {
-        visualIndicator = '<span class=' + state[response.state] + '></span>'
-        $(".custom-menu li a").prepend(visualIndicator)
+      success: function (response) {
+        visualIndicator = '<span class=' + state[response.state] + '></span>';
+        $(".custom-menu li a").prepend(visualIndicator);
       },
-      error: function(response) {
-        console.log(':(')
+      error: function (response) {
+        visualIndicator = '<span class=' + state['ERROR'] + '></span>';
+        $(".custom-menu li a").prepend(visualIndicator);
       }
     });
 
@@ -45,7 +47,7 @@ $(function () {
   });
 
   // Discard contextual menu if click happen else where
-  $(document).bind("mousedown", function(e) {
+  $(document).bind("mousedown", function (e) {
 
     if (!$(e.target).parents(".custom-menu").length > 0) {
 
@@ -54,7 +56,7 @@ $(function () {
   });
 
   // When the contextual menu element is clicked this displays available actions
-  $(".custom-menu li").click(function(){
+  $(".custom-menu li").click(function (){
 
     switch($(this).attr("data-action")) {
       case "first": get_email_template($(this)); break;
@@ -92,7 +94,4 @@ $(function () {
  
   }
 
-  function getTaskState(argument) {
-    
-  }
 });

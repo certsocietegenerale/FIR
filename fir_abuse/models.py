@@ -25,3 +25,7 @@ class EmailForm(forms.Form):
     bcc = forms.CharField()
     subject = forms.CharField()
     body = forms.CharField(widget=forms.Textarea)
+
+
+class AbuseInfo(models.Model):
+    pass
