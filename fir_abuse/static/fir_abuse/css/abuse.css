@@ -13,7 +13,6 @@
   padding: 0px;
 }
 
-
 .custom-menu li {
   list-style: none;
   padding: 8px 12px;
@@ -24,6 +23,11 @@
   background-color: #DEF;
 }
 
+.custom-menu li a {
+  text-decoration: none;
+}
+
 .glyphicon-eye-open {
-  margin-right: 5px;
+  margin-right: 4px;
+  margin-left: 8px;
 }
