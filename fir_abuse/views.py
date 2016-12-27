@@ -83,8 +83,6 @@ def analyze_artifacts(sender, instance=None, created=False, **kwargs):
             }
 
     if created and instance.type in tasks:
-        print instance.id
-        artifact = {'type': instance.type, 'value': instance.value}
         result = tasks[instance.type](args=[instance.id],
                 task_id=str(instance.id)) #, eta=datetime.now() + timedelta(seconds=10))
 
