@@ -8,6 +8,7 @@ from django.http import HttpResponse, HttpResponseBadRequest
 from django.template import Template
 from django.conf import settings
 from json import dumps
+from datetime import datetime, timedelta
 
 from celery.result import AsyncResult
 
@@ -20,12 +21,13 @@ from fir_abuse.models import AbuseTemplate, ArtifactEnrichment, AbuseContact
 from fir_celery.whois import Whois
 from fir_celery.network_whois import NetworkWhois
 
+from pprint import pprint
+
 
 @login_required
 @user_passes_test(is_incident_handler)
 def emailform(request):
     email_form = EmailForm()
-    print "emailformSHIT"
 
     return render(request, 'fir_abuse/emailform.html', {'form': email_form})
 
@@ -81,8 +83,10 @@ def analyze_artifacts(sender, instance=None, created=False, **kwargs):
             }
 
     if created and instance.type in tasks:
+        print instance.id
         artifact = {'type': instance.type, 'value': instance.value}
-        result = tasks[instance.type](args=[artifact], task_id=str(instance.id))
+        result = tasks[instance.type](args=[instance.id],
+                task_id=str(instance.id)) #, eta=datetime.now() + timedelta(seconds=10))
 
 
 @login_required
@@ -121,5 +125,3 @@ def get_template(request, incident_id, template_type):
     }
 
     return HttpResponse(dumps(response), content_type="application/json")
-
-
