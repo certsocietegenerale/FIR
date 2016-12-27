@@ -4,21 +4,25 @@ from ipwhois import IPWhois
 from operator import itemgetter
 import re
 
+from fir_artifacts.models import Artifact
+from fir_abuse.models import ArtifactEnrichment
 from fir_celery.celeryconf import celery_app
-from pprint import pprint
 
+from pprint import pprint
 """https://ipwhois.readthedocs.io/en/latest/RDAP.html
 """
+
 
 class NetworkWhois:
 
     @staticmethod
     @celery_app.task
-    def analyze(artifact):
+    def analyze(artifact_id):
+        artifact = Artifact.objects.get(pk=artifact_id)
         abuse_email = {}
 
-        obj = IPWhois(artifact['value'])
-        results = obj.lookup_rdap(depth=1)
+        obj = IPWhois(artifact.value)
+        results = obj.lookup_rdap(depth=1, inc_raw=True)
 
         s = {'abuse': 4, 'registrant': 3, 'registrar': 2, 'inmail': 1, 'none': 0}
 
@@ -38,25 +42,36 @@ class NetworkWhois:
                     r = s['inmail']
                 abuse_email[email] = r
 
+        #pprint(results)
         print "=============== NETWHOIS EMAIL ABUSE PROPOSAL ================="
         abuse_email= sorted(abuse_email.items(), key=itemgetter(1) , reverse=True)
-        """for key in abuse_email:
-            abuses.append(key)
-        pprint(abuses)"""
-        pprint(abuse_email[0][0])
 
-"""
-if __name__ == "__main__":
+        if 'name' in results['network'] and 'raw' in results and len(abuse_email) >= 1:
+            if results['network']['name']:
+                name = results['network']['name']
+            else:
+                name = "NOT PROVIDED"
+            enrichment = ArtifactEnrichment.objects.create(
+                    artifact=artifact,
+                    name=name,
+                    email=abuse_email[0][0],
+                    raw=results['raw']
+                    )
+            enrichment.save()
+            pprint(enrichment)
+            pprint(abuse_email[0][0])
+
+
+"""if __name__ == "__main__":
     ip_pool = [
-            "80.247.227.20", #RIPE
-            "35.156.105.176", #APNIC
-            "216.58.213.101",
-            "183.79.200.194",  #APNIC
-            "217.12.15.37",    #RIPE
-            "187.111.97.27",   #LACNIC
-            "196.12.225.227",  #AFRINIC
-            "74.125.225.229"  #ARIN
+            {'id': 1, 'value': "80.247.227.20"}, #RIPE
+            {'id': 2, 'value': "35.156.105.176"}, #APNIC
+            {'id': 3, 'value': "216.58.213.101"},
+            {'id': 4, 'value': "183.79.200.194"},  #APNIC
+            {'id': 5, 'value': "217.12.15.37"},    #RIPE
+            {'id': 6, 'value': "187.111.97.27"},   #LACNIC
+            {'id': 7, 'value': "196.12.225.227"},  #AFRINIC
+            {'id': 8, 'value': "74.125.225.229"}  #ARIN
             ]
     for ip in ip_pool:
-        NetworkWhois.analyze(ip)
-"""
+        NetworkWhois.analyze(ip)"""
