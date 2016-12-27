@@ -1,8 +1,8 @@
 from __future__ import absolute_import, unicode_literals
 
-import pythonwhois
-#from pythonwhois.net import get_whois_raw
-#from pythonwhois.parse import parse_raw_whois
+#import pythonwhois
+from pythonwhois.net import get_whois_raw
+from pythonwhois.parse import parse_raw_whois
 from tldextract import extract
 
 #from fir_celery.celeryconf import celery_app
@@ -31,7 +31,13 @@ class Whois:
                 artifact['value'] = ''.join([parts[1], '.', parts[2]])
             pprint(artifact['value'])
             import ipdb; ipdb.set_trace()
-            data = pythonwhois.get_whois(artifact['value'])
+            try:
+                data = get_whois_raw(artifact['value'])
+                parsed = parse_raw_whois(data, normalized=True)
+            except Exception as e:
+                #raise e
+                pass
+            #data = get_whois_raw(artifact['value'])
             import ipdb; ipdb.set_trace()
 
             #parsed = parse_raw_whois(data, normalized=True)
