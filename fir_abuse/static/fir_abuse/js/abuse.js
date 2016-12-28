@@ -69,16 +69,17 @@ $(function () {
   // Event handler for "Send Abuse"
   function get_email_template(button) {
     url = $(button).data('url')
+    console.log(button.attr('url'))
+    console.log(url)
     $('#send_email').button('reset')
 
     type = $(button).data('type')
 
-    $("#sendEmail").modal('show');
-    /*$.ajax({
+    //$("#sendEmail").modal('show');
+    $.ajax({
       type: "GET",
       url: url,
       success: function(msg) {
-        $('#sendEmail #id_behalf').val(msg.behalf)
         $('#sendEmail #id_to').val(msg.to)
         $('#sendEmail #id_cc').val(msg.cc)
         $('#sendEmail #id_bcc').val(msg.bcc)
@@ -88,10 +89,15 @@ $(function () {
         $('#sendEmail').data('type', type)
 
         tinyMCE.get('id_body').setContent(msg.body)
-        $('#sendEmail').data('bl', msg.bl)
+
+        $("#sendEmail").modal('show');
       }
-    });*/
- 
+    });
+
   }
+
+  /*#sendAbuseEmail input#id_to {
+    border:2px solid #009900;
+  }*/
 
 });

@@ -98,9 +98,17 @@ def task_state(request, task_id):
 
 @login_required
 @user_passes_test(is_incident_handler)
-def get_template(request, incident_id, template_type):
+def get_template(request, incident_id, artifact_id):
     i = get_object_or_404(Incident, pk=incident_id)
 
+    try:
+        artifact = Artifact.objects.get(pk=artifact_id)
+        enrichment = ArtifactEnrichment.objects.get(artifact=artifact)
+
+        abuse_contact = AbuseContact.objects.get(name=enrichment.name, incident_category=i.category, type=artifact.type)
+        abuse_template = AbuseTemplate.objects.get(incident_category=i.category, type=artifact.type)
+    except Exception as e:
+        abuse_template = None
 
     artifacts = {}
     for a in i.artifacts.all():
@@ -110,16 +118,19 @@ def get_template(request, incident_id, template_type):
 
     c = Context({
         'subject': i.subject.replace('http://', "hxxp://").replace('https://', 'hxxps://'),
-        'phishing_url': i.subject.replace('http://', "hxxp://").replace('https://', 'hxxps://'),
         'artifacts': artifacts,
+        'incident_id': i.id,
+        'bls': i.get_business_lines_names(),
+        'incident_category': i.category.name,
+        'trust': 1 if abuse_contact else 0
     })
 
     response = {
-        'to': rec_template.recipient_to if rec_template else "",
-        'cc': rec_template.recipient_cc if rec_template else "",
-        'bcc': rec_template.recipient_bcc if rec_template else "",
-        'subject': Template(cat_template.subject).render(c) if cat_template else "",
-        'body': Template(cat_template.body).render(c) if cat_template else "",
+        'to': abuse_contact.to if abuse_contact else enrichment.email,
+        'cc': "",
+        'bcc': "",
+        'subject': Template(abuse_template.subject).render(c) if abuse_template else "",
+        'body': Template(abuse_template.body).render(c) if abuse_template else "",
     }
 
     return HttpResponse(dumps(response), content_type="application/json")
