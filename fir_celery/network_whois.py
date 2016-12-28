@@ -42,7 +42,6 @@ class NetworkWhois:
                     r = s['inmail']
                 abuse_email[email] = r
 
-        #pprint(results)
         print "=============== NETWHOIS EMAIL ABUSE PROPOSAL ================="
         abuse_email= sorted(abuse_email.items(), key=itemgetter(1) , reverse=True)
 
