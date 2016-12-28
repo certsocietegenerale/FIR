@@ -13,6 +13,7 @@ class ACENestedAdmin(admin.TabularInline):
 
 class UserAdmin(auth_admin.UserAdmin):
     inlines = [ACENestedAdmin, ]
+    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active')
 
 
 class BusinessLineAdmin(TreeAdmin):
