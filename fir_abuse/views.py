@@ -16,7 +16,7 @@ from incidents.views import is_incident_handler
 from incidents.models import Incident, BusinessLine
 from fir_artifacts.models import Artifact
 
-from fir_abuse.models import AbuseTemplate, ArtifactEnrichment, AbuseContact
+from fir_abuse.models import AbuseTemplate, ArtifactEnrichment, AbuseContact, EmailForm
 
 from fir_celery.whois import Whois
 from fir_celery.network_whois import NetworkWhois
@@ -105,9 +105,13 @@ def get_template(request, incident_id, artifact_id):
         artifact = Artifact.objects.get(pk=artifact_id)
         enrichment = ArtifactEnrichment.objects.get(artifact=artifact)
 
-        abuse_contact = AbuseContact.objects.get(name=enrichment.name, incident_category=i.category, type=artifact.type)
-        abuse_template = AbuseTemplate.objects.get(incident_category=i.category, type=artifact.type)
+        abuse_contact = AbuseContact.objects.get(name=enrichment.name,
+                incident_category=i.category, type=artifact.type)
+
+        abuse_template = AbuseTemplate.objects.get(incident_category=i.category,
+                type=artifact.type)
     except Exception as e:
+        abuse_contact = None
         abuse_template = None
 
     artifacts = {}
@@ -131,6 +135,7 @@ def get_template(request, incident_id, artifact_id):
         'bcc': "",
         'subject': Template(abuse_template.subject).render(c) if abuse_template else "",
         'body': Template(abuse_template.body).render(c) if abuse_template else "",
+        'trust': 1 if abuse_contact else 0,
     }
 
     return HttpResponse(dumps(response), content_type="application/json")

@@ -36,3 +36,12 @@ class AbuseContact(models.Model):
 
     def __unicode__(self):
         return self.name
+
+
+class EmailForm(forms.Form):
+    behalf = forms.CharField()
+    to = forms.CharField()
+    cc = forms.CharField()
+    bcc = forms.CharField()
+    subject = forms.CharField()
+    body = forms.CharField(widget=forms.Textarea)
