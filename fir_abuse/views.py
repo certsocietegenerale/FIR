@@ -97,6 +97,7 @@ def task_state(request, task_id):
 
 
 @login_required
+<<<<<<< HEAD
 @authorization_required('incidents.handle_incidents', Incident, view_arg='incident_id')
 def get_template(request, incident_id, artifact_id, authorization_target=None):
     if authorization_target is None:
@@ -108,6 +109,12 @@ def get_template(request, incident_id, artifact_id, authorization_target=None):
     i = get_object_or_404(Incident.authorization.for_user(request.user, 'incidents.handle_incidents'),
             pk=incident_id)
     """
+=======
+@user_passes_test(is_incident_handler)
+def get_template(request, incident_id, artifact_id):
+    i = get_object_or_404(Incident, pk=incident_id)
+
+>>>>>>> 778410df01e4dd5c47290f85751459be83c0ca41
     artifact = Artifact.objects.get(pk=artifact_id)
     enrichment = ArtifactEnrichment.objects.get(artifact=artifact)
 
