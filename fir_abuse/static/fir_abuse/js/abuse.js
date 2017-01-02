@@ -4,8 +4,11 @@ $(function () {
   // Trigger action when the contextual menu is about to be shown
   $(".artifacts-table a").bind("contextmenu", function (e) {
 
+    artifact_id = $(this).data('id')
+    abuse_link = $("#send_abuse_link").data('urltemplate')
 
-    url = "/abuse/task/" + $(this).attr('id') + "/";
+    $("#send_abuse_link").data('url', abuse_link.replace(/0\/$/, artifact_id + '/'))
+    url = "/abuse/task/" + artifact_id + "/";
 
     state = {
       SUCCESS: '"glyphicon glyphicon-ok" style="color:#00FF00;"',
@@ -68,7 +71,7 @@ $(function () {
 
   // Event handler for "Send Abuse"
   function get_email_template(button) {
-    url = $(button).children("a").attr('data-url')
+    url = $("#send_abuse_link").data('url')
 
     $('#send_abuse_email').button('reset')
 
@@ -78,22 +81,19 @@ $(function () {
       type: "GET",
       url: url,
       success: function(msg) {
-        $('#sendAbuseEmail #id_to').val(msg.to)
-        $('#sendAbuseEmail #id_cc').val(msg.cc)
-        $('#sendAbuseEmail #id_bcc').val(msg.bcc)
-        $('#sendAbuseEmail #id_subject').val(msg.subject)
-        $('#sendAbuseEmail #id_body').val(msg.body)
+        $('#sendAbuseEmail #abuse_to').val(msg.to)
+        $('#sendAbuseEmail #abuse_cc').val(msg.cc)
+        $('#sendAbuseEmail #abuse_bcc').val(msg.bcc)
+        $('#sendAbuseEmail #abuse_subject').val(msg.subject)
+        $('#sendAbuseEmail #abuse_body').val(msg.body)
 
         trustLevel = ((msg.trust == 1) ? 'knowledge' : 'analyze')
-        $('#sendAbuseEmail #id_to').attr('trust', trustLevel)
+        $('#sendAbuseEmail #abuse_to').attr('trust', trustLevel)
 
         $('#sendAbuseEmail').data('artifact', msg.artifact)
 
-        //$('#sendAbuseEmail').data('type', type)
-
-        tinyMCE.get('id_body').setContent(msg.body)
-
-        $("#sendAbuseEmail").modal('show');
+        editors["abuse_body"].value(msg.body)
+        $("#sendAbuseEmail").modal('show')
       }
     });
 
@@ -105,24 +105,15 @@ $(function () {
     // Add form to the page
     $('#addComment').after(data);
 
-    // Activate tinyMCE editor
-    tinymce.init({
-      selector: "#id_body",
-      height: 300,
-      theme: "modern",
-      skin: "light",
-      plugins: "paste,table,code,preview",
-      toolbar: "undo redo | styleselect | bold italic | bullist numlist outdent indent code",
-      language: "en",
-      directionality: "ltr",
-      menubar: false,
-      statusbar: false
-    });
 
+    editors["abuse_body"] = init_simplemde($("#abuse_body"));
     // Activate 'Send Email' button
     $('#send_abuse_email').click(function (event) {
       send_email();
     });
+    $('#sendAbuseEmail').on('shown.bs.modal', function (e) {
+      editors["abuse_body"].codemirror.refresh()
+    })
   });
 
   function add_auto_comment() {
@@ -156,16 +147,12 @@ $(function () {
   function send_email() {
     $('#send_abuse_email').button('loading')
 
-    //type = $('#sendEmail').data('type')
-    //bl = $('#sendEmail').data('bl')
-
-    var body = tinyMCE.get('id_body').getContent()
-    $("#id_body").val(body)
-    data = $("#email_form").serialize()
+    $("#abuse_body").val(editors["abuse_body"].value());
+    data = $("#abuse_email_form").serialize()
 
     $.ajax({
       type: 'POST',
-      url: $("#email_form").attr('action'),
+      url: $("#abuse_email_form").attr('action'),
       data: data,
       success: function(msg) {
 

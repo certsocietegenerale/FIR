@@ -1,7 +1,10 @@
 {% load i18n %}
-{% load fir_abuse %}
-
-<div class='tab-pane' id='tab_abuses'>
-	<div class='' id='abuses'>
-	</div>
+<div id="details-actions-abuse" data-url="{% url 'abuse:emailform' %}">
 </div>
+<ul class='custom-menu'>
+  <li data-action="first">
+    <a id="send_abuse_link" href="#" data-urltemplate="{% url 'abuse:get_template' event.id 0 %}">
+    <span class="glyphicon glyphicon-eye-open" aria-hidden="true"></span> {% trans "Send Abuse" %}
+    </a>
+  </li>
+</ul>

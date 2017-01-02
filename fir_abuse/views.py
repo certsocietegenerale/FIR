@@ -12,6 +12,7 @@ from datetime import datetime, timedelta
 
 from celery.result import AsyncResult
 
+from incidents.authorization.decorator import authorization_required
 from incidents.views import is_incident_handler
 from incidents.models import Incident, BusinessLine
 from fir_artifacts.models import Artifact
@@ -23,9 +24,8 @@ from fir_celery.network_whois import NetworkWhois
 
 
 @login_required
-@user_passes_test(is_incident_handler)
 def emailform(request):
-    email_form = EmailForm()
+    email_form = EmailForm(auto_id='abuse_%s')
 
     return render(request, 'fir_abuse/emailform.html', {'form': email_form})
 
@@ -57,7 +57,9 @@ def send_email(request):
                 bcc=bcc.split(';'),
                 headers=reply_to
             )
-            e.attach_alternative(body, 'text/html')
+            e.attach_alternative(markdown2.markdown(body, extras=["link-patterns", "tables", "code-friendly"],
+                link_patterns=registry.link_patterns(request), safe_mode=True),
+                'text/html')
             e.content_subtype = 'html'
             e.send()
 
@@ -95,10 +97,17 @@ def task_state(request, task_id):
 
 
 @login_required
-@user_passes_test(is_incident_handler)
-def get_template(request, incident_id, artifact_id):
-    i = get_object_or_404(Incident, pk=incident_id)
-
+@authorization_required('incidents.handle_incidents', Incident, view_arg='incident_id')
+def get_template(request, incident_id, artifact_id, authorization_target=None):
+    if authorization_target is None:
+        i = get_object_or_404(Incident.authorization.for_user(request.user, 'incidents.handle_incidents'),
+                pk=incident_id)
+    else:
+        i = authorization_target
+    """
+    i = get_object_or_404(Incident.authorization.for_user(request.user, 'incidents.handle_incidents'),
+            pk=incident_id)
+    """
     artifact = Artifact.objects.get(pk=artifact_id)
     enrichment = ArtifactEnrichment.objects.get(artifact=artifact)
 

@@ -54,10 +54,10 @@
   width: 40px;
 }
 
-#sendAbuseEmail input#id_to[trust=knowledge] {
+#sendAbuseEmail input#abuse_to[trust=knowledge] {
     border:2px solid #66ff33;
 }
 
-#sendAbuseEmail input#id_to[trust=analyze] {
+#sendAbuseEmail input#abuse_to[trust=analyze] {
     border:2px solid #ff3333;
 }

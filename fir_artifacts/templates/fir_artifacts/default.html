@@ -7,7 +7,7 @@
 			{% for a in artifact_values %}
 				<a
 					{% if a.relations.count > 1 %} class='multiple' {% endif %}
-          href="{% url 'artifacts:correlations' a.id %}" id="{{ a.id }}"
+          href="{% url 'artifacts:correlations' a.id %}" data-id="{{ a.id }}"
 				>
 				{{ a.value }}
 				</a>
@@ -23,6 +23,5 @@
                 {% endif %}
 			{% endfor %}
 		</td>
-    {% plugin_point 'details_context_menu'  %}
 	</tr>
 {% endif %}
