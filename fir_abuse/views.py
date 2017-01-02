@@ -21,8 +21,6 @@ from fir_abuse.models import AbuseTemplate, ArtifactEnrichment, AbuseContact, Em
 from fir_celery.whois import Whois
 from fir_celery.network_whois import NetworkWhois
 
-from pprint import pprint
-
 
 @login_required
 @user_passes_test(is_incident_handler)
@@ -101,19 +99,11 @@ def task_state(request, task_id):
 def get_template(request, incident_id, artifact_id):
     i = get_object_or_404(Incident, pk=incident_id)
 
-    try:
-        artifact = Artifact.objects.get(pk=artifact_id)
-        enrichment = ArtifactEnrichment.objects.get(artifact=artifact)
+    artifact = Artifact.objects.get(pk=artifact_id)
+    enrichment = ArtifactEnrichment.objects.get(artifact=artifact)
 
-        abuse_contact = AbuseContact.objects.get(name=enrichment.name,
-                incident_category=i.category, type=artifact.type)
-
-        abuse_template = AbuseTemplate.objects.get(incident_category=i.category,
-                type=artifact.type)
-    except Exception as e:
-        abuse_contact = None
-        abuse_template = None
-
+    abuse_contact = get_best_record(artifact.type, i.category, AbuseContact, {'name': enrichment.name})
+    abuse_template = get_best_record(artifact.type, i.category, AbuseTemplate)
     artifacts = {}
     for a in i.artifacts.all():
         if a.type not in artifacts:
@@ -126,16 +116,47 @@ def get_template(request, incident_id, artifact_id):
         'incident_id': i.id,
         'bls': i.get_business_lines_names(),
         'incident_category': i.category.name,
-        'trust': 1 if abuse_contact else 0
+        'artifact': artifact.value.replace('http://', "hxxp://").replace('https://', 'hxxps://'),
     })
 
     response = {
         'to': abuse_contact.to if abuse_contact else enrichment.email,
-        'cc': "",
-        'bcc': "",
+        'cc': abuse_contact.cc if abuse_contact else '',
+        'bcc': abuse_contact.bcc if abuse_contact else '',
         'subject': Template(abuse_template.subject).render(c) if abuse_template else "",
         'body': Template(abuse_template.body).render(c) if abuse_template else "",
         'trust': 1 if abuse_contact else 0,
+        'artifact': artifact.value.replace('http://', "hxxp://").replace('https://', 'hxxps://'),
     }
 
     return HttpResponse(dumps(response), content_type="application/json")
+
+
+def get_best_record(artifact_type, category, model, filters={}):
+    if filters:
+        collection = model.objects.filter(**filters)
+    else:
+        collection = model.objects
+
+    q_type = Q(type=artifact_type) | Q(type='')
+    q_incident_category = Q(incident_category=category) | Q(incident_category=None)
+
+    result = None
+    score = 0
+
+    for record in collection.filter(q_type & q_incident_category):
+        if record.type and record.incident_category:
+            return record
+        elif record.type == '' and record.incident_category:
+            if score < 3:
+                result = record
+                score = 3
+        elif record.type and record.incident_category is None:
+            if score < 2:
+                result = record
+                score = 2
+        else:
+            if score == 0:
+                result = record
+
+    return result

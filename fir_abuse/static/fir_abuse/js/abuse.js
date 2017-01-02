@@ -87,6 +87,8 @@ $(function () {
         trustLevel = ((msg.trust == 1) ? 'knowledge' : 'analyze')
         $('#sendAbuseEmail #id_to').attr('trust', trustLevel)
 
+        $('#sendAbuseEmail').data('artifact', msg.artifact)
+
         //$('#sendAbuseEmail').data('type', type)
 
         tinyMCE.get('id_body').setContent(msg.body)
@@ -123,28 +125,16 @@ $(function () {
     });
   });
 
-  function add_auto_comment(type) {
+  function add_auto_comment() {
     date = new Date();
     // date format 1899-12-06 07:15
     date = date.getFullYear() + "-" + (date.getMonth()+1)
       + "-" + date.getDate() + " " + date.getHours()
       + ":" + date.getMinutes()
 
-    comment_ = ''
-    action_ = ''
+    comment_ = 'Abuse email sent to ' + $('#sendAbuseEmail').data('artifact')
+    action_ = $("#id_action option:contains('Abuse')").attr('value')
 
-    if (type == 'takedown') {
-      comment_ = 'Takedown started'
-      action_ = $("#id_action option:contains('Takedown')").attr('value')
-    }
-
-    if (type == 'alerting') {
-      comment_ = 'Alert sent'
-      console.log(comment_)
-      action_ = $("#id_action option:contains('Alerting')").attr('value')
-    }
-
-  if (action_ != '') {
     $.ajax({
         type: 'POST',
         url: $('#comment_form').data('new-comment-url'),
@@ -160,9 +150,7 @@ $(function () {
           count = parseInt($('#comment-count').text());
           $('#comment-count').text(count + 1);
         }
-      });
-
-    }
+    });
   }
 
   function send_email() {
@@ -182,18 +170,18 @@ $(function () {
       success: function(msg) {
 
         if (msg.status == 'ok') {
-              b = $('#send_abuse_email')
-              b.text('Sent')
-              b.prop('disabled', true)
-              $("#sendAbuseEmail").modal('hide')
-              add_auto_comment(type)
-            }
+          b = $('#send_abuse_email')
+          b.text('Sent')
+          b.prop('disabled', true)
+          $("#sendAbuseEmail").modal('hide')
+          add_auto_comment()
+        }
         if (msg.status == 'ko') {
-              b = $('#send_abuse_email')
-              b.text('ERROR')
-              b.prop('disabled', true)
-              alert("Something went terribly, terribly wrong:\n"+msg.error)
-              $("#sendAbuseEmail").modal('hide')
+          b = $('#send_abuse_email')
+          b.text('ERROR')
+          b.prop('disabled', true)
+          alert("Something went terribly, terribly wrong:\n"+msg.error)
+          $("#sendAbuseEmail").modal('hide')
         }
       }
     });
