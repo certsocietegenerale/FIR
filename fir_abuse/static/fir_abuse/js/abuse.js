@@ -18,8 +18,8 @@ $(function () {
       ERROR: '"glyphicon glyphicon-warning-sign" style="color:#FF0000"'
     }
 
-    if ($(".custom-menu li a span:eq(1)").length == 1) {
-      $(".custom-menu li a span:eq(0)").remove();
+    if ($(".custom-menu #visualIndicator")) {
+      $(".custom-menu #visualIndicator").remove();
     }
 
     $.ajax({
@@ -27,11 +27,11 @@ $(function () {
       url: url,
       headers: {'X-CSRFToken': getCookie('csrftoken')},
       success: function (response) {
-        visualIndicator = '<span class=' + state[response.state] + '></span>';
+        visualIndicator = '<span id="visualIndicator" class=' + state[response.state] + '></span>';
         $(".custom-menu li a").prepend(visualIndicator);
       },
       error: function (response) {
-        visualIndicator = '<span class=' + state['ERROR'] + '></span>';
+        visualIndicator = '<span id="visualIndicator" class=' + state['ERROR'] + '></span>';
         $(".custom-menu li a").prepend(visualIndicator);
       }
     });

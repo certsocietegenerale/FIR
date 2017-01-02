@@ -9,11 +9,14 @@ from django.template import Template
 from django.conf import settings
 from json import dumps
 from datetime import datetime, timedelta
+import markdown2
 
 from celery.result import AsyncResult
 
 from incidents.authorization.decorator import authorization_required
 from incidents.views import is_incident_handler
+from fir_plugins.links import registry
+
 from incidents.models import Incident, BusinessLine
 from fir_artifacts.models import Artifact
 

@@ -1,8 +1,35 @@
 version: '2'
 
 services:
+  fir:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    hostname: fir
+    command: ./run_fir.sh
+    volumes:
+      - .:/app/FIR
+    ports:
+      - "8000:8000"
+    links:
+      - redis
+    depends_on:
+      - redis
+
   redis:
     image: redis:3.2.5
     hostname: redis
     ports:
       - "6379:6379"
+
+  celery_wokrer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: ./run_celery.sh
+    volumes:
+      - .:/app/FIR
+    links:
+      - redis
+    depends_on:
+      - redis
