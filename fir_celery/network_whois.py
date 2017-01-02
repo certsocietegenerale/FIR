@@ -8,7 +8,6 @@ from fir_artifacts.models import Artifact
 from fir_abuse.models import ArtifactEnrichment
 from fir_celery.celeryconf import celery_app
 
-from pprint import pprint
 """https://ipwhois.readthedocs.io/en/latest/RDAP.html
 """
 
@@ -42,7 +41,6 @@ class NetworkWhois:
                     r = s['inmail']
                 abuse_email[email] = r
 
-        print "=============== NETWHOIS EMAIL ABUSE PROPOSAL ================="
         abuse_email= sorted(abuse_email.items(), key=itemgetter(1) , reverse=True)
 
         if 'name' in results['network'] and 'raw' in results and len(abuse_email) >= 1:
@@ -57,20 +55,3 @@ class NetworkWhois:
                     raw=results['raw']
                     )
             enrichment.save()
-            pprint(enrichment)
-            pprint(abuse_email[0][0])
-
-
-"""if __name__ == "__main__":
-    ip_pool = [
-            {'id': 1, 'value': "80.247.227.20"}, #RIPE
-            {'id': 2, 'value': "35.156.105.176"}, #APNIC
-            {'id': 3, 'value': "216.58.213.101"},
-            {'id': 4, 'value': "183.79.200.194"},  #APNIC
-            {'id': 5, 'value': "217.12.15.37"},    #RIPE
-            {'id': 6, 'value': "187.111.97.27"},   #LACNIC
-            {'id': 7, 'value': "196.12.225.227"},  #AFRINIC
-            {'id': 8, 'value': "74.125.225.229"}  #ARIN
-            ]
-    for ip in ip_pool:
-        NetworkWhois.analyze(ip)"""
