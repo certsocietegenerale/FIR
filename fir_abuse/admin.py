@@ -1,7 +1,6 @@
 from django.contrib import admin
 
-from fir_abuse.models import AbuseTemplate, ArtifactEnrichment, AbuseContact
+from fir_abuse.models import AbuseTemplate, AbuseContact
 
 admin.site.register(AbuseTemplate)
-admin.site.register(ArtifactEnrichment)
 admin.site.register(AbuseContact)

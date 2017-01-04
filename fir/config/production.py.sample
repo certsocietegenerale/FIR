@@ -25,6 +25,11 @@ EMAIL_PORT = 25
 
 # Uncomment this line to set a different reply-to address when sending alerts
 # REPLY_TO = other@address.com
+EMAIL_FROM = '"NAME" <address@email>'
+
+# Uncomment these lines if you want additional CC or BCC for all sent emails
+# EMAIL_CC = ['address@email']
+# EMAIL_BCC = ['address@email']
 
 # SECRET KEY
 SECRET_KEY = 'CHANGE_DUMMY_KEY_PLEASE'

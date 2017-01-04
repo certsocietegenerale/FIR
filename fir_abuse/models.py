@@ -1,8 +1,7 @@
 from django.db import models
 from django import forms
 
-from incidents.models import IncidentCategory, BusinessLine
-from fir_artifacts.models import Artifact
+from incidents.models import IncidentCategory
 
 
 class AbuseTemplate(models.Model):
@@ -16,21 +15,11 @@ class AbuseTemplate(models.Model):
         return self.name
 
 
-class ArtifactEnrichment(models.Model):
-    artifact = models.ForeignKey(Artifact, on_delete=models.CASCADE)
-    email = models.CharField(max_length=100, null=True)
-    name = models.CharField(max_length=100)
-    raw = models.TextField()
-
-    def __unicode__(self):
-        return self.name
-
-
 class AbuseContact(models.Model):
     name = models.CharField(max_length=100)
     to = models.CharField(max_length=100)
-    cc = models.CharField(max_length=100, null=True)
-    bcc = models.CharField(max_length=100, null=True)
+    cc = models.CharField(max_length=100, blank=True)
+    bcc = models.CharField(max_length=100, blank=True)
     incident_category = models.ForeignKey(IncidentCategory, blank=True, null=True)
     type = models.CharField(max_length=100, blank=True)
 

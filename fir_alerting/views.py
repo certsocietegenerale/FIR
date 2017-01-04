@@ -1,11 +1,9 @@
-import markdown2
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
 from django.template import Context
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.template import Template
-from django.conf import settings
 from json import dumps
 
 from incidents.authorization.decorator import authorization_required
@@ -13,8 +11,7 @@ from incidents.views import is_incident_handler
 from incidents.models import Incident, BusinessLine
 
 from fir_alerting.models import RecipientTemplate, CategoryTemplate, EmailForm
-
-from fir_plugins.links import registry
+from fir_email.helpers import send
 
 
 def get_rec_template(query):
@@ -102,33 +99,15 @@ def get_template(request, incident_id, template_type, bl=None, authorization_tar
 def send_email(request):
     if request.method == 'POST':
         try:
-            from django.core.mail import EmailMultiAlternatives
-            behalf = request.POST['behalf']
-            to = request.POST['to']
-            cc = request.POST['cc']
-            bcc = request.POST['bcc']
-
-            subject = request.POST['subject']
-            body = request.POST['body']
-
-            if hasattr(settings, 'REPLY_TO'):
-                reply_to = {'Reply-To': settings.REPLY_TO, 'Return-Path': settings.REPLY_TO}
-            else:
-                reply_to = {}
-
-            e = EmailMultiAlternatives(
-                subject=subject,
-                from_email=behalf,
-                to=to.split(';'),
-                cc=cc.split(';'),
-                bcc=bcc.split(';'),
-                headers=reply_to
+            send(
+                request,
+                to=request.POST['to'],
+                subject=request.POST['subject'],
+                body=request.POST['body'],
+                cc=request.POST['cc'],
+                bcc=request.POST['bcc'],
+                behalf=request.POST['behalf']
             )
-            e.attach_alternative(markdown2.markdown(body, extras=["link-patterns", "tables", "code-friendly"],
-                                                    link_patterns=registry.link_patterns(request), safe_mode=True),
-                                 'text/html')
-            e.content_subtype = 'html'
-            e.send()
 
             return HttpResponse(dumps({'status': 'ok'}), content_type="application/json")
 

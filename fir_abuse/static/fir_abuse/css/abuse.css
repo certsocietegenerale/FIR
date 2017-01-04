@@ -61,3 +61,7 @@
 #sendAbuseEmail input#abuse_to[trust=analyze] {
     border:2px solid #ff3333;
 }
+
+#abuse_email_form .nomargin {
+    margin-bottom: 0px;
+}

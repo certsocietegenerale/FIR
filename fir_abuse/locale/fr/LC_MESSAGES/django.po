@@ -1,0 +1,70 @@
+# FIR fir_abuse plugin translation.
+# Copyright (C) 2017 CERT Société Générale
+# This file is distributed under the same license as the PACKAGE package.
+# CERT SG <cert.sg@socgen.com>, 2017.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: FIR master\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-01-04 13:56+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: CERT SG <cert.sg@socgen.com>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: templates/fir_abuse/emailform.html:7
+msgid "Send abuse email"
+msgstr "Envoyer un email d'abus"
+
+#: templates/fir_abuse/emailform.html:14
+msgid "To:"
+msgstr "À :"
+
+#: templates/fir_abuse/emailform.html:20
+msgid "CC:"
+msgstr "CC :"
+
+#: templates/fir_abuse/emailform.html:26
+msgid "BCC:"
+msgstr "BCC :"
+
+#: templates/fir_abuse/emailform.html:32
+msgid "Subject"
+msgstr "Objet"
+
+#: templates/fir_abuse/emailform.html:40
+msgid "Body"
+msgstr "Corps"
+
+#: templates/fir_abuse/emailform.html:47
+msgid "Name(s)"
+msgstr "Nom(s)"
+
+#: templates/fir_abuse/emailform.html:49
+msgid "Abuse emails"
+msgstr "Emails pour signalement"
+
+#: templates/fir_abuse/emailform.html:51
+msgid "Raw"
+msgstr "Données brutes"
+
+#: templates/fir_abuse/emailform.html:61
+msgid "Close"
+msgstr "Fermer"
+
+#: templates/fir_abuse/emailform.html:62
+msgid "Send email"
+msgstr "Envoyer"
+
+#: templates/fir_abuse/plugins/details_context_menu.html:7
+#: templates/fir_abuse/plugins/details_tab_content.html:7
+msgid "Send Abuse"
+msgstr "Signaler"
+
+msgid "Enrichment"
+msgstr: "Enrichissement"

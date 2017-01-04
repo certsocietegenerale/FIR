@@ -1,29 +1,19 @@
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, get_object_or_404
 from django.db.models import Q
-from django.db.models.signals import post_save
-from django.dispatch import receiver
 from django.template import Context
 from django.http import HttpResponse, HttpResponseBadRequest
 from django.template import Template
-from django.conf import settings
 from json import dumps
-from datetime import datetime, timedelta
-import markdown2
-
-from celery.result import AsyncResult
 
 from incidents.authorization.decorator import authorization_required
 from incidents.views import is_incident_handler
-from fir_plugins.links import registry
-
-from incidents.models import Incident, BusinessLine
+from incidents.models import Incident
 from fir_artifacts.models import Artifact
-
-from fir_abuse.models import AbuseTemplate, ArtifactEnrichment, AbuseContact, EmailForm
-
-from fir_celery.whois import Whois
-from fir_celery.network_whois import NetworkWhois
+from fir_email.helpers import send
+from fir_abuse.models import AbuseTemplate, AbuseContact, EmailForm
+from fir_artifacts_enrichment.models import ArtifactEnrichment
+from fir_artifacts_enrichment.tasks import enrich_artifact
 
 
 @login_required
@@ -38,33 +28,14 @@ def emailform(request):
 def send_email(request):
     if request.method == 'POST':
         try:
-            from django.core.mail import EmailMultiAlternatives
-            behalf = request.POST['behalf']
-            to = request.POST['to']
-            cc = request.POST['cc']
-            bcc = request.POST['bcc']
-
-            subject = request.POST['subject']
-            body = request.POST['body']
-
-            if hasattr(settings, 'REPLY_TO'):
-                reply_to = {'Reply-To': settings.REPLY_TO, 'Return-Path': settings.REPLY_TO}
-            else:
-                reply_to = {}
-
-            e = EmailMultiAlternatives(
-                subject=subject,
-                from_email=behalf,
-                to=to.split(';'),
-                cc=cc.split(';'),
-                bcc=bcc.split(';'),
-                headers=reply_to
+            send(
+                request,
+                to=request.POST['to'],
+                subject=request.POST['subject'],
+                body=request.POST['body'],
+                cc=request.POST['cc'],
+                bcc=request.POST['bcc']
             )
-            e.attach_alternative(markdown2.markdown(body, extras=["link-patterns", "tables", "code-friendly"],
-                link_patterns=registry.link_patterns(request), safe_mode=True),
-                'text/html')
-            e.content_subtype = 'html'
-            e.send()
 
             return HttpResponse(dumps({'status': 'ok'}), content_type="application/json")
 
@@ -76,25 +47,9 @@ def send_email(request):
 
 @login_required
 @user_passes_test(is_incident_handler)
-@receiver(post_save, sender=Artifact)
-def analyze_artifacts(sender, instance=None, created=False, **kwargs):
-
-    tasks = {
-            'hostname': Whois.analyze.apply_async,
-            'email': Whois.analyze.apply_async,
-            'ip': NetworkWhois.analyze.apply_async
-            }
-
-    if created and instance.type in tasks:
-        result = tasks[instance.type](args=[instance.id],
-                task_id=str(instance.id)) #, eta=datetime.now() + timedelta(seconds=10))
-
-
-@login_required
-@user_passes_test(is_incident_handler)
 def task_state(request, task_id):
     if request.method == 'GET' and task_id:
-        task = AsyncResult(task_id)
+        task = enrich_artifact.AsyncResult(task_id)
         return HttpResponse(dumps({'state': task.state}), content_type="application/json")
     return HttpResponseBadRequest(dumps({'state': 'UNKNOWN'}), content_type="application/json")
 
@@ -109,10 +64,24 @@ def get_template(request, incident_id, artifact_id, authorization_target=None):
         i = authorization_target
 
     artifact = Artifact.objects.get(pk=artifact_id)
-    enrichment = ArtifactEnrichment.objects.get(artifact=artifact)
 
-    abuse_contact = get_best_record(artifact.type, i.category, AbuseContact, {'name': enrichment.name})
-    abuse_template = get_best_record(artifact.type, i.category, AbuseTemplate)
+    try:
+        enrichment = ArtifactEnrichment.objects.get(artifact=artifact)
+        default_email = enrichment.email
+        abuse_template = get_best_record(artifact.type, i.category, AbuseTemplate)
+
+        for name in enrichment.name.split('\n'):
+            abuse_contact = get_best_record(artifact.type, i.category, AbuseContact, {'name': name})
+
+            if abuse_contact:
+                break
+
+    except ArtifactEnrichment.DoesNotExist:
+        default_email = ""
+        enrichment = None
+        abuse_contact = None
+        abuse_template = None
+
     artifacts = {}
     for a in i.artifacts.all():
         if a.type not in artifacts:
@@ -126,10 +95,11 @@ def get_template(request, incident_id, artifact_id, authorization_target=None):
         'bls': i.get_business_lines_names(),
         'incident_category': i.category.name,
         'artifact': artifact.value.replace('http://', "hxxp://").replace('https://', 'hxxps://'),
+        'enrichment': enrichment.raw if enrichment else ''
     })
 
     response = {
-        'to': abuse_contact.to if abuse_contact else enrichment.email,
+        'to': abuse_contact.to if abuse_contact else default_email,
         'cc': abuse_contact.cc if abuse_contact else '',
         'bcc': abuse_contact.bcc if abuse_contact else '',
         'subject': Template(abuse_template.subject).render(c) if abuse_template else "",
@@ -137,6 +107,11 @@ def get_template(request, incident_id, artifact_id, authorization_target=None):
         'trust': 1 if abuse_contact else 0,
         'artifact': artifact.value.replace('http://', "hxxp://").replace('https://', 'hxxps://'),
     }
+
+    if enrichment:
+        response['enrichment_names'] = enrichment.name.split('\n')
+        response['enrichment_emails'] = enrichment.email
+        response['enrichment_raw'] = enrichment.raw
 
     return HttpResponse(dumps(response), content_type="application/json")
 

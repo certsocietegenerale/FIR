@@ -13,7 +13,7 @@ $(function () {
     state = {
       SUCCESS: '"glyphicon glyphicon-ok" style="color:#00FF00;"',
       FAILURE: '"glyphicon glyphicon-remove" style="color:#FF0000;"',
-      PENDING: '"glyphicon glyphicon-option-horizontal"',
+      PENDING: '"glyphicon glyphicon-time"',
       UNKNOWN: '"glyphicon glyphicon-question-sign"',
       ERROR: '"glyphicon glyphicon-warning-sign" style="color:#FF0000"'
     }
@@ -75,8 +75,6 @@ $(function () {
 
     $('#send_abuse_email').button('reset')
 
-    //type = $(button).data('type')
-
     $.ajax({
       type: "GET",
       url: url,
@@ -94,6 +92,15 @@ $(function () {
 
         editors["abuse_body"].value(msg.body)
         $("#sendAbuseEmail").modal('show')
+
+        if ('enrichment_raw' in msg) {
+          $("#abuse_enrichment_names").text(msg.enrichment_names.join(' | '))
+          $("#abuse_enrichment_emails").text(msg.enrichment_emails)
+          $("#abuse_enrichment_raw").text(msg.enrichment_raw)
+          $("#abuse_tab_enrichment_link").removeClass('hide');
+        } else {
+          $("#abuse_tab_enrichment_link").addClass('hide');
+        }
       }
     });
 

@@ -220,12 +220,10 @@ def details(request, incident_id, authorization_target=None):
             name__in=['Closed', 'Opened', 'Blocked'])
 
     (artifacts, artifacts_count, correlated_count) = libartifacts.all_for_object(i)
-    
+
     """
     Temp fix until i figure out how to set this
     """
-    abuse_count = 0
-    abuse = 1
     valid_attributes = i.category.validattribute_set.all()
     attributes = i.attribute_set.all()
 
@@ -235,8 +233,6 @@ def details(request, incident_id, authorization_target=None):
         request,
         "events/detail-all.html",
         {"event": i,
-         "abuse_count": abuse_count,
-         "abuse": abuse,
          "comment_form": form,
          "correlated_count": correlated_count,
          "artifacts_count": artifacts_count,

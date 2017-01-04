@@ -11,12 +11,6 @@
 				<div class="modal-body">
 					{% csrf_token %}
 					<div class='form-group nomargin'>
-						<label for="abuse_behalf" class="col-sm-1 text-right">{% trans "From:" %}</label>
-						<div class='col-sm-11'>
-							{{ form.behalf }}
-						</div>
-					</div>
-					<div class='form-group nomargin'>
 						<label for="abuse_to" class="col-sm-1 text-right">{% trans "To:" %}</label>
 						<div class='col-sm-11'>
 							{{ form.to }}
@@ -41,9 +35,23 @@
 						</div>
 					</div>
 					<div class='form-group'>
-						<label for="abuse_body" class="col-sm-1 text-right">{% trans "Body" %}</label>
-						<div class='col-sm-11'>
-							{{ form.body|safe }}
+                        <div class='col-sm-11 col-sm-offset-1'>
+                            <ul class="nav nav-pills" role="tablist">
+                                <li class="active"><a href="#abuse_tab_body" data-toggle="pill">{% trans "Body" %}</a></li>
+                                <li><a id="abuse_tab_enrichment_link" href="#abuse_tab_enrichment" data-toggle="pill">{% trans "Enrichment" %}</a></li>
+                            </ul>
+
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="abuse_tab_body">{{ form.body|safe }}</div>
+                                <div class="tab-pane" id="abuse_tab_enrichment">
+                                    <h4>{% trans "Name(s)" %}</h4>
+                                    <div id="abuse_enrichment_names"></div>
+                                    <h4>{% trans "Abuse emails" %}</h4>
+                                    <div id="abuse_enrichment_emails"></div>
+                                    <h4>{% trans "Raw" %}</h4>
+                                    <pre id="abuse_enrichment_raw"></pre>
+                                </div>
+                            </div>
 						</div>
 					</div>
 				</div>
