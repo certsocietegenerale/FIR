@@ -221,6 +221,9 @@ def details(request, incident_id, authorization_target=None):
 
     (artifacts, artifacts_count, correlated_count) = libartifacts.all_for_object(i)
 
+    """
+    Temp fix until i figure out how to set this
+    """
     valid_attributes = i.category.validattribute_set.all()
     attributes = i.attribute_set.all()
 

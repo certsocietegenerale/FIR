@@ -11,7 +11,7 @@ psycopg2==2.6.2
 pymongo==2.8
 pyquery==1.2.9
 python-dateutil==2.4.1
-pytz==2014.10
+pytz==2016.7
 six==1.9.0
 whitenoise==3.2.1
 django-treebeard==4.0.1

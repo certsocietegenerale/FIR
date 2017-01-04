@@ -1,0 +1,66 @@
+{% load i18n %}
+<div id="sendAbuseEmail" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="sendEmailLabel" aria-hidden="true">
+	<div class="modal-dialog modal-lg">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 id="sendEmailLabel" class="modal-title">{% trans "Send abuse email" %}</h4>
+			</div>
+
+			<form id="abuse_email_form" action="{% url 'abuse:send_email' %}" method="POST" class='form-horizontal'>
+				<div class="modal-body">
+					{% csrf_token %}
+					<div class='form-group nomargin'>
+						<label for="abuse_to" class="col-sm-1 text-right">{% trans "To:" %}</label>
+						<div class='col-sm-11'>
+							{{ form.to }}
+						</div>
+					</div>
+					<div class='form-group nomargin'>
+						<label for="abuse_cc" class="col-sm-1 text-right">{% trans "CC:" %}</label>
+						<div class='col-sm-11'>
+							{{ form.cc }}
+						</div>
+					</div>
+					<div class='form-group nomargin'>
+						<label for="abuse_bcc" class="col-sm-1 text-right">{% trans "BCC:" %}</label>
+						<div class='col-sm-11'>
+							{{ form.bcc }}
+						</div>
+					</div>
+					<div class='form-group'>
+						<label for="abuse_subject" class="col-sm-1 text-right">{% trans "Subject" %}</label>
+						<div class='col-sm-11'>
+							{{ form.subject|safe }}
+						</div>
+					</div>
+					<div class='form-group'>
+                        <div class='col-sm-11 col-sm-offset-1'>
+                            <ul class="nav nav-pills" role="tablist">
+                                <li class="active"><a href="#abuse_tab_body" data-toggle="pill">{% trans "Body" %}</a></li>
+                                <li><a id="abuse_tab_enrichment_link" href="#abuse_tab_enrichment" data-toggle="pill">{% trans "Enrichment" %}</a></li>
+                            </ul>
+
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="abuse_tab_body">{{ form.body|safe }}</div>
+                                <div class="tab-pane" id="abuse_tab_enrichment">
+                                    <h4>{% trans "Name(s)" %}</h4>
+                                    <div id="abuse_enrichment_names"></div>
+                                    <h4>{% trans "Abuse emails" %}</h4>
+                                    <div id="abuse_enrichment_emails"></div>
+                                    <h4>{% trans "Raw" %}</h4>
+                                    <pre id="abuse_enrichment_raw"></pre>
+                                </div>
+                            </div>
+						</div>
+					</div>
+				</div>
+			</form>
+
+			<div class="modal-footer">
+				<button class="btn btn-default" data-dismiss="modal" aria-hidden="true">{% trans "Close" %}</button>
+				<button data-sent-text="Message sent" data-loading-text="Sending..." id='send_abuse_email' class="btn btn-primary">{% trans "Send email" %}</button>
+			</div>
+		</div>
+	</div>
+</div>

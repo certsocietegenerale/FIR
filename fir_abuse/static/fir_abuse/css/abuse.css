@@ -1,0 +1,67 @@
+.custom-menu {
+  display: none;
+  z-index: 1000;
+  position: absolute;
+  overflow: hidden;
+  border: 1px solid #CCC;
+  white-space: nowrap;
+  font-family: sans-serif;
+  background: #FFF;
+  color: #333;
+  border-radius: 5px;
+  margin: 0px;
+  padding: 0px;
+}
+
+.custom-menu li {
+  list-style: none;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.custom-menu li:hover {
+  background-color: #DEF;
+}
+
+.custom-menu li a {
+  text-decoration: none;
+}
+
+.glyphicon-eye-open {
+  margin-right: 4px;
+  margin-left: 8px;
+}
+
+#sendAbuseEmail .form-horizontal .control-group {
+  margin-bottom: 0px;
+}
+
+#sendAbuseEmail input[type="text"] {
+  padding: 1px 3px
+}
+
+/* Email Modal */
+
+#sendAbuseEmail input {
+  width:98%;
+}
+
+#sendAbuseEmail .form-horizontal .controls {
+  margin-left: 50px;
+}
+
+#sendAbuseEmail .form-horizontal .control-label {
+  width: 40px;
+}
+
+#sendAbuseEmail input#abuse_to[trust=knowledge] {
+    border:2px solid #66ff33;
+}
+
+#sendAbuseEmail input#abuse_to[trust=analyze] {
+    border:2px solid #ff3333;
+}
+
+#abuse_email_form .nomargin {
+    margin-bottom: 0px;
+}

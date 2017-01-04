@@ -27,6 +27,11 @@ TEMPLATES[0]['OPTIONS']['loaders'] = (
 # Dummy key for development
 SECRET_KEY = 'DUMMY_KEY_FOR_DEVELOPMENT_DO_NOT_USE_IN_PRODUCTION'
 
+# Default REDIS configuration when using fir_celery
+REDIS_HOST = os.environ.get('REDIS_PORT_6379_TCP_ADDR', 'localhost')
+REDIS_PORT = 6379
+REDIS_DB = 0
+
 try:
     from fir.config.dev import *
 except ImportError:
