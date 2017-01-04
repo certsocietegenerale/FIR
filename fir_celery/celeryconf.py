@@ -1,21 +1,27 @@
 from __future__ import absolute_import, unicode_literals
 
 import os
+from pkgutil import find_loader
 from celery import Celery
-
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'fir.settings')
 
-REDIS_HOST = os.environ.get('REDIS_PORT_6379_TCP_ADDR', 'redis')
+from django.conf import settings
 
-REDIS_PORT = 6379
-REDIS_DB = 0
 
-celery_app = Celery('celeryconf',
-        broker='redis://%s:%d/%d' % (REDIS_HOST, REDIS_PORT, REDIS_DB),
-        backend='redis://%s:%d/%d' % (REDIS_HOST, REDIS_PORT, REDIS_DB),
-        include=['fir_celery.whois', 'fir_celery.network_whois']
-        )
+includes = []
+for app in settings.INSTALLED_APPS:
+    if app.startswith('fir_'):
+        module_name = "{}.tasks".format(app)
+        if find_loader(module_name):
+            includes.append(module_name)
+
+celery_app = Celery(
+    'celeryconf',
+    broker='redis://%s:%d/%d' % (settings.REDIS_HOST, settings.REDIS_PORT, settings.REDIS_DB),
+    backend='redis://%s:%d/%d' % (settings.REDIS_HOST, settings.REDIS_PORT, settings.REDIS_DB),
+    include=includes
+)
 
 
 if __name__ == '__main__':
