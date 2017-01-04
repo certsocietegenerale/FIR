@@ -628,3 +628,8 @@ div#concerned_business_lines {
 .CodeMirror {
     height: 300px !important;
 }
+
+.modal-body {
+    max-height: calc(100vh - 210px);
+    overflow-y: auto;
+}
