@@ -4,6 +4,7 @@ from django.utils.html import mark_safe
 from django.template import TemplateDoesNotExist
 from django.template.loader import get_template
 from django.contrib.contenttypes.models import ContentType
+from ..links import registry
 
 register = template.Library()
 
@@ -37,3 +38,11 @@ def content_type(obj):
     if not obj:
         return False
     return ContentType.objects.get_for_model(obj).pk
+
+
+@register.filter
+def object_id(obj):
+    id_template = registry.model_links.get(obj._meta.label, ['', '', None])[2]
+    if not id_template:
+        id_template = "#{}"
+    return id_template.format(obj.pk)
