@@ -129,6 +129,9 @@ TEMPLATES = [
 # Show incident IDs in views?
 INCIDENT_SHOW_ID = False
 
+# Incident ID prefix in views and links
+INCIDENT_ID_PREFIX = "FID:"
+
 # Permission added to the incident created by user, None for no permission
 INCIDENT_CREATOR_PERMISSION = 'incidents.view_incidents'
 
