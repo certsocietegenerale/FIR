@@ -4,6 +4,18 @@ from django.utils import six
 import re
 
 
+class LinkUrl(object):
+    def __init__(self, url, request=None):
+        self.url = url
+        self.request = request
+
+    def __call__(self, match):
+        path = reverse(self.url, args=match.groups())
+        if self.request is not None:
+            return self.request.build_absolute_uri(path)
+        return path
+
+
 class Links(object):
     def __init__(self):
         self.reverse_links = []
@@ -39,12 +51,7 @@ class Links(object):
     def _reverse(self, request=None):
         patterns = []
         for regex, url in self.reverse_links:
-            def get_url(match):
-                path = reverse(url, args=match.groups())
-                if request is not None:
-                    return request.build_absolute_uri(path)
-                return path
-            patterns.append((regex, get_url))
+            patterns.append((regex, LinkUrl(url, request)))
         return patterns
 
     def link_patterns(self, request=None):
