@@ -14,7 +14,7 @@ class ArtifactBlacklistItem(models.Model):
 
 class Artifact(ManyLinkableModel):
     type = models.CharField(max_length=20)
-    value = models.CharField(max_length=200)
+    value = models.TextField()
 
     def __unicode__(self):
         display = self.value
