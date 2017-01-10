@@ -2,6 +2,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import PermissionDenied
 from django.http import Http404
 from django.shortcuts import get_object_or_404, render, redirect
+from django.conf import settings
 from fir_artifacts.files import do_download_archive, do_download, do_upload_file, do_remove_file
 
 from incidents.views import is_incident_viewer
@@ -14,7 +15,9 @@ from fir_artifacts.models import Artifact
 def artifacts_correlations(request, artifact_id):
     a = get_object_or_404(Artifact, pk=artifact_id)
     correlations = a.relations.group()
-    return render(request, 'fir_artifacts/correlation_list.html', {'correlations': correlations, 'artifact': a})
+    return render(request, 'fir_artifacts/correlation_list.html', {'correlations': correlations,
+                                                                   'artifact': a,
+                                                                   'incident_show_id': settings.INCIDENT_SHOW_ID})
 
 
 @login_required

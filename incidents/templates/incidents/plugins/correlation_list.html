@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load fir_plugins %}
 {% load authorization %}
 {% block content %}
     {% with incident_list=correlations.incidents.objects %}
@@ -8,6 +9,7 @@
 
 			<thead>
 				<tr>
+                    {% if incident_show_id %}<th>ID</th>{% endif %}
 					<th>{% trans "Date" %}</th>
 					<th>{% trans "Subject" %}</th>
 					<th>{% trans "Category" %}</th>
@@ -25,6 +27,7 @@
         {%  has_perm 'incidents.handle_incidents' obj=incident as can_handle_incident %}
         {% if can_view_incident %}
 		<tr>
+            {% if incident_show_id %}<td>{{ incident|object_id }}</td>{% endif %}
 			<td>{{ incident.date|date:"SHORT_DATE_FORMAT" }}</td>
 			<td><a href="{% url 'incidents:details' incident.id %}">{{ incident.subject }}</a></td>
 			<td>{{ incident.category }}</td>

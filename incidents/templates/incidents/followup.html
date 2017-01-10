@@ -27,7 +27,7 @@
 
 		<table class='minitable table'>
 			<tr class='slim'>
-				{% if incident_show_id %}<td class='head'>ID</td><td class='delim'>#{{ incident.id }}</td>{% endif %}
+				{% if incident_show_id %}<td class='head'>ID</td><td class='delim'>{{ incident|object_id }}</td>{% endif %}
 				{%if incident.is_incident%}
 				<td class='head'>{%  trans "Incident Leader" %}</td><td class='delim'>{{ incident.actor }}</td>
 				<td class='head'>{%  trans "Plan" %}</td><td class='delim'>{{ incident.plan }}</td>

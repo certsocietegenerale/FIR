@@ -101,7 +101,7 @@
 			</table>
 		</div>
 
-		<h1>{% if event.is_incident %}{%  trans "Incident" %}{% else %}{%  trans "Event" %}{% endif %}{% if incident_show_id %} #{{ event.id }}{% endif %} / {{event.category}} / {{event.subject}}</h1>
+		<h1>{% if event.is_incident %}{%  trans "Incident" %}{% else %}{%  trans "Event" %}{% endif %}{% if incident_show_id %} {{ event|object_id }}{% endif %} / {{event.category}} / {{event.subject}}</h1>
 		<div class="row">
 			<div class="col-sm-7 col-xs-12">
                 {% trans "someone" as someone %}
