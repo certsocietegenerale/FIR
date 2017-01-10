@@ -6,7 +6,7 @@ urlpatterns = [
     url(r'^yearly$', views.yearly_stats, name='yearly'),
     url(r'^data/yearly/incidents$', views.data_yearly_incidents, name='data_yearly_incidents'),
 
-    url(r'^data/yearly/bl$', views.data_yearly_bl, {'type': 'incidents'}, name='data_yearly_bl'),
+    url(r'^data/yearly/bl$', views.data_yearly_bl, name='data_yearly_bl'),
     url(r'^data/yearly/bl/(?P<year>\d+)/incidents$', views.data_yearly_bl, {'type': 'incidents'}, name='data_yearly_bl'),
     url(r'^data/yearly/bl/(?P<year>\d+)/events$', views.data_yearly_bl, {'type': 'events'}, name='data_yearly_bl_events'),  # events
     url(r'^data/yearly/bl/detection$', views.data_yearly_bl_detection, name='data_yearly_bl_detection'),

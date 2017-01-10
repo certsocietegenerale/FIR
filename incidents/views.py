@@ -1638,7 +1638,6 @@ def data_yearly_field(request, field):
     total = 0
 
     q = Q(date__year=datetime.date.today().year)
-    q = q & Q(is_incident=True)
 
     for i in Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(q):
         field_dict[str(getattr(i, field))] = field_dict.get(str(getattr(i, field)), 0) + 1
