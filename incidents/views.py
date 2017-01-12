@@ -979,6 +979,34 @@ def data_sandbox(request):
                 plot['plan'] = str(inc.plan)
                 chart_data.append(plot)
 
+    if graph_type == 'tsv':
+	 if divisor == 'all':
+            qs = Q()
+            for i in xrange(months):
+                qs |= Q(date__year=dates[i].year, date__month=dates[i].month)
+
+            incidents = Incident.authorization.for_user(request.user, 'incidents.view_incidents').filter(
+                qs & q_all).distinct()
+	    tsvstring = 'date\tid\tsubject\tcategory\tconfidentiality_display\tseverity\tbusiness_lines_names\tstatus_display\tdetection\tactor\tlast_comment_action\tlast_comment_date\topened_by\tplan';
+            for inc in incidents:
+                tsvstring += "\r\n"
+                tsvstring += str(inc.date)
+                tsvstring += "\t"+str(inc.id)
+                tsvstring += "\t"+str(inc.subject).replace("\t"," ")
+                tsvstring += "\t"+str(inc.category.name)
+                tsvstring += "\t"+str(inc.get_confidentiality_display())
+                tsvstring += "\t"+str(inc.severity)
+                tsvstring += "\t"+str(inc.get_business_lines_names())
+                tsvstring += "\t"+str(inc.get_status_display())
+                tsvstring += "\t"+str(inc.detection)
+                tsvstring += "\t"+str(inc.actor)
+                tsvstring += "\t"+str(inc.get_last_comment().action.name)
+                tsvstring += "\t"+str(inc.get_last_comment().date)
+                tsvstring += "\t"+str(inc.opened_by)
+                tsvstring += "\t"+str(inc.plan)
+            
+	    return HttpResponse(tsvstring, content_type="text/tab-seperated-values")
+
     if graph_type == 'line':
 
         if divisor == 'all':

@@ -93,6 +93,8 @@ function refresh_stats() {
 
   generate_table("#incident_table", "/stats/data/sandbox/?divisor=all&graph_type=table&"+serialized)
 
+  $("#tsvlink").attr("href", "/stats/data/sandbox/?divisor=all&graph_type=tsv&"+serialized)
+
 }
 
 </script>
@@ -404,6 +406,7 @@ h4 .smaller {
 <br style='clear:both' />
 
 <h2>{% trans "Matching incidents" %}</h2><br />
+<a id="tsvlink" href="">Download as Tab Seperated Values</a>
 <table class="table table-hover table-condensed sortable followup-table" id='incident_table'>
       <thead>
         <tr>
