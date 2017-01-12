@@ -14,7 +14,9 @@ from fir_artifacts.models import Artifact
 @user_passes_test(is_incident_viewer)
 def artifacts_correlations(request, artifact_id):
     a = get_object_or_404(Artifact, pk=artifact_id)
-    correlations = a.relations.group()
+    correlations = a.relations_for_user(request.user).group()
+    if all([not link_type.objects.exists() for link_type in correlations.values()]):
+        raise PermissionDenied
     return render(request, 'fir_artifacts/correlation_list.html', {'correlations': correlations,
                                                                    'artifact': a,
                                                                    'incident_show_id': settings.INCIDENT_SHOW_ID})
