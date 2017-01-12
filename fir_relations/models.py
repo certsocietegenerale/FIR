@@ -14,13 +14,28 @@ from incidents.models import Incident, Comments
 
 @python_2_unicode_compatible
 class TemplateRelation(object):
-    def __init__(self, relation, relation_type='target'):
+    def __init__(self, relation, request, relation_type='target'):
         self.relation = relation
         self.relation_type = relation_type
+        self.user = request.user
         if self.relation_type == 'target':
             self.object = relation.target
         else:
             self.object = relation.source
+        self._check_permission()
+
+    def _check_permission(self):
+        self.can_view = False
+        self.can_edit = False
+        if hasattr(self.object, 'has_perm'):
+            if self.object.has_perm(self.user, 'incidents.view_incidents'):
+                self.can_view = True
+            else:
+                return
+        if hasattr(self.relation.source, 'has_perm'):
+            if self.relation.source.has_perm(self.user, 'incidents.handle_incidents'):
+                self.can_edit = True
+
 
     @property
     def url(self):
@@ -79,10 +94,12 @@ class RelationQuerySet(models.QuerySet):
                     relations.append(relation)
         return relations
 
-    def as_template_objects(self, relation_type='target'):
+    def as_template_objects(self, request, relation_type='target'):
         relations = []
         for relation in self:
-            relations.append(TemplateRelation(relation, relation_type=relation_type))
+            template_relation = TemplateRelation(relation, request, relation_type=relation_type)
+            if template_relation.can_view:
+                relations.append(template_relation)
         return relations
 
 
