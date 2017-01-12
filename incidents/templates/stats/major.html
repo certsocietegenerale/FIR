@@ -1,9 +1,15 @@
 {% extends 'base.html' %}
+{% load staticfiles %}
 {% load i18n %}
 
 {% block header %}
 <h1 style='float:left;margin-right:20px'>{%  trans "Major incidents in last quarter" %}</h1>
 {%endblock%}
+
+{% block custom_js %}
+<script src="{% static "js/excellentexport.js" %}"></script>
+<script src="{% static "custom_js/export.js" %}"></script>
+{% endblock %}
 
 {% block content %}
 
@@ -70,8 +76,9 @@
 </div>
 
 <h2>{%  trans "Major Incidents" %}</h2>
+<div>Export to <a download="incidents.tsv" class="export-link" href="#" data-table="incident_table">TSV</a> or <a download="incidents.csv" class="export-link" href="#" data-table="incident_table" data-delimiter=",">CSV</a></div>
 <br />
-<table class="table table-hover table-condensed sortable">
+<table id="incident_table" class="table table-hover table-condensed sortable">
 			<thead>
 				<tr>
 					<th>{%  trans "Date" %}</th>

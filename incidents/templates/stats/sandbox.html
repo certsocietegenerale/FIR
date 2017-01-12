@@ -11,12 +11,13 @@
 {% block custom_js_top %}
 <script src="{% static "js/d3.v3.min.js" %}"></script>
 <script src="{% static "custom_js/stats.js" %}"></script>
-
-{%endblock%}
+{% endblock%}
 
 {% block custom_js %}
 <script src="{% static "js/bootstrap-datetimepicker.min.js" %}"></script>
+<script src="{% static "js/excellentexport.js" %}"></script>
 <script src="{% static "select/select2.min.js" %}"></script>
+<script src="{% static "custom_js/export.js" %}"></script>
 
 <script>
 $(document).ready(function() {
@@ -92,9 +93,6 @@ function refresh_stats() {
   generate_bar_chart("#blocked", "/stats/data/sandbox/?divisor=blocked&graph_type=bar&"+serialized, 500, 500)
 
   generate_table("#incident_table", "/stats/data/sandbox/?divisor=all&graph_type=table&"+serialized)
-
-  $("#tsvlink").attr("href", "/stats/data/sandbox/?divisor=all&graph_type=tsv&"+serialized)
-
 }
 
 </script>
@@ -405,8 +403,8 @@ h4 .smaller {
 
 <br style='clear:both' />
 
-<h2>{% trans "Matching incidents" %}</h2><br />
-<a id="tsvlink" href="">Download as Tab Seperated Values</a>
+<h2>{% trans "Matching incidents" %}</h2>
+<div>Export to <a download="incidents.tsv" class="export-link" href="#" data-table="incident_table">TSV</a> or <a download="incidents.csv" class="export-link" href="#" data-table="incident_table" data-delimiter=",">CSV</a></div><br />
 <table class="table table-hover table-condensed sortable followup-table" id='incident_table'>
       <thead>
         <tr>
