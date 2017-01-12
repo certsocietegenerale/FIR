@@ -219,7 +219,7 @@ def details(request, incident_id, authorization_target=None):
         form.fields['action'].queryset = Label.objects.filter(group__name='action').exclude(
             name__in=['Closed', 'Opened', 'Blocked'])
 
-    (artifacts, artifacts_count, correlated_count) = libartifacts.all_for_object(i)
+    (artifacts, artifacts_count, correlated_count) = libartifacts.all_for_object(i, user=request.user)
 
     """
     Temp fix until i figure out how to set this
