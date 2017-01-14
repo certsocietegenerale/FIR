@@ -5,7 +5,8 @@ from django.core import mail
 from django.utils.translation import ugettext_lazy as _
 
 
-from fir_notifications.methods import NotificationMethod, request
+from fir_notifications.methods import NotificationMethod
+from fir_notifications.methods.utils import request
 from fir_plugins.links import registry as link_registry
 
 
