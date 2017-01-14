@@ -16,7 +16,7 @@ class EmailMethod(NotificationMethod):
     verbose_name = 'Email'
 
     def __init__(self):
-        super(NotificationMethod, self).__init__()
+        super(EmailMethod, self).__init__()
         if hasattr(settings, 'NOTIFICATIONS_EMAIL_FROM'):
             self.server_configured = True
         if 'djembe' in settings.INSTALLED_APPS:
