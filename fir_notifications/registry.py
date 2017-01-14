@@ -30,5 +30,8 @@ class Notifications(object):
     def get_method_choices(self):
         return [(obj.name, obj.verbose_name) for obj in self.methods.values()]
 
+    def get_methods(self):
+        return self.methods.values()
+
 
 registry = Notifications()
