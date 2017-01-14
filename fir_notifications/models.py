@@ -36,3 +36,22 @@ class NotificationTemplate(models.Model):
         verbose_name = _('notification template')
         verbose_name_plural = _('notification templates')
 
+
+@python_2_unicode_compatible
+class NotificationPreference(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='notification_preferences', verbose_name=_('user'))
+    event = models.CharField(max_length=60, verbose_name=_('event'))
+    method = models.CharField(max_length=60, verbose_name=_('method'))
+    business_lines = models.ManyToManyField('incidents.BusinessLine', related_name='+', blank=True,
+                                            verbose_name=_('business lines'))
+
+    def __str__(self):
+        return "{user}: {event} notification preference for {method}".format(user=self.user,
+                                                                             event=self.event,
+                                                                             method=self.method)
+
+    class Meta:
+        verbose_name = _('notification preference')
+        verbose_name_plural = _('notification preferences')
+        unique_together = (("user", "event", "method"),)
+        index_together = ["user", "event", "method"]
