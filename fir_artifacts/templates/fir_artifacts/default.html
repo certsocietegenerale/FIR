@@ -6,12 +6,12 @@
 		<td>
 			{% for a in artifact_values %}
 				<a
-					{% if a.relations.count > 1 %} class='multiple' {% endif %}
+					{% if a.correlation_count > 1 %} class='multiple' {% endif %}
           href="{% url 'artifacts:correlations' a.id %}" data-id="{{ a.id }}"
 				>
 				{{ a.value }}
 				</a>
-				{% if a.relations.count > 1 %} ({{ a.relations.count }}) {% endif %}
+				{% if a.correlation_count > 1 %} ({{ a.correlation_count }}) {% endif %}
                 {%  has_perm 'incidents.handle_incidents' obj=event as can_handle_incident %}
                 {% if can_handle_incident %}
 				<form class='icon' action="{% url 'artifacts:detach' a.id event|relation_name event.id %}" method='POST'>

@@ -54,6 +54,11 @@ class ManyLinkableModel(models.Model):
         self._relation_manager = LinkableManager(self)
         return self._relation_manager
 
+    def relations_for_user(self, user):
+        if user is None:
+            return self.relations
+        return LinkableManager(self, user=user)
+
     @classmethod
     def link_to(cls, linked_model, link_name=None, verbose_name=None, verbose_name_plural=None):
         return create_link(cls, linked_model)
@@ -65,9 +70,10 @@ class ManyLinkableModel(models.Model):
 def create_link(linkable_model, linked_model, linkable_link_name=None, verbose_name=None, verbose_name_plural=None):
 
     class LinkedModel(object):
-        def __init__(self, model, link_name=None, verbose_name=None, verbose_name_plural=None):
+        def __init__(self, model, link_name=None, verbose_name=None, verbose_name_plural=None, reverse_link_name=None):
             self.model = model
             self.link_name = link_name
+            self.reverse_link_name = reverse_link_name
             self.verbose_name = verbose_name
             self.verbose_name_plural = verbose_name_plural
 
@@ -103,7 +109,8 @@ def create_link(linkable_model, linked_model, linkable_link_name=None, verbose_n
     linkable_model._LINKS[linkable_link_name] = LinkedModel(
                                 linked_model, link_name=linkable_link_name,
                                 verbose_name=verbose_name,
-                                verbose_name_plural=verbose_name_plural)
+                                verbose_name_plural=verbose_name_plural,
+                                reverse_link_name=linked_link_name)
     return linkable_model
 
 

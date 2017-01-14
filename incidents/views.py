@@ -29,7 +29,7 @@ from django.template import RequestContext
 from json import dumps
 from django.template import Template
 
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.forms.models import model_to_dict, modelform_factory
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
@@ -219,7 +219,7 @@ def details(request, incident_id, authorization_target=None):
         form.fields['action'].queryset = Label.objects.filter(group__name='action').exclude(
             name__in=['Closed', 'Opened', 'Blocked'])
 
-    (artifacts, artifacts_count, correlated_count) = libartifacts.all_for_object(i)
+    (artifacts, artifacts_count, correlated_count) = libartifacts.all_for_object(i, user=request.user)
 
     """
     Temp fix until i figure out how to set this
