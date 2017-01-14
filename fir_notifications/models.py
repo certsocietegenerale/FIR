@@ -4,8 +4,10 @@ from django.db import models
 from django.conf import settings
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
+from fir_notifications.decorators import notification_event
 
 from fir_notifications.registry import registry
+from incidents.models import model_created, Incident, model_updated
 
 
 @python_2_unicode_compatible
@@ -55,3 +57,35 @@ class NotificationPreference(models.Model):
         verbose_name_plural = _('notification preferences')
         unique_together = (("user", "event", "method"),)
         index_together = ["user", "event", "method"]
+
+
+@notification_event('event:created', model_created, Incident, verbose_name=_('Event created'),
+                    section=_('Event'))
+def event_created(sender, instance, **kwargs):
+    if instance.is_incident:
+        return None, None
+    return instance, instance.concerned_business_lines
+
+
+@notification_event('incident:created', model_created, Incident, verbose_name=_('Incident created'),
+                    section=_('Incident'))
+def incident_created(sender, instance, **kwargs):
+    if not instance.is_incident:
+        return None, None
+    return instance, instance.concerned_business_lines
+
+
+@notification_event('event:updated', model_updated, Incident, verbose_name=_('Event updated'),
+                    section=_('Event'))
+def event_created(sender, instance, **kwargs):
+    if instance.is_incident:
+        return None, None
+    return instance, instance.concerned_business_lines
+
+
+@notification_event('incident:updated', model_updated, Incident, verbose_name=_('Incident updated'),
+                    section=_('Incident'))
+def incident_created(sender, instance, **kwargs):
+    if not instance.is_incident:
+        return None, None
+    return instance, instance.concerned_business_lines
