@@ -4,6 +4,7 @@ from django.apps import apps
 from django.utils.encoding import python_2_unicode_compatible
 
 from fir_notifications.methods.email import EmailMethod
+from fir_notifications.methods.jabber import XmppMethod
 
 
 @python_2_unicode_compatible
@@ -56,3 +57,4 @@ class Notifications(object):
 
 registry = Notifications()
 registry.register_method(EmailMethod())
+registry.register_method(XmppMethod())
