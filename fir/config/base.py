@@ -155,3 +155,6 @@ USER_SELF_SERVICE = {
     # User can change his password
     'CHANGE_PASSWORD': True
 }
+
+# External URL of your FIR application (used in fir_notification to render full URIs in templates)
+EXTERNAL_URL = 'http://fir.example.com'
