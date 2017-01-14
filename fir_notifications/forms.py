@@ -1,7 +1,8 @@
 import json
 
-from django.forms import forms
+from django import forms
 
+from fir_notifications.registry import registry
 from fir_notifications.models import MethodConfiguration
 
 
@@ -21,3 +22,10 @@ class MethodConfigurationForm(forms.Form):
         config, created = MethodConfiguration.objects.update_or_create(user=self.user, key=self.method.name,
                                                                        defaults={'value': json_value})
         return config
+
+
+class NotificationTemplateForm(forms.ModelForm):
+    event = forms.ChoiceField(choices=registry.get_event_choices())
+
+    class Meta:
+        fields = '__all__'
