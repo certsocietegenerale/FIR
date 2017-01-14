@@ -1,6 +1,7 @@
 import json
 
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 
 from fir_notifications.registry import registry
 from fir_notifications.models import MethodConfiguration
