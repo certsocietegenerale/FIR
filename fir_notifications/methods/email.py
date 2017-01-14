@@ -21,7 +21,7 @@ class EmailMethod(NotificationMethod):
         if hasattr(settings, 'NOTIFICATIONS_EMAIL_FROM'):
             self.server_configured = True
         if 'djembe' in settings.INSTALLED_APPS:
-            self.options['certificate'] = forms.CharField(required=False,
+            self.options['certificate'] = forms.CharField(required=False, label=_('Certificate'),
                                                           widget=forms.Textarea(attrs={'cols': 60, 'rows': 15}),
                                                           help_text=_('Encryption certificate in PEM format.'))
 
