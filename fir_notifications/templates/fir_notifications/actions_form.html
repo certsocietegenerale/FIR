@@ -1,0 +1,54 @@
+{% load i18n %}
+{% load add_css_class %}
+
+{% for method, method_form in actions.items %}
+    <div id="configure_{{method}}" class="modal fade notification-method-form" tabindex="-1" role="dialog" aria-labelledby="configure_{{method}}_label" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form id="configure_{{method}}_form" method="POST" action="{% url 'notifications:method_configuration' method %}">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                        <h4 id="configure_{{method}}_label" class="modal-title">{{method_form.title}}</h4>
+                    </div>
+                    <div class="modal-body">
+                        <div>
+                            {% csrf_token %}
+                            {% for field in method_form %}
+                            <div class="form-group row">
+                                <div class="col-sm-4">
+                                    {{ field.label_tag }}
+                                </div>
+                                <div class="col-sm-8">
+                                    {{ field|add_css_class:"form-control" }}
+                                    <span class='help-block'>
+                                        {% if not field.errors and field.help_text %}
+                                            {{field.help_text}}
+                                        {% endif %}
+                                        {% for error in field.errors %}
+                                            {{error}}
+                                        {% endfor %}
+                                    </span>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">{%  trans "Cancel" %}</button>
+                        <button type="submit" class="btn btn-primary">{%  trans "Save" %}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+<script>
+        window.onload = function(){
+            $('.notification-method-form').on('fir.form.success', function (event) {
+                console.log(this);
+                $(this).modal('hide');
+                event.stopPropagation();
+            });
+        };
+    </script>
