@@ -1,5 +1,7 @@
 from collections import OrderedDict
 
+from fir_notifications.methods.email import EmailMethod
+
 
 class Notifications(object):
     def __init__(self):
@@ -35,3 +37,4 @@ class Notifications(object):
 
 
 registry = Notifications()
+registry.register_method(EmailMethod())

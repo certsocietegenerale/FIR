@@ -30,3 +30,15 @@ class NotificationTemplateForm(forms.ModelForm):
 
     class Meta:
         fields = '__all__'
+
+
+class EmailMethodConfigurationForm(MethodConfigurationForm):
+    def save(self, *args, **kwargs):
+        if self.user is None or not self.user.email:
+            return None
+        try:
+            from djembe.models import Identity
+        except ImportError:
+            return None
+        config, created = Identity.objects.update_or_create(address=self.user.email, defaults=self.cleaned_data)
+        return config
