@@ -3,7 +3,7 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy
 
 from fir_plugins.admin import MarkdownModelAdmin
-from fir_notifications.models import MethodConfiguration, NotificationTemplate
+from fir_notifications.models import MethodConfiguration, NotificationTemplate, NotificationPreference
 from fir_notifications.forms import NotificationTemplateForm
 
 
@@ -22,4 +22,5 @@ class NotificationTemplateAdmin(MarkdownModelAdmin):
 
 admin.site.register(NotificationTemplate, NotificationTemplateAdmin)
 if settings.DEBUG:
+    admin.site.register(NotificationPreference)
     admin.site.register(MethodConfiguration)
