@@ -3,21 +3,33 @@ from fir_plugins.querysets import QuerySetSequence
 
 
 class LinkableManager(BaseManager):
-    def __init__(self, instance):
+    def __init__(self, instance, user=None, permission='incidents.view_incidents'):
         self.linkable = instance
+        self.user = user
+        self.permission = permission
 
     def get_querysets(self, linked_type=None):
         qss = list()
         if not linked_type:
             for link_name, linked_model in getattr(self.linkable, "_LINKS", dict()).items():
                 if hasattr(self.linkable, link_name):
-                    qss.append(getattr(self.linkable, link_name).all())
+                    if hasattr(linked_model.model, 'authorization') and self.user is not None:
+                        qss.append(
+                            linked_model.model.authorization.for_user(self.user, self.permission).filter(
+                                **{linked_model.reverse_link_name: self.linkable.pk}))
+                    else:
+                        qss.append(getattr(self.linkable, link_name).all())
         else:
             if not isinstance(linked_type, (list, tuple)):
                 linked_type = [linked_type,]
             for link_name, linked_model in getattr(self.linkable, "_LINKS", dict()).items():
                 if linked_type.count(linked_model.model) > 0:
-                    qss.append(getattr(self.linkable, link_name).all())
+                    if hasattr(linked_model.model, 'authorization') and self.user is not None:
+                        qss.append(
+                            linked_model.model.authorization.for_user(self.user, self.permission).filter(
+                                **{linked_model.reverse_link_name: self.linkable.pk}))
+                    else:
+                        qss.append(getattr(self.linkable, link_name).all())
         return QuerySetSequence(*qss)
 
     def all(self, linked_type=None):
@@ -32,8 +44,13 @@ class LinkableManager(BaseManager):
                 self.objects = objects
 
         for link_name, linked_model in getattr(self.linkable, "_LINKS", dict()).items():
-            objects = getattr(self.linkable, link_name).all()
-            result[link_name] = Group(linked_model, objects)
+            if hasattr(self.linkable, link_name):
+                if hasattr(linked_model.model, 'authorization') and self.user is not None:
+                    objects = linked_model.model.authorization.for_user(self.user, self.permission).filter(
+                        **{linked_model.reverse_link_name: self.linkable.pk})
+                else:
+                    objects = getattr(self.linkable, link_name).all()
+                result[link_name] = Group(linked_model, objects)
         return result
 
     def count(self, linked_type=None):
