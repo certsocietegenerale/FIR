@@ -1,0 +1,151 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-01-14 22:33+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: admin.py:19
+msgctxt "business lines"
+msgid "All"
+msgstr "Toutes"
+
+#: admin.py:20
+msgid "Business lines"
+msgstr ""
+
+#: apps.py:7
+msgid "Notifications"
+msgstr ""
+
+#: forms.py:18
+#, python-format
+msgid "Configure %(method)s"
+msgstr "Configurer %(method)s"
+
+#: methods/email.py:24
+msgid "Certificate"
+msgstr "Certificat"
+
+#: methods/email.py:26
+msgid "Encryption certificate in PEM format."
+msgstr "Certificat de chiffrement au format PEM"
+
+#: methods/jabber.py:28
+msgid "Jabber ID"
+msgstr ""
+
+#: models.py:15 models.py:44
+msgid "user"
+msgstr "utilisateur"
+
+#: models.py:16 models.py:46
+msgid "method"
+msgstr "méthode"
+
+#: models.py:17
+msgid "configuration"
+msgstr ""
+
+#: models.py:23
+msgid "method configuration"
+msgstr "configuration de méthode"
+
+#: models.py:24
+msgid "method configurations"
+msgstr "configurations de méthode"
+
+#: models.py:30 models.py:45
+msgid "event"
+msgstr "événement"
+
+#: models.py:32
+msgid "business line"
+msgstr ""
+
+#: models.py:33
+msgid "subject"
+msgstr "objet"
+
+#: models.py:34
+msgid "short description"
+msgstr "description courte"
+
+#: models.py:35
+msgid "description"
+msgstr ""
+
+#: models.py:38
+msgid "notification template"
+msgstr "gabarit de notification"
+
+#: models.py:39
+msgid "notification templates"
+msgstr "gabarits de notification"
+
+#: models.py:48
+msgid "business lines"
+msgstr ""
+
+#: models.py:56
+msgid "notification preference"
+msgstr "préférence de notification"
+
+#: models.py:57
+msgid "notification preferences"
+msgstr "préférences de notification"
+
+#: models.py:62
+msgid "Event created"
+msgstr "Événement créé"
+
+#: models.py:63 models.py:79
+msgid "Event"
+msgstr "Événement"
+
+#: models.py:70
+msgid "Incident created"
+msgstr "Incident créé"
+
+#: models.py:71 models.py:87
+msgid "Incident"
+msgstr "Incident"
+
+#: models.py:78
+msgid "Event updated"
+msgstr "Événement mis à jour"
+
+#: models.py:86
+msgid "Incident updated"
+msgstr "Incident mis à jour"
+
+#: templates/fir_notifications/actions.html:3
+#, python-format
+msgid "Configure %(method_name)s"
+msgstr "Configurer %(method_name)s"
+
+#: templates/fir_notifications/actions_form.html:38
+msgid "Cancel"
+msgstr "Annuler"
+
+#: templates/fir_notifications/actions_form.html:39
+#: templates/fir_notifications/preferences.html:33
+msgid "Save"
+msgstr "Enregistrer"
+
+#: templates/fir_notifications/preferences.html:8
+msgid "Notification preferences"
+msgstr "Préférences de notification"
