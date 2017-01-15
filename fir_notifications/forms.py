@@ -84,7 +84,7 @@ class NotificationPreferenceFormset(forms.BaseInlineFormSet):
             try:
                 key, initial = self.notifications.popitem()
                 event = initial['verbose_event']
-                method = initial['method']
+                method = initial['verbose_method']
                 kwargs['initial'] = {'event': initial['event'], 'method': initial['method']}
             except IndexError:
                 pass
