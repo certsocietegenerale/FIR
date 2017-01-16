@@ -57,6 +57,13 @@ class NotificationPreferenceFormset(forms.BaseInlineFormSet):
         self.min_num = len(self.notifications)
         self.max_num = len(self.notifications)
         self.can_delete = False
+        instance = kwargs.get('instance', None)
+        if instance is not None:
+            queryset = kwargs.get('queryset', None)
+            if queryset is None:
+                queryset = self.model._default_manager
+            qs = queryset.filter(event__in=registry.events.keys(), method__in= registry.methods.keys())
+            kwargs['queryset'] = qs
         super(NotificationPreferenceFormset, self).__init__(*args, **kwargs)
 
     def _construct_form(self, i, **kwargs):
