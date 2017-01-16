@@ -5,6 +5,7 @@ from django.db import models
 
 from django.contrib.auth.models import User, Permission
 from incidents.models import BusinessLine
+from fir_celery.celeryconf import celery_app
 
 _perm_id = None
 
@@ -83,7 +84,7 @@ def get_user_templates(event, business_lines):
     return users
 
 
-@shared_task
+@celery_app.task
 def handle_notification(content_type, instance, business_lines, event):
     from fir_notifications.registry import registry
     from django.contrib.contenttypes.models import ContentType
