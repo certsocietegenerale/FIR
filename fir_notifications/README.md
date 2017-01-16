@@ -2,7 +2,7 @@
 
 ## Features
 
-This plugins allows you to launch asynchronous tasks with Celery and send notifications to users.
+This plugins allows you to send notifications to users.
 
 ## Installation
 
