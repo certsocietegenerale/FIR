@@ -28,6 +28,13 @@ class Notifications(object):
         self.events = OrderedDict()
 
     def register_method(self, method, name=None, verbose_name=None):
+        """
+        Registers a notification method, instance of a subclass of `fir_notifications.methods.NotificationMethod`
+        Args:
+            method: instance of the notification method
+            name: overrides the instance.name
+            verbose_name: overrides the instance.verbose_name
+        """
         if not method.server_configured:
             return
         if name is not None:
@@ -39,6 +46,16 @@ class Notifications(object):
         self.methods[method.name] = method
 
     def register_event(self, name, signal, model, callback, verbose_name=None, section=None):
+        """
+        Registers a notification event
+        Args:
+            name: event name
+            signal: Django signal to listen to
+            model: Django model sending the signal (and event)
+            callback: Django signal handler
+            verbose_name: verbose name of the event
+            section: section in the user preference panel (default model application name)
+        """
         if verbose_name is None:
             verbose_name = name
         self.events[name] = RegisteredEvent(name, model, verbose_name=verbose_name, section=section)
