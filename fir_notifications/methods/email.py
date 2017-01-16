@@ -18,7 +18,7 @@ class EmailMethod(NotificationMethod):
 
     def __init__(self):
         super(EmailMethod, self).__init__()
-        if hasattr(settings, 'NOTIFICATIONS_EMAIL_FROM'):
+        if hasattr(settings, 'EMAIL_FROM') and settings.EMAIL_FROM is not None:
             self.server_configured = True
         if 'djembe' in settings.INSTALLED_APPS:
             self.options['certificate'] = forms.CharField(required=False, label=_('Certificate'),
@@ -26,11 +26,11 @@ class EmailMethod(NotificationMethod):
                                                           help_text=_('Encryption certificate in PEM format.'))
 
     def send(self, event, users, instance, paths):
-        from_address = settings.NOTIFICATIONS_EMAIL_FROM
+        from_address = settings.EMAIL_FROM
         reply_to = {}
-        if hasattr(settings, 'NOTIFICATIONS_EMAIL_REPLY_TO'):
-            reply_to = {'Reply-To': settings.NOTIFICATIONS_EMAIL_REPLY_TO,
-                        'Return-Path': settings.NOTIFICATIONS_EMAIL_REPLY_TO}
+        if hasattr(settings, 'REPLY_TO'):
+            reply_to = {'Reply-To': settings.REPLY_TO,
+                        'Return-Path': settings.REPLY_TO}
         messages = []
         for user, templates in users.items():
             if not self.enabled(event, user, paths) or not user.email:

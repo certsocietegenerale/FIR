@@ -54,13 +54,13 @@ EXTERNAL_URL = 'https://fir.example.com'
 
 You have to configure [Django email backend](https://docs.djangoproject.com/en/1.9/topics/email/).
 
-In addition, `fir_notifications` uses two settings:
+In addition, `fir_notifications` uses two settings defined in `fir_email`:
 
 ``` python
 # From address (required)
-NOTIFICATIONS_EMAIL_FROM = 'fir@example.com'
+EMAIL_FROM = 'fir@example.com'
 # Reply to address (optional)
-NOTIFICATIONS_EMAIL_REPLY_TO = None
+REPLY_TO = None
 ```
 
 #### S/MIME
@@ -104,7 +104,7 @@ RFC 5751 requires AES-128, and indicates that higher key lengths are of
 course the future. It marks tripleDES with "SHOULD-", meaning it's on its
 way out.
 
-To create signed notifications, in the admin site (*Djembe > Identities*), supply both a certificate and a private key which must not have a passphrase, with an `Address` that is the same as your setting `NOTIFICATIONS_EMAIL_FROM`. Any mail sent *from* this Identity's address will be signed with the private key.
+To create signed notifications, in the admin site (*Djembe > Identities*), supply both a certificate and a private key which must not have a passphrase, with an `Address` that is the same as your setting `EMAIL_FROM`. Any mail sent *from* this Identity's address will be signed with the private key.
 
 User certificates will be added from the user profile in FIR (*Configure Email*).
 
