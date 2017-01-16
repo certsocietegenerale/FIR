@@ -63,7 +63,7 @@ NOTIFICATIONS_EMAIL_FROM = 'fir@example.com'
 NOTIFICATIONS_EMAIL_REPLY_TO = None
 ```
 
-### S/MIME
+#### S/MIME
 
 To send signed/encrypted email notifications with S/MIME to users, install and configure [django-djembe](https://github.com/cabincode/django-djembe) and add it in your *installed_apps.txt*.
 
@@ -125,13 +125,20 @@ NOTIFICATIONS_XMPP_PORT = 5222
 
 ### Notification templates
 
-You have to create notification templates in the Django admin site.
+You have to create at least onenotification template per notification event in the Django admin site.
 
 To render notifications, each notification method can use the fields `subject`, `description` or `short_description`:
 
 - Email uses `subject` and `description`.
 - XMPP uses `subject` and `short_description`.
 
+These fields will accept Markdown formatted text and Django template language markups. The Django template context will contain an `instance`object, the instance of the object that fired the notification event.
+
+The Email `description` will generate a multipart message: a plain text part in Markdown and a HTML part rendered from this Markdown. The XMPP `short_description` will be rendered as HTML from Markdown.
+
+The template used to send the notification to the user will be chosen from the templates available to this user:
+- For a user with global permissions (permission from a Django group), global templates (templates with no nusiness line attached to it) will be preferred. 
+- For a user with no global permission, the nearest business line template will be preferred, global templates will be used as a fallback.
 ## Hacking
 
 ### Adding notification method
