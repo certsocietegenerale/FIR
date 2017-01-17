@@ -60,12 +60,39 @@ class NotificationPreference(models.Model):
         index_together = ["user", "event", "method"]
 
 
-@notification_event('event:created', model_created, Incident, verbose_name=_('Event created'),
-                    section=_('Event'))
-def event_created(sender, instance, **kwargs):
-    if instance.is_incident:
-        return None, None
-    return instance, instance.concerned_business_lines
+if not settings.NOTIFICATIONS_MERGE_INCIDENTS_AND_EVENTS:
+    @notification_event('event:created', model_created, Incident, verbose_name=_('Event created'),
+                        section=_('Event'))
+    def event_created(sender, instance, **kwargs):
+        if instance.is_incident:
+            return None, None
+        return instance, instance.concerned_business_lines
+
+
+    @notification_event('event:updated', model_updated, Incident, verbose_name=_('Event updated'),
+                        section=_('Event'))
+    def event_updated(sender, instance, **kwargs):
+        if instance.is_incident:
+            return None, None
+        return instance, instance.concerned_business_lines
+
+
+    @notification_event('event:commented', post_save, Comments, verbose_name=_('Event commented'),
+                        section=_('Event'))
+    def event_commented(sender, instance, **kwargs):
+        if not instance.incident and instance.incident.is_incident:
+            return None, None
+        if instance.action.name in ['Opened', 'Blocked', 'Closed']:
+            return None, None
+        return instance, instance.incident.concerned_business_lines
+
+
+    @notification_event('event:status_changed', model_status_changed, Incident, verbose_name=_('Event status changed'),
+                        section=_('Event'))
+    def event_status_changed(sender, instance, **kwargs):
+        if instance.is_incident:
+            return None, None
+        return instance, instance.concerned_business_lines
 
 
 @notification_event('incident:created', model_created, Incident, verbose_name=_('Incident created'),
@@ -76,53 +103,27 @@ def incident_created(sender, instance, **kwargs):
     return instance, instance.concerned_business_lines
 
 
-@notification_event('event:updated', model_updated, Incident, verbose_name=_('Event updated'),
-                    section=_('Event'))
-def event_updated(sender, instance, **kwargs):
-    if instance.is_incident:
-        return None, None
-    return instance, instance.concerned_business_lines
-
-
 @notification_event('incident:updated', model_updated, Incident, verbose_name=_('Incident updated'),
                     section=_('Incident'))
 def incident_updated(sender, instance, **kwargs):
-    if not instance.is_incident:
+    if not settings.NOTIFICATIONS_MERGE_INCIDENTS_AND_EVENTS and not instance.is_incident:
         return None, None
     return instance, instance.concerned_business_lines
-
-
-@notification_event('event:commented', post_save, Comments, verbose_name=_('Event commented'),
-                    section=_('Event'))
-def event_commented(sender, instance, **kwargs):
-    if not instance.incident and instance.incident.is_incident:
-        return None, None
-    if instance.action.name in ['Opened', 'Blocked', 'Closed']:
-        return None, None
-    return instance, instance.incident.concerned_business_lines
 
 
 @notification_event('incident:commented', post_save, Comments, verbose_name=_('Incident commented'),
                     section=_('Incident'))
 def incident_commented(sender, instance, **kwargs):
-    if not instance.incident and not instance.incident.is_incident:
+    if not instance.incident and not settings.NOTIFICATIONS_MERGE_INCIDENTS_AND_EVENTS and not instance.incident.is_incident:
         return None, None
     if instance.action.name in ['Opened', 'Blocked', 'Closed']:
         return None, None
     return instance, instance.incident.concerned_business_lines
 
 
-@notification_event('event:status_changed', model_status_changed, Incident, verbose_name=_('Event status changed'),
-                    section=_('Event'))
-def event_status_changed(sender, instance, **kwargs):
-    if instance.is_incident:
-        return None, None
-    return instance, instance.concerned_business_lines
-
-
 @notification_event('incident:status_changed', model_status_changed, Incident, verbose_name=_('Incident status changed'),
                     section=_('Incident'))
 def incident_status_changed(sender, instance, **kwargs):
-    if not instance.is_incident:
+    if not settings.NOTIFICATIONS_MERGE_INCIDENTS_AND_EVENTS and not instance.is_incident:
         return None, None
     return instance, instance.concerned_business_lines

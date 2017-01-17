@@ -162,3 +162,6 @@ EXTERNAL_URL = 'http://fir.example.com'
 # Put notification events you don't want in this tuple
 # Example: NOTIFICATIONS_DISABLED_EVENTS = ('event:created', 'incident:created')
 NOTIFICATIONS_DISABLED_EVENTS = ()
+
+# Send 'incident:*' notification events for both Event and Incident if True
+NOTIFICATIONS_MERGE_INCIDENTS_AND_EVENTS = False

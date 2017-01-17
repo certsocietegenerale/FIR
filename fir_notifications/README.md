@@ -50,6 +50,13 @@ You can disable notification events in the settings using the key `NOTIFICATIONS
 NOTIFICATIONS_DISABLED_EVENTS = ('event:created', 'incident:created')
 ```
 
+If you don't want to send different notification events for Incidents and Events, you  should enable this setting:
+
+```python
+# Send 'incident:*' notification events for both Event and Incident if True
+NOTIFICATIONS_MERGE_INCIDENTS_AND_EVENTS = True
+```
+
 ### Celery
 
 `fir_notifications` uses the FIR plugin `fir_celery`.
