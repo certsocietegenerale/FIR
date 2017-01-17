@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-14 22:33+0100\n"
+"POT-Creation-Date: 2017-01-17 08:48+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -48,89 +48,109 @@ msgstr "Certificat de chiffrement au format PEM"
 msgid "Jabber ID"
 msgstr ""
 
-#: models.py:15 models.py:44
+#: models.py:16 models.py:45
 msgid "user"
 msgstr "utilisateur"
 
-#: models.py:16 models.py:46
+#: models.py:17 models.py:47
 msgid "method"
 msgstr "méthode"
 
-#: models.py:17
+#: models.py:18
 msgid "configuration"
 msgstr ""
 
-#: models.py:23
+#: models.py:24
 msgid "method configuration"
 msgstr "configuration de méthode"
 
-#: models.py:24
+#: models.py:25
 msgid "method configurations"
 msgstr "configurations de méthode"
 
-#: models.py:30 models.py:45
+#: models.py:31 models.py:46
 msgid "event"
 msgstr "événement"
 
-#: models.py:32
+#: models.py:33
 msgid "business line"
 msgstr ""
 
-#: models.py:33
+#: models.py:34
 msgid "subject"
 msgstr "objet"
 
-#: models.py:34
+#: models.py:35
 msgid "short description"
 msgstr "description courte"
 
-#: models.py:35
+#: models.py:36
 msgid "description"
 msgstr ""
 
-#: models.py:38
+#: models.py:39
 msgid "notification template"
 msgstr "gabarit de notification"
 
-#: models.py:39
+#: models.py:40
 msgid "notification templates"
 msgstr "gabarits de notification"
 
-#: models.py:48
+#: models.py:49
 msgid "business lines"
 msgstr ""
 
-#: models.py:56
+#: models.py:57
 msgid "notification preference"
 msgstr "préférence de notification"
 
-#: models.py:57
+#: models.py:58
 msgid "notification preferences"
 msgstr "préférences de notification"
 
-#: models.py:62
+#: models.py:63
 msgid "Event created"
 msgstr "Événement créé"
 
-#: models.py:63 models.py:79
+#: models.py:64 models.py:80 models.py:96 models.py:118
 msgid "Event"
 msgstr "Événement"
 
-#: models.py:70
+#: models.py:71
 msgid "Incident created"
 msgstr "Incident créé"
 
-#: models.py:71 models.py:87
+#: models.py:72 models.py:88 models.py:107 models.py:126
 msgid "Incident"
 msgstr "Incident"
 
-#: models.py:78
+#: models.py:79
 msgid "Event updated"
 msgstr "Événement mis à jour"
 
-#: models.py:86
+#: models.py:87
 msgid "Incident updated"
 msgstr "Incident mis à jour"
+
+#: models.py:95
+#| msgid "Event created"
+msgid "Event commented"
+msgstr "Événement commenté"
+
+#: models.py:106
+#| msgid "Incident created"
+msgid "Incident commented"
+msgstr "Incident commenté"
+
+#: models.py:117
+#| msgid "Event created"
+msgid "Event status changed"
+msgstr "Statut de l'événement changé"
+
+#: models.py:125
+#| msgid "Incident created"
+msgid "Incident status changed"
+msgstr "Statut de l'incident changé"
 
 #: templates/fir_notifications/actions.html:3
 #, python-format
