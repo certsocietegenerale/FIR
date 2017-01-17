@@ -77,7 +77,7 @@ def incident_created(sender, instance, **kwargs):
 
 @notification_event('event:updated', model_updated, Incident, verbose_name=_('Event updated'),
                     section=_('Event'))
-def event_created(sender, instance, **kwargs):
+def event_updated(sender, instance, **kwargs):
     if instance.is_incident:
         return None, None
     return instance, instance.concerned_business_lines
@@ -85,7 +85,7 @@ def event_created(sender, instance, **kwargs):
 
 @notification_event('incident:updated', model_updated, Incident, verbose_name=_('Incident updated'),
                     section=_('Incident'))
-def incident_created(sender, instance, **kwargs):
+def incident_updated(sender, instance, **kwargs):
     if not instance.is_incident:
         return None, None
     return instance, instance.concerned_business_lines
