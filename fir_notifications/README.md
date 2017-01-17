@@ -35,6 +35,10 @@ Core FIR notifications:
 * 'event:updated': update of an event
 * 'incident:created': new incident
 * 'incident:updated': update of an incident
+* 'event:commented': new comment added to an event
+* 'incident:commented': new comment added to an incident
+* 'event:status_changed': event status changed
+* 'incident:status_changed': incident status changed
 
 ## Configuration
 
