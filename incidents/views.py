@@ -8,7 +8,7 @@ from django.contrib.staticfiles import finders
 from django.template.response import TemplateResponse
 from django.views.decorators.http import require_POST
 
-from incidents.models import IncidentCategory, Incident, Comments, BusinessLine
+from incidents.models import IncidentCategory, Incident, Comments, BusinessLine, model_status_changed
 from incidents.models import Label, Log, BaleCategory
 from incidents.models import Attribute, ValidAttribute, IncidentTemplate, Profile
 from incidents.models import IncidentForm, CommentForm
@@ -338,13 +338,17 @@ def edit_incident(request, incident_id, authorization_target=None):
     starred = i.is_starred
 
     if request.method == "POST":
+        previous_status = i.status
         form = IncidentForm(request.POST, instance=i, for_user=request.user)
 
         if form.is_valid():
             Comments.create_diff_comment(i, form.cleaned_data, request.user)
-
+            if previous_status == form.cleaned_data['status']:
+                previous_status = None
             # update main BL
             form.save()
+            if previous_status is not None:
+                model_status_changed.send(sender=Incident, instance=i, previous_status=previous_status)
             i.refresh_main_business_lines()
             i.is_starred = starred
             i.save()
@@ -386,6 +390,7 @@ def change_status(request, incident_id, status, authorization_target=None):
             pk=incident_id)
     else:
         i = authorization_target
+    previous_status = i.status
     i.status = status
     i.save()
 
@@ -402,7 +407,7 @@ def change_status(request, incident_id, status, authorization_target=None):
     c.incident = i
     c.opened_by = request.user
     c.save()
-
+    model_status_changed.send(sender=Incident, instance=i, previous_status=previous_status)
     return redirect('dashboard:main')
 
 
@@ -522,8 +527,11 @@ def update_comment(request, comment_id):
                 incident=c.incident)
 
             if c.action.name in ['Closed', 'Opened', 'Blocked']:
-                c.incident.status = c.action.name[0]
-                c.incident.save()
+                if c.action.name[0] != c.incident.status:
+                    previous_status = c.incident.status
+                    c.incident.status = c.action.name[0]
+                    c.incident.save()
+                    model_status_changed.send(sender=Incident, instance=c.incident, previous_status=previous_status)
 
             i.refresh_artifacts(c.comment)
 
@@ -773,9 +781,11 @@ def comment(request, incident_id, authorization_target=None):
             log("Comment created: %s" % (com.comment[:20] + "..."), request.user, incident=com.incident)
             i.refresh_artifacts(com.comment)
 
-            if com.action.name in ['Closed', 'Opened', 'Blocked']:
+            if com.action.name in ['Closed', 'Opened', 'Blocked'] and com.incident.status != com.action.name[0]:
+                previous_status = com.incident.status
                 com.incident.status = com.action.name[0]
                 com.incident.save()
+                model_status_changed.send(sender=Incident, instance=com.incident, previous_status=previous_status)
 
             return render(request, 'events/_comment.html', {'event': i, 'comment': com})
         else:
