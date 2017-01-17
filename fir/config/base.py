@@ -158,3 +158,7 @@ USER_SELF_SERVICE = {
 
 # External URL of your FIR application (used in fir_notification to render full URIs in templates)
 EXTERNAL_URL = 'http://fir.example.com'
+
+# Put notification events you don't want in this tuple
+# Example: NOTIFICATIONS_DISABLED_EVENTS = ('event:created', 'incident:created')
+NOTIFICATIONS_DISABLED_EVENTS = ()

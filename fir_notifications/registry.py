@@ -2,6 +2,7 @@ from collections import OrderedDict
 
 from django.apps import apps
 from django.utils.encoding import python_2_unicode_compatible
+from django.conf import settings
 
 from fir_notifications.methods.email import EmailMethod
 from fir_notifications.methods.jabber import XmppMethod
@@ -56,6 +57,8 @@ class Notifications(object):
             verbose_name: verbose name of the event
             section: section in the user preference panel (default model application name)
         """
+        if name in settings.NOTIFICATIONS_DISABLED_EVENTS:
+            return
         if verbose_name is None:
             verbose_name = name
         self.events[name] = RegisteredEvent(name, model, verbose_name=verbose_name, section=section)

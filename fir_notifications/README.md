@@ -42,6 +42,14 @@ Core FIR notifications:
 
 ## Configuration
 
+### Events
+
+You can disable notification events in the settings using the key `NOTIFICATIONS_DISABLED_EVENTS`:
+
+```python
+NOTIFICATIONS_DISABLED_EVENTS = ('event:created', 'incident:created')
+```
+
 ### Celery
 
 `fir_notifications` uses the FIR plugin `fir_celery`.
