@@ -13,7 +13,7 @@ def _combine_with_settings(values, setting):
     return values
 
 
-def send(request, to, subject, body, behalf=None, cc='', bcc=''):
+def prepare_email_message(to, subject, body, behalf=None, cc=None, bcc=None, request=None):
     reply_to = {}
 
     if hasattr(settings, 'REPLY_TO'):
@@ -22,23 +22,33 @@ def send(request, to, subject, body, behalf=None, cc='', bcc=''):
     if behalf is None and hasattr(settings, 'EMAIL_FROM'):
         behalf = settings.EMAIL_FROM
 
-    cc = _combine_with_settings(cc, 'EMAIL_CC')
-    bcc = _combine_with_settings(bcc, 'EMAIL_BCC')
+    if not isinstance(to, (tuple, list)):
+        to = to.split(';')
 
-    e = EmailMultiAlternatives(
+    email_message = EmailMultiAlternatives(
         subject=subject,
+        body=body,
         from_email=behalf,
-        to=to.split(';'),
+        to=to,
         cc=cc,
         bcc=bcc,
         headers=reply_to
     )
-    e.attach_alternative(markdown2.markdown(
-            body,
-            extras=["link-patterns", "tables", "code-friendly"],
-            link_patterns=registry.link_patterns(request),
-            safe_mode=True
-        ),
+    email_message.attach_alternative(markdown2.markdown(
+        body,
+        extras=["link-patterns", "tables", "code-friendly"],
+        link_patterns=registry.link_patterns(request),
+        safe_mode=True
+    ),
         'text/html')
-    e.content_subtype = 'html'
-    e.send()
+
+    return email_message
+
+
+def send(request, to, subject, body, behalf=None, cc='', bcc=''):
+
+    cc = _combine_with_settings(cc, 'EMAIL_CC')
+    bcc = _combine_with_settings(bcc, 'EMAIL_BCC')
+
+    email_message = prepare_email_message(to, subject, body, behalf=behalf, cc=cc, bcc=bcc, request=request)
+    email_message.send()

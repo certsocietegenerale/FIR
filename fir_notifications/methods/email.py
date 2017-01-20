@@ -1,13 +1,12 @@
-import markdown2
 from django import forms
 from django.conf import settings
 from django.core import mail
 from django.utils.translation import ugettext_lazy as _
 
+from fir_email.helpers import prepare_email_message
 
 from fir_notifications.methods import NotificationMethod
 from fir_notifications.methods.utils import request
-from fir_plugins.links import registry as link_registry
 
 
 class EmailMethod(NotificationMethod):
@@ -26,11 +25,6 @@ class EmailMethod(NotificationMethod):
                                                           help_text=_('Encryption certificate in PEM format.'))
 
     def send(self, event, users, instance, paths):
-        from_address = settings.EMAIL_FROM
-        reply_to = {}
-        if hasattr(settings, 'REPLY_TO'):
-            reply_to = {'Reply-To': settings.REPLY_TO,
-                        'Return-Path': settings.REPLY_TO}
         messages = []
         for user, templates in users.items():
             if not self.enabled(event, user, paths) or not user.email:
@@ -39,17 +33,9 @@ class EmailMethod(NotificationMethod):
             if template is None:
                 continue
             params = self.prepare(template, instance)
-            e = mail.EmailMultiAlternatives(
-                subject=params['subject'],
-                body=params['description'],
-                from_email=from_address,
-                to=[user.email, ],
-                headers=reply_to
-            )
-            e.attach_alternative(markdown2.markdown(params['description'], extras=["link-patterns"],
-                                                    link_patterns=link_registry.link_patterns(request), safe_mode=True),
-                                 'text/html')
-            messages.append(e)
+            email_message = prepare_email_message([user.email, ], params['subject'], params['description'],
+                                                  request=request)
+            messages.append(email_message)
         if len(messages):
             connection = mail.get_connection()
             connection.send_messages(messages)
