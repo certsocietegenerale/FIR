@@ -1,7 +1,7 @@
 import markdown2
 from django.conf import settings
 
-import xmpppy as xmpp
+import xmpp
 from django import forms
 
 from fir_notifications.methods import NotificationMethod
