@@ -31,9 +31,9 @@ The form comes pre-filled with data from templates and contact info, which you c
   * artifact: artifact value
   * enrichment: enrichment raw content
 
-If an __Abuse Contact__ exists it's always used to fill the upper part of the form, otherwise it's the email found through the enrichment process.
+If an __Abuse Contact__ exists it's always used to fill the upper part of the form, otherwise it's the __Email__ found through the enrichment process.
 
-> The form also contain an __Enrichment tab__ providing the `raw` result of the enrichement task.
+> The form also contain an __Enrichment tab__ providing the `raw` result of the enrichment task.
 
 You should define your __Abuse Templates__ and qualified __Abuse Contact__ by connecting to FIR admin and adding objects to the "Abuse templates" and "Abuse contact" tables.
 
