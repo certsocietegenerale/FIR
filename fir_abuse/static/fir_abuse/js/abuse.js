@@ -130,7 +130,7 @@ $(function () {
       + "-" + date.getDate() + " " + date.getHours()
       + ":" + date.getMinutes()
 
-    comment_ = 'Abuse email sent to ' + $('#sendAbuseEmail').data('artifact')
+    comment_ = 'Abuse email sent to ' + $('#sendAbuseEmail #abuse_to').val()
     action_ = $("#id_action option:contains('Abuse')").attr('value')
 
     $.ajax({
