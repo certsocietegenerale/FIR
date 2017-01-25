@@ -71,61 +71,7 @@ EXTERNAL_URL = 'https://fir.example.com'
 
 ### Email notifications
 
-You have to configure [Django email backend](https://docs.djangoproject.com/en/1.9/topics/email/).
-
-In addition, `fir_notifications` uses two settings defined in `fir_email`:
-
-``` python
-# From address (required)
-EMAIL_FROM = 'fir@example.com'
-# Reply to address (optional)
-REPLY_TO = None
-```
-
-#### S/MIME
-
-To send signed/encrypted email notifications with S/MIME to users, install and configure [django-djembe](https://github.com/cabincode/django-djembe) and add it in your *installed_apps.txt*.
-
-The following configuration example from the Djembe Readme can help you:
-
-``` bash
-(fir-env)$ pip install -r fir_notifications/requirements_smime.txt
-(fir-env)$ python manage.py migrate djembe
-```
-
-In *$FIR_HOME/fir/config/installed_app.txt*, add:
-
-```
-djembe
-```
-
-Change your email backend in your settings:
-
-``` python
-EMAIL_BACKEND = 'djembe.backends.EncryptingSMTPBackend'
-```
-
-To use a cipher other than the default AES-256, specify it in your settings `DJEMBE_CIPHER`:
-
-
-``` python
-DJEMBE_CIPHER = 'des_ede3_cbc'  # triple DES
-```
-The intersection of M2Crypto's ciphers and RFC 3851 are:
-
-* `des_ede3_cbc` (required by the RFC)
-* `aes_128_cbc` (recommended, not required, by the RFC)
-* `aes_192_cbc` (recommended, not required, by the RFC)
-* `aes_256_cbc` (recommended, not required, by the RFC)
-* `rc2_40_cbc` (RFC requires support, but it's weak -- don't use it)
-
-RFC 5751 requires AES-128, and indicates that higher key lengths are of
-course the future. It marks tripleDES with "SHOULD-", meaning it's on its
-way out.
-
-To create signed notifications, in the admin site (*Djembe > Identities*), supply both a certificate and a private key which must not have a passphrase, with an `Address` that is the same as your setting `EMAIL_FROM`. Any mail sent *from* this Identity's address will be signed with the private key.
-
-User certificates will be added from the user profile in FIR (*Configure Email*).
+Follow the `fir_email` [README](fir_email/README.md).
 
 ### Jabber (XMPP) notifications
 
