@@ -1,5 +1,6 @@
 from django.contrib.auth.decorators import login_required
 from django import forms
+from django.contrib import messages
 from django.shortcuts import redirect, render
 from django.views.decorators.http import require_POST
 from django.contrib.auth import get_user_model
@@ -20,6 +21,9 @@ def method_configuration(request, method):
     form = method_object.form(request.POST, user=request.user)
     if form.is_valid():
         form.save()
+    else:
+        for error in form.errors.items():
+            messages.error(request, error[1])
     return redirect('user:profile')
 
 
