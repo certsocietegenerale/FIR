@@ -95,6 +95,7 @@ INSTALLED_APPS = (
     'incidents',
     'fir_artifacts',
     'treebeard',
+    'fir_email'
 )
 
 apps_file = os.path.join(BASE_DIR, 'fir', 'config', 'installed_apps.txt')
