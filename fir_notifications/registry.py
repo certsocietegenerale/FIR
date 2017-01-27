@@ -66,10 +66,10 @@ class Notifications(object):
         signal.connect(callback, sender=model, dispatch_uid="fir_notifications.{}".format(name))
 
     def get_event_choices(self):
-        return [(obj.name, obj.verbose_name) for obj in self.events.values()]
+        return sorted([(obj.name, obj.verbose_name) for obj in self.events.values()])
 
     def get_method_choices(self):
-        return [(obj.name, obj.verbose_name) for obj in self.methods.values()]
+        return sorted([(obj.name, obj.verbose_name) for obj in self.methods.values()])
 
     def get_methods(self):
         return self.methods.values()
