@@ -58,6 +58,7 @@ class NotificationPreference(models.Model):
         verbose_name_plural = _('notification preferences')
         unique_together = (("user", "event", "method"),)
         index_together = ["user", "event", "method"]
+        ordering = ['user', 'event', 'method']
 
 
 if not settings.NOTIFICATIONS_MERGE_INCIDENTS_AND_EVENTS:
