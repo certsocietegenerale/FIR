@@ -10,7 +10,7 @@ from fir_notifications.methods.jabber import XmppMethod
 
 @python_2_unicode_compatible
 class RegisteredEvent(object):
-    def __init__(self, name, model, verbose_name=None, section = None):
+    def __init__(self, name, model, verbose_name=None, section=None):
         self.name = name
         if section is None:
             section = apps.get_app_config(model._meta.app_label).verbose_name
@@ -66,7 +66,12 @@ class Notifications(object):
         signal.connect(callback, sender=model, dispatch_uid="fir_notifications.{}".format(name))
 
     def get_event_choices(self):
-        return sorted([(obj.name, obj.verbose_name) for obj in self.events.values()])
+        results = OrderedDict()
+        for obj in self.events.values():
+            if obj.section not in results:
+                results[obj.section] = list()
+            results[obj.section].append((obj.name, obj.verbose_name))
+        return [(section, sorted(choices)) for section, choices in results.items()]
 
     def get_method_choices(self):
         return sorted([(obj.name, obj.verbose_name) for obj in self.methods.values()])
