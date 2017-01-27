@@ -22,3 +22,18 @@ def notification_forms(context):
             actions[method_name] = method_object.form(user=context['user'])
     return {'actions': actions}
 
+
+@register.filter
+def display_method(arg):
+    method = registry.methods.get(arg, None)
+    if method is None:
+        return 'Unknown'
+    return method.verbose_name
+
+
+@register.filter
+def display_event(arg):
+    event = registry.events.get(arg, None)
+    if event is None:
+        return 'Unknown'
+    return event.verbose_name

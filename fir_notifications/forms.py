@@ -1,11 +1,12 @@
 import json
-from collections import OrderedDict
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
+from incidents.models import BusinessLine
+
 from fir_notifications.registry import registry
-from fir_notifications.models import MethodConfiguration
+from fir_notifications.models import MethodConfiguration, NotificationPreference
 
 
 class MethodConfigurationForm(forms.Form):
@@ -33,82 +34,32 @@ class NotificationTemplateForm(forms.ModelForm):
         fields = '__all__'
 
 
-class NotificationPreferenceFormset(forms.BaseInlineFormSet):
+class NotificationPreferenceForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
-        self.notifications = OrderedDict()
-        for e, verbose_e in registry.events.items():
-            for m, verbose_m in registry.methods.items():
-                self.notifications["{}_{}".format(e, m)] = {'event': e,
-                                                            'verbose_event': verbose_e,
-                                                            'method': m,
-                                                            'verbose_method': verbose_m.verbose_name}
-        self.min_num = len(self.notifications)
-        self.max_num = len(self.notifications)
-        self.can_delete = False
+        self.user = kwargs.pop('user', None)
         instance = kwargs.get('instance', None)
+        if self.user is None and instance is not None:
+            self.user = instance.user
+        if instance is None and kwargs.get('data', None) is not None:
+            data = kwargs.get('data')
+            event = data.get('event', None)
+            method = data.get('method', None)
+            if event and method and self.user:
+                try:
+                    kwargs['instance'] = NotificationPreference.objects.get(user=self.user, event=event, method=method)
+                except (NotificationPreference.DoesNotExist, NotificationPreference.MultipleObjectsReturned):
+                    pass
+        super(NotificationPreferenceForm, self).__init__(*args, **kwargs)
+        self.fields['business_lines'].queryset = BusinessLine.authorization.for_user(self.user,
+                                                                                     'incidents.view_incidents')
         if instance is not None:
-            queryset = kwargs.get('queryset', None)
-            if queryset is None:
-                queryset = self.model._default_manager
-            qs = queryset.filter(event__in=registry.events.keys(), method__in= registry.methods.keys())
-            kwargs['queryset'] = qs
-        super(NotificationPreferenceFormset, self).__init__(*args, **kwargs)
+            self.fields['event'].disabled = True
+            self.fields['method'].disabled = True
 
-    def _construct_form(self, i, **kwargs):
-        method = None
-        event = None
-        if self.is_bound and i < self.initial_form_count():
-            pk_key = "%s-%s" % (self.add_prefix(i), self.model._meta.pk.name)
-            pk = self.data[pk_key]
-            pk_field = self.model._meta.pk
-            to_python = self._get_to_python(pk_field)
-            pk = to_python(pk)
-            instance = self._existing_object(pk)
-            notification = self.notifications.pop("{}_{}".format(instance.event, instance.method))
-            event = notification['verbose_event']
-            method = notification['verbose_method']
-            kwargs['instance'] = instance
-        if i < self.initial_form_count() and 'instance' not in kwargs:
-            instance = self.get_queryset()[i]
-            notification = self.notifications.pop("{}_{}".format(instance.event, instance.method))
-            event = notification['verbose_event']
-            method = notification['verbose_method']
-            kwargs['instance'] = self.get_queryset()[i]
-        if i >= self.initial_form_count() and self.notifications:
-            # Set initial values for extra forms
-            try:
-                key, initial = self.notifications.popitem()
-                event = initial['verbose_event']
-                method = initial['verbose_method']
-                kwargs['initial'] = {'event': initial['event'], 'method': initial['method']}
-            except IndexError:
-                pass
-        form = forms.BaseFormSet._construct_form(self, i, **kwargs)
-        if self.save_as_new:
-            # Remove the primary key from the form's data, we are only
-            # creating new instances
-            form.data[form.add_prefix(self._pk_field.name)] = None
+    event = forms.ChoiceField(choices=registry.get_event_choices(), label=_('Event'))
+    method = forms.ChoiceField(choices=registry.get_method_choices(), label=_('Method'))
+    business_lines = forms.ModelMultipleChoiceField(BusinessLine.objects.all(), label=_('Business lines'))
 
-            # Remove the foreign key from the form's data
-            form.data[form.add_prefix(self.fk.name)] = None
-
-            # Set the fk value here so that the form can do its validation.
-        fk_value = self.instance.pk
-        if self.fk.remote_field.field_name != self.fk.remote_field.model._meta.pk.name:
-            fk_value = getattr(self.instance, self.fk.remote_field.field_name)
-            fk_value = getattr(fk_value, 'pk', fk_value)
-        setattr(form.instance, self.fk.get_attname(), fk_value)
-        setattr(form, 'get_notification_display', lambda: u"{} via {}".format(event.verbose_name, method))
-        setattr(form, 'get_event', lambda: event)
-        return form
-
-    @property
-    def labelled_forms(self):
-        fs_forms = {}
-        for form in self.forms:
-            label = form.get_event().section
-            if label not in fs_forms:
-                fs_forms[label] = []
-            fs_forms[label].append(form)
-            fs_forms[label] = sorted(fs_forms[label], key=lambda form: form.get_event().name)
-        return fs_forms
+    class Meta:
+        exclude = ('user', )
+        model = NotificationPreference

@@ -1,15 +1,14 @@
 from django.contrib.auth.decorators import login_required
-from django import forms
 from django.contrib import messages
-from django.shortcuts import redirect, render
-from django.views.decorators.http import require_POST
-from django.contrib.auth import get_user_model
+from django.http import JsonResponse
+from django.shortcuts import redirect, render, get_object_or_404
+from django.template.loader import render_to_string
+from django.views.decorators.http import require_POST, require_GET
+from django.utils.translation import ugettext_lazy as _
 
-from fir_notifications.forms import NotificationPreferenceFormset
+from fir_notifications.forms import NotificationPreferenceForm
 from fir_notifications.models import NotificationPreference
 from fir_notifications.registry import registry
-
-from incidents.models import BusinessLine
 
 
 @require_POST
@@ -27,28 +26,47 @@ def method_configuration(request, method):
     return redirect('user:profile')
 
 
+@require_GET
 @login_required
-def preferences(request):
+def subscriptions(request):
+    instances = NotificationPreference.objects.filter(user=request.user,
+                                                      event__in=registry.events.keys(),
+                                                      method__in=registry.methods.keys(),
+                                                      business_lines__isnull=False).distinct()
+    return render(request, "fir_notifications/subscriptions.html", {'preferences': instances})
 
-    class NotificationPreferenceForm(forms.ModelForm):
-        event = forms.ChoiceField(choices=registry.get_event_choices(), disabled=True, widget=forms.HiddenInput())
-        method = forms.ChoiceField(choices=registry.get_method_choices(), disabled=True, widget=forms.HiddenInput())
-        business_lines = forms.ModelMultipleChoiceField(BusinessLine.authorization.for_user(request.user,
-                                                                                            'incidents.view_incidents'),
-                                                        required=False)
 
-        class Meta:
-            fields = "__all__"
-
-    formset = forms.inlineformset_factory(get_user_model(), NotificationPreference,
-                                          formset=NotificationPreferenceFormset,
-                                          form=NotificationPreferenceForm)
+@login_required
+def edit_subscription(request, object_id=None):
+    instance = None
+    if object_id is not None:
+        instance = get_object_or_404(NotificationPreference, pk=object_id, user=request.user)
     if request.method == 'POST':
-        fs = formset(request.POST, instance=request.user)
-        if fs.is_valid():
-            fs.save()
-        return redirect('user:profile')
+        form = NotificationPreferenceForm(instance=instance, data=request.POST, user=request.user)
+        if form.is_valid():
+            form.save()
+            return JsonResponse({'status': 'success'})
+        else:
+            errors = render_to_string("fir_notifications/subscribe.html",
+                                      {'form': form})
+            return JsonResponse({'status': 'error', 'data': errors})
     else:
-        fs = formset(instance=request.user)
+        form = NotificationPreferenceForm(instance=instance, user=request.user)
+    return render(request, "fir_notifications/subscribe.html", {'form': form})
 
-    return render(request, "fir_notifications/preferences.html", {'formset': fs})
+
+@require_POST
+@login_required
+def unsubscribe(request, object_id=None):
+    if object_id is not None:
+        try:
+            instance = NotificationPreference.objects.get(pk=object_id, user=request.user)
+            instance.delete()
+            messages.info(request, _('Unsubscribed.'))
+        except NotificationPreference.DoesNotExist:
+            messages.error(request, _("Subscription does not exist."))
+        except NotificationPreference.MultipleObjectsReturned:
+            messages.error(request, _("Subscription is invalid."))
+    else:
+        messages.error(request, _("Subscription does not exist."))
+    return redirect('user:profile')
