@@ -11,6 +11,7 @@
           <table class="table table-condensed">
             <thead>
                 <tr>
+                    <th>{%  trans "Section" %}</th>
                     <th>{%  trans "Event" %}</th>
                     <th>{%  trans "Method" %}</th>
                     <th>{%  trans "Business lines" %}</th>
@@ -21,6 +22,7 @@
             <tbody>
               {% for preference in preferences %}
                   <tr>
+                    <td>{{ preference.event|display_event_section }}</td>
                     <td>{{ preference.event|display_event }}</td>
                     <td>{{ preference.method|display_method }}</td>
                     <td>{{ preference.business_lines.all|join:', ' }}</td>

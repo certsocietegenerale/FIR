@@ -37,3 +37,11 @@ def display_event(arg):
     if event is None:
         return 'Unknown'
     return event.verbose_name
+
+
+@register.filter
+def display_event_section(arg):
+    event = registry.events.get(arg, None)
+    if event is None:
+        return 'Unknown'
+    return event.section
