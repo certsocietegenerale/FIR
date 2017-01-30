@@ -45,17 +45,23 @@ class XmppMethod(NotificationMethod):
             self.connection_tuple = (self.server, self.port)
             self.use_srv = False
         self.client = Client(self.jid.getDomain())
-        if not self.client.connect(server=self.connection_tuple, use_srv=self.use_srv):
-            self.server_configured = False
-            return
-        if not self.client.auth(self.jid.getNode(), self.password, resource=self.jid.getResource()):
-            self.server_configured = False
-            return
-        self.client.disconnected()
+        if self.client.connect(server=self.connection_tuple, use_srv=self.use_srv):
+            self.client.auth(self.jid.getNode(), self.password, resource=self.jid.getResource())
+            self.client.disconnected()
         self.server_configured = True
 
+    def _ensure_connection(self):
+        if not hasattr(self.client, 'Dispatcher'):
+            if self.client.connect(server=self.connection_tuple, use_srv=self.use_srv):
+                if self.client.auth(self.jid.getNode(), self.password, resource=self.jid.getResource()):
+                    return True
+            return False
+        return self.client.reconnectAndReauth()
+
     def send(self, event, users, instance, paths):
-        self.client.reconnectAndReauth()
+        if not self._ensure_connection():
+            print("Cannot contact the XMPP server")
+            return
         for user, templates in users.items():
             jid = self._get_jid(user)
             if not self.enabled(event, user, paths) or jid is None:
