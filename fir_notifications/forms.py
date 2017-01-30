@@ -2,6 +2,7 @@ import json
 
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth import get_user_model
 
 from incidents.models import BusinessLine
 
@@ -56,10 +57,16 @@ class NotificationPreferenceForm(forms.ModelForm):
             self.fields['event'].disabled = True
             self.fields['method'].disabled = True
 
+    def clean_user(self):
+        if self.user is None:
+            raise forms.ValidationError(_("Notification preference must be linked to a user."))
+        return self.user
+
+    user = forms.ModelChoiceField(queryset=get_user_model().objects.all(), widget=forms.HiddenInput(), required=False)
     event = forms.ChoiceField(choices=registry.get_event_choices(), label=_('Event'))
     method = forms.ChoiceField(choices=registry.get_method_choices(), label=_('Method'))
     business_lines = forms.ModelMultipleChoiceField(BusinessLine.objects.all(), label=_('Business lines'))
 
     class Meta:
-        exclude = ('user', )
+        fields = '__all__'
         model = NotificationPreference
