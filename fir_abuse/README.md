@@ -21,8 +21,7 @@ Clicking on **Send Abuse** in the context menu, opens a _Send Email Abuse_ modal
 
 The form comes pre-filled with data from templates and contact info, which you can define from the FIR admin panel:
 
-* __Abuse Templates__: `name`, `type`, `body`, `subject` and `incident_category` are the five attributes that define an abuse template. The abuse email's _subject_ and _body_ for a specific incident category are filled thanks to these templates. When trying to find a template, FIR will look for the most specific one.
-* __Abuse Contact__: is a **_qualified contact information_** that helps define the upper part of the email form: `to`, `cc` and `bcc`. Each contact is specific to an `incident_category` and a `type`. FIR choose the right one depending on thoses parameters. The following variables are available by default in the context:
+* __Abuse Templates__: `name`, `type`, `body`, `subject` and `incident_category` are the five attributes that define an abuse template. The abuse email's _subject_ and _body_ for a specific incident category are filled thanks to these templates. When trying to find a template, FIR will look for the most specific one. The following variables are available by default in the context:
   * subject: name of the incident
   * bls: name of concerned business line
   * artifacts: dictionary of artifacts
@@ -30,8 +29,10 @@ The form comes pre-filled with data from templates and contact info, which you c
   * incident_category: category's name
   * artifact: artifact value
   * enrichment: enrichment raw content
+  
+* __Abuse Contact__: is a **_qualified contact information_** that helps define the upper part of the email form: `to`, `cc` and `bcc`. Each contact can be specific to an `incident_category` and/or a `type` of artifact. FIR will choose the most specific abuse contact for the `name` determined by the **enrichment task**.
 
-If an __Abuse Contact__ exists it's always used to fill the upper part of the form, otherwise it's the __Email__ found through the enrichment process.
+If an __Abuse Contact__ exists it's always used to fill the upper part of the form. In this case, the `to` field will be green. Otherwise it's the __Email__ found through the enrichment process (and the field will be red).
 
 > The form also contain an __Enrichment tab__ providing the `raw` result of the enrichment task.
 
