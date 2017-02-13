@@ -1,0 +1,45 @@
+{% load i18n %}
+{% load notifications %}
+{% load staticfiles %}
+
+<div class="col-sm-8 col-sm-offset-2">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">{% trans "Notification subscriptions" %}</h3>
+      </div>
+      <div class="panel-body">
+          <table class="table table-condensed">
+            <thead>
+                <tr>
+                    <th>{%  trans "Section" %}</th>
+                    <th>{%  trans "Event" %}</th>
+                    <th>{%  trans "Method" %}</th>
+                    <th>{%  trans "Business lines" %}</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+              {% for preference in preferences %}
+                  <tr>
+                    <td>{{ preference.event|display_event_section }}</td>
+                    <td>{{ preference.event|display_event }}</td>
+                    <td>{{ preference.method|display_method }}</td>
+                    <td>{{ preference.business_lines.all|join:', ' }}</td>
+                      <td><a href="#" id="edit_subscription_{{preference.pk}}" class="modal-async" data-target='#notification_preference_modals' data-url="{% url 'notifications:edit-subscription' preference.pk %}"><span class="glyphicon glyphicon-pencil" title="{% trans "Edit" %}"></span></a></td>
+                      <td><form id='unsubscribe_{{preference.pk}}' name='delete' action="{% url 'notifications:unsubscribe' preference.pk %}" method='POST'>
+		                    {% csrf_token %}
+		                    <button type='submit' class='btn btn-xs btn-link icon' title="{% trans 'Unsubscribe' %}"><i class='glyphicon glyphicon-remove'></i></button>
+                          </form>
+                      </td>
+                  </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <button id="subscribe_notification" class="modal-async btn btn-primary pull-right" type="button" data-target='#notification_preference_modals' data-url="{% url 'notifications:subscribe' %}"><span class="glyphicon glyphicon-plus" title="{% trans "Subscribe" %}"></span>&nbsp;{% trans "Subscribe" %}</button>
+        </div>
+      </div>
+</div>
+<div id='notification_preference_modals'>
+</div>
+<script src="{% static "fir_notifications/notifications.js" %}"></script>

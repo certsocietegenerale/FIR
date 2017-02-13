@@ -1,0 +1,206 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-01-30 12:26+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: admin.py:19
+msgctxt "business lines"
+msgid "All"
+msgstr "Toutes"
+
+#: admin.py:20 forms.py:68 templates/fir_notifications/subscriptions.html:17
+msgid "Business lines"
+msgstr ""
+
+#: apps.py:7
+msgid "Notifications"
+msgstr ""
+
+#: forms.py:20
+#, python-format
+msgid "Configure %(method)s"
+msgstr "Configurer %(method)s"
+
+#: forms.py:62
+msgid "Notification preference must be linked to a user."
+msgstr "La préférence de notification doit être reliée à un utilisateur."
+
+#: forms.py:66 models.py:66 models.py:74 models.py:82 models.py:92
+#: templates/fir_notifications/subscriptions.html:15
+msgid "Event"
+msgstr "Événement"
+
+#: forms.py:67 templates/fir_notifications/subscriptions.html:16
+msgid "Method"
+msgstr "Méthode"
+
+#: methods/jabber.py:28
+msgid "Jabber ID"
+msgstr ""
+
+#: models.py:16 models.py:45
+msgid "user"
+msgstr "utilisateur"
+
+#: models.py:17 models.py:47
+msgid "method"
+msgstr "méthode"
+
+#: models.py:18
+msgid "configuration"
+msgstr ""
+
+#: models.py:24
+msgid "method configuration"
+msgstr "configuration de méthode"
+
+#: models.py:25
+msgid "method configurations"
+msgstr "configurations de méthode"
+
+#: models.py:31 models.py:46
+msgid "event"
+msgstr "événement"
+
+#: models.py:33
+msgid "business line"
+msgstr ""
+
+#: models.py:34
+msgid "subject"
+msgstr "objet"
+
+#: models.py:35
+msgid "short description"
+msgstr "description courte"
+
+#: models.py:36
+msgid "description"
+msgstr ""
+
+#: models.py:39
+msgid "notification template"
+msgstr "gabarit de notification"
+
+#: models.py:40
+msgid "notification templates"
+msgstr "gabarits de notification"
+
+#: models.py:49
+msgid "business lines"
+msgstr ""
+
+#: models.py:57
+msgid "notification preference"
+msgstr "préférence de notification"
+
+#: models.py:58
+msgid "notification preferences"
+msgstr "préférences de notification"
+
+#: models.py:65
+msgid "Event created"
+msgstr "Événement créé"
+
+#: models.py:73
+msgid "Event updated"
+msgstr "Événement mis à jour"
+
+#: models.py:81
+msgid "Event commented"
+msgstr "Événement commenté"
+
+#: models.py:91
+msgid "Event status changed"
+msgstr "Statut de l'événement changé"
+
+#: models.py:99
+msgid "Incident created"
+msgstr "Incident créé"
+
+#: models.py:100 models.py:108 models.py:116 models.py:126
+msgid "Incident"
+msgstr "Incident"
+
+#: models.py:107
+msgid "Incident updated"
+msgstr "Incident mis à jour"
+
+#: models.py:115
+msgid "Incident commented"
+msgstr "Incident commenté"
+
+#: models.py:125
+msgid "Incident status changed"
+msgstr "Statut de l'incident changé"
+
+#: templates/fir_notifications/actions.html:3
+#, python-format
+msgid "Configure %(method_name)s"
+msgstr "Configurer %(method_name)s"
+
+#: templates/fir_notifications/actions_form.html:38
+#: templates/fir_notifications/subscribe.html:36
+msgid "Cancel"
+msgstr "Annuler"
+
+#: templates/fir_notifications/actions_form.html:39
+#: templates/fir_notifications/preferences.html:33
+#: templates/fir_notifications/subscribe.html:37
+msgid "Save"
+msgstr "Enregistrer"
+
+#: templates/fir_notifications/preferences.html:8
+msgid "Notification preferences"
+msgstr "Préférences de notification"
+
+#: templates/fir_notifications/subscribe.html:9
+msgid "Notification subscription"
+msgstr "Abonnement à une notification"
+
+#: templates/fir_notifications/subscriptions.html:8
+msgid "Notification subscriptions"
+msgstr "Abonnements aux notifications"
+
+#: templates/fir_notifications/subscriptions.html:14
+msgid "Section"
+msgstr ""
+
+#: templates/fir_notifications/subscriptions.html:29
+msgid "Edit"
+msgstr "Éditer"
+
+#: templates/fir_notifications/subscriptions.html:32
+msgid "Unsubscribe"
+msgstr "Se désabonner"
+
+#: templates/fir_notifications/subscriptions.html:39
+msgid "Subscribe"
+msgstr "S'abonner"
+
+#: views.py:65
+msgid "Unsubscribed."
+msgstr "Désabonné."
+
+#: views.py:67 views.py:71
+msgid "Subscription does not exist."
+msgstr "L'abonnement n'existe pas."
+
+#: views.py:69
+msgid "Subscription is invalid."
+msgstr "Abonnement invalide."

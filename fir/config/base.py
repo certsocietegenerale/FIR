@@ -95,6 +95,7 @@ INSTALLED_APPS = (
     'incidents',
     'fir_artifacts',
     'treebeard',
+    'fir_email'
 )
 
 apps_file = os.path.join(BASE_DIR, 'fir', 'config', 'installed_apps.txt')
@@ -155,3 +156,10 @@ USER_SELF_SERVICE = {
     # User can change his password
     'CHANGE_PASSWORD': True
 }
+
+# Put notification events you don't want in this tuple
+# Example: NOTIFICATIONS_DISABLED_EVENTS = ('event:created', 'incident:created')
+NOTIFICATIONS_DISABLED_EVENTS = ()
+
+# Send 'incident:*' notification events for both Event and Incident if True
+NOTIFICATIONS_MERGE_INCIDENTS_AND_EVENTS = False

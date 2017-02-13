@@ -1,0 +1,55 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2017-01-26 06:46+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: forms.py:8
+msgid "Certificate"
+msgstr "Certificat"
+
+#: forms.py:10
+msgid "Encryption certificate in PEM format."
+msgstr "Certificat de chiffrement au format PEM."
+
+#: forms.py:35
+msgid "Improperly configured S/MIME: Email backend is incompatible"
+msgstr "Mauvaise configuration de S/MIME : le moteur de messagerie est incompatible"
+
+#: forms.py:41
+msgid "Improperly configured S/MIME: missing dependencies"
+msgstr "auvaise configuration de S/MIME : dépendances manquantes"
+
+#: forms.py:43
+msgid "Invalid certificate: unknown format"
+msgstr "Certificat invalide : format inconnu"
+
+#: templates/fir_email/smime_profile_action.html:5
+msgid "Set S/MIME certificate"
+msgstr "Définir le certificat S/MIME"
+
+#: templates/fir_email/smime_profile_action.html:13
+msgid "Set certificate"
+msgstr "Définir le certificat"
+
+#: templates/fir_email/smime_profile_action.html:40
+msgid "Cancel"
+msgstr "Annuler"
+
+#: templates/fir_email/smime_profile_action.html:41
+msgid "Save"
+msgstr "Enregistrer"

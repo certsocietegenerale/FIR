@@ -1,0 +1,56 @@
+{% load i18n %}
+{% load add_css_class %}
+
+{% if smime_status %}
+<li><a href="#" id="user_add_smime" data-toggle='modal' data-target='#add_smime'><i class="glyphicon glyphicon-lock"></i>{% blocktrans %}Set S/MIME certificate{% endblocktrans %}</a></li>
+
+<div id="add_smime" class="modal fade smime-certificate-form" tabindex="-1" role="dialog" aria-labelledby="add_smime_label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="add_smime_form" method="POST" action="{% url 'email:user-certificate' %}">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 id="add_smime_label" class="modal-title">{% trans 'Set certificate' %}</h4>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        {% csrf_token %}
+                        {% for field in form %}
+                        <div class="form-group row">
+                            <div class="col-sm-4">
+                                {{ field.label_tag }}
+                            </div>
+                            <div class="col-sm-8">
+                                {{ field|add_css_class:"form-control" }}
+                                <span class='help-block'>
+                                    {% if not field.errors and field.help_text %}
+                                        {{field.help_text}}
+                                    {% endif %}
+                                    {% for error in field.errors %}
+                                        {{error}}
+                                    {% endfor %}
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">{%  trans "Cancel" %}</button>
+                    <button type="submit" class="btn btn-primary">{%  trans "Save" %}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+        window.onload = function(){
+            $('.notification-method-form').on('fir.form.success', function (event) {
+                console.log(this);
+                $(this).modal('hide');
+                event.stopPropagation();
+            });
+        };
+    </script>
+{% endif %}
