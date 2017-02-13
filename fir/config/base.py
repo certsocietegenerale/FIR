@@ -145,6 +145,25 @@ INCIDENT_VIEWER_CAN_COMMENT = True
 # Escape HTML when displaying markdown
 MARKDOWN_SAFE_MODE = True
 
+# Allowed HTML tags in Markdown output (requires MARKDOWN_SAFE_MODE to be True)
+MARKDOWN_ALLOWED_TAGS = [
+    'a',
+    'abbr',
+    'acronym',
+    'b',
+    'blockquote',
+    'code',
+    'em',
+    'i',
+    'li',
+    'ol',
+    'strong',
+    'ul',
+    'p',
+    'h1', 'h2', 'h3', 'h4',
+    'table', 'thead', 'th', 'tbody', 'tr', 'td'
+]
+
 # User self-service features
 USER_SELF_SERVICE = {
     # User can change his own email address
