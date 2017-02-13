@@ -76,7 +76,7 @@ class Profile(models.Model):
 
 
 class Log(models.Model):
-    who = models.ForeignKey(User)
+    who = models.ForeignKey(User, null=True, blank=True)
     what = models.CharField(max_length=100, choices=STATUS_CHOICES)
     when = models.DateTimeField(auto_now_add=True)
     incident = models.ForeignKey('Incident', null=True, blank=True)
