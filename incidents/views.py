@@ -122,12 +122,14 @@ def user_login(request):
 
             if user.is_active:
                 login(request, user)
-                log("Login", user)
+                log("Login success", user)
                 init_session(request)
                 return redirect('dashboard:main')
             else:
+                log("Login attempted from locked account", user)
                 return HttpResponse('Account disabled')
         else:
+            log("Login failed for "+username, None)
             return render(request, 'incidents/login.html', {'error': 'error'})
     else:
         return render(request, 'incidents/login.html')
