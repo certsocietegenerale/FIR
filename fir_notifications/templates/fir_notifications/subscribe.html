@@ -11,7 +11,12 @@
                 <div class="modal-body">
                     <div>
                         {% csrf_token %}
-                        {% for field in form %}
+
+                        {% for hidden in form.hidden_fields %}
+                            {{ hidden }}
+                        {% endfor %}
+
+                        {% for field in form.visible_fields %}
                         <div class="form-group row">
                             <div class="col-sm-4">
                                 {{ field.label_tag }}
