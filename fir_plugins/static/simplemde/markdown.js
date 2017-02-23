@@ -22,6 +22,7 @@ function init_simplemde(textarea, initial_text) {
     renderingConfig: {
       codeSyntaxHighlighting: true
     },
+    forceSync: true,
     spellChecker: false,
     toolbar: [
       "bold",
