@@ -98,12 +98,20 @@ comment_permissions = ['incidents.handle_incidents', ]
 if getattr(settings, 'INCIDENT_VIEWER_CAN_COMMENT', False):
     comment_permissions.append('incidents.view_incidents')
 
+def getclientip(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
 
 # login / logout =================================================
 
 
 def user_login(request):
     if request.method == "POST":
+	
         username = request.POST['username']
         password = request.POST['password']
         user = authenticate(username=username, password=password)
@@ -122,14 +130,14 @@ def user_login(request):
 
             if user.is_active:
                 login(request, user)
-                log("Login success", user)
+                log("Login success", user, None, None, getclientip(request))
                 init_session(request)
                 return redirect('dashboard:main')
             else:
-		log("Login attempted from locked account", user)
+		log("Login attempted from locked account", user, None, None, getclientip(request))
                 return HttpResponse('Account disabled')
         else:
-            log("Login failed for "+username, None)
+            log("Login failed for "+username, None, None, getclientip(request))
             return render(request, 'incidents/login.html', {'error': 'error'})
     else:
         return render(request, 'incidents/login.html')
@@ -153,7 +161,7 @@ def init_session(request):
 # audit trail =====================================================
 
 
-def log(what, user, incident=None, comment=None):
+def log(what, user, incident=None, comment=None, ip=None):
     # dirty hack to not log when in debug mode
     import sys
     if getattr(settings, 'DEBUG', False):
@@ -165,7 +173,7 @@ def log(what, user, incident=None, comment=None):
     log.who = user
     log.incident = incident
     log.comment = comment
-
+    log.ip = ip
     log.save()
 
 

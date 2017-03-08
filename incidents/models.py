@@ -79,6 +79,7 @@ class Log(models.Model):
     who = models.ForeignKey(User, null=True, blank=True)
     what = models.CharField(max_length=100, choices=STATUS_CHOICES)
     when = models.DateTimeField(auto_now_add=True)
+    ip = models.CharField(max_length=100, null=True)
     incident = models.ForeignKey('Incident', null=True, blank=True)
     comment = models.ForeignKey('Comments', null=True, blank=True)
 
