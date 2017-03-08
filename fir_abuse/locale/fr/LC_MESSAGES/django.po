@@ -67,4 +67,4 @@ msgid "Send Abuse"
 msgstr "Signaler"
 
 msgid "Enrichment"
-msgstr: "Enrichissement"
+msgstr "Enrichissement"

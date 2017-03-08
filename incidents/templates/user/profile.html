@@ -4,6 +4,14 @@
 {% load staticfiles %}
 {% load fir_plugins %}
 
+{% block custom_css %}
+<link href="{% static "select/select2.css" %}" rel="stylesheet"/>
+<link href="{% static "select/select2-bootstrap.css" %}" rel="stylesheet"/>
+{% endblock %}
+
+{% block custom_js %}
+<script src="{% static "select/select2.min.js" %}"></script>
+{% endblock %}
 
 {% block content %}
     <div id='details-actions-all'>

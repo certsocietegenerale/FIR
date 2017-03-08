@@ -1,0 +1,39 @@
+{% load i18n %}
+{% load add_css_class %}
+
+{% if formset.forms %}
+<div class="col-sm-8 col-sm-offset-2">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">{% trans "Notification preferences" %}</h3>
+      </div>
+      <div class="panel-body">
+          <form action="{% url 'notifications:preferences' %}" method="post">
+                <div class="row-fluid">
+                    {% csrf_token %}
+                    {{ formset.management_form }}
+                    {% for label, forms in formset.labelled_forms.items %}
+                    <fieldset>
+                        <legend>{{ label }}</legend>
+                        {% for form in forms %}
+                        <div class="col-sm-3">
+                            <div class="form-group">
+                           <label id="id_business_lines">{{ form.get_notification_display }}</label>
+                                {{ form.business_lines|add_css_class:"form-control" }}
+                                {% for hidden in form.hidden_fields %}
+                                    {{ hidden }}
+                                {% endfor %}
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </fieldset>
+                    {% endfor %}
+                </div>
+                <div class="row-fluid">
+                    <button class="btn btn-primary" type="submit">{% trans "Save" %}</button>
+                </div>
+            </form>
+        </div>
+      </div>
+</div>
+{% endif %}

@@ -1,0 +1,4 @@
+{% load i18n %}
+{% for method, method_name in actions.items %}
+<li><a href="#" id="user_configure_{{method}}" data-toggle='modal' data-target='#configure_{{method}}'><i class="glyphicon glyphicon-comment"></i>{% blocktrans %}Configure {{ method_name }}{% endblocktrans %}</a></li>
+{% endfor %}

@@ -1,0 +1,47 @@
+{% load  add_css_class %}
+{% load i18n %}
+<div id="subscribe_notifications" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="subscribe_notifications}_label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="subscribe_notifications_form" method="POST" action="{{ request.path }}">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 id="subscribe_notifications_label" class="modal-title">{% trans "Notification subscription" %}</h4>
+                </div>
+                <div class="modal-body">
+                    <div>
+                        {% csrf_token %}
+
+                        {% for hidden in form.hidden_fields %}
+                            {{ hidden }}
+                        {% endfor %}
+
+                        {% for field in form.visible_fields %}
+                        <div class="form-group row">
+                            <div class="col-sm-4">
+                                {{ field.label_tag }}
+                            </div>
+                            <div class="col-sm-8">
+                                {{ field|add_css_class:"form-control" }}
+                                <span class='help-block'>
+                                    {% if not field.errors and field.help_text %}
+                                        {{field.help_text}}
+                                    {% endif %}
+                                    {% for error in field.errors %}
+                                        {{error}}
+                                    {% endfor %}
+                                </span>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">{%  trans "Cancel" %}</button>
+                    <button type="submit" class="btn btn-primary">{%  trans "Save" %}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

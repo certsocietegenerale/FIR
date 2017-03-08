@@ -50,6 +50,7 @@ CONFIDENTIALITY_LEVEL = (
 
 model_created = Signal(providing_args=['instance'])
 model_updated = Signal(providing_args=['instance'])
+model_status_changed = Signal(providing_args=['instance', 'previous_status'])
 
 
 class FIRModel:
@@ -199,8 +200,10 @@ class Incident(FIRModel, models.Model):
         return self.get_last_action != "Closed"
 
     def close_timeout(self):
+        previous_status = self.status
         self.status = 'C'
         self.save()
+        model_status_changed.send(sender=Incident, instance=self, previous_status=previous_status)
 
         c = Comments()
         c.comment = "Incident closed (timeout)"
