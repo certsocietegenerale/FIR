@@ -67,8 +67,8 @@ for app in INSTALLED_APPS:
         try:
             h = importlib.import_module('{}.hooks'.format(app))
             APP_HOOKS[app_name] = h.hooks
-        except ImportError as e:
-            print "No module named hooks for {}".format(app_name)
+        except ImportError:
+            pass
 
 
 
