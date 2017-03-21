@@ -16,6 +16,8 @@ def rich_edit_static(context):
     files = [
         "<link href=\"%s\" rel=\"stylesheet\"/>" % static(
             "simplemde/simplemde.min.css"),
+        "<link href=\"%s\" rel=\"stylesheet\"/>" % static(
+            "font-awesome/css/font-awesome.min.css"),
         "<script type=\"text/javascript\" src=\"%s\"></script>" % static(
             "simplemde/marked.min.js"),
         "<script type=\"text/javascript\" src=\"%s\"></script>" % static(
