@@ -161,7 +161,10 @@ MARKDOWN_ALLOWED_TAGS = [
     'ul',
     'p',
     'h1', 'h2', 'h3', 'h4',
-    'table', 'thead', 'th', 'tbody', 'tr', 'td'
+    'table', 'thead', 'th', 'tbody', 'tr', 'td',
+    'br',
+    'hr',
+    'pre'
 ]
 
 # User self-service features
