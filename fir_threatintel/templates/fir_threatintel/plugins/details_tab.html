@@ -1,0 +1,9 @@
+{% load i18n %}
+
+<li>
+	<input type="hidden" id="yeti_api_key" name="name" value="{{user.yetiprofile.api_key}}">
+	<input type="hidden" id="yeti_endpoint" name="name" value="{{user.yetiprofile.endpoint}}">
+	<a href='#tab_threatintel' data-toggle='tab' id='ti-tab'>
+		{% trans "Threat Intel" %}<span class="ti-count"></span>
+	</a>
+</li>

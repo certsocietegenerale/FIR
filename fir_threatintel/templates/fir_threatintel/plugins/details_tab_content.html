@@ -1,0 +1,121 @@
+{% load staticfiles %}
+{% load i18n %}
+
+{% load fir_threatintel %}
+
+{% for artifact_type in artifacts %}
+	{% with artifact_type|artifact_json:request as art %}
+		{% for aval in art.artifact_values %}
+		<input type="hidden" name="artifacts" value="{{ aval.value }}" />
+		{% endfor %}
+	{% endwith %}
+{% endfor %}
+
+<div class='tab-pane' data-query-endpoint="" data-observable-post="" id='tab_threatintel'>
+No intelligence available for this incident. Please check your configuration settings.
+</div>
+
+{% verbatim %}
+<!-- Start Handlebar templates -->
+
+<script id="yeti-tab-data-template" type="text/x-handlebars-template">
+		<span class="known">Known: {{known.length}}</span>
+	{{#each entities}}
+		<span class="label label-danger">{{name}}</span>
+	{{/each}}
+</script>
+
+<script id="yeti-matches-template" type="text/x-handlebars-template">
+<div class="col-sm-12 widget yeti-matches">
+	<h4 class='widget'>Entity guesses</h4>
+	<table class="table table-condensed">
+		{{#each entities}}
+			{{#if matches.indicators}}
+			<tbody>
+				<tr><th>Entity</th><th>Indicator</th><th>Observable</th><th>Diamond edge</th><th>Pattern</th></tr>
+				{{#each matches.indicators}}
+				<tr><td><span class="label label-danger"><a href="{{../human_url}}" target="_blank">{{../name}}</a></span></td><td><a href="{{human_url}}" target=_blank>{{name}}</a></td><td><code>{{matched_observable}}</code></td><td>{{diamond}}</td><td><code>{{pattern}}</code></td></tr>
+				{{/each}}
+			</tbody>
+			{{/if}}
+			{{#if matches.observables}}
+			<tbody>
+				<tr><th>Entity</th><th>Observable</th><th>Tags</th></tr>
+				{{#each matches.observables}}
+				<tr><td><span class="label label-danger"><a href="{{../human_url}}" target="_blank">{{../name}}</a></span></td><td><code><a href="{{matched_observable.human_url}}" target="_blank"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></a>&nbsp;{{matched_observable.value}}</code></td><td>{{#each matched_observable.tags}}<span class="label label-primary">{{this}}</span>{{/each}}</td></tr>
+				{{/each}}
+			</tbody>
+			{{/if}}
+		{{/each}}
+
+
+	</table>
+</div>
+</script>
+
+<script id="yeti-observables-template" type="text/x-handlebars-template">
+<div class="col-sm-12 widget yeti-matches">
+	<h4 class='widget'>Observables</h4>
+	<div class="read">
+		<table class="table table-condensed yeti-read">
+			<tbody class="known">
+				{{#if known}}
+				<tr><th class="narrow"></th><th>Observable</th><th>Tags</th><th>YETI Context</th></tr>
+				{{#each known}}
+				<tr><td><a href="{{human_url}}" target="_blank"><span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></a></td><td><code>{{value}}</code></td><td>{{#each tags}}<span class="label label-primary">{{name}}</span>{{/each}}</td><td>{{join context ", " "source"}}</td></tr>
+				{{/each}}
+				{{/if}}
+			</tbody>
+			<tbody class="unknown">
+				{{#if unknown}}
+				<tr><th></th><th>Unknown observables</th><th></th><th></th></tr>
+				{{#each unknown}}
+				<tr><td></td><td><code>{{this}}</code></td><td>N/A</td><td>N/A</td></tr>
+				{{/each}}
+				{{/if}}
+			</tbody>
+
+		</table>
+	</div>
+
+	<div class="send">
+	<table class="table table-condensed yeti-send">
+		<tr><th></th><th>Observable</th><th>Tags</th><th>YETI Context</th></tr>
+		<tbody class="known">
+			{{#if known}}
+			{{#each known}}
+			<tr class="observable"><td><input type="checkbox" name="name" value=""></td><td class="value"><code>{{value}}</code></td><td class="tags"><input type="text" class="tagsinput tag-azure-yeti" value="{{#each tags}}{{name}},{{/each}}"></td><td class="context">{{join context ", " "source"}}</td></tr>
+			{{/each}}
+			{{/if}}
+		</tbody>
+
+		<tbody class="unknown">
+			{{#if unknown}}
+			<tr><th></th><th>Unknown observables</th><th></th><th></th></tr>
+			{{#each unknown}}
+			<tr class="observable"><td><input type="checkbox" name="name" value=""></td><td class="value"><code>{{this}}</code></td><td class="tags"><input type="text" class="tagsinput tag-azure-yeti" value=""></td><td class="context">N/A</td></tr>
+			{{/each}}
+			{{/if}}
+		</tbody>
+		<tbody>
+			<tr>
+				<td><input id="check-all" data-target="observable" class="check-all" type="checkbox" name="name" value=""></td>
+				<td>&nbsp;<strong><label for="check-all">Select all / tags for all observables</label></strong></td>
+				<td class="tags">asd<input type="text" class="tagsinput tag-azure-yeti all-tags" value=""></td>
+				<td></td>
+			</tr>
+		</tbody>
+	</table>
+		<button class="btn btn-danger" id="send-to-yeti" href="#" role="button">Send it! <span class="glyphicon glyphicon-cloud-upload" aria-hidden="true"></span></button>
+		{% endverbatim %}
+			<strong>Note</strong>: Observables added this way will have the following <code>FIR</code> context <code id="fid" data-fid="{{event.id}}">{FID: {{event.id}}}</code>
+		{% verbatim %}
+	</div>
+
+	<a class="btn btn-default btn-sm" id="toggle-send" href="#" role="button">Send to Yeti...</a>
+
+</div>
+</script>
+
+<!-- End Handlebar templates -->
+{% endverbatim %}

@@ -1,0 +1,26 @@
+{% load i18n %}
+{% if perms.incidents.handle_incidents %}
+<div class="row">
+
+  <div class="col-sm-8 col-sm-offset-2">
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title">FIR ThreatIntel - {% trans "Yeti API configuration" %}</h3>
+      </div>
+      <div class="panel-body">
+          You need an API key for the FIR ThreatIntel plugin to work.
+          <form class="" action="{% url 'threatintel:update_api' %}" method="post">
+            <div class="form-group">
+              <input type="text" class="form-control" name="yeti_api" placeholder="Yeti API key" value="{{ user.yetiprofile.api_key}}" />
+            </div>
+            <div class="form-group">
+              <input type="text" class="form-control" name="endpoint" placeholder="http://localhost:5000/api" value="{{ user.yetiprofile.endpoint}}" />
+            </div>
+            {% csrf_token %}
+            <button type="submit" class="btn btn-primary">Save</button>
+          </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}

@@ -1,0 +1,218 @@
+#tab_threatintel .yeti-guesses .label,
+#tab_threatintel .yeti-guesses .badge {
+  font-size: initial;
+}
+
+#tab_threatintel table > tbody > tr> th {
+  border-top: 0px;
+}
+
+#tab_threatintel table td {
+  vertical-align: middle;
+}
+
+#tab_threatintel label {
+  margin-bottom: 0;
+}
+
+#tab_threatintel table {
+  margin-bottom: 0px;
+}
+
+#tab_threatintel table td {
+  padding:5px;
+}
+
+#tab_threatintel .label {
+  margin: 2px;
+}
+
+#tab_threatintel .narrow {
+  width:10px;
+}
+
+#tab_threatintel a .glyphicon {
+  color: #337ab7;
+}
+
+#tab_threatintel span.label a {
+  color:white
+}
+
+#tab_threatintel span.label a:hover {
+  text-decoration: none;
+  color:black;
+}
+
+.ti-count, .ti-count .label {
+  font-size: 11px;
+  opacity: 0.8;
+}
+
+#ti-tab:hover * {
+  opacity: 1;
+}
+
+span.context {
+  margin-left: 2px;
+}
+
+#tab_threatintel table td.tags {
+  padding: 0px;
+}
+
+div.send {
+  display: none;
+  margin-bottom: 10px;
+}
+
+.checkbox-all {
+  width:40px;
+}
+
+.yeti-alert {
+  display: inline;
+}
+
+
+.tagsinput {
+  height: 40px;
+  overflow-y: auto;
+  text-align: left;
+}
+.tagsinput .tag {
+  cursor: pointer;
+  overflow: hidden;
+  position: relative;
+  margin: 1px ;
+  padding: 2px 12px;
+  border: 1px solid #888888;
+  border-radius: 3px;
+  color: #888888;
+  font-weight: 500;
+  font-size: 12px;
+  display: inline-block;
+  vertical-align: middle;
+}
+.tagsinput .tag:hover {
+  padding-left: 10px;
+  padding-right: 14px;
+}
+.tagsinput .tagsinput-add {
+  color: #333333;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 14px;
+  padding: 5px 6px;
+  margin: 5px 0 0;
+  vertical-align: middle;
+  opacity: 0.8;
+  filter: alpha(opacity=80);
+}
+.tagsinput .tagsinput-add:hover, .tagsinput .tagsinput-add:focus {
+  opacity: 1;
+  filter: alpha(opacity=100);
+}
+.tagsinput .tagsinput-add:before {
+  content: "+";
+  font-family: "Arial";
+}
+.tagsinput .tagsinput-remove-link {
+  color: #888888;
+  cursor: pointer;
+  font-size: 12px;
+  padding: 2px 0;
+  position: absolute;
+  right: 0;
+  opacity: 0;
+  text-align: right;
+  text-decoration: none;
+  top: 0;
+  width: 100%;
+  z-index: 2;
+}
+.tagsinput .tag:hover .tagsinput-remove-link {
+  opacity: 1;
+  padding-right: 6px;
+}
+.tagsinput .tagsinput-remove-link:before {
+  content: "\e014";
+  font-family: 'Glyphicons Halflings';
+  font-size: 10px;
+  margin-top:1px;
+}
+.tagsinput .tagsinput-add-container {
+  display: inline-block;
+  vertical-align: middle;
+}
+.tagsinput input {
+  background: transparent;
+  border: none;
+  color: #333333;
+  margin: 0;
+  outline: medium none !important;
+  padding: 0 0 0 5px;
+  vertical-align: middle;
+  width: 100px;
+  height: 20px;
+}
+.tagsinput.tag-blue .tag, .tagsinput.tag-blue .tagsinput-remove-link {
+  border-color: #447DF7;
+  color: #447DF7;
+}
+.tagsinput.tag-azure .tag, .tagsinput.tag-azure .tagsinput-remove-link {
+  border-color: #23CCEF;
+  color: #23CCEF;
+}
+.tagsinput.tag-azure-yeti .tag, .tagsinput.tag-azure-yeti .tagsinput-remove-link {
+  border-color: LightSkyBlue;
+  color: LightSkyBlue;
+}
+.tagsinput.tag-green .tag, .tagsinput.tag-green .tagsinput-remove-link {
+  border-color: #87CB16;
+  color: #87CB16;
+}
+.tagsinput.tag-orange .tag, .tagsinput.tag-orange .tagsinput-remove-link {
+  border-color: #FFA534;
+  color: #FFA534;
+}
+.tagsinput.tag-red .tag, .tagsinput.tag-red .tagsinput-remove-link {
+  border-color: #FB404B;
+  color: #FB404B;
+}
+.tagsinput.tag-fill.tag-blue .tag {
+  border-color: #447DF7;
+  color: #FFFFFF;
+  background-color: #447DF7;
+}
+.tagsinput.tag-fill.tag-azure .tag {
+  border-color: #23CCEF;
+  color: #FFFFFF;
+  background-color: #23CCEF;
+}
+.tagsinput.tag-fill.tag-green .tag {
+  border-color: #87CB16;
+  color: #FFFFFF;
+  background-color: #87CB16;
+}
+.tagsinput.tag-fill.tag-orange .tag {
+  border-color: #FFA534;
+  color: #FFFFFF;
+  background-color: #FFA534;
+}
+.tagsinput.tag-fill.tag-red .tag {
+  border-color: #FB404B;
+  color: #FFFFFF;
+  background-color: #FB404B;
+}
+.tagsinput.tag-fill .tagsinput-remove-link {
+  color: #FFFFFF;
+}
+
+.animation-transition-ultra-fast, .tagsinput .tag, .tagsinput .tagsinput-remove-link {
+  -webkit-transition: all 60ms ease-in;
+  -moz-transition: all 60ms ease-in;
+  -o-transition: all 60ms ease-in;
+  -ms-transition: all 60ms ease-in;
+  transition: all 60ms ease-in;
+}
