@@ -1,7 +1,7 @@
-from django.conf.urls import patterns, url
+from django.conf.urls import url
 
 from fir_threatintel import views
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^update_api', views.update_api, name='update_api'),
-)
+]
