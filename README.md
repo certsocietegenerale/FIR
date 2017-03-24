@@ -19,7 +19,7 @@ If you like it and want to set it up for production, [here's how to do it](https
 
 A dockerfile for running a dev-quality FIR setup is also available in [docker/Dockerfile](docker/Dockerfile).
 
-Deploy to [Heroku](https://heroku.com) via fir/heroku_settings.py
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy) via fir/heroku_settings.py
 
 # Community
 
