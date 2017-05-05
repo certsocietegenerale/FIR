@@ -5,13 +5,6 @@ function isNumber(n) {
 var color = d3.scale.ordinal()
 	    .range(["#e60028", "#873d67", "#3e7eaf", "#d55a39", "#1a9656", "#666666", "#d24b28", "#0ac8dc", "#82379b", "#a50041", "#a0af00", "#ffa02d", "#c30082", "#00a550", "#64a0c8", "#c864cd", "#dc4b69", "#9be173", "#ffb414", "#e1648c", "#9178d2", "#6e3c28"]);
 
-
-var color_severity = d3.scale.ordinal()
-					.domain(['1/4', '2/4', '3/4', '4/4'])
-					.range(['#468847', '#f89406', '#fefe00', '#f81920']);
-
-var colors = {other: color, severity: color_severity};
-
 function generate_table(selector, url) {
 	$.getJSON(url, function(data) {
 
@@ -24,7 +17,7 @@ function generate_table(selector, url) {
 			tr.append("<td>"+incident.subject+"</td>");
 			tr.append("<td>"+incident.category+"</td>");
 			tr.append("<td>"+incident.confidentiality_display+"</td>");
-			tr.append("<td><span class='badge threatcon-"+incident.severity+"'>"+incident.severity+"</span></td>");
+			tr.append("<td><span class='badge' style='background-color: "+incident.severity.color+"!important;'>"+incident.severity+"</span></td>");
 			tr.append("<td>"+incident.business_lines_names+"</td>");
 			tr.append("<td>"+incident.status_display+"</td>");
 			tr.append("<td>"+incident.detection+"</td>");
@@ -112,7 +105,6 @@ function generate_stacked_chart(selector, url, width, height, label, legend) {
 		legend = Object.keys(data[0]).length-1;
 
 		width = width + margin.left + margin.right - 120 * Math.floor(legend/legend_per_col);
-		var color_scale = color;
 		var svg = d3.select(selector).append("svg")
 		    .attr("width", width)
 		    .attr("height", height + margin.top + margin.bottom)
@@ -124,14 +116,6 @@ function generate_stacked_chart(selector, url, width, height, label, legend) {
 		  data.forEach(function(d) {
 		    var y0 = 0;
 			var type;
-		    if (d['1/4'] != undefined) {
-		    	type = 'severity';
-		    	color_scale = color_severity
-		    }
-		   	else {
-		   		type = 'other';
-		   		color_scale = color
-		   	}
 		    d.values = color.domain().map(function(name) { 	return {name: name, y0: y0, y1: y0 += +d[name], type: type}; });
 		    d.total = d.values[d.values.length - 1].y1;
 	  });
@@ -184,7 +168,7 @@ function generate_stacked_chart(selector, url, width, height, label, legend) {
 	      .attr('title', function(d) { return d.y1-d.y0})
 	      .attr('data-toggle', 'tooltip')
 	      .style("fill", function(d) {
-	      	return colors[d.type](d.name)
+	      	return color(d.name)
 	      });
 
 
@@ -204,7 +188,7 @@ function generate_stacked_chart(selector, url, width, height, label, legend) {
 	      .attr("width", 18)
 	      .attr("height", 18)
 	      .style("fill", function(d) {
-	      	return color_scale(d)
+	      	return color(d)
 	      });
 
 
@@ -355,21 +339,13 @@ function generate_multiple_donut_chart(selector, url, widths, outer_radius, inne
 	  		if (isNumber(d[index]))
 	  			total += d[index];
 	  	}
-	  	if (d['1/4'] != undefined) {
-		    	type = 'severity';
-		    	color_scale = color_severity
-	    }
-	   	else {
-	   		type = 'other';
-	   		color_scale = color
-	   	}
 	   	if (total == 0)
-	    		na = true;
-	    	else
-	    		na = false;
+	    	na = true;
+	    else
+	    	na = false;
 	    d.entries = color.domain().map(function(name) {
-	    	if (na) {	return {name: "N/A", value: 1, type: 'other', na: na }}
-	    	else {   	return {name: name, value: +d[name], type: type, na: na}; }
+	    	if (na) {	return {name: "N/A", value: 1, na: na }}
+	    	else {   	return {name: name, value: +d[name], na: na}; }
 	    });
 	  });
 
@@ -393,7 +369,7 @@ function generate_multiple_donut_chart(selector, url, widths, outer_radius, inne
 	      	if (d.data.na) {
 	      		return "#CCC";
 	      	}
-	      	return colors[d.data.type](d.data.name);
+	      	return color(d.data.name);
 	      });
 
 	  g.append("text")
@@ -439,13 +415,6 @@ function generate_donut_chart(selector, url, dimension, radius) {
       .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
 
   d3.json(url, function(error, data) {
-	  var color_scale;
-      if (data[0].label == "1/4") {
-		  color_scale = color_severity;
-	  } else {
-		  color_scale = color;
-      }
-
       color.domain([]);
 
       data.forEach(function(d) {
@@ -459,7 +428,7 @@ function generate_donut_chart(selector, url, dimension, radius) {
 
       g.append("path")
           .attr("d", arc)
-          .style("fill", function(d) { return color_scale(d.data.label); });
+          .style("fill", function(d) { return color(d.data.label); });
 
       g.append("text")
           .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
@@ -476,14 +445,14 @@ function generate_donut_chart(selector, url, dimension, radius) {
           .attr("width", radius)
           .attr("height", legend_height)
         	.selectAll("g")
-          	.data(color_scale.domain().slice().reverse())
+          	.data(color.domain().slice().reverse())
         	.enter().append("g")
          	.attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
 
       legend.append("rect")
           .attr("width", 18)
           .attr("height", 18)
-          .style("fill", color_scale);
+          .style("fill", color);
 
       legend.append("text")
           .attr("x", 24)
