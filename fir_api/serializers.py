@@ -57,6 +57,8 @@ class IncidentSerializer(serializers.ModelSerializer):
         exclude = ['main_business_lines', 'artifacts']
         read_only_fields = ('id', 'opened_by', 'main_business_lines', 'file_set')
 
+# FIR Comment model        
+        
 class CommentSerializer(serializers.ModelSerializer):
     incident = serializers.HyperlinkedRelatedField(read_only=True, view_name='api:incident-detail')
     
