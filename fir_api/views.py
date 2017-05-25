@@ -18,7 +18,7 @@ from rest_framework.decorators import detail_route
 from rest_framework import renderers
 
 
-from fir_api.serializers import UserSerializer, IncidentSerializer, ArtifactSerializer, FileSerializer
+from fir_api.serializers import UserSerializer, IncidentSerializer, ArtifactSerializer, FileSerializer, CommentSerializer
 from fir_api.permissions import IsIncidentHandler
 from fir_artifacts.files import handle_uploaded_file, do_download
 from incidents.models import Incident, Artifact, Comments, File
@@ -83,6 +83,13 @@ class FileViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
         resp_data = FileSerializer(files_added, many=True, context={'request': request}).data
         return HttpResponse(JSONRenderer().render(resp_data), content_type='application/json')
 
+class CommentViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
+    """
+    API endpoint that (currently) allows for viewing of comments
+    """
+    queryset = Comments.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = (IsAuthenticated, IsIncidentHandler)
 
 # Token Generation ===========================================================
 
