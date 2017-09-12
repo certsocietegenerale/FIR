@@ -30,7 +30,7 @@ class WebhookMethod(NotificationMethod):
         return self._get_configuration(user).get('token', None)
 
     @staticmethod
-    def _prepare_json(token, event, instance):
+    def _prepare_json(event, instance):
         date = getattr(instance, 'date', None)
         timestamp = int(date.strftime('%s')) if date is not None else None
         instance_id = getattr(instance, 'id', None)
@@ -42,7 +42,6 @@ class WebhookMethod(NotificationMethod):
             elif event_type == 'event':
                 url = request.build_absolute_uri('/events/{}/'.format(instance_id))
         return json_dumps({
-            'token': token,
             'event': event,
             'id': instance_id,
             'url': url,
@@ -72,8 +71,9 @@ class WebhookMethod(NotificationMethod):
             if not self.enabled(event, user, paths) or not url:
                 continue
             http_request = Request(url)
+            http_request.add_header('Authorization', 'Token {}'.format(token))
             http_request.add_header('Content-Type', 'application/json')
-            urlopen(http_request, self._prepare_json(token, event, instance))
+            urlopen(http_request, self._prepare_json(event, instance))
 
     def configured(self, user):
         return super(WebhookMethod, self).configured(user) and self._get_url(user)
