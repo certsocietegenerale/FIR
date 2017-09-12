@@ -36,10 +36,11 @@ class WebhookMethod(NotificationMethod):
         instance_id = getattr(instance, 'id', None)
         event_type = event.split(':')[0]
         url = None
-        if event_type == 'incident':
-            url = request.build_absolute_uri('/incidents/{}/'.format(instance_id))
-        elif event_type == 'event':
-            url = request.build_absolute_uri('/events/{}/'.format(instance_id))
+        if instance_id is not None:
+            if event_type == 'incident':
+                url = request.build_absolute_uri('/incidents/{}/'.format(instance_id))
+            elif event_type == 'event':
+                url = request.build_absolute_uri('/events/{}/'.format(instance_id))
         return json_dumps({
             'token': token,
             'event': event,
