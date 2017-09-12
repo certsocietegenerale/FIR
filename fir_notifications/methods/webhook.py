@@ -5,6 +5,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from fir_notifications.methods import NotificationMethod
+from fir_notifications.methods.utils import request
 
 
 class WebhookMethod(NotificationMethod):
@@ -32,10 +33,18 @@ class WebhookMethod(NotificationMethod):
     def _prepare_json(token, event, instance):
         date = getattr(instance, 'date', None)
         timestamp = int(date.strftime('%s')) if date is not None else None
+        instance_id = getattr(instance, 'id', None)
+        event_type = event.split(':')[0]
+        url = None
+        if event_type == 'incident':
+            url = request.build_absolute_uri('/incidents/{}/'.format(instance_id))
+        elif event_type == 'event':
+            url = request.build_absolute_uri('/events/{}/'.format(instance_id))
         return json_dumps({
             'token': token,
             'event': event,
-            'id': getattr(instance, 'id', None),
+            'id': instance_id,
+            'url': url,
             'subject': getattr(instance, 'subject', None),
             'status': getattr(instance, 'status', None),
             'category_id': getattr(instance, 'category_id', None),
@@ -61,9 +70,9 @@ class WebhookMethod(NotificationMethod):
             token = self._get_token(user)
             if not self.enabled(event, user, paths) or not url:
                 continue
-            request = Request(url)
-            request.add_header('Content-Type', 'application/json')
-            urlopen(request, self._prepare_json(token, event, instance))
+            http_request = Request(url)
+            http_request.add_header('Content-Type', 'application/json')
+            urlopen(http_request, self._prepare_json(token, event, instance))
 
     def configured(self, user):
         return super(WebhookMethod, self).configured(user) and self._get_url(user)
