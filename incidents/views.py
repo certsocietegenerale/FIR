@@ -33,6 +33,7 @@ from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.forms.models import model_to_dict, modelform_factory
 from django.utils.translation import ugettext_lazy as _
 from django.conf import settings
+from django.contrib import messages
 
 import re, datetime
 from dateutil.relativedelta import *
