@@ -71,7 +71,7 @@ EXTERNAL_URL = 'https://fir.example.com'
 
 ### Email notifications
 
-Follow the `fir_email` [README](fir_email/README.md).
+Follow the `fir_email` [README](../fir_email/README.md).
 
 ### Jabber (XMPP) notifications
 
