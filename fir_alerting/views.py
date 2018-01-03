@@ -68,17 +68,25 @@ def get_template(request, incident_id, template_type, bl=None, authorization_tar
         rec_template = get_rec_template(Q(business_line=None) & Q(type=template_type))
 
     artifacts = {}
+    main_artifact = None
     for a in i.artifacts.all():
+        if i.subject.lower() == a.value:
+            main_artifact = a
         if a.type not in artifacts:
             artifacts[a.type] = []
         artifacts[a.type].append(a.value.replace('http://', "hxxp://").replace('https://', 'hxxps://'))
+
+    enrich = None
+    if main_artifact and main_artifact.artifactenrichment_set.all().count() > 0:
+        enrich = main_artifact.artifactenrichment_set.all()[0].raw
 
     c = Context({
         'subject': i.subject.replace('http://', "hxxp://").replace('https://', 'hxxps://'),
         'bl': bl_name,
         'phishing_url': i.subject.replace('http://', "hxxp://").replace('https://', 'hxxps://'),
         'artifacts': artifacts,
-        'incident_id': i.id
+        'incident_id': i.id,
+        'enrich': enrich
     })
 
     response = {
