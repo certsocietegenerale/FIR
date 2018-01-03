@@ -679,5 +679,37 @@
             ]
         ]
     }
+},
+{
+    "model": "incidents.severitychoice",
+    "pk": 1,
+    "fields": {
+        "name": "1",
+        "color": "#468847"
+    }
+},
+{
+    "model": "incidents.severitychoice",
+    "pk": 2,
+    "fields": {
+        "name": "2",
+        "color": "#fefe00"
+    }
+},
+{
+    "model": "incidents.severitychoice",
+    "pk": 3,
+    "fields": {
+        "name": "3",
+        "color": "#f89406"
+    }
+},
+{
+    "model": "incidents.severitychoice",
+    "pk": 4,
+    "fields": {
+        "name": "4",
+        "color": "#f81920"
+    }
 }
 ]

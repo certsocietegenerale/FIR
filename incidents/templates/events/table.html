@@ -59,7 +59,7 @@
 							<td><a href="{% url 'events:details' incident.id %}">{{ incident.subject }}</a></td>
 						{% endif %}
 						<td>{{ incident.get_business_lines_names }}</td>
-						<td><span class='badge threatcon-{{ incident.severity }}'>{{ incident.severity }}</span></td>
+						<td><span class='badge' style='background-color:{{ incident.severity.color }}!important;'>{{ incident.severity }}</span></td>
 						<td>{{ incident.get_status_display }}</td>
 
 						{% if incident_view %}

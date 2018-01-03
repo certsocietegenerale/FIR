@@ -117,25 +117,6 @@ h4 {
 	clear:both;
 }
 
-
-/* badges -------------------------------------*/
-.threatcon-1 { /* green */
-	background-color: #468847!important;
-}
-
-.threatcon-2 { /* yellow */
-	background-color: #fefe00!important;
-	color:black!important;
-}
-
-.threatcon-3 { /* orange */
-	background-color: #f89406!important;
-}
-
-.threatcon-4 { /* red */
-	background-color: #f81920!important;
-}
-
 /* regex --------------------------------------*/
 
 span.hostname {

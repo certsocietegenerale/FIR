@@ -238,7 +238,7 @@
 			</td>
 			<td>{{ incident.category }}</td>
 			<td>{{ incident.get_confidentiality_display }}</td>
-			<td><span class='badge threatcon-{{incident.severity}}'>{{ incident.severity }}</span></td>
+			<td><span class='badge' style='background-color:{{ incident.severity.color }}!important;'>{{ incident.severity }}</span></td>
 			<td>{{ incident.get_business_lines_names }}</td>
 			<td>{{ incident.get_status_display }}</td>
 			<td>{{ incident.detection }}</td>
@@ -287,7 +287,7 @@
 			</td>
 			<td>{{ incident.category }}</td>
 			<td>{{ incident.get_confidentiality_display }}</td>
-			<td><span class='badge threatcon-{{incident.severity}}'>{{ incident.severity }}</span></td>
+			<td><span class='badge' style='background-color:{{ incident.severity.color }}!important;'>{{ incident.severity }}</span></td>
 			<td>{{ incident.get_business_lines_names }}</td>
 			<td>{{ incident.get_status_display }}</td>
 			<td>{{ incident.detection }}</td>
