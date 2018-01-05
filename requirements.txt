@@ -1,6 +1,6 @@
 cssselect==0.9.1
 dj-database-url==0.4.1
-Django==1.9.9
+Django==1.11
 django-filter==0.14.0
 djangorestframework==3.4.6
 flup==1.0.2

@@ -11,7 +11,7 @@ from django.views.decorators.http import require_POST
 from incidents.models import IncidentCategory, Incident, Comments, BusinessLine, model_status_changed
 from incidents.models import Label, Log, BaleCategory
 from incidents.models import Attribute, ValidAttribute, IncidentTemplate, Profile
-from incidents.models import IncidentForm, CommentForm
+from incidents.forms import IncidentForm, CommentForm
 from incidents.authorization.decorator import authorization_required
 from fir.config.base import INSTALLED_APPS
 import importlib
