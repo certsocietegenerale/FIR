@@ -165,7 +165,8 @@ class IncidentCategory(models.Model):
 # Core models ================================================================
 
 @tree_authorization(fields=['concerned_business_lines', ], tree_model='incidents.BusinessLine',
-                    owner_field='opened_by', owner_permission=settings.INCIDENT_CREATOR_PERMISSION)
+                    owner_field='opened_by', owner_permission=settings.INCIDENT_CREATOR_PERMISSION,
+                    extra_tests={'confidentiality__lte': lambda u: u.profile.confidentiality})
 @link_to(File)
 @link_to(Artifact)
 class Incident(FIRModel, models.Model):
