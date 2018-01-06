@@ -32,6 +32,29 @@ body .frame, .minitable, table {
 	font-size:12px;
 }
 
+/* badges -------------------------------------*/
+
+.confidentiality-0 { /* white */
+	background-color: white!important;
+	color:black!important;
+}
+
+.confidentiality-1 { /* green */
+	background-color: #468847!important;
+}
+
+.confidentiality-2 { /* orange */
+	background-color: #f89406!important;
+}
+
+.confidentiality-3 { /* red */
+	background-color: #f81920!important;
+}
+
+.confidentiality-4 { /* black */
+	background-color: black!important;
+}
+
 
 /* regex --------------------------------------*/
 
@@ -141,7 +164,7 @@ footer div {
 }
 
 .container {
-	min-height: 100%
+	min-height: 100%;
 	height: auto !important;
 
 }

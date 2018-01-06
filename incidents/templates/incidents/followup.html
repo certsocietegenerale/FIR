@@ -32,6 +32,11 @@
 				<td class='head'>{%  trans "Incident Leader" %}</td><td class='delim'>{{ incident.actor }}</td>
 				<td class='head'>{%  trans "Plan" %}</td><td class='delim'>{{ incident.plan }}</td>
 				{%endif%}
+                <td class='head'>{%  trans "Confidentiality" %}</td><td class='delim'>
+                    <span class='label confidentiality-{{ incident.confidentiality }}'>
+                        {{ incident.get_confidentiality_display}}
+                    </span>
+                </td>
 				<td class='head'>{%  trans "Severity" %}</td><td class='delim'>{{ incident.severity }}</td>
 				<td class='head'>{%  trans "Category" %}</td><td class='delim'>{{ incident.category }}</td>
 				<td class='head'>{%  trans "Status" %}</td><td class='delim'><span class='label {% if incident.status == "O" %}label-info{% elif incident.status == "B" %}label-danger{% elif incident.status == "C"%}label-success{% endif %}'>{{ incident.get_status_display}}</span></td>
