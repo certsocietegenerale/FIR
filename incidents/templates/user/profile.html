@@ -103,7 +103,11 @@
                                           <p id="id_incident_number" class="form-control-static form-control">{{ user.profile.incident_number }}</p>
                                       {% endif %}
                                   </div>
-                                  <div class="col-sm-6 checkbox aligned-with-stack{% if profile_form.hide_closed.errors%} has-error{%endif%}">
+                                  <div class="col-sm-3">
+                                      <label for="id_confidentiality">{% trans "Security clearance" %}</label>
+                                      <p id="id_confidentiality" class="form-control-static"><span class="label confidentiality-{{ user.profile.confidentiality }}">{{  user.profile.get_confidentiality_display}}</span></p>
+                                  </div>
+                                  <div class="col-sm-3 checkbox aligned-with-stack{% if profile_form.hide_closed.errors%} has-error{%endif%}">
                                       {% if profile_form.hide_closed %}
                                           <label>{{ profile_form.hide_closed }} {% trans "Hide closed events?" %}</label>
                                           {% include 'events/_form_errors.html' with errors=profile_form.hide_closed.errors %}
