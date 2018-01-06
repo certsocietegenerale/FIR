@@ -62,6 +62,8 @@ class Profile(models.Model):
     user = models.OneToOneField(User)
     incident_number = models.IntegerField(default=50)
     hide_closed = models.BooleanField(default=False)
+    confidentiality = models.IntegerField(choices=CONFIDENTIALITY_LEVEL, default=len(CONFIDENTIALITY_LEVEL) - 1,
+                                          verbose_name=_(u"security clearance"))
 
     def __unicode__(self):
         return u"Profile for user '{}'".format(self.user)
