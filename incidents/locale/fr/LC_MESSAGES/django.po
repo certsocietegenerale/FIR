@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FIR master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-23 11:39+0100\n"
+"POT-Creation-Date: 2018-01-06 12:56+0100\n"
 "PO-Revision-Date: 2015-03-15 20:24+0100\n"
 "Last-Translator: Gaetan Crahay <gaetan@crahay.eu>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -17,48 +17,52 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: models.py:21 models.py:190 templates/dashboard/index.html:22
-#: templates/events/detail-all.html:52 views.py:235
+#: forms.py:47
+msgid "You cannot create incidents for these business lines"
+msgstr "Vous ne pouvez pas créer d'incidents pour ces parties prenantes"
+
+#: models.py:19 models.py:188 templates/dashboard/index.html:22
+#: templates/events/detail-all.html:52 views.py:255
 msgid "Open"
 msgstr "Ouvert"
 
-#: models.py:22
+#: models.py:20
 msgid "Closed"
 msgstr "Fermé"
 
-#: models.py:23 templates/dashboard/index.html:25
+#: models.py:21 templates/dashboard/index.html:25
 msgid "Blocked"
 msgstr "Bloqué"
 
-#: models.py:118 models.py:129
+#: models.py:66
+msgid "security clearance"
+msgstr "habilitation"
+
+#: models.py:115 models.py:126
 #, fuzzy
 #| msgid "Business lines"
 msgid "business line"
 msgstr "Parties prenantes"
 
-#: models.py:128
+#: models.py:125
 msgid "user"
 msgstr "utilisateur"
 
-#: models.py:130
+#: models.py:127
 msgid "role"
 msgstr "rôle"
 
-#: models.py:133
+#: models.py:130
 msgid "{} is {} on {}"
 msgstr "{} est {} de {}"
 
-#: models.py:136
+#: models.py:133
 msgid "access control entry"
 msgstr "entrée de contrôle d'accès"
 
-#: models.py:137
+#: models.py:134
 msgid "access control entries"
 msgstr "entrées de contrôle d'accès"
-
-#: models.py:402
-msgid "You cannot create incidents for these business lines"
-msgstr "Vous ne pouvez pas créer d'incidents pour ces parties prenantes"
 
 #: templates/403.html:13
 msgid "Access denied"
@@ -82,80 +86,80 @@ msgid "List of incidents including %(artifact_display)s %(artifact_value)s"
 msgstr "Liste des incidents incluant %(artifact_display)s %(artifact_value)s"
 
 #: templates/artifacts/incidents_index.html:13
-#: templates/events/detail-all.html:216 templates/events/table.html:7
-#: templates/incidents/followup.html:60
-#: templates/incidents/plugins/correlation_list.html:11
-#: templates/stats/attributes.html:136 templates/stats/major.html:77
-#: templates/stats/quarterly.html:210 templates/stats/quarterly.html:258
-#: templates/stats/sandbox.html:405
+#: templates/events/detail-all.html:221 templates/events/table.html:8
+#: templates/incidents/followup.html:65
+#: templates/incidents/plugins/correlation_list.html:13
+#: templates/stats/attributes.html:138 templates/stats/major.html:84
+#: templates/stats/quarterly.html:211 templates/stats/quarterly.html:260
+#: templates/stats/sandbox.html:411
 msgid "Date"
 msgstr ""
 
-#: templates/artifacts/incidents_index.html:14 templates/events/new.html:70
-#: templates/events/table.html:9
-#: templates/incidents/plugins/correlation_list.html:12
-#: templates/stats/attributes.html:138 templates/stats/major.html:78
-#: templates/stats/quarterly.html:212 templates/stats/quarterly.html:260
-#: templates/stats/sandbox.html:407
+#: templates/artifacts/incidents_index.html:14 templates/events/new.html:74
+#: templates/events/table.html:10
+#: templates/incidents/plugins/correlation_list.html:14
+#: templates/stats/attributes.html:140 templates/stats/major.html:85
+#: templates/stats/quarterly.html:213 templates/stats/quarterly.html:262
+#: templates/stats/sandbox.html:413
 msgid "Subject"
 msgstr "Objet"
 
 #: templates/artifacts/incidents_index.html:15
-#: templates/events/detail-all.html:88 templates/events/new.html:82
-#: templates/events/table.html:8 templates/incidents/followup.html:36
-#: templates/incidents/plugins/correlation_list.html:13
-#: templates/stats/attributes.html:137 templates/stats/major.html:79
-#: templates/stats/quarterly.html:213 templates/stats/quarterly.html:261
-#: templates/stats/sandbox.html:408
+#: templates/events/detail-all.html:93 templates/events/new.html:86
+#: templates/events/table.html:9 templates/incidents/followup.html:41
+#: templates/incidents/plugins/correlation_list.html:15
+#: templates/stats/attributes.html:139 templates/stats/major.html:86
+#: templates/stats/quarterly.html:214 templates/stats/quarterly.html:263
+#: templates/stats/sandbox.html:414
 msgid "Category"
 msgstr "Catégorie"
 
-#: templates/artifacts/incidents_index.html:16 templates/events/new.html:75
-#: templates/events/table.html:25
-#: templates/incidents/plugins/correlation_list.html:14
+#: templates/artifacts/incidents_index.html:16 templates/events/new.html:79
+#: templates/events/table.html:26
+#: templates/incidents/plugins/correlation_list.html:16
 msgid "Business Lines"
 msgstr "Parties prenantes"
 
 #: templates/artifacts/incidents_index.html:17
-#: templates/events/detail-all.html:89 templates/events/new.html:87
-#: templates/events/table.html:11 templates/incidents/followup.html:37
-#: templates/incidents/plugins/correlation_list.html:15
-#: templates/stats/major.html:83 templates/stats/quarterly.html:217
-#: templates/stats/quarterly.html:265 templates/stats/sandbox.html:412
+#: templates/events/detail-all.html:94 templates/events/new.html:91
+#: templates/events/table.html:12 templates/incidents/followup.html:42
+#: templates/incidents/plugins/correlation_list.html:17
+#: templates/stats/major.html:90 templates/stats/quarterly.html:218
+#: templates/stats/quarterly.html:267 templates/stats/sandbox.html:418
 msgid "Status"
 msgstr "Statut"
 
 #: templates/artifacts/incidents_index.html:18
-#: templates/events/detail-all.html:98 templates/events/new.html:92
-#: templates/events/table.html:12 templates/incidents/followup.html:39
-#: templates/incidents/plugins/correlation_list.html:16
-#: templates/stats/attributes.html:338 templates/stats/major.html:84
-#: templates/stats/sandbox.html:249
+#: templates/events/detail-all.html:103 templates/events/new.html:96
+#: templates/events/table.html:13 templates/incidents/followup.html:44
+#: templates/incidents/plugins/correlation_list.html:18
+#: templates/stats/attributes.html:344 templates/stats/major.html:91
+#: templates/stats/sandbox.html:254
 msgid "Detection"
 msgstr "Détection"
 
-#: templates/artifacts/incidents_index.html:19 templates/events/new.html:132
-#: templates/incidents/plugins/correlation_list.html:17
+#: templates/artifacts/incidents_index.html:19 templates/events/new.html:136
+#: templates/incidents/plugins/correlation_list.html:19
 msgid "Actor"
 msgstr "Acteur"
 
 #: templates/artifacts/incidents_index.html:20
-#: templates/events/detail-all.html:85 templates/events/new.html:137
-#: templates/events/table.html:15 templates/incidents/followup.html:33
-#: templates/incidents/plugins/correlation_list.html:18
-#: templates/stats/major.html:88 templates/stats/quarterly.html:222
-#: templates/stats/quarterly.html:270 templates/stats/sandbox.html:417
+#: templates/events/detail-all.html:90 templates/events/new.html:141
+#: templates/events/table.html:16 templates/incidents/followup.html:33
+#: templates/incidents/plugins/correlation_list.html:20
+#: templates/stats/major.html:95 templates/stats/quarterly.html:223
+#: templates/stats/quarterly.html:272 templates/stats/sandbox.html:423
 msgid "Plan"
 msgstr ""
 
 #: templates/artifacts/incidents_index.html:21
-#: templates/events/detail-all.html:47 templates/events/table.html:36
-#: templates/incidents/plugins/correlation_list.html:19
+#: templates/events/detail-all.html:47 templates/events/table.html:37
+#: templates/incidents/plugins/correlation_list.html:21
 msgid "Edit"
 msgstr "Éditer"
 
 #: templates/artifacts/incidents_index.html:44
-#: templates/incidents/plugins/correlation_list.html:47
+#: templates/incidents/plugins/correlation_list.html:50
 msgid "No incidents found. Lucky you!"
 msgstr "Aucun incident. Quelle chance !"
 
@@ -163,7 +167,7 @@ msgstr "Aucun incident. Quelle chance !"
 msgid "Back"
 msgstr "Retour"
 
-#: templates/base.html:53 templates/events/new.html:48
+#: templates/base.html:53 templates/events/new.html:52
 msgid "New event"
 msgstr "Nouvel évènement"
 
@@ -175,8 +179,8 @@ msgstr "Défaut"
 msgid "Dashboard"
 msgstr "Tableau de bord"
 
-#: templates/base.html:75 templates/incidents/plugins/correlation_list.html:5
-#: templates/stats/attributes.html:397
+#: templates/base.html:75 templates/incidents/plugins/correlation_list.html:6
+#: templates/stats/attributes.html:403
 msgid "Incidents"
 msgstr ""
 
@@ -208,26 +212,26 @@ msgstr "Incidents majeurs"
 msgid "Sandbox"
 msgstr "Bac à sable"
 
-#: templates/base.html:88 templates/events/detail-all.html:122
-#: templates/stats/attributes.html:427
+#: templates/base.html:88 templates/events/detail-all.html:127
+#: templates/stats/attributes.html:433
 msgid "Attributes"
 msgstr "Attributs"
 
-#: templates/base.html:94
-msgid "search..."
-msgstr "recherche..."
-
-#: templates/base.html:101
+#: templates/base.html:96
 msgid "Currently logged in as"
 msgstr "Connecté en tant que"
 
-#: templates/base.html:102
+#: templates/base.html:97
 msgid "logout"
 msgstr "déconnexion"
 
-#: templates/base.html:105
+#: templates/base.html:100
 msgid "Admin"
 msgstr ""
+
+#: templates/base.html:110
+msgid "search..."
+msgstr "recherche..."
 
 #: templates/dashboard/index.html:13
 msgid "Starred Incidents"
@@ -251,7 +255,7 @@ msgstr "Fichier"
 msgid "Attribute"
 msgstr "Attribut"
 
-#: templates/events/detail-all.html:39 templates/events/detail-all.html:149
+#: templates/events/detail-all.html:39 templates/events/detail-all.html:154
 msgid "Add"
 msgstr "Ajouter"
 
@@ -264,8 +268,8 @@ msgstr "Commenter"
 msgid "Block"
 msgstr "Bloquer"
 
-#: templates/events/detail-all.html:68 templates/user/profile.html:22
-#: templates/user/profile.html:26
+#: templates/events/detail-all.html:68 templates/user/profile.html:34
+#: templates/user/profile.html:38
 msgid "Close"
 msgstr "Fermer"
 
@@ -274,109 +278,109 @@ msgid "Incident followup"
 msgstr "Suivi de l'incident"
 
 #: templates/events/detail-all.html:84 templates/incidents/followup.html:32
-#: templates/stats/major.html:85 templates/stats/quarterly.html:219
-#: templates/stats/quarterly.html:267 templates/stats/sandbox.html:414
+#: templates/stats/major.html:92 templates/stats/quarterly.html:220
+#: templates/stats/quarterly.html:269 templates/stats/sandbox.html:420
 msgid "Incident Leader"
 msgstr "Responsable de l'incident"
 
-#: templates/events/detail-all.html:87 templates/events/new.html:97
-#: templates/events/table.html:10 templates/incidents/followup.html:35
-#: templates/stats/attributes.html:345 templates/stats/major.html:81
-#: templates/stats/sandbox.html:256
+#: templates/events/detail-all.html:85 templates/events/new.html:113
+#: templates/incidents/followup.html:35
+msgid "Confidentiality"
+msgstr "Confidentialité"
+
+#: templates/events/detail-all.html:92 templates/events/new.html:101
+#: templates/events/table.html:11 templates/incidents/followup.html:40
+#: templates/stats/attributes.html:351 templates/stats/major.html:88
+#: templates/stats/sandbox.html:261
 msgid "Severity"
 msgstr "Sévérité"
 
-#: templates/events/detail-all.html:99 templates/incidents/followup.html:40
+#: templates/events/detail-all.html:104 templates/incidents/followup.html:45
 msgid "B/L"
 msgstr "P/P"
 
-#: templates/events/detail-all.html:104 templates/events/new.html:50
+#: templates/events/detail-all.html:109 templates/events/new.html:54
 #: templates/incidents/followup.html:11
 msgid "Incident"
 msgstr "Incident"
 
-#: templates/events/detail-all.html:104 templates/events/new.html:50
+#: templates/events/detail-all.html:109 templates/events/new.html:54
 #: templates/incidents/followup.html:11
 msgid "Event"
 msgstr "Évènement"
 
-#: templates/events/detail-all.html:107 templates/incidents/followup.html:22
+#: templates/events/detail-all.html:112 templates/incidents/followup.html:22
 msgid "someone"
 msgstr "quelqu'un"
 
-#: templates/events/detail-all.html:108 templates/incidents/followup.html:23
+#: templates/events/detail-all.html:113 templates/incidents/followup.html:23
 #, python-format
 msgid "Opened on %(date)s by %(opened_by)s"
 msgstr "Ouvert le %(date)s par %(opened_by)s"
 
-#: templates/events/detail-all.html:111 templates/events/new.html:152
+#: templates/events/detail-all.html:116 templates/events/new.html:156
 msgid "Description"
 msgstr "Description"
 
-#: templates/events/detail-all.html:127
+#: templates/events/detail-all.html:132
 msgid "Name"
 msgstr "Nom"
 
-#: templates/events/detail-all.html:128
+#: templates/events/detail-all.html:133
 msgid "Value"
 msgstr "Valeur"
 
-#: templates/events/detail-all.html:138
+#: templates/events/detail-all.html:143
 msgid "Add attribute"
 msgstr "Ajouter un attribut"
 
-#: templates/events/detail-all.html:164
+#: templates/events/detail-all.html:169
 msgid "Comments"
 msgstr "Commentaires"
 
-#: templates/events/detail-all.html:178 templates/incidents/followup.html:62
+#: templates/events/detail-all.html:183 templates/incidents/followup.html:67
 msgctxt "noun"
 msgid "Comment"
 msgstr "Commentaire"
 
-#: templates/events/detail-all.html:179 templates/events/detail-all.html:205
-#: templates/incidents/followup.html:63
+#: templates/events/detail-all.html:184 templates/events/detail-all.html:210
+#: templates/incidents/followup.html:68
 msgid "Action"
 msgstr "Action"
 
-#: templates/events/detail-all.html:198
+#: templates/events/detail-all.html:203
 msgid "Add comment"
 msgstr "Commenter"
 
-#: templates/events/detail-all.html:240 templates/user/profile.html:168
+#: templates/events/detail-all.html:245 templates/user/profile.html:186
 msgid "Cancel"
 msgstr "Annuler"
 
-#: templates/events/detail-all.html:241
+#: templates/events/detail-all.html:246
 msgid "Save changes"
 msgstr "Enregistrer les changements"
 
-#: templates/events/new.html:53 templates/events/new.html:158
-#: templates/user/profile.html:79
+#: templates/events/new.html:57 templates/events/new.html:162
 msgid "Save"
 msgstr "Enregister"
 
-#: templates/events/new.html:63 templates/incidents/followup.html:49
+#: templates/events/new.html:67 templates/incidents/followup.html:54
 msgid "Summary"
 msgstr "Résumé"
 
-#: templates/events/new.html:104
+#: templates/events/new.html:108
 msgid "Date / Time"
 msgstr "Date / Heure"
 
-#: templates/events/new.html:109
-msgid "Confidentiality"
-msgstr "Confidentialité"
-
-#: templates/events/new.html:116
+#: templates/events/new.html:120
 msgid "Is an incident"
 msgstr "Est un incident"
 
-#: templates/events/new.html:128
+#: templates/events/new.html:132
 msgid "Incident details"
 msgstr "Détails de l'incident"
 
-#: templates/events/new.html:142
+#: templates/events/new.html:146
 msgid "Major incident"
 msgstr "Incident majeur"
 
@@ -384,44 +388,44 @@ msgstr "Incident majeur"
 msgid "Search results for:"
 msgstr "Résultats de recherche pour :"
 
-#: templates/events/table.html:13
+#: templates/events/table.html:14
 msgid "Leader"
 msgstr "Responsable"
 
-#: templates/events/table.html:14 templates/stats/major.html:86
-#: templates/stats/quarterly.html:220 templates/stats/quarterly.html:268
+#: templates/events/table.html:15 templates/stats/major.html:93
+#: templates/stats/quarterly.html:221 templates/stats/quarterly.html:270
 msgid "Last Action"
 msgstr "Dernière Action"
 
-#: templates/events/table.html:16 templates/stats/major.html:80
-#: templates/stats/quarterly.html:214 templates/stats/quarterly.html:262
-#: templates/stats/sandbox.html:409
+#: templates/events/table.html:17 templates/stats/major.html:87
+#: templates/stats/quarterly.html:215 templates/stats/quarterly.html:264
+#: templates/stats/sandbox.html:415
 msgid "Lvl"
 msgstr "Niv."
 
-#: templates/events/table.html:17 templates/stats/quarterly.html:221
-#: templates/stats/quarterly.html:269 templates/stats/sandbox.html:416
+#: templates/events/table.html:18 templates/stats/quarterly.html:222
+#: templates/stats/quarterly.html:271 templates/stats/sandbox.html:422
 msgid "IH"
 msgstr "RI"
 
-#: templates/events/table.html:18
+#: templates/events/table.html:19
 msgid "None"
 msgstr "Aucun"
 
-#: templates/events/table.html:97
+#: templates/events/table.html:102
 msgid "previous"
 msgstr "précédent"
 
-#: templates/events/table.html:102
+#: templates/events/table.html:107
 #, python-format
 msgid "(page %(number)s of %(num_pages)s)"
 msgstr "(page %(number)s sur %(num_pages)s)"
 
-#: templates/events/table.html:107
+#: templates/events/table.html:112
 msgid "next"
 msgstr "suivant"
 
-#: templates/events/table.html:115
+#: templates/events/table.html:120
 msgid "No incidents to show."
 msgstr "Aucun incident."
 
@@ -429,19 +433,19 @@ msgstr "Aucun incident."
 msgid "Event followup"
 msgstr "Suivi de l'évènement"
 
-#: templates/incidents/followup.html:55
+#: templates/incidents/followup.html:60
 msgid "Incident timeline"
 msgstr "Chronologie de l'incident"
 
-#: templates/incidents/followup.html:61
+#: templates/incidents/followup.html:66
 msgid "Author"
 msgstr "Auteur"
 
-#: templates/incidents/followup.html:81
+#: templates/incidents/followup.html:86
 msgid "Related files"
 msgstr "Fichiers associés"
 
-#: templates/incidents/followup.html:94
+#: templates/incidents/followup.html:99
 msgid "No files for this incident."
 msgstr "Aucun fichier pour cet incident."
 
@@ -453,7 +457,7 @@ msgstr "Se connecter à &middot; FIR"
 msgid "Sign in to FIR"
 msgstr "Se connecter à FIR"
 
-#: templates/incidents/login.html:37 templates/user/profile.html:41
+#: templates/incidents/login.html:37 templates/user/profile.html:61
 msgid "Username"
 msgstr "Utilisateur"
 
@@ -477,99 +481,99 @@ msgstr "Mauvais couple utilisateur / mot de passe"
 msgid "I can break the rules, too."
 msgstr ""
 
-#: templates/stats/attributes.html:54
+#: templates/stats/attributes.html:56
 msgid "Incidents count:"
 msgstr "Nombre d'incidents :"
 
-#: templates/stats/attributes.html:54
+#: templates/stats/attributes.html:56
 msgid "With attribute set:"
 msgstr "Avec un jeu d'attributs :"
 
-#: templates/stats/attributes.html:139
+#: templates/stats/attributes.html:141
 msgid "Business&nbsp;Lines"
 msgstr "Parties&nbsp;prenantes"
 
-#: templates/stats/attributes.html:324 templates/stats/sandbox.html:233
+#: templates/stats/attributes.html:330 templates/stats/sandbox.html:238
 msgid "From"
 msgstr "De"
 
-#: templates/stats/attributes.html:331 templates/stats/sandbox.html:240
+#: templates/stats/attributes.html:337 templates/stats/sandbox.html:245
 msgid "To"
 msgstr "À"
 
-#: templates/stats/attributes.html:361 templates/stats/sandbox.html:272
+#: templates/stats/attributes.html:367 templates/stats/sandbox.html:277
 msgid "Categories"
 msgstr "Catégories"
 
-#: templates/stats/attributes.html:374 templates/stats/sandbox.html:285
+#: templates/stats/attributes.html:380 templates/stats/sandbox.html:290
 msgid "Business lines"
 msgstr "Parties prenantes"
 
-#: templates/stats/attributes.html:382 templates/stats/sandbox.html:293
+#: templates/stats/attributes.html:388 templates/stats/sandbox.html:298
 msgid "Incidents only"
 msgstr "Incidents seulement"
 
-#: templates/stats/attributes.html:386 templates/stats/sandbox.html:297
+#: templates/stats/attributes.html:392 templates/stats/sandbox.html:302
 msgid "Major incidents only"
 msgstr "Incidents majeurs seulement"
 
-#: templates/stats/attributes.html:394
+#: templates/stats/attributes.html:400
 msgid "Bars"
 msgstr "Barres"
 
-#: templates/stats/attributes.html:408
+#: templates/stats/attributes.html:414
 msgid "Only incidents with attribute set"
 msgstr "Incidents avec un jeu d'attributs seulement"
 
-#: templates/stats/attributes.html:412
+#: templates/stats/attributes.html:418
 msgid "Total"
 msgstr ""
 
-#: templates/stats/attributes.html:416
+#: templates/stats/attributes.html:422
 msgid "Average"
 msgstr "Moyenne"
 
-#: templates/stats/attributes.html:420
+#: templates/stats/attributes.html:426
 msgid "Standard Deviation"
 msgstr "Écart-type"
 
-#: templates/stats/attributes.html:441 templates/stats/sandbox.html:305
+#: templates/stats/attributes.html:447 templates/stats/sandbox.html:310
 msgid "Go"
 msgstr ""
 
-#: templates/stats/attributes.html:450
+#: templates/stats/attributes.html:456
 msgid "Over time"
 msgstr "En fonction du temps"
 
-#: templates/stats/attributes.html:456 templates/stats/sandbox.html:401
+#: templates/stats/attributes.html:462 templates/stats/sandbox.html:406
 msgid "Matching incidents"
 msgstr "Incidents correspondants"
 
-#: templates/stats/major.html:5
+#: templates/stats/major.html:6
 msgid "Major incidents in last quarter"
 msgstr "Incidents majeurs du dernier trimestre"
 
-#: templates/stats/major.html:11
+#: templates/stats/major.html:17
 msgid "Basel categories"
 msgstr "Catégories Bâloises"
 
-#: templates/stats/major.html:31
+#: templates/stats/major.html:37
 msgid "CERT categories"
 msgstr "Catégories CERT"
 
-#: templates/stats/major.html:52
+#: templates/stats/major.html:58
 msgid "Business Line ventilation"
 msgstr "Répartition par partie prenante"
 
-#: templates/stats/major.html:72
+#: templates/stats/major.html:78
 msgid "Major Incidents"
 msgstr "Incidents majeurs"
 
-#: templates/stats/major.html:82
+#: templates/stats/major.html:89
 msgid "Business Line"
 msgstr "Partie prenante"
 
-#: templates/stats/major.html:87
+#: templates/stats/major.html:94
 msgid "Opened by"
 msgstr "Ouvert par"
 
@@ -615,15 +619,15 @@ msgid "Incident Management by incident leader (Business Line or CERT)"
 msgstr ""
 "Gestion d'incident par responsable d'incident (Partie prenante ou CERT)"
 
-#: templates/stats/quarterly.html:188 templates/stats/sandbox.html:378
+#: templates/stats/quarterly.html:188 templates/stats/sandbox.html:383
 msgid "Monitored domains"
 msgstr "Domaines surveillés"
 
-#: templates/stats/quarterly.html:193 templates/stats/sandbox.html:386
+#: templates/stats/quarterly.html:193 templates/stats/sandbox.html:391
 msgid "Open incidents"
 msgstr "Incidents ouverts"
 
-#: templates/stats/quarterly.html:198 templates/stats/sandbox.html:394
+#: templates/stats/quarterly.html:198 templates/stats/sandbox.html:399
 msgid "Blocked incidents"
 msgstr "Incidents bloqués"
 
@@ -631,59 +635,59 @@ msgstr "Incidents bloqués"
 msgid "Incident follow-up"
 msgstr "Suivi de l'incident"
 
-#: templates/stats/quarterly.html:211 templates/stats/quarterly.html:259
-#: templates/stats/sandbox.html:406
+#: templates/stats/quarterly.html:212 templates/stats/quarterly.html:261
+#: templates/stats/sandbox.html:412
 msgid "FID"
 msgstr ""
 
-#: templates/stats/quarterly.html:215 templates/stats/quarterly.html:263
-#: templates/stats/sandbox.html:410
+#: templates/stats/quarterly.html:216 templates/stats/quarterly.html:265
+#: templates/stats/sandbox.html:416
 msgid "Svrt"
 msgstr ""
 
-#: templates/stats/quarterly.html:216 templates/stats/quarterly.html:264
-#: templates/stats/sandbox.html:411
+#: templates/stats/quarterly.html:217 templates/stats/quarterly.html:266
+#: templates/stats/sandbox.html:417
 msgid "Business&nbsp;Line"
 msgstr "Partie&nbsp;prenante"
 
-#: templates/stats/quarterly.html:218 templates/stats/quarterly.html:266
-#: templates/stats/sandbox.html:413
+#: templates/stats/quarterly.html:219 templates/stats/quarterly.html:268
+#: templates/stats/sandbox.html:419
 msgid "Det."
 msgstr "Dét."
 
-#: templates/stats/quarterly.html:254
+#: templates/stats/quarterly.html:255
 msgid "Unclosed incidents older than three months"
 msgstr "Incidents ouverts ou bloqués de plus de trois mois"
 
-#: templates/stats/sandbox.html:312
+#: templates/stats/sandbox.html:317
 msgid "Overlapping years"
 msgstr "Années superposées"
 
-#: templates/stats/sandbox.html:320
+#: templates/stats/sandbox.html:325
 msgid "By category <span class='smaller'>comparison</span>"
 msgstr "Par catégorie <span class='smaller'>comparaison</span>"
 
-#: templates/stats/sandbox.html:328
+#: templates/stats/sandbox.html:333
 msgid "By category"
 msgstr "Par catégorie"
 
-#: templates/stats/sandbox.html:338
+#: templates/stats/sandbox.html:343
 msgid "By month"
 msgstr "par mois"
 
-#: templates/stats/sandbox.html:346
+#: templates/stats/sandbox.html:351
 msgid "By subentity"
 msgstr "Par sous-entité"
 
-#: templates/stats/sandbox.html:358
+#: templates/stats/sandbox.html:363
 msgid "By severity"
 msgstr "Par sévérité"
 
-#: templates/stats/sandbox.html:368
+#: templates/stats/sandbox.html:373
 msgid "By Incident Leader"
 msgstr "Par responsable d'incident"
 
-#: templates/stats/sandbox.html:415
+#: templates/stats/sandbox.html:421
 msgid "Last action"
 msgstr "Dernière action"
 
@@ -756,47 +760,50 @@ msgstr "Évolution des parties prenantes des évènements"
 msgid "Events by business line"
 msgstr "Évènements par partie prenante"
 
-#: templates/user/profile.html:13 templates/user/profile.html:120
-#: templates/user/profile.html:169
+#: templates/user/profile.html:21 templates/user/profile.html:138
+#: templates/user/profile.html:187
 msgid "Change password"
 msgstr "Modifier le mot de passe"
 
-#: templates/user/profile.html:23
+#: templates/user/profile.html:35
 msgid "Password changed!"
 msgstr "Mot de passe modifié !"
 
-#: templates/user/profile.html:27
+#: templates/user/profile.html:39
 msgid "Error: password not changed."
 msgstr "Erreur: le mot de passe n'a pas été changé."
 
-#: templates/user/profile.html:31
+#: templates/user/profile.html:53
 #, python-format
 msgid "%(user_name)s's profile"
 msgstr "Profil de %(user_name)s"
 
-#: templates/user/profile.html:38
-msgid "Main profile"
-msgstr "Profil principal"
-
-#: templates/user/profile.html:45
+#: templates/user/profile.html:64
 msgid "Email"
 msgstr ""
 
-#: templates/user/profile.html:57
+#: templates/user/profile.html:76
 msgid "First name"
 msgstr "Prénom"
 
-#: templates/user/profile.html:66
+#: templates/user/profile.html:85
 msgid "Last name"
 msgstr "Nom"
 
-#: templates/user/profile.html:88
+#: templates/user/profile.html:98
 msgid "Number of incidents per page"
 msgstr "Nombre d'incidents par page"
 
-#: templates/user/profile.html:98 templates/user/profile.html:101
+#: templates/user/profile.html:107
+msgid "Security clearance"
+msgstr "Habilitation"
+
+#: templates/user/profile.html:112 templates/user/profile.html:115
 msgid "Hide closed events?"
 msgstr "Masquer les incidents fermés ?"
+
+#~ msgid "Main profile"
+#~ msgstr "Profil principal"
 
 #~ msgid "Correlated Artifacts"
 #~ msgstr "Artefacts corrélés"
