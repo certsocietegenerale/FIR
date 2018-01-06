@@ -185,3 +185,6 @@ NOTIFICATIONS_DISABLED_EVENTS = ()
 
 # Send 'incident:*' notification events for both Event and Incident if True
 NOTIFICATIONS_MERGE_INCIDENTS_AND_EVENTS = False
+
+# Incident and event confidentiality choices
+INCIDENT_CONFIDENTIALITY_LEVEL = ('C0', 'C1', 'C2', 'C3')

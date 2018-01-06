@@ -36,12 +36,8 @@ LOG_ACTIONS = (
     ("LO", "Logged out"),
 )
 
-CONFIDENTIALITY_LEVEL = (
-    (0, "C0"),
-    (1, "C1"),
-    (2, "C2"),
-    (3, "C3"),
-)
+CONFIDENTIALITY_LEVEL = [(i, settings.INCIDENT_CONFIDENTIALITY_LEVEL[i])
+                         for i in range(0, len(settings.INCIDENT_CONFIDENTIALITY_LEVEL))]
 
 # Special Model class that handles signals
 
