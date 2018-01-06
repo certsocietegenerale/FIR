@@ -188,3 +188,7 @@ NOTIFICATIONS_MERGE_INCIDENTS_AND_EVENTS = False
 
 # Incident and event confidentiality choices
 INCIDENT_CONFIDENTIALITY_LEVEL = ('C0', 'C1', 'C2', 'C3')
+
+# Default user confidentiality level access index
+# 3 for 'C3'
+INCIDENT_DEFAULT_USER_CONFIDENTIALITY = 3
