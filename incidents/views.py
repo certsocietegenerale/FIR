@@ -8,7 +8,7 @@ from django.contrib.staticfiles import finders
 from django.template.response import TemplateResponse
 from django.views.decorators.http import require_POST
 
-from incidents.models import IncidentCategory, Incident, Comments, BusinessLine, model_status_changed
+from incidents.models import IncidentCategory, Incident, Comments, BusinessLine, model_status_changed, STATUS_CHOICES
 from incidents.models import Label, Log, BaleCategory
 from incidents.models import Attribute, ValidAttribute, IncidentTemplate, Profile
 from incidents.forms import IncidentForm, CommentForm
@@ -528,12 +528,25 @@ def update_comment(request, comment_id):
             log("Comment edited: %s" % (comment_form.cleaned_data['comment'][:20] + "..."), request.user,
                 incident=c.incident)
 
-            if c.action.name in ['Closed', 'Opened', 'Blocked']:
-                if c.action.name[0] != c.incident.status:
-                    previous_status = c.incident.status
-                    c.incident.status = c.action.name[0]
-                    c.incident.save()
-                    model_status_changed.send(sender=Incident, instance=c.incident, previous_status=previous_status)
+#            if c.action.name in ['Closed', 'Opened', 'Blocked']:
+            if c.action.name in ['Opened', 'Qualification_in_progress', 'Qualified', 'AP_Defined','AP_Validated','In_progress','Closed']:
+                
+                for choices in STATUS_CHOICES:
+                    if choices[1] == c.action.name:
+                        current_choice = choices[0] 
+                        previous_status = c.incident.status
+                        c.incident.status = current_choice
+                        c.incident.save()
+                        model_status_changed.send(sender=Incident, instance=c.incident, previous_status=previous_status)
+
+
+
+
+               # if c.action.name[0] != c.incident.status:
+               #     previous_status = c.incident.status
+                #    c.incident.status = c.action.name[0]
+                 #   c.incident.save()
+                 #   model_status_changed.send(sender=Incident, instance=c.incident, previous_status=previous_status)
 
             i.refresh_artifacts(c.comment)
 
@@ -783,11 +796,20 @@ def comment(request, incident_id, authorization_target=None):
             log("Comment created: %s" % (com.comment[:20] + "..."), request.user, incident=com.incident)
             i.refresh_artifacts(com.comment)
 
-            if com.action.name in ['Closed', 'Opened', 'Blocked'] and com.incident.status != com.action.name[0]:
-                previous_status = com.incident.status
-                com.incident.status = com.action.name[0]
-                com.incident.save()
-                model_status_changed.send(sender=Incident, instance=com.incident, previous_status=previous_status)
+            if com.action.name in ['Opened', 'Qualification_in_progress', 'Qualified', 'AP_Defined','AP_Validated','In_progress','Closed'] and com.incident.status != com.action.name[0]:
+                for choices in STATUS_CHOICES:
+                    if choices[1] == com.action.name:
+                        current_choice = choices[0] 
+                        previous_status = com.incident.status
+                        com.incident.status = current_choice
+                        com.incident.save()
+                        model_status_changed.send(sender=Incident, instance=com.incident, previous_status=previous_status)
+
+
+                #previous_status = com.incident.status
+                #com.incident.status = com.action.name[0]
+                #com.incident.save()
+                #model_status_changed.send(sender=Incident, instance=com.incident, previous_status=previous_status)
 
             return render(request, 'events/_comment.html', {'event': i, 'comment': com})
         else:
@@ -2164,16 +2186,52 @@ def dashboard_starred(request):
     return incident_display(request, Q(is_starred=True) & ~Q(status='C'), True, False)
 
 
+
 @login_required
 @user_passes_test(is_incident_viewer)
 def dashboard_open(request):
     return incident_display(request, Q(status='O'))
+
+@login_required
+@user_passes_test(is_incident_viewer)
+def dashboard_qualification_in_progress(request):
+    return incident_display(request, Q(status='QI'))
+
+@login_required
+@user_passes_test(is_incident_viewer)
+def dashboard_qualified(request):
+    return incident_display(request, Q(status='Q'))
+
+@login_required
+@user_passes_test(is_incident_viewer)
+def dashboard_ap_defined(request):
+    return incident_display(request, Q(status='APD'))
+
+@login_required
+@user_passes_test(is_incident_viewer)
+def dashboard_ap_validated(request):
+    return incident_display(request, Q(status='APV'))
+
+@login_required
+@user_passes_test(is_incident_viewer)
+def dashboard_in_progress(request):
+    return incident_display(request, Q(status='IN'))
+
+@login_required
+@user_passes_test(is_incident_viewer)
+def dashboard_closed(request):
+    return incident_display(request, Q(status='C'))
+
 
 
 @login_required
 @user_passes_test(is_incident_viewer)
 def dashboard_blocked(request):
     return incident_display(request, Q(status='B'))
+
+
+
+
 
 
 @login_required

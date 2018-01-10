@@ -16,9 +16,13 @@ from fir_plugins.models import link_to
 from incidents.authorization import tree_authorization, AuthorizationModelMixin
 
 STATUS_CHOICES = (
-    ("O", _("Open")),
+    ("O", _("Opened")),
+    ("QI", _("Qualification_in_progress")),
+    ("Q", _("Qualified")),
+    ("APD", _("AP_Defined")),
+    ("APV", _("AP_Validated")),
+    ("IN", _("In_progress")),
     ("C", _("Closed")),
-    ("B", _("Blocked")),
 )
 
 SEVERITY_CHOICES = (

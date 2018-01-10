@@ -21,12 +21,32 @@
 		<li class='active'>
 			<a href='#tab_open' data-toggle='tab'>{%  trans "Open" %}</a>
 		</li>
-		<li>
-			<a href='#tab_blocked' data-toggle='tab'>{%  trans "Blocked" %}</a>
+
+		<li >
+			<a href='#tab_qualification_in_progress' data-toggle='tab'>{%  trans "Qualification in progress" %}</a>
 		</li>
+
+		<li >
+			<a href='#tab_qualified' data-toggle='tab'>{%  trans "Qualified" %}</a>
+		</li>
+		<li >
+			<a href='#tab_ap_defined' data-toggle='tab'>{%  trans "AP Defined" %}</a>
+		</li>
+
+		<li >
+			<a href='#tab_ap_validated' data-toggle='tab'>{%  trans "AP Validated" %}</a>
+		</li>
+
+		<li >
+			<a href='#tab_in_progress' data-toggle='tab'>{%  trans "In progress" %}</a>
+		</li>
+
 		<li>
+			<a href='#tab_closed' data-toggle='tab'>{%  trans "Closed" %}</a>
+		</li>
+		<!--<li>
 			<a href='#tab_old' data-toggle='tab'>{%  trans "Old" %}</a>
-		</li>
+		</li>-->
 		{% plugin_point 'dashboard_tab' %}
 	</ul>
 
@@ -35,13 +55,35 @@
 			{%  trans "Loading ..." %}
 		</div>
 
-		<div class='tab-pane incident_display table-responsive' id='tab_blocked' data-url="{% url 'dashboard:blocked' %}">
+		<div class='tab-pane incident_display table-responsive' id='tab_qualification_in_progress' data-url="{% url 'dashboard:qualification_in_progress' %}">
 			{%  trans "Loading ..." %}
 		</div>
 
-		<div class='tab-pane incident_display table-responsive' id='tab_old' data-url="{% url 'dashboard:old' %}">
+		<div class='tab-pane incident_display table-responsive' id='tab_qualified' data-url="{% url 'dashboard:qualified' %}">
 			{%  trans "Loading ..." %}
 		</div>
+
+		<div class='tab-pane incident_display table-responsive' id='tab_ap_defined' data-url="{% url 'dashboard:ap_defined' %}">
+			{%  trans "Loading ..." %}
+		</div>
+
+		<div class='tab-pane incident_display table-responsive' id='tab_ap_validated' data-url="{% url 'dashboard:ap_validated' %}">
+			{%  trans "Loading ..." %}
+		</div>
+
+		<div class='tab-pane incident_display table-responsive' id='tab_in_progress' data-url="{% url 'dashboard:in_progress' %}">
+			{%  trans "Loading ..." %}
+		</div>
+
+		<div class='tab-pane incident_display table-responsive' id='tab_closed' data-url="{% url 'dashboard:closed' %}">
+			{%  trans "Loading ..." %}
+		</div>
+
+
+
+	<!--	<div class='tab-pane incident_display table-responsive' id='tab_old' data-url="{% url 'dashboard:old' %}">
+			{%  trans "Loading ..." %}
+		</div>-->
 		{% plugin_point 'dashboard_tab_content' %}
 	</div>
 </div>
