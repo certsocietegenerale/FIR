@@ -30,6 +30,7 @@ class IncidentForm(ModelForm):
         self.fields['is_major'].error_messages['required'] = 'This field is required.'
 
         self.fields['is_major'].label = 'Major?'
+        self.fields['assignee'].label = 'Assignee'
 
     def clean(self):
         cleaned_data = super(IncidentForm, self).clean()

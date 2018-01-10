@@ -119,6 +119,14 @@ $(document).ready(function() {
                             {% endif %}
 
 						</div>
+						<div class="row">
+						  <div class="col-sm-2 form-group{% if form.assignee.errors%} has-error{%endif%}">
+						    <label id="id_assignee">{% trans "Assignee" %}</label>
+						    {{ form.assignee|add_css_class:"form-control" }}
+						    {% include 'events/_form_errors.html' with errors=form.assignee.errors %}
+						  </div>
+
+						</div>
 					</fieldset>
 				</div>
 				<div class="col-sm-6">
