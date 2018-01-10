@@ -8,4 +8,5 @@ urlpatterns = [
     url(r'^open/$', views.dashboard_open, name='open'),
     url(r'^blocked/$', views.dashboard_blocked, name='blocked'),
     url(r'^old/$', views.dashboard_old, name='old'),
+    url(r'^assigned/$', views.dashboard_assigned, name="assigned")
 ]

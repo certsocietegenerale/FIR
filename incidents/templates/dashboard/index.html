@@ -27,6 +27,9 @@
 		<li>
 			<a href='#tab_old' data-toggle='tab'>{%  trans "Old" %}</a>
 		</li>
+		<li>
+			<a href='#tab_assigned' data-toggle='tab'>{%  trans "Assigned to me" %}</a>
+		</li>
 		{% plugin_point 'dashboard_tab' %}
 	</ul>
 
@@ -42,6 +45,11 @@
 		<div class='tab-pane incident_display table-responsive' id='tab_old' data-url="{% url 'dashboard:old' %}">
 			{%  trans "Loading ..." %}
 		</div>
+		
+		<div class='tab-pane incident_display table-responsive' id='tab_assigned' data-url="{% url 'dashboard:assigned' %}">
+			{%  trans "Loading ..." %}
+		</div>
+		
 		{% plugin_point 'dashboard_tab_content' %}
 	</div>
 </div>
