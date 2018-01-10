@@ -34,6 +34,7 @@
 						{% include 'events/column.html' with name=t_lvl field='confidentiality' %}
 					{% endif %}
 					{% include 'events/column.html' with name=t_ih field='opened_by' %}
+					<th>{% trans "Assignee" %}</th>
 					<th>{%  trans "Edit" %}</th>
 				</tr>
 			</thead>
@@ -80,6 +81,7 @@
 						{% endif %}
 
 						<td>{{ incident.opened_by }}</td>
+						<td>{{ incident.assignee }}</td>
 						<td>
                             {% if can_handle_incident %}
 							<a href="{% url 'incidents:edit' incident.id %}"><span class='glyphicon glyphicon-pencil'></span></a>

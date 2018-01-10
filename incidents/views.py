@@ -642,6 +642,12 @@ def search(request):
                 q = q & Q(status=status.group(1)[0])
                 query_string = query_string.replace('status:' + status.group(1), '')
 
+            assigned_to = re.search("assigned_to:(\S+)", query_string)
+            if assigned_to:
+                u = User.objects.filter(username=assigned_to.group(1))
+                q = q & Q(assignee=u)
+                query_string = query_string.replace('assigned_to:' + assigned_to.group(1), '')
+
             artifacts = re.search("art:(\S+)", query_string)
             if artifacts:
                 artifacts = artifacts.group(1)
@@ -2232,6 +2238,12 @@ def dashboard_blocked(request):
 
 
 
+
+
+@login_required
+@user_passes_test(is_incident_viewer)
+def dashboard_assigned(request):
+    return incident_display(request, Q(assignee=request.user))
 
 
 @login_required

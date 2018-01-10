@@ -193,6 +193,7 @@ class Incident(FIRModel, models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=_("Open"))
     opened_by = models.ForeignKey(User)
     confidentiality = models.IntegerField(choices=CONFIDENTIALITY_LEVEL, default='1')
+    assignee = models.ForeignKey(User, related_name='assigned_incidents', blank=True, null=True)
 
     def __unicode__(self):
         return self.subject

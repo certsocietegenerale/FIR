@@ -44,9 +44,15 @@
 		<li>
 			<a href='#tab_closed' data-toggle='tab'>{%  trans "Closed" %}</a>
 		</li>
+
 		<!--<li>
 			<a href='#tab_old' data-toggle='tab'>{%  trans "Old" %}</a>
 		</li>-->
+
+		<li class="pull-right">
+			<a href='#tab_assigned' data-toggle='tab'><strong>{% trans "Assigned to me" %}</strong></a>
+		</li>
+
 		{% plugin_point 'dashboard_tab' %}
 	</ul>
 
@@ -75,15 +81,22 @@
 			{%  trans "Loading ..." %}
 		</div>
 
+
 		<div class='tab-pane incident_display table-responsive' id='tab_closed' data-url="{% url 'dashboard:closed' %}">
 			{%  trans "Loading ..." %}
 		</div>
 
 
-
 	<!--	<div class='tab-pane incident_display table-responsive' id='tab_old' data-url="{% url 'dashboard:old' %}">
 			{%  trans "Loading ..." %}
 		</div>-->
+
+		
+		<div class='tab-pane incident_display table-responsive' id='tab_assigned' data-url="{% url 'dashboard:assigned' %}">
+			{%  trans "Loading ..." %}
+		</div>
+		
+
 		{% plugin_point 'dashboard_tab_content' %}
 	</div>
 </div>

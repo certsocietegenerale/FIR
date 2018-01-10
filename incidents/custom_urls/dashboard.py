@@ -13,4 +13,5 @@ urlpatterns = [
     url(r'^in_progress/$', views.dashboard_in_progress, name='in_progress'),
     url(r'^closed/$', views.dashboard_closed, name='closed'),
     url(r'^old/$', views.dashboard_old, name='old'),
+    url(r'^assigned/$', views.dashboard_assigned, name="assigned")
 ]
