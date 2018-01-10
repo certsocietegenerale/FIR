@@ -20,9 +20,9 @@
 $(document).ready(function() {
 	$("select#id_concerned_business_lines").select2({ dropdownAutoWidth: true, width: '100%' });
 	$("select#id_category").select2();
-	$('select#id_status').select2({minimumResultsForSearch: -1, width: '90px'});
 	$('select#id_detection').select2({minimumResultsForSearch: -1, width: '90px'});
 	$('select#id_severity').select2({minimumResultsForSearch: -1, width: '90px'});
+	$('select#id_status').select2({minimumResultsForSearch: -1, width: '200px'});
 	$('select#id_actor').select2({minimumResultsForSearch: -1, width: '90px'});
 	$('select#id_plan').select2({minimumResultsForSearch: -1, width: '90px'});
 	$('select#id_confidentiality').select2({minimumResultsForSearch: -1, width: '90px'});
@@ -83,11 +83,7 @@ $(document).ready(function() {
 								{{ form.category|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.category.errors %}
 							</div>
-							<div class="col-sm-2 form-group{% if form.status.errors%} has-error{%endif%}">
-								<label id="id_status">{% trans "Status" %}</label>
-								{{ form.status|add_css_class:"form-control" }}
-								{% include 'events/_form_errors.html' with errors=form.status.errors %}
-							</div>
+
 							<div class="col-sm-2 form-group{% if form.detection.errors%} has-error{%endif%}">
 								<label id="id_detection">{% trans "Detection" %}</label>
 								{{ form.detection|add_css_class:"form-control" }}
@@ -97,6 +93,11 @@ $(document).ready(function() {
 								<label id="id_severity">{% trans "Severity" %}</label>
 								{{ form.severity|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.severity.errors %}
+							</div>
+							<div class="col-sm-2 form-group{% if form.status.errors%} has-error{%endif%}">
+								<label id="id_status">{% trans "Status" %}</label>
+								{{ form.status|add_css_class:"form-control" }}
+								{% include 'events/_form_errors.html' with errors=form.status.errors %}
 							</div>
 						</div>
 						<div class="row">
