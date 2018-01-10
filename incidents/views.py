@@ -168,6 +168,11 @@ def log(what, user, incident=None, comment=None):
 
     log.save()
 
+# management ======================================================
+@login_required
+@user_passes_test(is_incident_viewer)
+def management_index(request):
+    return render(request, 'management/index.html')
 
 # incidents =======================================================
 
@@ -206,6 +211,10 @@ def incidents_all(request):
 def events_all(request):
     return incident_display(request, Q(is_incident=False), False)
 
+@login_required
+@user_passes_test(is_incident_viewer)
+def management_all(request):
+    return incident_management_display(request, Q(is_incident=True))
 
 @login_required
 @authorization_required('incidents.view_incidents', Incident, view_arg='incident_id')
@@ -530,10 +539,10 @@ def update_comment(request, comment_id):
 
 #            if c.action.name in ['Closed', 'Opened', 'Blocked']:
             if c.action.name in ['Opened', 'Qualification_in_progress', 'Qualified', 'AP_Defined','AP_Validated','In_progress','Closed']:
-                
+
                 for choices in STATUS_CHOICES:
                     if choices[1] == c.action.name:
-                        current_choice = choices[0] 
+                        current_choice = choices[0]
                         previous_status = c.incident.status
                         c.incident.status = current_choice
                         c.incident.save()
@@ -805,7 +814,7 @@ def comment(request, incident_id, authorization_target=None):
             if com.action.name in ['Opened', 'Qualification_in_progress', 'Qualified', 'AP_Defined','AP_Validated','In_progress','Closed'] and com.incident.status != com.action.name[0]:
                 for choices in STATUS_CHOICES:
                     if choices[1] == com.action.name:
-                        current_choice = choices[0] 
+                        current_choice = choices[0]
                         previous_status = com.incident.status
                         com.incident.status = current_choice
                         com.incident.save()
@@ -2260,6 +2269,41 @@ def dashboard_old(request):
         'order_param': 'last_action',
         'asc': 'true'
     })
+
+def incident_management_display(request, filter, incident_view=True, paginated=True):
+    (order_by, order_param, asc) = incidents_order(request)
+
+    permissions = 'incidents.view_incidents'
+
+    if order_param == 'last_action':
+        incident_list = Incident.authorization.for_user(request.user, permissions).filter(filter).annotate(
+            Max('comments__date')).order_by(order_by)
+    else:
+        pre_list = Incident.authorization.for_user(request.user, permissions)
+        incident_list = pre_list.filter(filter).order_by(order_by)
+
+    if paginated:
+        page = request.GET.get('page', 1)
+        incidents_per_page = request.user.profile.incident_number
+        p = Paginator(incident_list, incidents_per_page)
+
+        try:
+            incident_list = p.page(page)
+        except (PageNotAnInteger, EmptyPage):
+            incident_list = p.page(1)
+
+    return render(request, 'management/table.html', {
+        'incident_list': incident_list,
+        'incident_view': incident_view,
+        'order_param': order_param,
+        'asc': asc,
+        'incident_show_id': settings.INCIDENT_SHOW_ID
+    })
+
+@login_required
+@user_passes_test(is_incident_viewer)
+def management_incidents(request):
+    return incident_management_display(request, Q(status='O'))
 
 
 # User profile ============================================================

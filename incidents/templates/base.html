@@ -73,6 +73,7 @@
               {% endif %}
               <li id='dashboard-nav'><a href="{% url 'dashboard:main' %}">{% trans "Dashboard" %}</a></li>
               <li id='incidents-nav'><a href="{% url 'incidents:index' %}">{% trans "Incidents"%}</a></li>
+              <li id='management-nav'><a href="{% url 'management:index' %}">{% trans "Management"%}</a></li>
               <li id='events-nav'><a href="{% url 'events:index' %}">{% trans "Events" %}</a></li>
             {% plugin_point 'base_navbar' %}
               {% has_perm 'incidents.view_statistics' model='incidents.Incident' as can_view_statistics %}
