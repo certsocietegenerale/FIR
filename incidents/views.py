@@ -2303,7 +2303,7 @@ def incident_management_display(request, filter, incident_view=True, paginated=T
 @login_required
 @user_passes_test(is_incident_viewer)
 def management_incidents(request):
-    return incident_management_display(request, Q(status='O'))
+    return incident_management_display(request, Q())
 
 
 # User profile ============================================================
