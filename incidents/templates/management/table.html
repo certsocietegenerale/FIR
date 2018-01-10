@@ -11,7 +11,6 @@
             {% trans "Severity" as t_severity %}
             {% trans "Status" as t_status %}
             {% trans "Last Action" as t_lastaction %}
-            {% trans "Plan" as t_plan %}
             {% trans "None" as t_none %}
 				<tr>
                     {% if incident_show_id %}<th>ID</th>{% endif %}
@@ -24,7 +23,6 @@
 					{% include 'events/column.html' with name=t_status field='status' %}
 					{% if incident_view %}
 						{% include 'events/column.html' with name=t_lastaction field='last_action' %}
-						{% include 'events/column.html' with name=t_plan field='plan' %}
 					{% endif %}
 				</tr>
 			</thead>
@@ -64,7 +62,6 @@
 									{{ t_none }}
 								{%endif%}
 							</td>
-							<td>{{ incident.plan|default:t_none }}</td>
 						{% endif %}
 					</tr>
 				{% endfor %}
