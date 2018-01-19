@@ -11,8 +11,7 @@ from django.views.decorators.http import require_POST
 from incidents.models import IncidentCategory, Incident, Comments, BusinessLine, model_status_changed
 from incidents.models import Label, Log, BaleCategory
 from incidents.models import Attribute, ValidAttribute, IncidentTemplate, Profile
-from incidents.forms import IncidentForm, CommentForm, CustomAuthenticationForm, CustomAuthenticationTokenForm
-from two_factor.forms import AuthenticationTokenForm, BackupTokenForm
+from incidents.forms import IncidentForm, CommentForm
 
 from incidents.authorization.decorator import authorization_required
 from fir.config.base import INSTALLED_APPS, ENFORCE_2FA, TF_INSTALLED
@@ -108,6 +107,9 @@ if getattr(settings, 'INCIDENT_VIEWER_CAN_COMMENT', False):
 if TF_INSTALLED:
     from two_factor.views.core import LoginView
     from two_factor import signals
+    from incidents.forms import CustomAuthenticationForm, CustomAuthenticationTokenForm
+    from two_factor.forms import AuthenticationTokenForm, BackupTokenForm
+
 
     class CustomLoginView(LoginView):
         template_name = 'two_factor/login.html'
