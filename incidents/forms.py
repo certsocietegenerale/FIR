@@ -12,11 +12,10 @@ class CustomAuthenticationForm(AuthenticationForm):
                                                              'name': 'username',
                                                              'placeholder': 'Username'}))
     password = forms.CharField(label=False,
-                               max_length=30,
-                               widget=forms.TextInput(attrs={'class': 'form-control',
-                                                             'name': 'password',
-                                                             'type': 'password',
-                                                             'placeholder': 'Password'}))
+                               max_length=64,
+                               widget=forms.PasswordInput(attrs={'class': 'form-control',
+                                                                 'name': 'password',
+                                                                 'placeholder': 'Password'}))
     remember = forms.BooleanField(required=False,
                                   label='Remember me',
                                   widget=forms.CheckboxInput(attrs={'class': 'checkbox',
@@ -29,7 +28,6 @@ if TF_INSTALLED:
         def __init__(self, user, initial_device, **kwargs):
             super(CustomAuthenticationTokenForm, self).__init__(user, initial_device, **kwargs)
             self.fields['otp_token'].widget.attrs.update({'class': 'form-control'})
-                                                          #'placeholder': 'Token'})
 else:
     class CustomAuthenticationTokenForm(ModelForm):
         def __init__(self, user, initial_device, **kwargs):
