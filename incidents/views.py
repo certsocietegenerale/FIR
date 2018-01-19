@@ -202,7 +202,7 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     request.session.flush()
-    if ENFORCE_2FA:
+    if TF_INSTALLED:
         return redirect('two_factor:login')
     else:
         return redirect('login')
@@ -237,7 +237,7 @@ def log(what, user, incident=None, comment=None):
 
 # incidents =======================================================
 
-@login_required
+@fir_auth_required
 @authorization_required('incidents.view_incidents', Incident, view_arg='incident_id')
 def followup(request, incident_id, authorization_target=None):
     if authorization_target is None:
@@ -255,25 +255,25 @@ def followup(request, incident_id, authorization_target=None):
     )
 
 
-@login_required
+@fir_auth_required
 @user_passes_test(is_incident_viewer)
 def index(request, is_incident=False):
     return render(request, 'events/index-all.html', {'incident_view': is_incident})
 
 
-@login_required
+@fir_auth_required
 @user_passes_test(is_incident_viewer)
 def incidents_all(request):
     return incident_display(request, Q(is_incident=True))
 
 
-@login_required
+@fir_auth_required
 @user_passes_test(is_incident_viewer)
 def events_all(request):
     return incident_display(request, Q(is_incident=False), False)
 
 
-@login_required
+@fir_auth_required
 @authorization_required('incidents.view_incidents', Incident, view_arg='incident_id')
 def details(request, incident_id, authorization_target=None):
     if authorization_target is None:
@@ -312,7 +312,7 @@ def details(request, incident_id, authorization_target=None):
     )
 
 
-@login_required
+@fir_auth_required
 @user_passes_test(is_incident_reporter)
 def new_event(request):
     if request.method == 'POST':
@@ -394,7 +394,7 @@ def diff(incident, form):
     return "\n".join(comments)
 
 
-@login_required
+@fir_auth_required
 @authorization_required('incidents.handle_incidents', Incident, view_arg='incident_id')
 def edit_incident(request, incident_id, authorization_target=None):
     if authorization_target is None:
@@ -432,7 +432,7 @@ def edit_incident(request, incident_id, authorization_target=None):
     return render(request, 'events/new.html', {'i': i, 'form': form, 'mode': 'edit'})
 
 
-@login_required
+@fir_auth_required
 @authorization_required('incidents.handle_incidents', Incident, view_arg='incident_id')
 def delete_incident(request, incident_id, authorization_target=None):
     if request.method == "POST":
@@ -449,7 +449,7 @@ def delete_incident(request, incident_id, authorization_target=None):
         return redirect("incidents:index")
 
 
-@login_required
+@fir_auth_required
 @authorization_required('incidents.handle_incidents', Incident, view_arg='incident_id')
 def change_status(request, incident_id, status, authorization_target=None):
     if authorization_target is None:
@@ -482,7 +482,7 @@ def change_status(request, incident_id, status, authorization_target=None):
 # attributes ================================================================
 
 
-@login_required
+@fir_auth_required
 @authorization_required('incidents.handle_incidents', Incident, view_arg='incident_id')
 def add_attribute(request, incident_id, authorization_target=None):
     if authorization_target is None:
@@ -515,7 +515,7 @@ def add_attribute(request, incident_id, authorization_target=None):
     return redirect('incidents:details', incident_id=incident_id)
 
 
-@login_required
+@fir_auth_required
 @authorization_required('incidents.handle_incidents', Incident, view_arg='incident_id')
 def delete_attribute(request, incident_id, attribute_id, authorization_target=None):
     a = get_object_or_404(Attribute, pk=attribute_id)
@@ -526,7 +526,7 @@ def delete_attribute(request, incident_id, attribute_id, authorization_target=No
 
 # comments ==================================================================
 
-@login_required
+@fir_auth_required
 def edit_comment(request, incident_id, comment_id):
     c = get_object_or_404(Comments, pk=comment_id, incident_id=incident_id)
     i = c.incident
@@ -556,7 +556,7 @@ def edit_comment(request, incident_id, comment_id):
     return render(request, 'events/edit_comment.html', {'c': c, 'form': form})
 
 
-@login_required
+@fir_auth_required
 def delete_comment(request, incident_id, comment_id):
     c = get_object_or_404(Comments, pk=comment_id, incident_id=incident_id)
     i = c.incident
@@ -571,7 +571,7 @@ def delete_comment(request, incident_id, comment_id):
         return redirect('incidents:details', incident_id=c.incident_id)
 
 
-@login_required
+@fir_auth_required
 def update_comment(request, comment_id):
     c = get_object_or_404(Comments, pk=comment_id)
     i = c.incident
@@ -611,7 +611,7 @@ def update_comment(request, comment_id):
 
 # events ====================================================================
 
-@login_required
+@fir_auth_required
 @user_passes_test(is_incident_viewer)
 def event_index(request):
     return index(request, False)
@@ -654,7 +654,7 @@ def get_query(query_string, search_fields):
     return query
 
 
-@login_required
+@fir_auth_required
 @user_passes_test(is_incident_viewer)
 def search(request):
     query_string = ''
@@ -809,7 +809,7 @@ def search(request):
 
 # ajax ======================================================================
 
-@login_required
+@fir_auth_required
 @authorization_required('incidents.handle_incidents', Incident, view_arg='incident_id')
 def toggle_star(request, incident_id, authorization_target=None):
     if authorization_target is None:
@@ -826,7 +826,7 @@ def toggle_star(request, incident_id, authorization_target=None):
     return HttpResponse(dumps({'starred': i.is_starred}), content_type='application/json')
 
 
-@login_required
+@fir_auth_required
 @authorization_required(comment_permissions, Incident, view_arg='incident_id')
 def comment(request, incident_id, authorization_target=None):
     if authorization_target is None:
@@ -865,7 +865,7 @@ def comment(request, incident_id, authorization_target=None):
 
 # User ==========================================================================
 
-@login_required
+@fir_auth_required
 def toggle_closed(request):
     request.user.profile.hide_closed = not request.user.profile.hide_closed
     request.user.profile.save()
@@ -893,13 +893,13 @@ def delete_empty_keys(chart_data):
     return chart_data
 
 
-@login_required
+@fir_auth_required
 @user_passes_test(can_view_statistics)
 def yearly_stats(request):
     return render(request, 'stats/yearly.html')
 
 
-@login_required
+@fir_auth_required
 @user_passes_test(is_incident_handler)
 def close_old(request):
     now = datetime.datetime.now()
@@ -912,7 +912,7 @@ def close_old(request):
     return redirect('stats:quarterly_bl_stats_default')
 
 
-@login_required
+@fir_auth_required
 @user_passes_test(can_view_statistics)
 def quarterly_bl_stats(request, business_line=None, num_months=3):
     bls = BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics')
@@ -949,7 +949,7 @@ def quarterly_bl_stats(request, business_line=None, num_months=3):
                    'bls': bls})
 
 
-@login_required
+@fir_auth_required
 @user_passes_test(can_view_statistics)
 def yearly_compare(request, year=None):
     if year is None:
@@ -960,7 +960,7 @@ def yearly_compare(request, year=None):
 
 # comparison ===============================================================
 
-@login_required
+@fir_auth_required
 @user_passes_test(can_view_statistics)
 def data_sandbox(request):
     # parse request parameters from GET requests
@@ -1179,7 +1179,7 @@ def data_sandbox(request):
     return HttpResponse(dumps(chart_data), content_type="application/json")
 
 
-@login_required
+@fir_auth_required
 @user_passes_test(can_view_statistics)
 def sandbox(request, divisor='all'):
     form = IncidentForm(request.POST, for_user=request.user, permissions='incidents.view_statistics')
@@ -1206,7 +1206,7 @@ def sandbox(request, divisor='all'):
          })
 
 
-@login_required
+@fir_auth_required
 @user_passes_test(can_view_statistics)
 def stats_attributes(request):
     form = IncidentForm(for_user=request.user, permissions='incidents.view_statistics')
@@ -1365,7 +1365,7 @@ def stats_attributes_date_ranges(start, end):
     return result
 
 
-@login_required
+@fir_auth_required
 @user_passes_test(can_view_statistics)
 def stats_attributes_table(request):
     main_filter = stats_attributes_filter(request)
@@ -1435,7 +1435,7 @@ def stats_attributes_by_time_range(request):
         yield (datetime_range, incident_ids, attributes, len(with_attribute))
 
 
-@login_required
+@fir_auth_required
 @user_passes_test(can_view_statistics)
 def stats_attributes_over_time(request):
     incident_values = []
@@ -1527,7 +1527,7 @@ def average(values, size):
         return 0
 
 
-@login_required
+@fir_auth_required
 @user_passes_test(can_view_statistics)
 def stats_attributes_basic(request):
     main_filter = stats_attributes_filter(request)
@@ -1583,7 +1583,7 @@ def stats_attributes_basic(request):
     return HttpResponse(dumps(result, default=json_util.default), content_type="application/json")
 
 
-@login_required
+@fir_auth_required
 @user_passes_test(can_view_statistics)
 # set slide=True for a sliding year (current month, 12 months backwards).
 # slide=False for comparing Y-jan -> Y-dec and (Y-1)-jan -> (Y-1)-dec
@@ -1626,7 +1626,7 @@ def data_yearly_compare(request, year, type='all', slide=True):
     return HttpResponse(dumps(chart_data), content_type="application/json")
 
 
-@login_required
+@fir_auth_required
 @user_passes_test(can_view_statistics)
 def data_yearly_evolution(request, year, type='all', divisor='bl', slide=True):
     chart_data = []
@@ -1692,7 +1692,7 @@ def data_yearly_evolution(request, year, type='all', divisor='bl', slide=True):
     return HttpResponse(dumps(chart_data), content_type="application/json")
 
 
-@login_required
+@fir_auth_required
 @user_passes_test(can_view_statistics)
 def data_yearly_incidents(request):
     chart_data = []
@@ -1709,7 +1709,7 @@ def data_yearly_incidents(request):
     return HttpResponse(dumps(chart_data), content_type="application/json")
 
 
-@login_required
+@fir_auth_required
 @user_passes_test(can_view_statistics)
 def data_yearly_field(request, field):
     field_dict = {}
@@ -1731,7 +1731,7 @@ def data_yearly_field(request, field):
     return HttpResponse(dumps(chart_data), content_type="application/json")
 
 
-@login_required
+@fir_auth_required
 @user_passes_test(can_view_statistics)
 def data_yearly_bl(request, year=datetime.date.today().year, type='all'):
     bls = BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics').filter(depth=1)
@@ -1764,7 +1764,7 @@ def data_yearly_bl(request, year=datetime.date.today().year, type='all'):
     return HttpResponse(dumps(chart_data), content_type="application/json")
 
 
-@login_required
+@fir_auth_required
 @user_passes_test(can_view_statistics)
 def data_yearly_bl_detection(request):
     bls = BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics').filter(depth=1)
@@ -1788,7 +1788,7 @@ def data_yearly_bl_detection(request):
     return HttpResponse(dumps(chart_data), content_type='application/json')
 
 
-@login_required
+@fir_auth_required
 @user_passes_test(can_view_statistics)
 def data_yearly_bl_severity(request):
     bls = BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics').filter(depth=1)
@@ -1816,7 +1816,7 @@ def data_yearly_bl_severity(request):
     return HttpResponse(dumps(chart_data), content_type='application/json')
 
 
-@login_required
+@fir_auth_required
 @user_passes_test(can_view_statistics)
 def data_yearly_bl_category(request):
     bls = BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics').filter(depth=1)
@@ -1846,7 +1846,7 @@ def data_yearly_bl_category(request):
     return HttpResponse(dumps(chart_data), content_type='application/json')
 
 
-@login_required
+@fir_auth_required
 @user_passes_test(can_view_statistics)
 def data_yearly_bl_plan(request):
     bls = BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics').filter(depth=1)
@@ -1876,7 +1876,7 @@ def data_yearly_bl_plan(request):
     return HttpResponse(dumps(chart_data), content_type='application/json')
 
 
-@login_required
+@fir_auth_required
 @user_passes_test(can_view_statistics)
 def data_incident_variation(request, business_line, num_months=3):
     bl = get_object_or_404(BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics'), name=business_line)
@@ -1928,7 +1928,7 @@ def data_incident_variation(request, business_line, num_months=3):
     return HttpResponse(dumps(chart_data), content_type='application/json')
 
 
-@login_required
+@fir_auth_required
 @user_passes_test(can_view_statistics)
 def data_quarterly_bl(request, business_line, divisor, num_months=3, is_incident=True):
     bl = get_object_or_404(BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics'),
@@ -2063,7 +2063,7 @@ def data_quarterly_bl(request, business_line, divisor, num_months=3, is_incident
     return HttpResponse(dumps(chart_data), content_type='application/json')
 
 
-@login_required
+@fir_auth_required
 @user_passes_test(can_view_statistics)
 def quarterly_major(request, start_date=None, num_months=3):
     q_major = Q(is_major=True)
@@ -2219,31 +2219,31 @@ def incident_display(request, filter, incident_view=True, paginated=True):
 
 
 @fir_auth_required
-#@login_required
+#@fir_auth_required
 @user_passes_test(is_incident_viewer)
 def dashboard_main(request):
     return render(request, 'dashboard/index.html')
 
 
-@login_required
+@fir_auth_required
 @user_passes_test(is_incident_viewer)
 def dashboard_starred(request):
     return incident_display(request, Q(is_starred=True) & ~Q(status='C'), True, False)
 
 
-@login_required
+@fir_auth_required
 @user_passes_test(is_incident_viewer)
 def dashboard_open(request):
     return incident_display(request, Q(status='O'))
 
 
-@login_required
+@fir_auth_required
 @user_passes_test(is_incident_viewer)
 def dashboard_blocked(request):
     return incident_display(request, Q(status='B'))
 
 
-@login_required
+@fir_auth_required
 @user_passes_test(is_incident_viewer)
 def dashboard_old(request):
     permissions = ['incidents.view_incidents', 'incidents.handle_incidents']
@@ -2260,7 +2260,7 @@ def dashboard_old(request):
 
 
 # User profile ============================================================
-@login_required
+@fir_auth_required
 def user_self_service(request):
     user_fields = []
     if settings.USER_SELF_SERVICE.get('CHANGE_EMAIL', True):
@@ -2303,7 +2303,7 @@ def user_self_service(request):
     })
 
 
-@login_required
+@fir_auth_required
 @require_POST
 def user_change_password(request):
     if not settings.USER_SELF_SERVICE.get('CHANGE_PASSWORD', True):
