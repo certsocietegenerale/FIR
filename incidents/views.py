@@ -11,20 +11,23 @@ from django.views.decorators.http import require_POST
 from incidents.models import IncidentCategory, Incident, Comments, BusinessLine, model_status_changed
 from incidents.models import Label, Log, BaleCategory
 from incidents.models import Attribute, ValidAttribute, IncidentTemplate, Profile
-from incidents.forms import IncidentForm, CommentForm
+from incidents.forms import IncidentForm, CommentForm, CustomAuthenticationForm, CustomAuthenticationTokenForm
+from two_factor.forms import AuthenticationTokenForm, BackupTokenForm
+
 from incidents.authorization.decorator import authorization_required
-from fir.config.base import INSTALLED_APPS
+from fir.config.base import INSTALLED_APPS, ENFORCE_2FA, TF_INSTALLED
 import importlib
 
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required, user_passes_test
+from fir.decorators import fir_auth_required
 from django.core import serializers
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from django.core.urlresolvers import reverse
 from django.db.models import Q, Max
 from django.http import HttpResponse, HttpResponseServerError
-from django.shortcuts import get_object_or_404, render, redirect
+from django.shortcuts import get_object_or_404, render, redirect, resolve_url
 from django.template import RequestContext
 from json import dumps
 from django.template import Template
@@ -32,6 +35,7 @@ from django.template import Template
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.forms.models import model_to_dict, modelform_factory
 from django.utils.translation import ugettext_lazy as _
+from django.utils.http import is_safe_url
 from django.conf import settings
 
 import re, datetime
@@ -101,6 +105,64 @@ if getattr(settings, 'INCIDENT_VIEWER_CAN_COMMENT', False):
 
 # login / logout =================================================
 
+if TF_INSTALLED:
+    from two_factor.views.core import LoginView
+    from two_factor import signals
+
+    class CustomLoginView(LoginView):
+        template_name = 'two_factor/login.html'
+
+        form_list = (
+            ('auth', CustomAuthenticationForm),
+            ('token', CustomAuthenticationTokenForm),
+            ('backup', BackupTokenForm),
+        )
+
+        def __init__(self, **kwargs):
+            super(CustomLoginView, self).__init__(**kwargs)
+
+
+        def done(self, form_list, **kwargs):
+            """
+            Login the user and redirect to the desired page.
+            """
+            login(self.request, self.get_user())
+
+            redirect_to = self.request.POST.get(
+                self.redirect_field_name,
+                self.request.GET.get(self.redirect_field_name, '')
+            )
+            if not is_safe_url(url=redirect_to, host=self.request.get_host()):
+                redirect_to = resolve_url(settings.LOGIN_REDIRECT_URL)
+
+            is_auth = False
+            user = self.get_user()
+            device = getattr(self.get_user(), 'otp_device', None)
+            if device:
+                signals.user_verified.send(sender=__name__, request=self.request,
+                                           user=self.get_user(), device=device)
+                redirect_to = resolve_url("dashboard:main")
+                is_auth = True
+            elif ENFORCE_2FA:
+                redirect_to = resolve_url("two_factor:profile")
+            else:
+                redirect_to = resolve_url("dashboard:main")
+                is_auth = True
+            if not self.request.POST.get('remember', None):
+                self.request.session.set_expiry(0)
+            try:
+                Profile.objects.get(user=user)
+            except ObjectDoesNotExist:
+                profile = Profile()
+                profile.user = user
+                profile.hide_closed = False
+                profile.incident_number = 50
+                profile.save()
+            if user.is_active:
+                log("Login success", user)
+                init_session(self.request)
+            return redirect(redirect_to)
+
 
 def user_login(request):
     if request.method == "POST":
@@ -138,8 +200,10 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     request.session.flush()
-    return redirect('login')
-
+    if ENFORCE_2FA:
+        return redirect('two_factor:login')
+    else:
+        return redirect('login')
 
 def init_session(request):
     pass
@@ -2152,7 +2216,8 @@ def incident_display(request, filter, incident_view=True, paginated=True):
     })
 
 
-@login_required
+@fir_auth_required
+#@login_required
 @user_passes_test(is_incident_viewer)
 def dashboard_main(request):
     return render(request, 'dashboard/index.html')

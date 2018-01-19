@@ -1,8 +1,36 @@
 from django.forms import ModelForm
 from django import forms
 from incidents.models import IncidentCategory, Incident, Comments, BusinessLine
+from django.contrib.auth.forms import AuthenticationForm
+from fir.config.base import TF_INSTALLED
 
-# forms ===============================================================
+
+class CustomAuthenticationForm(AuthenticationForm):
+    username = forms.CharField(label=False,
+                               max_length=30,
+                               widget=forms.TextInput(attrs={'class': 'form-control',
+                                                             'name': 'username',
+                                                             'placeholder': 'Username'}))
+    password = forms.CharField(label=False,
+                               max_length=30,
+                               widget=forms.TextInput(attrs={'class': 'form-control',
+                                                             'name': 'password',
+                                                             'type': 'password',
+                                                             'placeholder': 'Password'}))
+    remember = forms.BooleanField(required=False,
+                                  label='Remember me',
+                                  widget=forms.CheckboxInput(attrs={'class': 'checkbox',
+                                                                    'name': 'remember'}))
+
+if TF_INSTALLED:
+    from two_factor.forms import AuthenticationTokenForm
+
+    class CustomAuthenticationTokenForm(AuthenticationTokenForm):
+        def __init__(self, user, initial_device, **kwargs):
+            super(CustomAuthenticationTokenForm, self).__init__(user, initial_device, **kwargs)
+            self.fields['otp_token'].widget.attrs.update({'class': 'form-control'})
+                                                          #'placeholder': 'Token'})
+
 
 
 class IncidentForm(ModelForm):
