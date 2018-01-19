@@ -30,8 +30,11 @@ if TF_INSTALLED:
             super(CustomAuthenticationTokenForm, self).__init__(user, initial_device, **kwargs)
             self.fields['otp_token'].widget.attrs.update({'class': 'form-control'})
                                                           #'placeholder': 'Token'})
-
-
+else:
+    class CustomAuthenticationTokenForm(ModelForm):
+        def __init__(self, user, initial_device, **kwargs):
+            super(CustomAuthenticationTokenForm, self).__init__(user, initial_device, **kwargs)
+            
 
 class IncidentForm(ModelForm):
     def __init__(self, *args, **kwargs):
