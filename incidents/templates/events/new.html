@@ -71,11 +71,13 @@ $(document).ready(function() {
 								{{ form.subject|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.subject.errors %}
 							</div>
+<!-- no business line
 							<div class="col-sm-6 form-group{% if form.concerned_business_lines.errors%} has-error{%endif%}">
 								<label id="id_concerned_business_lines">{% trans "Business Lines" %}</label>
 								{{ form.concerned_business_lines|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.concerned_business_lines.errors %}
 							</div>
+-->
 						</div>
 						<div class="row">
 							<div class="col-sm-6 form-group{% if form.category.errors%} has-error{%endif%}">
@@ -121,9 +123,9 @@ $(document).ready(function() {
 						</div>
 					</fieldset>
 				</div>
+<!-- no actor plan major incident
 				<div class="col-sm-6">
 					{% if can_handle_incident %}
-
 					<fieldset id="incident_fields" class='details collapse {% if form.is_incident.value %}in{%endif%}'>
 						<legend>{% trans "Incident details" %}</legend>
 
@@ -146,6 +148,7 @@ $(document).ready(function() {
 					</fieldset>
 					{% endif %}
 				</div>
+-->
 			</div>
 			<div class="row">
 				<fieldset class="col-sm-12">
