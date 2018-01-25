@@ -7,6 +7,7 @@ from fir.config.base import *
 DEBUG = True
 TEMPLATES[0]['OPTIONS']['debug'] = True
 
+print "base dir path", BASE_DIR
 # Sqlite3 database backend
 DATABASES = {
     'default': {
