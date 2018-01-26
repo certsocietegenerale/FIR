@@ -196,6 +196,16 @@ class Incident(FIRModel, models.Model):
     incident_discovery = models.DateTimeField(default=datetime.datetime.now, blank=True)
     incident_reported = models.DateTimeField(default=datetime.datetime.now, blank=True)
 
+# STIX advanced fields ================================================================
+#    is_advanced = False (html form needs to persist boolean toggle)
+    is_advanced = models.BooleanField(default=False)
+    initial_compromise = models.DateTimeField(blank=True, null=True)
+    first_data_exfiltration = models.DateTimeField(blank=True, null=True)
+    incident_opened = models.DateTimeField(blank=True, null=True)
+    containment_achieved = models.DateTimeField(blank=True, null=True)
+    restoration_achieved = models.DateTimeField(blank=True, null=True)
+    incident_closed = models.DateTimeField(blank=True, null=True)
+
     def __unicode__(self):
         return self.subject
 

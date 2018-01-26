@@ -59,8 +59,6 @@ $(document).ready(function() {
 
 				<div class="col-sm-6">
 
-				    <legend>{% trans "Hello Seb" %}</legend>
-
 					<fieldset>
 
 						<legend>{% trans "Summary" %}</legend>
@@ -122,20 +120,62 @@ $(document).ready(function() {
 								{{ form.incident_reported|add_css_class:"form-control datetime" }}
 								{% include 'events/_form_errors.html' with errors=form.incident_reported.errors %}
 							</div>
+
+							<div class="col-sm-3 checkbox aligned-with-stack{% if form.is_advanced.errors%} has-error{%endif%}">
+								<label data-toggle='collapse' data-target='#advanced_fields'>{{ form.is_advanced }} {% trans "Advanced" %}</label>
+								{% include 'events/_form_errors.html' with errors=form.is_advanced.errors %}
+							</div>
+						</div>
+                        <!-- advanced STIX dates -->
+						<div class="row">
+							<fieldset id="advanced_fields" class='details collapse {% if form.is_advanced.value %}in{%endif%}'>
+							    <div class="col-sm-6 form-group{% if form.initial_compromise.errors%} has-error{%endif%}">
+								    <label id="id_initial_compromise">{% trans "Initial Compromise" %}</label>
+								    {{ form.initial_compromise|add_css_class:"form-control datetime" }}
+								    {% include 'events/_form_errors.html' with errors=form.initial_compromise.errors %}
+							    </div>
+							    <div class="col-sm-6 form-group{% if form.first_data_exfiltration.errors%} has-error{%endif%}">
+								    <label id="id_first_data_exfiltration">{% trans "First Data Exfiltration" %}</label>
+								    {{ form.first_data_exfiltration|add_css_class:"form-control datetime" }}
+								    {% include 'events/_form_errors.html' with errors=form.first_data_exfiltration.errors %}
+							    </div>
+							    <div class="col-sm-6 form-group{% if form.incident_opened.errors%} has-error{%endif%}">
+								    <label id="id_incident_opened">{% trans "Incident Opened" %}</label>
+								    {{ form.incident_opened|add_css_class:"form-control datetime" }}
+								    {% include 'events/_form_errors.html' with errors=form.incident_opened.errors %}
+							    </div>
+							    <div class="col-sm-6 form-group{% if form.containment_achieved.errors%} has-error{%endif%}">
+								    <label id="id_containment_achieved">{% trans "Containment Achieved" %}</label>
+								    {{ form.containment_achieved|add_css_class:"form-control datetime" }}
+								    {% include 'events/_form_errors.html' with errors=form.containment_achieved.errors %}
+							    </div>
+							    <div class="col-sm-6 form-group{% if form.restoration_achieved.errors%} has-error{%endif%}">
+								    <label id="id_restoration_achieved">{% trans "Restoration Achieved" %}</label>
+								    {{ form.restoration_achieved|add_css_class:"form-control datetime" }}
+								    {% include 'events/_form_errors.html' with errors=form.restoration_achieved.errors %}
+							    </div>
+							    <div class="col-sm-6 form-group{% if form.incident_closed.errors%} has-error{%endif%}">
+								    <label id="id_incident_closed">{% trans "Incident Closed" %}</label>
+								    {{ form.incident_closed|add_css_class:"form-control datetime" }}
+								    {% include 'events/_form_errors.html' with errors=form.incident_closed.errors %}
+							    </div>
+                            </fieldset>
 						</div>
 
 						<div class="row">
+<!-- no date
 							<div class="col-sm-6 form-group{% if form.date.errors%} has-error{%endif%}">
 								<label id="id_date">{% trans "Date / Time" %}</label>
 								{{ form.date|add_css_class:"form-control datetime" }}
 								{% include 'events/_form_errors.html' with errors=form.date.errors %}
 							</div>
+-->
 							<div class="col-sm-1 form-group{% if form.confidentiality.errors%} has-error{%endif%}">
 								<label id="id_confidentiality">{% trans "Confidentiality" %}</label>
 								{{ form.confidentiality|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.confidentiality.errors %}
 							</div>
-                            {%  has_perm 'incidents.handle_incidents' model=form as can_handle_incident %}
+                            {% has_perm 'incidents.handle_incidents' model=form as can_handle_incident %}
                             {% if can_handle_incident %}
 							<div class="col-sm-3 col-sm-offset-2 checkbox aligned-with-stack{% if form.is_incident.errors%} has-error{%endif%}">
                                 <!-- Is an incident label replaced by Incident details -->
