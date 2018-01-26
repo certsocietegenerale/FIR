@@ -174,7 +174,6 @@ class Incident(FIRModel, models.Model):
     date = models.DateTimeField(default=datetime.datetime.now, blank=True)
     is_starred = models.BooleanField(default=False)
     subject = models.CharField(max_length=256)
-    short_description = models.CharField(max_length=256, blank=True)
     description = models.TextField()
     category = models.ForeignKey(IncidentCategory)
     concerned_business_lines = models.ManyToManyField(BusinessLine, blank=True)
@@ -190,6 +189,12 @@ class Incident(FIRModel, models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=_("Open"))
     opened_by = models.ForeignKey(User)
     confidentiality = models.IntegerField(choices=CONFIDENTIALITY_LEVEL, default='1')
+
+# STIX fields ================================================================
+    short_description = models.CharField(max_length=256, blank=True)
+    first_malicious_action = models.DateTimeField(default=datetime.datetime.now, blank=True)
+    incident_discovery = models.DateTimeField(default=datetime.datetime.now, blank=True)
+    incident_reported = models.DateTimeField(default=datetime.datetime.now, blank=True)
 
     def __unicode__(self):
         return self.subject
@@ -366,7 +371,6 @@ class ValidAttribute(models.Model):
 class IncidentTemplate(models.Model):
     name = models.CharField(max_length=100)
     subject = models.CharField(max_length=256, null=True, blank=True)
-    short_description = models.CharField(max_length=256, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
     category = models.ForeignKey(IncidentCategory, null=True, blank=True)
     concerned_business_lines = models.ManyToManyField(BusinessLine, blank=True)
@@ -375,6 +379,9 @@ class IncidentTemplate(models.Model):
     is_incident = models.BooleanField(default=False)
     actor = models.ForeignKey(Label, limit_choices_to={'group__name': 'actor'}, related_name='+', blank=True, null=True)
     plan = models.ForeignKey(Label, limit_choices_to={'group__name': 'plan'}, related_name='+', blank=True, null=True)
+
+# STIX fields ================================================================
+    short_description = models.CharField(max_length=256, null=True, blank=True)
 
     def __unicode__(self):
         return self.name
