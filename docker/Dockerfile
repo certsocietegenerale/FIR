@@ -32,7 +32,7 @@ RUN addgroup fir && \
 
 WORKDIR /app
 
-RUN git clone https://github.com/certsocietegenerale/FIR.git && \
+RUN git clone https://github.com/HugoPouliquen/FIR.git && \
     chown -R fir:fir /app/FIR && \
     cd FIR && \
     pip install -r requirements.txt && \
