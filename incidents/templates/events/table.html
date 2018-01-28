@@ -18,7 +18,7 @@
             {% trans "IH" as t_ih %}
             {% trans "None" as t_none %}
 				<tr>
-                    {% if incident_show_id %}<th>ID</th>{% endif %}
+				  {% if incident_show_id %}<th>ID</th>{% endif %}
 					{% include 'events/column.html' with name=t_date field='date' %}
 					<th></th>
 					{% include 'events/column.html' with name=t_category field='category' %}
