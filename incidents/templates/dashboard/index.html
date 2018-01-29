@@ -10,11 +10,6 @@
 {% endblock %}
 
 {% block content %}
-<h4>{%  trans "Starred Incidents" %}</h4>
-
-<div id='starred_incidents' class='incident_display' data-url="{% url 'dashboard:starred' %}">
-{%  trans "Loading ..." %}
-</div>
 
 <div class='tabbable'>
 	<ul class='nav nav-tabs'>
@@ -91,11 +86,11 @@
 			{%  trans "Loading ..." %}
 		</div>-->
 
-		
+
 		<div class='tab-pane incident_display table-responsive' id='tab_assigned' data-url="{% url 'dashboard:assigned' %}">
 			{%  trans "Loading ..." %}
 		</div>
-		
+
 
 		{% plugin_point 'dashboard_tab_content' %}
 	</div>
