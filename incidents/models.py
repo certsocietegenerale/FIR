@@ -44,6 +44,27 @@ CONFIDENTIALITY_LEVEL = (
     (3, "C3"),
 )
 
+# From
+# http://stix.mitre.org/XMLSchema/default_vocabularies/1.2.0/stix_default_vocabularies.xsd
+# TODO modify as required.
+CATEGORIES = (
+    (1, "Exercise/Network Defense Testing"),
+    (2, "Unauthorized Access"),
+    (3, "Denial of Service"),
+    (4, "Malicious Code"),
+    (5, "Improper Usage"),
+    (6, "Scans/Probes/Attempted Access"),
+    (7, "Investigation"),
+)
+
+# TODO modify as required
+CONFIDENCE_VALUE = (
+    (1, "Low"),
+    (2, "Medium"),
+    (3, "High"),
+)
+
+
 # Special Model class that handles signals
 
 
@@ -104,7 +125,6 @@ class Label(models.Model):
 
     def __unicode__(self):
         return "%s" % (self.name)
-
 
 class BusinessLine(MP_Node, AuthorizationModelMixin):
     name = models.CharField(max_length=100)
@@ -176,7 +196,10 @@ class Incident(FIRModel, models.Model):
     is_starred = models.BooleanField(default=False)
     subject = models.CharField(max_length=256)
     description = models.TextField()
-    category = models.ForeignKey(IncidentCategory)
+
+    # we use fir category here
+    # TODO to interface with django admin to get values for choices
+    category = models.ForeignKey(IncidentCategory, choices = CATEGORIES)
     concerned_business_lines = models.ManyToManyField(BusinessLine, blank=True)
     main_business_lines = models.ManyToManyField(BusinessLine, related_name='incidents_affecting_main', blank=True)
     detection = models.ForeignKey(Label, limit_choices_to={'group__name': 'detection'}, related_name='detection_label')
@@ -199,10 +222,6 @@ class Incident(FIRModel, models.Model):
     #incident_id is the global unique id
     incident_id = models.UUIDField(default=uuid.uuid4, editable=False)
     external_id = models.CharField(max_length=50, blank=True)
-    #categories = 0..N, consider using Valid attributes from Admin page
-    # http://stixproject.github.io/data-model/1.2/stixVocabs/IncidentCategoryVocab-1.0/
-    # or just use FIR category
-    categories = models.CharField(max_length=256, blank=True)
     reporter = models.CharField(max_length=100, blank=True)
     victim = models.CharField(max_length=150, blank=True)
     #affected_assets = 0..N, consider using Valid attributes from Admin page
@@ -230,8 +249,11 @@ class Incident(FIRModel, models.Model):
     #COA_description http://stixproject.github.io/data-model/1.2/coa/CourseOfActionType/
     COA_requested_description = models.CharField(max_length=150, blank=True)
     COA_taken_description = models.CharField(max_length=150, blank=True)
+
     #confidence_value TODO http://stixproject.github.io/data-model/1.2/stixVocabs/HighMediumLowVocab-1.0/
-    confidence_description = models.CharField(max_length=150, blank=True)
+    confidence_description = models.CharField(max_length=10,
+                                              choices=CONFIDENCE_VALUE)
+
     #contact_name http://stixproject.github.io/data-model/1.2/stixCommon/IdentityType/
     contact_name = models.CharField(max_length=30, blank=True)
     #history use incident Comment entries
@@ -424,7 +446,7 @@ class IncidentTemplate(models.Model):
     name = models.CharField(max_length=100)
     subject = models.CharField(max_length=256, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
-    category = models.ForeignKey(IncidentCategory, null=True, blank=True)
+    category = models.ForeignKey(IncidentCategory, blank=True)
     concerned_business_lines = models.ManyToManyField(BusinessLine, blank=True)
     detection = models.ForeignKey(Label, limit_choices_to={'group__name': 'detection'}, null=True, blank=True)
     severity = models.IntegerField(choices=SEVERITY_CHOICES, null=True, blank=True)
