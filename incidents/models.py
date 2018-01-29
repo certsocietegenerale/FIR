@@ -181,7 +181,7 @@ class Incident(FIRModel, models.Model):
     main_business_lines = models.ManyToManyField(BusinessLine, related_name='incidents_affecting_main', blank=True)
     detection = models.ForeignKey(Label, limit_choices_to={'group__name': 'detection'}, related_name='detection_label')
     severity = models.IntegerField(choices=SEVERITY_CHOICES)
-    is_incident = models.BooleanField(default=False)
+    is_incident = models.BooleanField(default=True)
     is_major = models.BooleanField(default=False)
     actor = models.ForeignKey(Label, limit_choices_to={'group__name': 'actor'}, related_name='actor_label', blank=True,
                               null=True)
