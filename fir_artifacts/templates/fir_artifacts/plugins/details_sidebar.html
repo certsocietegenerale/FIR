@@ -3,9 +3,8 @@
 {% load fir_artifacts %}
 {% load authorization %}
 {%  has_perm 'incidents.handle_incidents' obj=event as can_handle_incident %}
-<div class='widget {% if event.file_set.count == 0 %}hidden{% endif%}' id='details-files'>
+<div class='widget' id='details-files'>
 <h4 class='widget'>{%  trans "Related files" %}</h4>
-    {% if event.file_set.count > 0 %}
         <table class='table table-condensed files fixed'>
             <thead>
                 <tr>
@@ -37,7 +36,6 @@
                 </tr>
             {% endfor %}
         </table>
-    {% endif %}
     {% if can_handle_incident %}
     <form id='upload_form' enctype="multipart/form-data" action="{% url 'artifacts:upload_file' event|content_type event.id %}" method='POST'>
         {% csrf_token %}
