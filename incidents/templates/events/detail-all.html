@@ -53,14 +53,6 @@
 					</form>
 				</li>
 			{% endif %}
-			{% if event.status != 'B' %}
-				<li>
-					<form action="{% url 'incidents:change_status' event.id 'B' %}" method='POST' class='icon'>
-						{% csrf_token %}
-						<a href="#" class='submit'><i class="glyphicon glyphicon-ban-circle"></i>{%  trans "Block" %}</a>
-					</form>
-				</li>
-			{% endif %}
 			{% if event.status != 'C' %}
 				<li>
 					<form action="{% url 'incidents:change_status' event.id 'C' %}" method='POST' class='icon'>
@@ -70,7 +62,6 @@
 				</li>
 			{% endif %}
             {% endif %}
-			<li><a href="{% url 'incidents:followup' event.id %}"><i class="glyphicon glyphicon-retweet"></i>{%  trans "Incident followup" %}</a></li>
 			{% plugin_point 'details_actions' %}
 		</ul>
 	</div>
