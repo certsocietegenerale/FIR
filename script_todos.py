@@ -14,14 +14,14 @@ from fir_todos.models import TodoItem, TodoListTemplate
 def import_file(filename):
     ''' create a todolistemplate from a file '''
     todos = []
-    template = TodoListTemplate(name=filename.split('.')[0])
+    template = TodoListTemplate(name=os.path.basename(filename).split('.')[0])
     template.save()
     for line in open(filename).read().split('\n'):
         todos.append(create_item(line))
 
     template.todolist = todos
     template.save()
-    print "[*] import terminé"
+    print("[*] import terminé")
 
 
 def create_item(line):

@@ -24,12 +24,9 @@ class IncidentForm(ModelForm):
         self.fields['subject'].error_messages['required'] = 'This field is required.'
         self.fields['category'].error_messages['required'] = 'This field is required.'
         self.fields['concerned_business_lines'].error_messages['required'] = 'This field is required.'
-        self.fields['detection'].error_messages['required'] = 'This field is required.'
 
         self.fields['severity'].error_messages['required'] = 'This field is required.'
-        self.fields['is_major'].error_messages['required'] = 'This field is required.'
 
-        self.fields['is_major'].label = 'Major?'
         self.fields['assignee'].label = 'Assignee'
 
     def clean(self):

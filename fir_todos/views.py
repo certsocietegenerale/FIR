@@ -110,17 +110,16 @@ def dashboard(request):
     return render(request, 'fir_todos/dashboard.html', {'todos': todos})
 
 
-def get_todo_templates(category, detection, bl):
+def get_todo_templates(category, bl):
     results = []
 
     q = Q(category=category) | Q(category__isnull=True)
-    q &= Q(detection=detection) | Q(detection__isnull=True)
     q &= Q(concerned_business_lines=bl) | Q(concerned_business_lines__isnull=True)
 
     results += TodoListTemplate.objects.filter(q)
 
     if not bl.is_root():
-        results += [m for m in get_todo_templates(category, detection, bl.get_parent()) if m not in results]
+        results += [m for m in get_todo_templates(category, bl.get_parent()) if m not in results]
 
     return results
 
@@ -141,7 +140,7 @@ def new_event(sender, instance, **kwargs):
     todos = dict()
 
     for bl in instance.concerned_business_lines.all():
-        for template in get_todo_templates(instance.category, instance.detection, bl):
+        for template in get_todo_templates(instance.category, bl):
             for task in template.todolist.all():
                 if task.id not in todos:
                     todos[task.id] = {'task': task, 'bls': [bl]}
