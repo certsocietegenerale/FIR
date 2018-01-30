@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load fir_plugins %}
 {% load add_css_class %}
 {% load i18n %}
 {% load staticfiles %}
@@ -9,13 +10,12 @@
 <link href="{% static "select/select2.css" %}" rel="stylesheet"/>
 <link href="{% static "select/select2-bootstrap.css" %}" rel="stylesheet"/>
 <link href="{% static "css/bootstrap-datetimepicker.min.css" %}" rel="stylesheet"/>
-
-
 {% endblock %}
 
 {% block custom_js %}
 <script src="{% static "select/select2.min.js" %}"></script>
 {% rich_edit_static %}
+
 <script>
 $(document).ready(function() {
 	$("select#id_concerned_business_lines").select2({ dropdownAutoWidth: true, width: '100%' });
@@ -32,7 +32,6 @@ $(document).ready(function() {
 <script src="{% static "js/bootstrap-datetimepicker.min.js" %}"></script>
 
 {% endblock %}
-
 
 {% block content %}
 
@@ -180,7 +179,7 @@ $(document).ready(function() {
 								{{ form.confidentiality|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.confidentiality.errors %}
 							</div>
-<!-- no is_incident toggle
+<!-- no is_incident toggle -->
                             {% has_perm 'incidents.handle_incidents' model=form as can_handle_incident %}
                             {% if can_handle_incident %}
 							<div class="col-sm-3 col-sm-offset-2 checkbox aligned-with-stack{% if form.is_incident.errors%} has-error{%endif%}">
@@ -188,7 +187,7 @@ $(document).ready(function() {
 								{% include 'events/_form_errors.html' with errors=form.is_incident.errors %}
 							</div>
                             {% endif %}
--->
+
 						</div>
                         <!-- STIX fields 
 						<div class="row">
@@ -235,6 +234,7 @@ $(document).ready(function() {
 				</div>
 -->
 			</div>
+
 			<div class="row">
 				<fieldset class="col-sm-12">
 					<legend>{% trans "Description" %}</legend>
@@ -252,13 +252,6 @@ $(document).ready(function() {
                                                 {{ form.short_description|add_css_class:"form-control" }}
 						{% include 'events/_form_errors.html' with errors=form.short_description.errors %}
 					</div>
-<!--
-					<div class="col-sm-12 form-group{% if form.subject.errors%} has-error{%endif%}">
-						<label for="id_short_description">{% trans "Short Description" %}</label>
-                        <input class="form-control" id="form.short_description" type="text" width=100%>
-						{% include 'events/_form_errors.html' with errors=form.subject.errors %}
-					</div>
--->
 				</fieldset>
 			</div>
 			<div class="row">
@@ -398,7 +391,22 @@ $(document).ready(function() {
 				</fieldset>
 			</div>
 
+		<div id='main_tabs' class='tabbable'>
+			<ul class='nav nav-tabs'>
+				<li class='active'>
+					<a href='#tab_comments' data-toggle='tab'>
+						{% trans "Comments" %} (<span id='comment-count'>{{ comments.count }}</span>)
+					</a>
+				</li>
+				{% plugin_point 'details_tab' %}
+			</ul>
+		</div>
+
 			<button class="btn btn-primary" type="submit">{% trans "Save" %}</button>
 		</form>
+
 	</div>
 {% endblock %}
+
+
+
