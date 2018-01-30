@@ -19,22 +19,19 @@
             {% trans "None" as t_none %}
 				<tr>
 				  {% if incident_show_id %}<th>ID</th>{% endif %}
+
 					{% include 'events/column.html' with name=t_date field='date' %}
-					<th></th>
-					{% include 'events/column.html' with name=t_category field='category' %}
-					{% include 'events/column.html' with name=t_subject field='subject' %}
+					<th>Type</th>
 					<th>{% trans "Business Lines" %}</th>
+					{% include 'events/column.html' with name=t_category field='category' %}
 					{% include 'events/column.html' with name=t_severity field='severity' %}
+					{% include 'events/column.html' with name=t_subject field='subject' %}
 					{% include 'events/column.html' with name=t_status field='status' %}
-					{% if incident_view %}
-						{% include 'events/column.html' with name=t_detection field='detection' %}
-						{% include 'events/column.html' with name=t_leader field='actor' %}
-						{% include 'events/column.html' with name=t_lastaction field='last_action' %}
-						{% include 'events/column.html' with name=t_plan field='plan' %}
-						{% include 'events/column.html' with name=t_lvl field='confidentiality' %}
-					{% endif %}
-					{% include 'events/column.html' with name=t_ih field='opened_by' %}
 					<th>{% trans "Assignee" %}</th>
+
+					{% if incident_view %}
+						{% include 'events/column.html' with name=t_lastaction field='last_action' %}
+					{% endif %}
 					<th>{%  trans "Edit" %}</th>
 				</tr>
 			</thead>
@@ -42,30 +39,27 @@
 				{% for incident in incident_list %}
 					{%  has_perm 'incidents.handle_incidents' obj=incident as can_handle_incident %}
 					<tr class='{{ incident.status }}'>
-						{% if incident_show_id %}<td>{{ incident|object_id }}</td>{% endif %}
+						<td>{{ incident|object_id }}</td>
 						<td class='incident_date_column'>{{ incident.date|date:'Y-m-d' }}</td>
-						<td>
-							{% if can_handle_incident %}<a href="{% url 'ajax:toggle_star' incident.id %}" class='star'>{%endif%}
-									{% if incident.is_starred %}
-										<i class='glyphicon glyphicon-star star'></i>
-									{% else %}
-										<i class='glyphicon glyphicon-star-empty star'></i>
-									{% endif %}
-							{% if can_handle_incident %}</a>{%endif%}
-						</td>
+						{% if incident.is_incident %}
+							<td> Incident </td>
+						{% else %}
+							<td> Event</td>
+						{% endif %}
+						<td>{{ incident.get_business_lines_names }}</td>
+
 						<td>{{ incident.category }}</td>
+						<td><span class='badge threatcon-{{ incident.severity }}'>{{ incident.severity }}</span></td>
 						{% if incident.is_incident %}
 							<td><a href="{% url 'incidents:details' incident.id %}">{{ incident.subject }}</a></td>
 						{% else %}
 							<td><a href="{% url 'events:details' incident.id %}">{{ incident.subject }}</a></td>
 						{% endif %}
-						<td>{{ incident.get_business_lines_names }}</td>
-						<td><span class='badge threatcon-{{ incident.severity }}'>{{ incident.severity }}</span></td>
 						<td>{{ incident.get_status_display }}</td>
+						<td>{{ incident.assignee }}</td>
+
 
 						{% if incident_view %}
-							<td>{{ incident.detection }}</td>
-							<td>{{ incident.actor }}</td>
 							<td>
 								{% if incident.comments_set.count > 0%}
 									{{ incident.get_last_comment.action }}
@@ -76,12 +70,8 @@
 									{{ t_none }}
 								{%endif%}
 							</td>
-							<td>{{ incident.plan|default:t_none }}</td>
-							<td>{{ incident.get_confidentiality_display }}</td>
 						{% endif %}
 
-						<td>{{ incident.opened_by }}</td>
-						<td>{{ incident.assignee }}</td>
 						<td>
                             {% if can_handle_incident %}
 							<a href="{% url 'incidents:edit' incident.id %}"><span class='glyphicon glyphicon-pencil'></span></a>

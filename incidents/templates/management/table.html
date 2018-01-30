@@ -13,7 +13,7 @@
             {% trans "Last Action" as t_lastaction %}
             {% trans "None" as t_none %}
 				<tr>
-                    {% if incident_show_id %}<th>ID</th>{% endif %}
+          <th>ID</th>
 					{% include 'events/column.html' with name=t_date field='date' %}
 					<th></th>
 					{% include 'events/column.html' with name=t_category field='category' %}
@@ -30,16 +30,10 @@
 				{% for incident in incident_list %}
 					{%  has_perm 'incidents.handle_incidents' obj=incident as can_handle_incident %}
 					<tr class='{{ incident.status }}'>
-						{% if incident_show_id %}<td>{{ incident|object_id }}</td>{% endif %}
+						<td>{{ incident|object_id }}</td>
 						<td class='incident_date_column'>{{ incident.date|date:'Y-m-d' }}</td>
 						<td>
-							{% if can_handle_incident %}<a href="{% url 'ajax:toggle_star' incident.id %}" class='star'>{%endif%}
-									{% if incident.is_starred %}
-										<i class='glyphicon glyphicon-star star'></i>
-									{% else %}
-										<i class='glyphicon glyphicon-star-empty star'></i>
-									{% endif %}
-							{% if can_handle_incident %}</a>{%endif%}
+
 						</td>
 						<td>{{ incident.category }}</td>
 						{% if incident.is_incident %}
