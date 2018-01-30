@@ -53,12 +53,18 @@ $(function () {
 			}
 		}
 	}
-
+    // Make sure each 'incident_display' comes to life
+	$('.incident_display').each(function (index) {
+		refresh_display($(this));
+	});
+    
+    // refresh at specified interval
+    setInterval(function(){
 	// Make sure each 'incident_display' comes to life
 	$('.incident_display').each(function (index) {
 		refresh_display($(this));
 	});
-
+    }, 3000 );
 	// Change sort when clicking on a column title
 	$('.incident_display').on('click', 'thead a', function (event) {
 		refresh_display($(this));

@@ -266,12 +266,6 @@ def new_event(request):
         if form.is_valid():
             i = form.save(commit=False)
 
-            if not form.cleaned_data['is_major']:
-                i.is_major = form.cleaned_data['category'].is_major
-
-            if i.is_major:
-                i.is_incident = True
-
             i.opened_by = request.user
             i.save()
             form.save_m2m()
@@ -310,8 +304,6 @@ def diff(incident, form):
 
             label = i
 
-            if i == 'is_major':
-                label = 'major'
             if i == 'concerned_business_lines':
                 label = "business lines"
             if i == 'main_business_line':
@@ -706,8 +698,7 @@ def search(request):
 
             order_by = order_param
 
-            if order_by not in ['date', 'subject', 'category', 'bl', 'severity', 'status', 'opened_by', 'detection',
-                                'actor', 'confidentiality']:
+            if order_by not in ['date', 'subject', 'category', 'bl', 'severity', 'status', 'opened_by']:
                 order_by = 'date'
 
             if order_by == "category":

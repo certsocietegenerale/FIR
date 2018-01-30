@@ -18,7 +18,8 @@
             {% trans "IH" as t_ih %}
             {% trans "None" as t_none %}
 				<tr>
-                    <th>ID</th>
+				  {% if incident_show_id %}<th>ID</th>{% endif %}
+
 					{% include 'events/column.html' with name=t_date field='date' %}
 					<th>Type</th>
 					<th>{% trans "Business Lines" %}</th>

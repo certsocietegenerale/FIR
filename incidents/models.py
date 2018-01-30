@@ -182,17 +182,14 @@ class Incident(FIRModel, models.Model):
     category = models.ForeignKey(IncidentCategory)
     concerned_business_lines = models.ManyToManyField(BusinessLine, blank=True)
     main_business_lines = models.ManyToManyField(BusinessLine, related_name='incidents_affecting_main', blank=True)
-    detection = models.ForeignKey(Label, limit_choices_to={'group__name': 'detection'}, related_name='detection_label')
+
     severity = models.IntegerField(choices=SEVERITY_CHOICES)
     is_incident = models.BooleanField(default=False)
-    is_major = models.BooleanField(default=False)
-    actor = models.ForeignKey(Label, limit_choices_to={'group__name': 'actor'}, related_name='actor_label', blank=True,
-                              null=True)
-    plan = models.ForeignKey(Label, limit_choices_to={'group__name': 'plan'}, related_name='plan_label', blank=True,
-                             null=True)
+    # is_major = models.BooleanField(default=False)
+
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=_("Open"))
     opened_by = models.ForeignKey(User)
-    confidentiality = models.IntegerField(choices=CONFIDENTIALITY_LEVEL, default='1')
+
     assignee = models.ForeignKey(User, related_name='assigned_incidents', blank=True, null=True)
 
     def __unicode__(self):
@@ -373,11 +370,9 @@ class IncidentTemplate(models.Model):
     description = models.TextField(null=True, blank=True)
     category = models.ForeignKey(IncidentCategory, null=True, blank=True)
     concerned_business_lines = models.ManyToManyField(BusinessLine, blank=True)
-    detection = models.ForeignKey(Label, limit_choices_to={'group__name': 'detection'}, null=True, blank=True)
+    
     severity = models.IntegerField(choices=SEVERITY_CHOICES, null=True, blank=True)
     is_incident = models.BooleanField(default=False)
-    actor = models.ForeignKey(Label, limit_choices_to={'group__name': 'actor'}, related_name='+', blank=True, null=True)
-    plan = models.ForeignKey(Label, limit_choices_to={'group__name': 'plan'}, related_name='+', blank=True, null=True)
 
     def __unicode__(self):
         return self.name
