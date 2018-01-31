@@ -478,3 +478,57 @@ def log_new_incident(sender, instance, created, **kwargs):
         what = 'Edit incident'
 
     Log.objects.create(who=instance.opened_by, what=what, incident=instance)
+
+# STIX tables ================================================================
+class InformationSources(models.Model):
+    description = models.CharField(max_length=256, null=True, blank=True)  
+    incident = models.ForeignKey(Incident)
+
+    class Meta:
+        verbose_name_plural = 'informationsources'
+
+    def __unicode__(self):
+        return u"InformationSource for incident %s" % self.incident.id
+
+    @classmethod
+    def create_diff_comment(cls, incident, data, user):
+        informationsources = ''
+        for key in data:
+            new = data[key]
+            old = getattr(incident, key)
+
+            if new != old:
+                label = key
+
+                if key == 'is_major':
+                    label = 'major'
+                if key == 'concerned_business_lines':
+                    label = "business lines"
+                if key == 'main_business_line':
+                    label = "main business line"
+                if key == 'is_incident':
+                    label = 'incident'
+
+                if old == "O":
+                    old = 'Open'
+                if old == "C":
+                    old = 'Closed'
+                if old == "B":
+                    old = 'Blocked'
+                if new == "O":
+                    new = 'Open'
+                if new == "C":
+                    new = 'Closed'
+                if new == "B":
+                    new = 'Blocked'
+
+                informationsources += u'Changed "%s" from "%s" to "%s"; ' % (label, old, new)
+
+        if informationsources:
+            InformationSources.objects.create(
+                description=informationsources,
+                incident=incident
+            )
+
+
+
