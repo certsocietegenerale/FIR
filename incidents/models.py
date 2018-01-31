@@ -179,8 +179,10 @@ class Incident(FIRModel, models.Model):
     category = models.ForeignKey(IncidentCategory)
     concerned_business_lines = models.ManyToManyField(BusinessLine, blank=True)
     main_business_lines = models.ManyToManyField(BusinessLine, related_name='incidents_affecting_main', blank=True)
-    detection = models.ForeignKey(Label, limit_choices_to={'group__name': 'detection'}, related_name='detection_label')
-    severity = models.IntegerField(choices=SEVERITY_CHOICES)
+# Seb default detection to '2'=External
+    detection = models.ForeignKey(Label, limit_choices_to={'group__name': 'detection'}, related_name='detection_label', default='2')
+# Seb default severity to '1'
+    severity = models.IntegerField(choices=SEVERITY_CHOICES, default='1')
     is_incident = models.BooleanField(default=True)
     is_major = models.BooleanField(default=False)
     actor = models.ForeignKey(Label, limit_choices_to={'group__name': 'actor'}, related_name='actor_label', blank=True,
@@ -226,7 +228,7 @@ class Incident(FIRModel, models.Model):
     intended_effect_description = models.CharField(max_length=100, blank=True)
     security_compromise_name = models.CharField(max_length=30, blank=True)
     discovery_method_name = models.CharField(max_length=30, blank=True)
-    related_incident_uuid = models.UUIDField(null=True)
+    related_incident_uuid = models.UUIDField(blank=True, null=True)
     #COA_description http://stixproject.github.io/data-model/1.2/coa/CourseOfActionType/
     COA_requested_description = models.CharField(max_length=150, blank=True)
     COA_taken_description = models.CharField(max_length=150, blank=True)
