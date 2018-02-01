@@ -62,7 +62,7 @@
             "name": "Closed"
 	}
     },
-    
+
     {
 	"pk": 1,
 	"model": "incidents.balecategory",
@@ -285,20 +285,10 @@
     },
     {
 	"model": "incidents.businessline",
-	"pk": 1,
+	"pk": 2,
 	"fields": {
 	    "path": "0001",
 	    "depth": 1,
-	    "numchild": 2,
-	    "name": "ENSIBS"
-	}
-    },
-    {
-	"model": "incidents.businessline",
-	"pk": 2,
-	"fields": {
-	    "path": "00010002",
-	    "depth": 2,
 	    "numchild": 0,
 	    "name": "Management"
 	}
@@ -307,8 +297,8 @@
 	"model": "incidents.businessline",
 	"pk": 3,
 	"fields": {
-	    "path": "00010001",
-	    "depth": 2,
+	    "path": "0002",
+	    "depth": 1,
 	    "numchild": 0,
 	    "name": "Technical"
 	}
