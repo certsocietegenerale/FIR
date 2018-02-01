@@ -11,7 +11,7 @@ $(function () {
 	}
 
 	function refresh_display(element) {
-		var incident_table = element.closest('.incident_table');
+		var incident_table = element.find('.incident_table');
 		var container;
 		if (element.hasClass('incident_display')) {
 			container = element;

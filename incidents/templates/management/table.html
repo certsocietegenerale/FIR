@@ -16,11 +16,12 @@
           <th>ID</th>
 					{% include 'events/column.html' with name=t_date field='date' %}
 					<th></th>
+					<th>Type</th>
 					{% include 'events/column.html' with name=t_category field='category' %}
 					{% include 'events/column.html' with name=t_subject field='subject' %}
-					<th>{% trans "Business Lines" %}</th>
 					{% include 'events/column.html' with name=t_severity field='severity' %}
 					{% include 'events/column.html' with name=t_status field='status' %}
+					<th>{% trans "Assignee" %}</th>
 					{% if incident_view %}
 						{% include 'events/column.html' with name=t_lastaction field='last_action' %}
 					{% endif %}
@@ -35,15 +36,21 @@
 						<td>
 
 						</td>
+						<td>{% if incident.is_incident %}
+						Incident
+						{% else %}
+						Event
+						{% endif %}</td>
 						<td>{{ incident.category }}</td>
+						
 						{% if incident.is_incident %}
 							<td><a href="{% url 'incidents:details' incident.id %}">{{ incident.subject }}</a></td>
 						{% else %}
 							<td><a href="{% url 'events:details' incident.id %}">{{ incident.subject }}</a></td>
 						{% endif %}
-						<td>{{ incident.get_business_lines_names }}</td>
 						<td><span class='badge threatcon-{{ incident.severity }}'>{{ incident.severity }}</span></td>
 						<td>{{ incident.get_status_display }}</td>
+						<td>{{ incident.assignee }}</td>
 
 						{% if incident_view %}
 							<td>

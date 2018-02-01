@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load staticfiles %}
+
+{% block custom_js %}
+<script src="{% static "custom_js/incident_display.js" %}"></script>
+{% endblock %}
+
+{% block content %}
+		<div id='all_incidents' class='incident_display' data-url="{% url 'management_cell:all' %}"></div>
+{% endblock %}
