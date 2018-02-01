@@ -13,15 +13,15 @@
 	{% endwith %}
 {% else %}
 	{% has_perm 'incidents.handle_incidents' obj=event as can_handle_incident %}
-	{% if can_handle_incident %}
+	<!-- {% if can_handle_incident %}
 		<li>
 			<a href="#" id='details-actions-alert' data-type='alerting'>
 				<i class="glyphicon glyphicon-send"></i>{% trans "Alert" %}
 			</a>
 		</li>
-	{% endif %}
+	{% endif %} -->
 {% endif %}
 {% has_perm 'incidents.handle_incidents' obj=event as can_handle_incident %}
-{% if can_handle_incident %}
-<li><a href="#" class='details-alert-bl' data-type='takedown' data-url="{% url 'alerting:get_template' event.id 'takedown' %}"><i class="glyphicon glyphicon-screenshot"></i>{% trans "Takedown" %}</a></li>
-{% endif %}
+<!-- {% if can_handle_incident %}
+<li><a href="#" class='details-alert-bl' data-type='takedown' data-url="{% url 'alerting:get_template' event.id 'takedown' %}"><i class="glyphicon glyphicon-screenshot"></i>{% trans "Takedown" %}</a></li> -->
+<!-- {% endif %} -->
