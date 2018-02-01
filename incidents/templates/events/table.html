@@ -38,8 +38,13 @@
 			<tbody>
 				{% for incident in incident_list %}
 					{%  has_perm 'incidents.handle_incidents' obj=incident as can_handle_incident %}
-					<tr class='{{ incident.status }}'>
-						<td>{{ incident|object_id }}</td>
+				<tr class='{{ incident.status }}'>
+				  {% if incident.is_incident %}
+				  <td><a href="{% url 'incidents:details' incident.id %}">{{ incident|object_id }}</a></td>
+				  {% else %}
+				  <td><a href="{% url 'events:details' incident.id %}">{{ incident|object_id }}</a></td>
+				  {% endif %}
+
 						<td class='incident_date_column'>{{ incident.date|date:'Y-m-d' }}</td>
 						{% if incident.is_incident %}
 							<td> Incident </td>
