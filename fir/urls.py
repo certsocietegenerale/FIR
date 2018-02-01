@@ -17,6 +17,8 @@ urlpatterns = [
     url(r'^user/', include('incidents.custom_urls.user', namespace='user')),
     url(r'^dashboard/', include('incidents.custom_urls.dashboard', namespace='dashboard')),
     url(r'^management/', include('incidents.custom_urls.management', namespace='management')),
+    url(r'^management_cell/', include('incidents.custom_urls.management_cell', namespace='management_cell')),
+    url(r'^technical_cell/', include('incidents.custom_urls.technical_cell', namespace='technical_cell')),
     url(r'^admin/', include(admin.site.urls)),
     url(r'^$', views.dashboard_main),
 ]

@@ -6,7 +6,7 @@
 <html lang="{{ LANGUAGE_CODE }}">
   <head>
     <meta charset="utf-8">
-    <title>{%block title%}FIR{%endblock%}</title>
+    <title>{%block title%}FIR - ENSIBS{%endblock%}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -72,24 +72,8 @@
               </li>
               {% endif %}
               <li id='dashboard-nav'><a href="{% url 'dashboard:main' %}">{% trans "Dashboard" %}</a></li>
-              <li id='incidents-nav'><a href="{% url 'incidents:index' %}">{% trans "Incidents"%}</a></li>
-              <li id='management-nav'><a href="{% url 'management:index' %}">{% trans "Management"%}</a></li>
-              <li id='events-nav'><a href="{% url 'events:index' %}">{% trans "Events" %}</a></li>
-            {% plugin_point 'base_navbar' %}
-              {% has_perm 'incidents.view_statistics' model='incidents.Incident' as can_view_statistics %}
-              {% if can_view_statistics %}
-              <li id='incidents-nav' class='dropdown'>
-                <a class='dropdown-toggle' data-toggle='dropdown' href="#">{% trans "Stats" %}</a>
-                <ul class='dropdown-menu'>
-                  <li><a href="{% url 'stats:yearly' %}">{% trans "Yearly" %}</a></li>
-                  <li><a href="{% url 'stats:quarterly_bl_stats_default' %}">{% trans "Quarterly" %}</a></li>
-                  <li><a href="{% url 'stats:yearly_compare' %}">{% trans "Compare with previous year" %}</a></li>
-                  <li><a href="{%url 'stats:quarterly_major' %}">{% trans "Major incidents" %}</a></li>
-                  <li><a href="{%url 'stats:sandbox' %}">{% trans "Sandbox" %} <i class='glyphicon glyphicon-asterisk'></i></a></li>
-                  <li><a href="{%url 'stats:attributes' %}">{% trans "Attributes" %}</a></li>
-                </ul>
-              </li>
-              {% endif %}
+              <li id='management_cell-nav'><a href="{% url 'management_cell:main' %}">{% trans "Management Cell" %}</a></li>
+              <li id='technical_cell-nav'><a href="{% url 'technical_cell:main' %}">{% trans "Technical Cell" %}</a></li>
             </ul>
             <ul class="nav navbar-nav navbar-right">
               <li>

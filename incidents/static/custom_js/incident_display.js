@@ -10,6 +10,7 @@ $(function () {
 	};
     }
 
+
     function refresh_display(element) {
 	var incident_table = element.find('.incident_table');
 	var container;
@@ -69,7 +70,6 @@ $(function () {
     // Change sort when clicking on a column title
     $('.incident_display').on('click', 'thead a', function (event) {
 	incident_table = $(document).find('.incident_table');
-	alert("asc is" + incident_table.data('asc'));
 	
 	if(incident_table.data('asc') == false){
 	    incident_table.data('asc', true);
