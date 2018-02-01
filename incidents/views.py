@@ -2185,13 +2185,21 @@ def incident_display(request, filter, incident_view=True, paginated=True):
 def dashboard_main(request):
     return render(request, 'dashboard/index.html')
 
+@login_required
+@user_passes_test(is_incident_viewer)
+def dashboard_management_main(request):
+    return render(request, 'management_cell/index.html')
+
+@login_required
+@user_passes_test(is_incident_viewer)
+def dashboard_technical_main(request):
+    return render(request, 'technical_cell/index.html')
+
 
 @login_required
 @user_passes_test(is_incident_viewer)
 def dashboard_starred(request):
     return incident_display(request, Q(is_starred=True) & ~Q(status='C'), True, False)
-
-
 
 @login_required
 @user_passes_test(is_incident_viewer)
@@ -2235,15 +2243,10 @@ def dashboard_closed(request):
 def dashboard_blocked(request):
     return incident_display(request, Q(status='B'))
 
-
-
-
-
-
 @login_required
 @user_passes_test(is_incident_viewer)
 def dashboard_assigned(request):
-    return incident_display(request, Q(assignee=request.user))
+    return incident_display(request, Q(assignee=request.user) & ~Q(status='C'))
 
 
 @login_required
@@ -2271,7 +2274,8 @@ def incident_management_display(request, filter, incident_view=True, paginated=T
             Max('comments__date')).order_by(order_by)
     else:
         pre_list = Incident.authorization.for_user(request.user, permissions)
-        incident_list = pre_list.filter(filter).order_by(order_by)
+        exclude_var = Q(status='C')
+        incident_list = pre_list.filter(filter).exclude(exclude_var).order_by(order_by)
 
     if paginated:
         page = request.GET.get('page', 1)
@@ -2295,6 +2299,17 @@ def incident_management_display(request, filter, incident_view=True, paginated=T
 @user_passes_test(is_incident_viewer)
 def management_incidents(request):
     return incident_management_display(request, Q())
+
+
+@login_required
+@user_passes_test(is_incident_viewer)
+def management_cell_incidents(request):
+    return incident_management_display(request, Q(concerned_business_lines=2) & ~Q(status='C')) # 8 = management (2 en réel)
+
+@login_required
+@user_passes_test(is_incident_viewer)
+def technical_cell_incidents(request):
+    return incident_management_display(request, Q(concerned_business_lines=3) & ~Q(status='C')) # 7 = technical (3 en réel)
 
 
 # User profile ============================================================

@@ -22,10 +22,10 @@
 
 					{% include 'events/column.html' with name=t_date field='date' %}
 					<th>Type</th>
-					<th>{% trans "Business Lines" %}</th>
 					{% include 'events/column.html' with name=t_category field='category' %}
-					{% include 'events/column.html' with name=t_severity field='severity' %}
 					{% include 'events/column.html' with name=t_subject field='subject' %}
+					<th>{% trans "Business Lines" %}</th>
+					{% include 'events/column.html' with name=t_severity field='severity' %}
 					{% include 'events/column.html' with name=t_status field='status' %}
 					<th>{% trans "Assignee" %}</th>
 
@@ -38,23 +38,25 @@
 			<tbody>
 				{% for incident in incident_list %}
 					{%  has_perm 'incidents.handle_incidents' obj=incident as can_handle_incident %}
-					<tr class='{{ incident.status }}'>
-						<td>{{ incident|object_id }}</td>
+				<tr class='{{ incident.status }}'>
+				  {% if incident.is_incident %}
+				  <td><a href="{% url 'incidents:details' incident.id %}">{{ incident|object_id }}</a></td>
+				  {% else %}
+				  <td><a href="{% url 'events:details' incident.id %}">{{ incident|object_id }}</a></td>
+				  {% endif %}
+
 						<td class='incident_date_column'>{{ incident.date|date:'Y-m-d' }}</td>
 						{% if incident.is_incident %}
 							<td> Incident </td>
 						{% else %}
 							<td> Event</td>
 						{% endif %}
+						<td>{{ incident.category }}</td>
+						<td><a href="{% url 'events:details' incident.id %}">{{ incident.subject }}</a></td>
 						<td>{{ incident.get_business_lines_names }}</td>
 
-						<td>{{ incident.category }}</td>
 						<td><span class='badge threatcon-{{ incident.severity }}'>{{ incident.severity }}</span></td>
-						{% if incident.is_incident %}
-							<td><a href="{% url 'incidents:details' incident.id %}">{{ incident.subject }}</a></td>
-						{% else %}
-							<td><a href="{% url 'events:details' incident.id %}">{{ incident.subject }}</a></td>
-						{% endif %}
+
 						<td>{{ incident.get_status_display }}</td>
 						<td>{{ incident.assignee }}</td>
 

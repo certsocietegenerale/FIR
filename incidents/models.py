@@ -180,17 +180,17 @@ class Incident(FIRModel, models.Model):
     subject = models.CharField(max_length=256)
     description = models.TextField()
     category = models.ForeignKey(IncidentCategory)
-    concerned_business_lines = models.ManyToManyField(BusinessLine, blank=True)
-    main_business_lines = models.ManyToManyField(BusinessLine, related_name='incidents_affecting_main', blank=True)
+    concerned_business_lines = models.ManyToManyField(BusinessLine, blank=False)
+    main_business_lines = models.ManyToManyField(BusinessLine, related_name='incidents_affecting_main', blank=False)
 
-    severity = models.IntegerField(choices=SEVERITY_CHOICES)
+    severity = models.IntegerField(choices=SEVERITY_CHOICES, blank=False)
     is_incident = models.BooleanField(default=False)
     # is_major = models.BooleanField(default=False)
 
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=_("Open"))
     opened_by = models.ForeignKey(User)
 
-    assignee = models.ForeignKey(User, related_name='assigned_incidents', blank=True, null=True)
+    assignee = models.ForeignKey(User, related_name='assigned_incidents', blank=False)
 
     def __unicode__(self):
         return self.subject
