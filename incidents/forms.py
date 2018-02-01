@@ -1,6 +1,8 @@
 from django.forms import ModelForm
 from django import forms
 from incidents.models import IncidentCategory, Incident, Comments, BusinessLine
+# Seb added
+from incidents.models import InformationSources
 
 # forms ===============================================================
 
@@ -67,3 +69,16 @@ class CommentForm(ModelForm):
 class UploadFileForm(forms.Form):
     title = forms.CharField()
     file = forms.FileField()
+
+# Seb added ==========================================================================
+class InformationSourceForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(ModelForm, self).__init__(*args, **kwargs)
+        self.fields['description'].error_messages['required'] = 'This field is required.'
+
+    class Meta:
+        model = InformationSources
+        exclude = ('incident',)
+
+
+

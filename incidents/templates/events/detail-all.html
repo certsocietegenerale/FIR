@@ -40,7 +40,7 @@
             {% endif %}
 <!-- Seb added informationsource -->
             {% if can_comment_incident %}
-			<li><a href="#" id='details-actions-informationsource' data-target='#addComment'>
+			<li><a href="#" id='details-actions-informationsource' data-target='#addInformationSource'>
 				<i class="glyphicon glyphicon-info-sign"></i>{%  trans "Source" context "verb" %}
 			</a></li>
             {% endif %}
@@ -278,6 +278,39 @@
 		</div>
     <div id='comment_edit_modals'>
     </div>
+
+<!-- Seb added Modal for informationsource -->
+		<div id="addInformationSource" class="modal" tabindex="-1" role="dialog" aria-labelledby="addInformationSourceLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<form id="informationsource_form" method="POST" data-ajaxform data-target='#tab_informationsources tbody' data-action='prepend' data-new-informationsource-url="{% url 'incidents:informationsource' event.id %}">
+					 	<div class="modal-header">
+					    	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+							<h4 id="addInformationSourceLabel" class="modal-title">{% trans "Add Information Source" %}</h4>
+					  	</div>
+					  	<div class="modal-body">
+							<div>
+								{% csrf_token %}
+
+								<div class="form-group" id="add-informationsource-area">
+									{% rich_edit informationsource_form.description %}
+									<span class='help-block'>
+										{% for error in informationsource_form.description.errors %}
+											{{error}}
+										{% endfor %}
+									</span>
+								</div>
+							</div>
+					  	</div>
+
+						<div class="modal-footer">
+							<button class="btn btn-default" data-dismiss="modal" aria-hidden="true">{%  trans "Cancel" %}</button>
+							<button type="submit" class="btn btn-primary">{%  trans "Save changes" %}</button>
+					  	</div>
+					</form>
+				</div>
+			</div>
+		</div>
 
 	</div>
 {% endblock %}

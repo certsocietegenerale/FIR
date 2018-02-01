@@ -139,4 +139,17 @@ $(function () {
 
 		event.stopPropagation();
 	});
+
+    // Seb added functions here...
+	// Set up form for new informationsource
+	$('#details-actions-informationsource').click(function (event) {
+
+		$("#addInformationSource").modal('toggle');
+
+		var form = $('#addInformationSource form');
+		form.attr('action', form.data('new-informationsource-url'));
+		form.data('target', '#tab_informationsources tbody');
+
+	});
+
 });
