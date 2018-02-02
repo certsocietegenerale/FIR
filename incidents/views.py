@@ -2271,13 +2271,13 @@ def user_change_password(request):
     messages.error(request, form.errors)
     return HttpResponseServerError(dumps(ret), content_type="application/json")
 
-# Seb added ============================================================
+# Seb added functions ============================================================
 informationsource_permissions = ['incidents.handle_incidents', ]
 if getattr(settings, 'INCIDENT_VIEWER_CAN_COMMENT', False):
     informationsource_permissions.append('incidents.view_incidents')
 
 @login_required
-#@authorization_required(informationsource_permissions, Incident, view_arg='incident_id')
+@authorization_required(informationsource_permissions, Incident, view_arg='incident_id')
 def informationsource(request, incident_id, authorization_target=None):
     if authorization_target is None:
         i = get_object_or_404(
@@ -2292,12 +2292,12 @@ def informationsource(request, incident_id, authorization_target=None):
         #    comment_form.fields['action'].queryset = Label.objects.filter(group__name='action').exclude(
         #        name__in=['Closed', 'Opened', 'Blocked'])
         if informationsource_form.is_valid():
-            com = informationsource_form.save(commit=False)
-            com.incident = i
-            #com.opened_by = request.user
-            com.save()
-            log("InformationSource created: %s" % (com.description[:20] + "..."), request.user, incident=com.incident)
-            i.refresh_artifacts(com.description)
+            formObject = informationsource_form.save(commit=False)
+            formObject.incident = i
+            #formObject.opened_by = request.user
+            formObject.save()
+            log("InformationSource created: %s" % (formObject.description[:20] + "..."), request.user, incident=formObject.incident)
+            #i.refresh_artifacts(formObject.description)
 
             #if com.action.name in ['Closed', 'Opened', 'Blocked'] and com.incident.status != com.action.name[0]:
             #    previous_status = com.incident.status
@@ -2305,7 +2305,11 @@ def informationsource(request, incident_id, authorization_target=None):
             #    com.incident.save()
             #    model_status_changed.send(sender=Incident, instance=com.incident, previous_status=previous_status)
 
-            return render(request, 'events/_informationsource.html', {'event': i, 'informationsource': com})
+            previous_status = formObject.incident.status
+            formObject.incident.save()
+            model_status_changed.send(sender=Incident, instance=formObject.incident, previous_status=previous_status)
+
+            return render(request, 'events/_informationsource.html', {'event': i, 'informationsource': formObject})
         else:
             ret = {'status': 'error', 'errors': informationsource_form.errors}
             return HttpResponseServerError(dumps(ret), content_type="application/json")
@@ -2329,39 +2333,40 @@ def delete_informationsource(request, incident_id, informationsource_id):
 
 @login_required
 def update_informationsource(request, informationsource_id):
-    c = get_object_or_404(InformationSources, pk=informationsource_id)
-    i = c.incident
+    keyObject = get_object_or_404(InformationSources, pk=informationsource_id)
+    i = keyObject.incident
     if request.method == 'GET':
         if not request.user.has_perm('incidents.view_incidents', obj=i):
             ret = {'status': 'error', 'errors': ['Permission denied', ]}
             return HttpResponseServerError(dumps(ret), content_type="application/json")
-        serialized = serializers.serialize('json', [c, ])
+        serialized = serializers.serialize('json', [keyObject, ])
         return HttpResponse(dumps(serialized), content_type="application/json")
     else:
-        comment_form = CommentForm(request.POST, instance=c)
-        if not request.user.has_perm('incidents.handle_incidents', obj=i):
-            comment_form.fields['action'].queryset = Label.objects.filter(group__name='action').exclude(
-                name__in=['Closed', 'Opened', 'Blocked'])
+        informationsource_form = InformationSourceForm(request.POST, instance=c)
+        #if not request.user.has_perm('incidents.handle_incidents', obj=i):
+        #    informationsource_form.fields['action'].queryset = Label.objects.filter(group__name='action').exclude(
+        #        name__in=['Closed', 'Opened', 'Blocked'])
 
-        if comment_form.is_valid():
+        if informationsource_form.is_valid():
 
-            c = comment_form.save()
+            formObject = informationsource_form.save()
 
-            log("Comment edited: %s" % (comment_form.cleaned_data['comment'][:20] + "..."), request.user,
-                incident=c.incident)
+            log("Description edited: %s" % (informationsource_form.cleaned_data['description'][:20] + "..."), request.user,
+                incident=formObject.incident)
+            
+            # audit history
+            #if c.action.name in ['Closed', 'Opened', 'Blocked']:
+            #    if c.action.name[0] != c.incident.status:
+            #        previous_status = c.incident.status
+            #        c.incident.status = c.action.name[0]
+            #        c.incident.save()
+            #        model_status_changed.send(sender=Incident, instance=c.incident, previous_status=previous_status)
 
-            if c.action.name in ['Closed', 'Opened', 'Blocked']:
-                if c.action.name[0] != c.incident.status:
-                    previous_status = c.incident.status
-                    c.incident.status = c.action.name[0]
-                    c.incident.save()
-                    model_status_changed.send(sender=Incident, instance=c.incident, previous_status=previous_status)
+            #i.refresh_artifacts(fromObject.description)
 
-            i.refresh_artifacts(c.comment)
-
-            return render(request, 'events/_comment.html', {'comment': c, 'event': i})
+            return render(request, 'events/_informationsource.html', {'informationsource': formObject, 'event': i})
         else:
-            ret = {'status': 'error', 'errors': comment_form.errors}
+            ret = {'status': 'error', 'errors': informationsource_form.errors}
             return HttpResponseServerError(dumps(ret), content_type="application/json")
 
 

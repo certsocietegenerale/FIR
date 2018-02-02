@@ -77,7 +77,7 @@ $(document).ready(function() {
 								{{ form.external_id|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.external_id.errors %}
 							</div>
-<!-- not using business line
+<!-- Seb not using business line
 							<div class="col-sm-6 form-group{% if form.concerned_business_lines.errors%} has-error{%endif%}">
 								<label id="id_concerned_business_lines">{% trans "Business Lines" %}</label>
 								{{ form.concerned_business_lines|add_css_class:"form-control" }}
@@ -96,20 +96,20 @@ $(document).ready(function() {
 								{{ form.status|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.status.errors %}
 							</div>
-<!-- hiding detection, defaulted in models -->
+<!-- Seb hiding detection, defaulted in models -->
 							<div class="col-sm-2 hidden form-group{% if form.detection.errors%} has-error{%endif%}">
 								<label id="id_detection">{% trans "Detection" %}</label>
 								{{ form.detection|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.detection.errors %}
 							</div>
-<!-- hiding severity, defaulted in models -->
+<!-- Seb hiding severity, defaulted in models -->
 							<div class="col-sm-2 hidden form-group{% if form.severity.errors%} has-error{%endif%}">
 								<label id="id_severity">{% trans "Severity" %}</label>
 								{{ form.severity|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.severity.errors %}
 							</div>
 						</div>
-                        <!-- STIX fields -->    
+                        <!-- Seb STIX fields -->    
 						<div class="row">
 							<div class="col-sm-6 form-group{% if form.first_malicious_action.errors%} has-error{%endif%}">
 								<label id="id_first_malicious_action">{% trans "First Malicious Action" %}</label>
@@ -132,7 +132,7 @@ $(document).ready(function() {
 								{% include 'events/_form_errors.html' with errors=form.is_advanced.errors %}
 							</div>
 						</div>
-                        <!-- advanced STIX dates -->
+                        <!-- Seb advanced STIX dates -->
 						<div class="row">
 							<fieldset id="advanced_fields" class='details collapse {% if form.is_advanced.value %}in{%endif%}'>
 							    <div class="col-sm-6 form-group{% if form.initial_compromise.errors%} has-error{%endif%}">
@@ -169,20 +169,20 @@ $(document).ready(function() {
 						</div>
 
 						<div class="row">
-<!-- not using date
+<!-- Seb not using date
 							<div class="col-sm-6 form-group{% if form.date.errors%} has-error{%endif%}">
 								<label id="id_date">{% trans "Date / Time" %}</label>
 								{{ form.date|add_css_class:"form-control datetime" }}
 								{% include 'events/_form_errors.html' with errors=form.date.errors %}
 							</div>
 -->
-<!-- hiding confidentiality, defaulted in models -->
+<!-- Seb hiding confidentiality, defaulted in models -->
 							<div class="col-sm-1 hidden form-group{% if form.confidentiality.errors%} has-error{%endif%}">
 								<label id="id_confidentiality">{% trans "Confidentiality" %}</label>
 								{{ form.confidentiality|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.confidentiality.errors %}
 							</div>
-<!-- hiding is_incident toggle, defaulted in models -->
+<!-- Seb hiding is_incident toggle, defaulted in models -->
                             {% has_perm 'incidents.handle_incidents' model=form as can_handle_incident %}
                             {% if can_handle_incident %}
 							<div class="col-sm-3 col-sm-offset-2 checkbox hidden aligned-with-stack{% if form.is_incident.errors%} has-error{%endif%}">
@@ -194,7 +194,7 @@ $(document).ready(function() {
 						</div>
 					</fieldset>
 
-<!-- not using actor, plan, major incident
+<!-- Seb not using actor, plan, major incident
 				<div class="col-sm-6">
 					{% if can_handle_incident %}
 					<fieldset id="incident_fields" class='details collapse {% if form.is_incident.value %}in{%endif%}'>
@@ -231,7 +231,7 @@ $(document).ready(function() {
 				{{ form.non_field_errors }}
 			</div>
 
-            <!-- STIX fields -->
+            <!-- Seb STIX fields -->
 			<div class="row">
 				<fieldset class="col-sm-12">
 					<div class="col-sm-12 form-group{% if form.short_description.errors%} has-error{%endif%}">
@@ -305,7 +305,7 @@ $(document).ready(function() {
 			<div class="row">
 				<fieldset class="col-sm-12">
 					<div class="col-sm-4 form-group{% if form.related_indicator_TTP_title.errors%} has-error{%endif%}">
-						<label for="id_related_indicator_TTP_title">{% trans "Related Indicator TTP" %}</label>
+						<label for="id_related_indicator_TTP_title">{% trans "Related Indicator Type" %}</label>
                                                 {{ form.related_indicator_TTP_title|add_css_class:"form-control" }}
 						{% include 'events/_form_errors.html' with errors=form.related_indicator_TTP_title.errors %}
 					</div>
@@ -347,6 +347,11 @@ $(document).ready(function() {
                                                 {{ form.intended_effect_description|add_css_class:"form-control" }}
 						{% include 'events/_form_errors.html' with errors=form.intended_effect_description.errors %}
 					</div>
+					<div class="col-sm-6 form-group{% if form.confidence_description.errors%} has-error{%endif%}">
+						<label for="id_confidence_description">{% trans "Confidence Description" %}</label>
+                                                {{ form.confidence_description|add_css_class:"form-control" }}
+						{% include 'events/_form_errors.html' with errors=form.confidence_description.errors %}
+					</div>
 				</fieldset>
 			</div>
 			<div class="row">
@@ -363,6 +368,7 @@ $(document).ready(function() {
 					</div>
 				</fieldset>
 			</div>
+            <!-- Seb informationsource is now in its own table
 			<div class="row">
 				<fieldset class="col-sm-12">
 					<div class="col-sm-6 form-group{% if form.confidence_description.errors%} has-error{%endif%}">
@@ -377,34 +383,7 @@ $(document).ready(function() {
 					</div>
 				</fieldset>
 			</div>
-<!-- testing only
-		<div id='main_tabs' class='tabbable'>
-			<ul class='nav nav-tabs'>
-				<li class='active'>
-					<a href='#tab_comments' data-toggle='tab'>
-						{% trans "Comments" %} (<span id='comment-count'>{{ comments.count }}</span>)
-					</a>
-				</li>
-				
-			</ul>
-		</div>
-		<div class='tab-content tabs table-responsive'>
-			<div class='tab-pane active' id='tab_comments'>
-				<table class="table table-hover table-condensed">
-					<thead>
-						<tr>
-							<th><i class='glyphicon glyphicon-calendar'></i></th>
-							<th><i class='glyphicon glyphicon-user'></i></th>
-							<th>{%  trans "Comment" context "noun" %}</th>
-							<th>{%  trans "Action" %}</th>
-							<th></th>
-							<th></th>
-						</tr>
-					</thead>
-				</table>
-			</div>
-		</div>
--->
+            -->
 			<button class="btn btn-primary" type="submit">{% trans "Save" %}</button>
 		</form>
 

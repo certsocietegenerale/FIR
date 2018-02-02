@@ -2,6 +2,7 @@ from django.conf.urls import url
 
 from incidents import views
 
+#Seb added informationsource
 urlpatterns = [
     url(r'^$', views.index, {'is_incident': True}, name='index'),
     url(r'^all/$', views.incidents_all, name='all'),
@@ -10,7 +11,7 @@ urlpatterns = [
     url(r'^(?P<incident_id>\d+)/comment/$', views.comment, name='comment'),
     url(r'^(?P<incident_id>\d+)/comment/(?P<comment_id>\d+)/delete/$', views.delete_comment, name='delete_comment'),
 
-    url(r'^(?P<incident_id>\d+)/informationsource/$', views.comment, name='informationsource'),
+    url(r'^(?P<incident_id>\d+)/informationsource/$', views.informationsource, name='informationsource'),
     url(r'^(?P<incident_id>\d+)/informationsource/(?P<informationsource_id>\d+)/delete/$', views.delete_informationsource, name='delete_informationsource'),
 
     url(r'^(?P<incident_id>\d+)/edit/$', views.edit_incident, name='edit'),

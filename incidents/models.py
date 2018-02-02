@@ -193,7 +193,7 @@ class Incident(FIRModel, models.Model):
     opened_by = models.ForeignKey(User)
     confidentiality = models.IntegerField(choices=CONFIDENTIALITY_LEVEL, default='1')
 
-# STIX fields ================================================================
+# Seb STIX fields ================================================================
     short_description = models.CharField(max_length=256, blank=True)
     first_malicious_action = models.DateTimeField(default=datetime.datetime.now, blank=True)
     incident_discovery = models.DateTimeField(default=datetime.datetime.now, blank=True)
@@ -240,7 +240,7 @@ class Incident(FIRModel, models.Model):
     #information_source http://stixproject.github.io/data-model/1.2/stixCommon/InformationSourceType/
     information_source_description = models.CharField(max_length=200, blank=True)
 
-# STIX advanced fields ================================================================
+# Seb STIX advanced fields ================================================================
     #is_advanced = False (html form needs to persist boolean toggle)
     is_advanced = models.BooleanField(default=False)
     initial_compromise = models.DateTimeField(blank=True, null=True)
@@ -434,7 +434,7 @@ class IncidentTemplate(models.Model):
     actor = models.ForeignKey(Label, limit_choices_to={'group__name': 'actor'}, related_name='+', blank=True, null=True)
     plan = models.ForeignKey(Label, limit_choices_to={'group__name': 'plan'}, related_name='+', blank=True, null=True)
 
-# STIX fields ================================================================
+# Seb STIX fields ================================================================
     short_description = models.CharField(max_length=256, null=True, blank=True)
 
     def __unicode__(self):
@@ -479,7 +479,7 @@ def log_new_incident(sender, instance, created, **kwargs):
 
     Log.objects.create(who=instance.opened_by, what=what, incident=instance)
 
-# STIX tables ================================================================
+# Seb STIX tables ================================================================
 class InformationSources(models.Model):
     description = models.CharField(max_length=256, null=True, blank=True)  
     incident = models.ForeignKey(Incident)

@@ -79,6 +79,8 @@ class InformationSourceForm(ModelForm):
     class Meta:
         model = InformationSources
         exclude = ('incident',)
-
+        widgets = {
+            'action': forms.Select(attrs={'required': True, 'class': 'form-control'})
+        }
 
 
