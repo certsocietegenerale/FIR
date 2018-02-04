@@ -11,7 +11,12 @@ from django.views.decorators.http import require_POST
 from incidents.models import IncidentCategory, Incident, Comments, BusinessLine, model_status_changed
 from incidents.models import Label, Log, BaleCategory
 from incidents.models import Attribute, ValidAttribute, IncidentTemplate, Profile
+#Seb added
+from incidents.models import InformationSources
+
 from incidents.forms import IncidentForm, CommentForm
+#Seb added
+from incidents.forms import InformationSourceForm
 
 from incidents.authorization.decorator import authorization_required
 from fir.config.base import INSTALLED_APPS, ENFORCE_2FA, TF_INSTALLED
@@ -234,6 +239,10 @@ def log(what, user, incident=None, comment=None):
 
     log.save()
 
+#Seb added
+def logConsole(what, user, incident=None, comment=None):
+    print "DEBUG: "+ what
+
 
 # incidents =======================================================
 
@@ -297,6 +306,11 @@ def details(request, incident_id, authorization_target=None):
 
     comments = i.comments_set.all().order_by('date')
 
+    infoSourceform = InformationSourceForm()
+    infosources = i.informationsources_set.all()
+    
+    logConsole("views.details ", request.user)
+
     return render(
         request,
         "events/detail-all.html",
@@ -308,6 +322,8 @@ def details(request, incident_id, authorization_target=None):
          "attributes": attributes,
          "valid_attributes": valid_attributes,
          "comments": comments,
+"informationsource_form": infoSourceform,
+"informationsources": infosources,
          "incident_show_id": settings.INCIDENT_SHOW_ID}
     )
 
@@ -2320,3 +2336,103 @@ def user_change_password(request):
     ret = {'status': 'error', 'errors': form.errors}
     messages.error(request, form.errors)
     return HttpResponseServerError(dumps(ret), content_type="application/json")
+
+# Seb added functions ============================================================
+informationsource_permissions = ['incidents.handle_incidents', ]
+if getattr(settings, 'INCIDENT_VIEWER_CAN_COMMENT', False):
+    informationsource_permissions.append('incidents.view_incidents')
+
+@login_required
+@authorization_required(informationsource_permissions, Incident, view_arg='incident_id')
+def informationsource(request, incident_id, authorization_target=None):
+    if authorization_target is None:
+        i = get_object_or_404(
+            Incident.authorization.for_user(request.user, informationsource_permissions),
+            pk=incident_id)
+    else:
+        i = authorization_target
+
+    if request.method == "POST":
+        informationsource_form = InformationSourceForm(request.POST)
+        #if not request.user.has_perm('incidents.handle_incidents'):
+        #    comment_form.fields['action'].queryset = Label.objects.filter(group__name='action').exclude(
+        #        name__in=['Closed', 'Opened', 'Blocked'])
+        if informationsource_form.is_valid():
+            formObject = informationsource_form.save(commit=False)
+            formObject.incident = i
+            #formObject.opened_by = request.user
+            formObject.save()
+            log("InformationSource created: %s" % (formObject.description[:20] + "..."), request.user, incident=formObject.incident)
+            #i.refresh_artifacts(formObject.description)
+
+            #if com.action.name in ['Closed', 'Opened', 'Blocked'] and com.incident.status != com.action.name[0]:
+            #    previous_status = com.incident.status
+            #    com.incident.status = com.action.name[0]
+            #    com.incident.save()
+            #    model_status_changed.send(sender=Incident, instance=com.incident, previous_status=previous_status)
+
+            previous_status = formObject.incident.status
+            formObject.incident.save()
+            model_status_changed.send(sender=Incident, instance=formObject.incident, previous_status=previous_status)
+
+            return render(request, 'events/_informationsource.html', {'event': i, 'informationsource': formObject})
+        else:
+            ret = {'status': 'error', 'errors': informationsource_form.errors}
+            return HttpResponseServerError(dumps(ret), content_type="application/json")
+
+    return redirect('incidents:details', incident_id=incident_id)
+
+@login_required
+def delete_informationsource(request, incident_id, informationsource_id):
+    c = get_object_or_404(InformationSources, pk=informationsource_id, incident_id=incident_id)
+    i = c.incident
+    if not request.user.has_perm('incidents.handle_incidents', obj=i) and not c.opened_by == request.user:
+        raise PermissionDenied()
+    if request.method == "POST":
+        msg = "Information Source '%s' deleted." % (c.description[:20] + "...")
+        c.delete()
+        log(msg, request.user, incident=Incident.objects.get(id=incident_id))
+        return redirect('incidents:details', incident_id=c.incident_id)
+    else:
+        return redirect('incidents:details', incident_id=c.incident_id)
+
+
+@login_required
+def update_informationsource(request, informationsource_id):
+    keyObject = get_object_or_404(InformationSources, pk=informationsource_id)
+    i = keyObject.incident
+    if request.method == 'GET':
+        if not request.user.has_perm('incidents.view_incidents', obj=i):
+            ret = {'status': 'error', 'errors': ['Permission denied', ]}
+            return HttpResponseServerError(dumps(ret), content_type="application/json")
+        serialized = serializers.serialize('json', [keyObject, ])
+        return HttpResponse(dumps(serialized), content_type="application/json")
+    else:
+        informationsource_form = InformationSourceForm(request.POST, instance=c)
+        #if not request.user.has_perm('incidents.handle_incidents', obj=i):
+        #    informationsource_form.fields['action'].queryset = Label.objects.filter(group__name='action').exclude(
+        #        name__in=['Closed', 'Opened', 'Blocked'])
+
+        if informationsource_form.is_valid():
+
+            formObject = informationsource_form.save()
+
+            log("Description edited: %s" % (informationsource_form.cleaned_data['description'][:20] + "..."), request.user,
+                incident=formObject.incident)
+            
+            # audit history
+            #if c.action.name in ['Closed', 'Opened', 'Blocked']:
+            #    if c.action.name[0] != c.incident.status:
+            #        previous_status = c.incident.status
+            #        c.incident.status = c.action.name[0]
+            #        c.incident.save()
+            #        model_status_changed.send(sender=Incident, instance=c.incident, previous_status=previous_status)
+
+            #i.refresh_artifacts(fromObject.description)
+
+            return render(request, 'events/_informationsource.html', {'informationsource': formObject, 'event': i})
+        else:
+            ret = {'status': 'error', 'errors': informationsource_form.errors}
+            return HttpResponseServerError(dumps(ret), content_type="application/json")
+
+

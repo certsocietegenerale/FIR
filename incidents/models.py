@@ -202,8 +202,10 @@ class Incident(FIRModel, models.Model):
     category = models.ForeignKey(IncidentCategory, choices = CATEGORIES)
     concerned_business_lines = models.ManyToManyField(BusinessLine, blank=True)
     main_business_lines = models.ManyToManyField(BusinessLine, related_name='incidents_affecting_main', blank=True)
-    detection = models.ForeignKey(Label, limit_choices_to={'group__name': 'detection'}, related_name='detection_label')
-    severity = models.IntegerField(choices=SEVERITY_CHOICES)
+# Seb default detection to '2'=External
+    detection = models.ForeignKey(Label, limit_choices_to={'group__name': 'detection'}, related_name='detection_label', default='2')
+# Seb default severity to '1'
+    severity = models.IntegerField(choices=SEVERITY_CHOICES, default='1')
     is_incident = models.BooleanField(default=True)
     is_major = models.BooleanField(default=False)
     actor = models.ForeignKey(Label, limit_choices_to={'group__name': 'actor'}, related_name='actor_label', blank=True,
@@ -214,7 +216,7 @@ class Incident(FIRModel, models.Model):
     opened_by = models.ForeignKey(User)
     confidentiality = models.IntegerField(choices=CONFIDENTIALITY_LEVEL, default='1')
 
-# STIX fields ================================================================
+# Seb STIX fields ================================================================
     short_description = models.CharField(max_length=256, blank=True)
     first_malicious_action = models.DateTimeField(default=datetime.datetime.now, blank=True)
     incident_discovery = models.DateTimeField(default=datetime.datetime.now, blank=True)
@@ -245,7 +247,7 @@ class Incident(FIRModel, models.Model):
     intended_effect_description = models.CharField(max_length=100, blank=True)
     security_compromise_name = models.CharField(max_length=30, blank=True)
     discovery_method_name = models.CharField(max_length=30, blank=True)
-    related_incident_uuid = models.UUIDField(null=True)
+    related_incident_uuid = models.UUIDField(blank=True, null=True)
     #COA_description http://stixproject.github.io/data-model/1.2/coa/CourseOfActionType/
     COA_requested_description = models.CharField(max_length=150, blank=True)
     COA_taken_description = models.CharField(max_length=150, blank=True)
@@ -260,7 +262,7 @@ class Incident(FIRModel, models.Model):
     #information_source http://stixproject.github.io/data-model/1.2/stixCommon/InformationSourceType/
     information_source_description = models.CharField(max_length=200, blank=True)
 
-# STIX advanced fields ================================================================
+# Seb STIX advanced fields ================================================================
     #is_advanced = False (html form needs to persist boolean toggle)
     is_advanced = models.BooleanField(default=False)
     initial_compromise = models.DateTimeField(blank=True, null=True)
@@ -454,7 +456,7 @@ class IncidentTemplate(models.Model):
     actor = models.ForeignKey(Label, limit_choices_to={'group__name': 'actor'}, related_name='+', blank=True, null=True)
     plan = models.ForeignKey(Label, limit_choices_to={'group__name': 'plan'}, related_name='+', blank=True, null=True)
 
-# STIX fields ================================================================
+# Seb STIX fields ================================================================
     short_description = models.CharField(max_length=256, null=True, blank=True)
 
     def __unicode__(self):
@@ -498,3 +500,57 @@ def log_new_incident(sender, instance, created, **kwargs):
         what = 'Edit incident'
 
     Log.objects.create(who=instance.opened_by, what=what, incident=instance)
+
+# Seb STIX tables ================================================================
+class InformationSources(models.Model):
+    description = models.CharField(max_length=256, null=True, blank=True)  
+    incident = models.ForeignKey(Incident)
+
+    class Meta:
+        verbose_name_plural = 'informationsources'
+
+    def __unicode__(self):
+        return u"InformationSource for incident %s" % self.incident.id
+
+    @classmethod
+    def create_diff_comment(cls, incident, data, user):
+        informationsources = ''
+        for key in data:
+            new = data[key]
+            old = getattr(incident, key)
+
+            if new != old:
+                label = key
+
+                if key == 'is_major':
+                    label = 'major'
+                if key == 'concerned_business_lines':
+                    label = "business lines"
+                if key == 'main_business_line':
+                    label = "main business line"
+                if key == 'is_incident':
+                    label = 'incident'
+
+                if old == "O":
+                    old = 'Open'
+                if old == "C":
+                    old = 'Closed'
+                if old == "B":
+                    old = 'Blocked'
+                if new == "O":
+                    new = 'Open'
+                if new == "C":
+                    new = 'Closed'
+                if new == "B":
+                    new = 'Blocked'
+
+                informationsources += u'Changed "%s" from "%s" to "%s"; ' % (label, old, new)
+
+        if informationsources:
+            InformationSources.objects.create(
+                description=informationsources,
+                incident=incident
+            )
+
+
+

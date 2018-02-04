@@ -139,4 +139,67 @@ $(function () {
 
 		event.stopPropagation();
 	});
+
+    // Seb added functions here...
+	// Set up form for new informationsource
+	$('#details-actions-informationsource').click(function (event) {
+
+		$("#addInformationSource").modal('toggle');
+
+		var form = $('#addInformationSource form');
+		form.attr('action', form.data('new-informationsource-url'));
+		form.data('target', '#tab_informationsources tbody');
+
+	});
+
+	// Set up form for update informationsource
+	$('#tab_informationsources').on('click', '.edit-informationsource', function (event) {
+		var form = $('#addInformationSource form');
+		var informationsource_id = $(this).data('informationsource-id');
+
+		$.getJSON("/ajax/informationsource/" + informationsource_id, function(msg) {
+			var informationsource = jQuery.parseJSON(msg)[0];
+			var text = informationsource.fields.description;
+			//var action = comment.fields.action;
+			//var date = new Date(comment.fields.date);
+			// date format 1899-12-06 07:15
+			//date = date.getUTCFullYear() + "-" + (Z(date.getUTCMonth()+1)) +"-" + Z(date.getUTCDate()) + " " + Z(date.getUTCHours()) + ":" + Z(date.getUTCMinutes())
+
+			$("#addInformationSource").modal('toggle');
+
+			editors["id_informationsource"].value(text);
+			//$("#id_action").val(action);
+			//$("#id_date").val(date);
+
+			form.attr('action', '/ajax/informationsource/' + informationsource_id);
+			form.data('target', '#informationsource_id_' + informationsource_id);
+			form.data('action', 'replaceWith');
+		});
+	});
+
+	// Custom behavior when informationsource is added
+	$('#addInformationSource').on('fir.form.success', function (event) {
+		// Dismiss modal
+		editors["id_informationsource"].value("");
+		$('#addInformationSource').modal('hide');
+
+		// Hack not to trigger on update
+		if ($('#addInformationSource form').data('action') != 'replaceWith') {
+			// Update count
+			var count = parseInt($('#informationsource-count').text());
+			$('#informationsource-count').text(count + 1);
+		}
+
+		event.stopPropagation();
+	});
+
+	// Custom behavior when informationsource is removed
+	$('#tab_informationsources').on('fir.form.success', function (event) {
+		// Update count
+		var count = parseInt($('#informationsource-count').text());
+		$('#informationsource-count').text(count - 1);
+
+		event.stopPropagation();
+	});
+
 });
