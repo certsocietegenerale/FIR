@@ -13,7 +13,8 @@ See the wiki for the [user manual](https://github.com/certsocietegenerale/FIR/wi
 
 # Installation
 
-There are two ways to install FIR. If you want to take it for a test-drive, just follow the instructions for [setting up a development environment](https://github.com/certsocietegenerale/FIR/wiki/Setting-up-a-development-environment) in the Wiki.
+There are two ways to install FIR. If you want to take it for a test-drive, 
+just follow the instructions for [setting up a development environment](https://github.com/sebtno/FIR/wiki/Setting-up-a-development-environment).
 
 If you like it and want to set it up for production, [here's how to do it](https://github.com/certsocietegenerale/FIR/wiki/Installation-on-a-production-environment).
 

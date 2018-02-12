@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import datetime
+import uuid
 
 from django.db.models.signals import post_save
 from django.dispatch import Signal, receiver
@@ -42,6 +43,27 @@ CONFIDENTIALITY_LEVEL = (
     (2, "C2"),
     (3, "C3"),
 )
+
+# From
+# http://stix.mitre.org/XMLSchema/default_vocabularies/1.2.0/stix_default_vocabularies.xsd
+# TODO modify as required.
+CATEGORIES = (
+    (1, "Exercise/Network Defense Testing"),
+    (2, "Unauthorized Access"),
+    (3, "Denial of Service"),
+    (4, "Malicious Code"),
+    (5, "Improper Usage"),
+    (6, "Scans/Probes/Attempted Access"),
+    (7, "Investigation"),
+)
+
+# TODO modify as required
+CONFIDENCE_VALUE = (
+    (1, "Low"),
+    (2, "Medium"),
+    (3, "High"),
+)
+
 
 # Special Model class that handles signals
 
@@ -103,7 +125,6 @@ class Label(models.Model):
 
     def __unicode__(self):
         return "%s" % (self.name)
-
 
 class BusinessLine(MP_Node, AuthorizationModelMixin):
     name = models.CharField(max_length=100)
@@ -175,12 +196,17 @@ class Incident(FIRModel, models.Model):
     is_starred = models.BooleanField(default=False)
     subject = models.CharField(max_length=256)
     description = models.TextField()
-    category = models.ForeignKey(IncidentCategory)
+
+    # we use fir category here
+    # TODO to interface with django admin to get values for choices
+    category = models.ForeignKey(IncidentCategory, choices = CATEGORIES)
     concerned_business_lines = models.ManyToManyField(BusinessLine, blank=True)
     main_business_lines = models.ManyToManyField(BusinessLine, related_name='incidents_affecting_main', blank=True)
-    detection = models.ForeignKey(Label, limit_choices_to={'group__name': 'detection'}, related_name='detection_label')
-    severity = models.IntegerField(choices=SEVERITY_CHOICES)
-    is_incident = models.BooleanField(default=False)
+# Seb default detection to '2'=External
+    detection = models.ForeignKey(Label, limit_choices_to={'group__name': 'detection'}, related_name='detection_label', default='2')
+# Seb default severity to '1'
+    severity = models.IntegerField(choices=SEVERITY_CHOICES, default='1')
+    is_incident = models.BooleanField(default=True)
     is_major = models.BooleanField(default=False)
     actor = models.ForeignKey(Label, limit_choices_to={'group__name': 'actor'}, related_name='actor_label', blank=True,
                               null=True)
@@ -189,6 +215,62 @@ class Incident(FIRModel, models.Model):
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=_("Open"))
     opened_by = models.ForeignKey(User)
     confidentiality = models.IntegerField(choices=CONFIDENTIALITY_LEVEL, default='1')
+
+# Seb STIX fields ================================================================
+    short_description = models.CharField(max_length=256, blank=True)
+    first_malicious_action = models.DateTimeField(default=datetime.datetime.now, blank=True)
+    incident_discovery = models.DateTimeField(default=datetime.datetime.now, blank=True)
+    incident_reported = models.DateTimeField(default=datetime.datetime.now, blank=True)
+    #incident_id is the global unique id
+    incident_id = models.UUIDField(default=uuid.uuid4, editable=False)
+    external_id = models.CharField(max_length=50, blank=True)
+    reporter = models.CharField(max_length=100, blank=True)
+    victim = models.CharField(max_length=150, blank=True)
+    #affected_assets = 0..N, consider using Valid attributes from Admin page
+    affected_assets = models.CharField(max_length=256, blank=True)
+    impact_assessment_loss_estimation_USD = models.DecimalField(max_digits=18, decimal_places=2, blank=True, null=True)
+    impact_assessment_loss_estimation_CRYPTO = models.DecimalField(max_digits=18, decimal_places=2, blank=True, null=True)
+    #incident_status http://stixproject.github.io/data-model/1.2/stixVocabs/IncidentStatusVocab-1.0/
+    # or just use FIR status    
+    incident_status = models.CharField(max_length=50, blank=True)
+    #related_indicator http://stixproject.github.io/data-model/1.2/indicator/IndicatorType/
+    related_indicator_title = models.CharField(max_length=50, blank=True)
+    related_indicator_type = models.CharField(max_length=30, blank=True)
+    #related_indicator_TTP http://stixproject.github.io/data-model/1.2/ttp/TTPType/
+    related_indicator_TTP_title = models.CharField(max_length=30, blank=True)
+    #related_observable http://stixproject.github.io/data-model/1.2/cybox/ObservableType/
+    related_observable_title = models.CharField(max_length=30, blank=True)
+    #leveraged_TTP http://stixproject.github.io/data-model/1.2/ttp/TTPType/
+    leveraged_TTP_resource_infrastructure_title = models.CharField(max_length=50, blank=True)
+    #threat_actor http://stixproject.github.io/data-model/1.2/ta/ThreatActorType/
+    threat_actor_title = models.CharField(max_length=50, blank=True)
+    intended_effect_description = models.CharField(max_length=100, blank=True)
+    security_compromise_name = models.CharField(max_length=30, blank=True)
+    discovery_method_name = models.CharField(max_length=30, blank=True)
+    related_incident_uuid = models.UUIDField(blank=True, null=True)
+    #COA_description http://stixproject.github.io/data-model/1.2/coa/CourseOfActionType/
+    COA_requested_description = models.CharField(max_length=150, blank=True)
+    COA_taken_description = models.CharField(max_length=150, blank=True)
+
+    #confidence_value TODO http://stixproject.github.io/data-model/1.2/stixVocabs/HighMediumLowVocab-1.0/
+    confidence_description = models.CharField(max_length=10,
+                                              choices=CONFIDENCE_VALUE)
+
+    #contact_name http://stixproject.github.io/data-model/1.2/stixCommon/IdentityType/
+    contact_name = models.CharField(max_length=30, blank=True)
+    #history use incident Comment entries
+    #information_source http://stixproject.github.io/data-model/1.2/stixCommon/InformationSourceType/
+    information_source_description = models.CharField(max_length=200, blank=True)
+
+# Seb STIX advanced fields ================================================================
+    #is_advanced = False (html form needs to persist boolean toggle)
+    is_advanced = models.BooleanField(default=False)
+    initial_compromise = models.DateTimeField(blank=True, null=True)
+    first_data_exfiltration = models.DateTimeField(blank=True, null=True)
+    incident_opened = models.DateTimeField(blank=True, null=True)
+    containment_achieved = models.DateTimeField(blank=True, null=True)
+    restoration_achieved = models.DateTimeField(blank=True, null=True)
+    incident_closed = models.DateTimeField(blank=True, null=True)
 
     def __unicode__(self):
         return self.subject
@@ -366,13 +448,16 @@ class IncidentTemplate(models.Model):
     name = models.CharField(max_length=100)
     subject = models.CharField(max_length=256, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
-    category = models.ForeignKey(IncidentCategory, null=True, blank=True)
+    category = models.ForeignKey(IncidentCategory, blank=True)
     concerned_business_lines = models.ManyToManyField(BusinessLine, blank=True)
     detection = models.ForeignKey(Label, limit_choices_to={'group__name': 'detection'}, null=True, blank=True)
     severity = models.IntegerField(choices=SEVERITY_CHOICES, null=True, blank=True)
     is_incident = models.BooleanField(default=False)
     actor = models.ForeignKey(Label, limit_choices_to={'group__name': 'actor'}, related_name='+', blank=True, null=True)
     plan = models.ForeignKey(Label, limit_choices_to={'group__name': 'plan'}, related_name='+', blank=True, null=True)
+
+# Seb STIX fields ================================================================
+    short_description = models.CharField(max_length=256, null=True, blank=True)
 
     def __unicode__(self):
         return self.name
@@ -415,3 +500,57 @@ def log_new_incident(sender, instance, created, **kwargs):
         what = 'Edit incident'
 
     Log.objects.create(who=instance.opened_by, what=what, incident=instance)
+
+# Seb STIX tables ================================================================
+class InformationSources(models.Model):
+    description = models.CharField(max_length=256, null=True, blank=True)  
+    incident = models.ForeignKey(Incident)
+
+    class Meta:
+        verbose_name_plural = 'informationsources'
+
+    def __unicode__(self):
+        return u"InformationSource for incident %s" % self.incident.id
+
+    @classmethod
+    def create_diff_comment(cls, incident, data, user):
+        informationsources = ''
+        for key in data:
+            new = data[key]
+            old = getattr(incident, key)
+
+            if new != old:
+                label = key
+
+                if key == 'is_major':
+                    label = 'major'
+                if key == 'concerned_business_lines':
+                    label = "business lines"
+                if key == 'main_business_line':
+                    label = "main business line"
+                if key == 'is_incident':
+                    label = 'incident'
+
+                if old == "O":
+                    old = 'Open'
+                if old == "C":
+                    old = 'Closed'
+                if old == "B":
+                    old = 'Blocked'
+                if new == "O":
+                    new = 'Open'
+                if new == "C":
+                    new = 'Closed'
+                if new == "B":
+                    new = 'Blocked'
+
+                informationsources += u'Changed "%s" from "%s" to "%s"; ' % (label, old, new)
+
+        if informationsources:
+            InformationSources.objects.create(
+                description=informationsources,
+                incident=incident
+            )
+
+
+

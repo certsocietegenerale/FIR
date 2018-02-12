@@ -6,7 +6,8 @@
 <html lang="{{ LANGUAGE_CODE }}">
   <head>
     <meta charset="utf-8">
-    <title>{%block title%}FIR{%endblock%}</title>
+    <!-- Seb replaced FIR with TNO :-) -->
+    <title>{%block title%}TNO{%endblock%}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -41,7 +42,8 @@
               <span class="icon-bar"></span>
               <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="{% url 'dashboard:main' %}">FIR</a>
+            <!-- Seb replaced FIR with TNO :-) -->
+            <a class="navbar-brand" href="{% url 'dashboard:main' %}">TNO</a>
           </div>
 
           <div class="collapse navbar-collapse" id="navbar-collapse">
@@ -50,7 +52,8 @@
               <li>
                 <div class="btn-group navbar-btn">
                   <button class="btn btn-danger" onclick="javascript:location.href='{% url 'events:new' %}'">
-                    {% trans "New event" %} <span class="glyphicon glyphicon-fire"></span>
+                    <!-- Seb replaced New event with New incident -->
+                    {% trans "New incident" %} <span class="glyphicon glyphicon-fire"></span>
                   </button>
                   {% if request.session.has_incident_templates %}
                   <button type="button" class="btn btn-danger dropdown-toggle" data-toggle="dropdown">
@@ -73,7 +76,9 @@
               {% endif %}
               <li id='dashboard-nav'><a href="{% url 'dashboard:main' %}">{% trans "Dashboard" %}</a></li>
               <li id='incidents-nav'><a href="{% url 'incidents:index' %}">{% trans "Incidents"%}</a></li>
+<!-- no Event
               <li id='events-nav'><a href="{% url 'events:index' %}">{% trans "Events" %}</a></li>
+-->
             {% plugin_point 'base_navbar' %}
               {% has_perm 'incidents.view_statistics' model='incidents.Incident' as can_view_statistics %}
               {% if can_view_statistics %}
@@ -134,10 +139,15 @@
     <script type="text/javascript" src="{% static "custom_js/auto_ajax.js" %}"></script>
 
     {% block custom_js %}{% endblock %}
-
+    
     <footer class="hidden-xs">
+      <!-- Seb replaced copyright footer
       <div>
         FIR - Fast Incident Response - <a href='https://cert.societegenerale.com/'>CERT Soci&eacute;t&eacute; G&eacute;n&eacute;rale {% now "Y"%}</a> &copy; bug reports go to <a href='https://github.com/certsocietegenerale/FIR' target='blank'>the GitHub repository</a>
+      </div>
+      -->
+      <div>
+        Blockchain Incidents Database - <a href='https://www.tno.nl/'>TNO The Netherlands Organization {% now "Y"%}</a> &copy; bug reports go to <a href='https://github.com/sebtno/FIR' target='blank'>the GitHub repository</a>
       </div>
     </footer>
   </body>

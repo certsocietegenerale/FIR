@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load fir_plugins %}
 {% load add_css_class %}
 {% load i18n %}
 {% load staticfiles %}
@@ -9,13 +10,12 @@
 <link href="{% static "select/select2.css" %}" rel="stylesheet"/>
 <link href="{% static "select/select2-bootstrap.css" %}" rel="stylesheet"/>
 <link href="{% static "css/bootstrap-datetimepicker.min.css" %}" rel="stylesheet"/>
-
-
 {% endblock %}
 
 {% block custom_js %}
 <script src="{% static "select/select2.min.js" %}"></script>
 {% rich_edit_static %}
+
 <script>
 $(document).ready(function() {
 	$("select#id_concerned_business_lines").select2({ dropdownAutoWidth: true, width: '100%' });
@@ -33,7 +33,6 @@ $(document).ready(function() {
 
 {% endblock %}
 
-
 {% block content %}
 
 	<div class="container-fluid labels-ontop">
@@ -45,7 +44,7 @@ $(document).ready(function() {
 
 			<div class="row header">
 				{% if not i %}
-					<h1 class="col-sm-11">{% trans "New event" %}</h1>
+					<h1 class="col-sm-11">{% trans "New Incident" %}</h1>
 				{% else %}
 					<h1 class="col-sm-11">{% if i.is_incident %}{% trans "Incident" %}{%else%}{% trans "Event" %}{%endif%}: {{ i.subject }}</h1>
 				{% endif %}
@@ -57,7 +56,8 @@ $(document).ready(function() {
 			<div class="row">
 				{% csrf_token %}
 
-				<div class="col-sm-6">
+				<div class="col-sm-12">
+
 					<fieldset>
 
 						<legend>{% trans "Summary" %}</legend>
@@ -66,16 +66,24 @@ $(document).ready(function() {
 						{% endif %}
 
 						<div class="row">
+
 							<div class="col-sm-6 form-group{% if form.subject.errors%} has-error{%endif%}">
-								<label for="id_subject">{% trans "Subject" %}</label>
+								<label for="id_subject">{% trans "Title" %}</label>
 								{{ form.subject|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.subject.errors %}
 							</div>
+							<div class="col-sm-6 form-group{% if form.external_id.errors%} has-error{%endif%}">
+								<label for="id_external_id">{% trans "External ID" %}</label>
+								{{ form.external_id|add_css_class:"form-control" }}
+								{% include 'events/_form_errors.html' with errors=form.external_id.errors %}
+							</div>
+<!-- Seb not using business line
 							<div class="col-sm-6 form-group{% if form.concerned_business_lines.errors%} has-error{%endif%}">
 								<label id="id_concerned_business_lines">{% trans "Business Lines" %}</label>
 								{{ form.concerned_business_lines|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.concerned_business_lines.errors %}
 							</div>
+-->
 						</div>
 						<div class="row">
 							<div class="col-sm-6 form-group{% if form.category.errors%} has-error{%endif%}">
@@ -88,42 +96,107 @@ $(document).ready(function() {
 								{{ form.status|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.status.errors %}
 							</div>
-							<div class="col-sm-2 form-group{% if form.detection.errors%} has-error{%endif%}">
+<!-- Seb hiding detection, defaulted in models -->
+							<div class="col-sm-2 hidden form-group{% if form.detection.errors%} has-error{%endif%}">
 								<label id="id_detection">{% trans "Detection" %}</label>
 								{{ form.detection|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.detection.errors %}
 							</div>
-							<div class="col-sm-2 form-group{% if form.severity.errors%} has-error{%endif%}">
+<!-- Seb hiding severity, defaulted in models -->
+							<div class="col-sm-2 hidden form-group{% if form.severity.errors%} has-error{%endif%}">
 								<label id="id_severity">{% trans "Severity" %}</label>
 								{{ form.severity|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.severity.errors %}
 							</div>
 						</div>
+                        <!-- Seb STIX fields -->    
 						<div class="row">
+							<div class="col-sm-6 form-group{% if form.first_malicious_action.errors%} has-error{%endif%}">
+								<label id="id_first_malicious_action">{% trans "First Malicious Action" %}</label>
+								{{ form.first_malicious_action|add_css_class:"form-control datetime" }}
+								{% include 'events/_form_errors.html' with errors=form.first_malicious_action.errors %}
+							</div>
+							<div class="col-sm-6 form-group{% if form.incident_discovery.errors%} has-error{%endif%}">
+								<label id="id_incident_discovery">{% trans "Incident Discovery" %}</label>
+								{{ form.incident_discovery|add_css_class:"form-control datetime" }}
+								{% include 'events/_form_errors.html' with errors=form.incident_discovery.errors %}
+							</div>
+							<div class="col-sm-6 form-group{% if form.incident_reported.errors%} has-error{%endif%}">
+								<label id="id_incident_reported">{% trans "Incident Reported" %}</label>
+								{{ form.incident_reported|add_css_class:"form-control datetime" }}
+								{% include 'events/_form_errors.html' with errors=form.incident_reported.errors %}
+							</div>
+
+							<div class="col-sm-3 checkbox aligned-with-stack{% if form.is_advanced.errors%} has-error{%endif%}">
+								<label data-toggle='collapse' data-target='#advanced_fields'>{{ form.is_advanced }} {% trans "Advanced" %}</label>
+								{% include 'events/_form_errors.html' with errors=form.is_advanced.errors %}
+							</div>
+						</div>
+                        <!-- Seb advanced STIX dates -->
+						<div class="row">
+							<fieldset id="advanced_fields" class='details collapse {% if form.is_advanced.value %}in{%endif%}'>
+							    <div class="col-sm-6 form-group{% if form.initial_compromise.errors%} has-error{%endif%}">
+								    <label id="id_initial_compromise">{% trans "Initial Compromise" %}</label>
+								    {{ form.initial_compromise|add_css_class:"form-control datetime" }}
+								    {% include 'events/_form_errors.html' with errors=form.initial_compromise.errors %}
+							    </div>
+							    <div class="col-sm-6 form-group{% if form.first_data_exfiltration.errors%} has-error{%endif%}">
+								    <label id="id_first_data_exfiltration">{% trans "First Data Exfiltration" %}</label>
+								    {{ form.first_data_exfiltration|add_css_class:"form-control datetime" }}
+								    {% include 'events/_form_errors.html' with errors=form.first_data_exfiltration.errors %}
+							    </div>
+							    <div class="col-sm-6 form-group{% if form.incident_opened.errors%} has-error{%endif%}">
+								    <label id="id_incident_opened">{% trans "Incident Opened" %}</label>
+								    {{ form.incident_opened|add_css_class:"form-control datetime" }}
+								    {% include 'events/_form_errors.html' with errors=form.incident_opened.errors %}
+							    </div>
+							    <div class="col-sm-6 form-group{% if form.containment_achieved.errors%} has-error{%endif%}">
+								    <label id="id_containment_achieved">{% trans "Containment Achieved" %}</label>
+								    {{ form.containment_achieved|add_css_class:"form-control datetime" }}
+								    {% include 'events/_form_errors.html' with errors=form.containment_achieved.errors %}
+							    </div>
+							    <div class="col-sm-6 form-group{% if form.restoration_achieved.errors%} has-error{%endif%}">
+								    <label id="id_restoration_achieved">{% trans "Restoration Achieved" %}</label>
+								    {{ form.restoration_achieved|add_css_class:"form-control datetime" }}
+								    {% include 'events/_form_errors.html' with errors=form.restoration_achieved.errors %}
+							    </div>
+							    <div class="col-sm-6 form-group{% if form.incident_closed.errors%} has-error{%endif%}">
+								    <label id="id_incident_closed">{% trans "Incident Closed" %}</label>
+								    {{ form.incident_closed|add_css_class:"form-control datetime" }}
+								    {% include 'events/_form_errors.html' with errors=form.incident_closed.errors %}
+							    </div>
+                            </fieldset>
+						</div>
+
+						<div class="row">
+<!-- Seb not using date
 							<div class="col-sm-6 form-group{% if form.date.errors%} has-error{%endif%}">
 								<label id="id_date">{% trans "Date / Time" %}</label>
 								{{ form.date|add_css_class:"form-control datetime" }}
 								{% include 'events/_form_errors.html' with errors=form.date.errors %}
 							</div>
-							<div class="col-sm-1 form-group{% if form.confidentiality.errors%} has-error{%endif%}">
+-->
+<!-- Seb hiding confidentiality, defaulted in models -->
+							<div class="col-sm-1 hidden form-group{% if form.confidentiality.errors%} has-error{%endif%}">
 								<label id="id_confidentiality">{% trans "Confidentiality" %}</label>
 								{{ form.confidentiality|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.confidentiality.errors %}
 							</div>
-                            {%  has_perm 'incidents.handle_incidents' model=form as can_handle_incident %}
+<!-- Seb hiding is_incident toggle, defaulted in models -->
+                            {% has_perm 'incidents.handle_incidents' model=form as can_handle_incident %}
                             {% if can_handle_incident %}
-							<div class="col-sm-3 col-sm-offset-2 checkbox aligned-with-stack{% if form.is_incident.errors%} has-error{%endif%}">
-								<label data-toggle='collapse' data-target='#incident_fields'>{{ form.is_incident }} {% trans "Is an incident" %}</label>
+							<div class="col-sm-3 col-sm-offset-2 checkbox hidden aligned-with-stack{% if form.is_incident.errors%} has-error{%endif%}">
+								<label data-toggle='collapse' data-target='#incident_fields'>{{ form.is_incident }} {% trans "Is incident" %}</label>
 								{% include 'events/_form_errors.html' with errors=form.is_incident.errors %}
 							</div>
                             {% endif %}
 
 						</div>
 					</fieldset>
-				</div>
+
+<!-- Seb not using actor, plan, major incident
 				<div class="col-sm-6">
 					{% if can_handle_incident %}
-
 					<fieldset id="incident_fields" class='details collapse {% if form.is_incident.value %}in{%endif%}'>
 						<legend>{% trans "Incident details" %}</legend>
 
@@ -146,7 +219,9 @@ $(document).ready(function() {
 					</fieldset>
 					{% endif %}
 				</div>
+-->
 			</div>
+
 			<div class="row">
 				<fieldset class="col-sm-12">
 					<legend>{% trans "Description" %}</legend>
@@ -155,7 +230,165 @@ $(document).ready(function() {
 				</fieldset>
 				{{ form.non_field_errors }}
 			</div>
+
+            <!-- Seb STIX fields -->
+			<div class="row">
+				<fieldset class="col-sm-12">
+					<div class="col-sm-12 form-group{% if form.short_description.errors%} has-error{%endif%}">
+						<label for="id_short_description">{% trans "Short Description" %}</label>
+                                                {{ form.short_description|add_css_class:"form-control" }}
+						{% include 'events/_form_errors.html' with errors=form.short_description.errors %}
+					</div>
+				</fieldset>
+			</div>
+			<div class="row">
+				<fieldset class="col-sm-12">
+					<div class="col-sm-12 form-group{% if form.affected_assets.errors%} has-error{%endif%}">
+						<label for="id_affected_assets">{% trans "Affected Assets" %}</label>
+                                                {{ form.affected_assets|add_css_class:"form-control" }}
+						{% include 'events/_form_errors.html' with errors=form.affected_assets.errors %}
+					</div>
+				</fieldset>
+			</div>
+			<div class="row">
+				<fieldset class="col-sm-12">
+					<div class="col-sm-4 form-group{% if form.reporter.errors%} has-error{%endif%}">
+						<label for="id_reporter">{% trans "Reporter" %}</label>
+                                                {{ form.reporter|add_css_class:"form-control" }}
+						{% include 'events/_form_errors.html' with errors=form.reporter.errors %}
+					</div>
+					<div class="col-sm-4 form-group{% if form.victim.errors%} has-error{%endif%}">
+						<label for="id_victim">{% trans "Victim" %}</label>
+                                                {{ form.victim|add_css_class:"form-control" }}
+						{% include 'events/_form_errors.html' with errors=form.victim.errors %}
+					</div>
+					<div class="col-sm-4 form-group{% if form.contact_name.errors%} has-error{%endif%}">
+						<label for="id_contact_name">{% trans "Contact Name" %}</label>
+                                                {{ form.contact_name|add_css_class:"form-control" }}
+						{% include 'events/_form_errors.html' with errors=form.contact_name.errors %}
+					</div>
+				</fieldset>
+			</div>
+			<div class="row">
+				<fieldset class="col-sm-12">
+					<div class="col-sm-4 form-group{% if form.impact_assessment_loss_estimation_USD.errors%} has-error{%endif%}">
+						<label for="id_impact_assessment_loss_estimation_USD">{% trans "Loss Estimation (USD)" %}</label>
+                                                {{ form.impact_assessment_loss_estimation_USD|add_css_class:"form-control" }}
+						{% include 'events/_form_errors.html' with errors=form.impact_assessment_loss_estimation_USD.errors %}
+					</div>
+					<div class="col-sm-4 form-group{% if form.impact_assessment_loss_estimation_CRYPTO.errors%} has-error{%endif%}">
+						<label for="id_impact_assessment_loss_estimation_CRYPTO">{% trans "Loss Estimation (CRYPTO)" %}</label>
+                                                {{ form.impact_assessment_loss_estimation_CRYPTO|add_css_class:"form-control" }}
+						{% include 'events/_form_errors.html' with errors=form.impact_assessment_loss_estimation_CRYPTO.errors %}
+					</div>
+				</fieldset>
+			</div>
+			<div class="row">
+				<fieldset class="col-sm-12">
+					<div class="col-sm-4 form-group{% if form.related_indicator_title.errors%} has-error{%endif%}">
+						<label for="id_related_indicator_title">{% trans "Related Indicator" %}</label>
+                                                {{ form.related_indicator_title|add_css_class:"form-control" }}
+						{% include 'events/_form_errors.html' with errors=form.related_indicator_title.errors %}
+					</div>
+					<div class="col-sm-4 form-group{% if form.related_indicator_type.errors%} has-error{%endif%}">
+						<label for="id_related_indicator_type">{% trans "Related Indicator Type" %}</label>
+                                                {{ form.related_indicator_type|add_css_class:"form-control" }}
+						{% include 'events/_form_errors.html' with errors=form.related_indicator_type.errors %}
+					</div>
+					<div class="col-sm-4 form-group{% if form.related_incident_uuid.errors%} has-error{%endif%}">
+						<label for="id_related_incident_uuid">{% trans "Related Incident ID" %}</label>
+                                                {{ form.related_incident_uuid|add_css_class:"form-control" }}
+						{% include 'events/_form_errors.html' with errors=form.related_incident_uuid.errors %}
+					</div>
+				</fieldset>
+			</div>
+			<div class="row">
+				<fieldset class="col-sm-12">
+					<div class="col-sm-4 form-group{% if form.related_indicator_TTP_title.errors%} has-error{%endif%}">
+						<label for="id_related_indicator_TTP_title">{% trans "Related Indicator Type" %}</label>
+                                                {{ form.related_indicator_TTP_title|add_css_class:"form-control" }}
+						{% include 'events/_form_errors.html' with errors=form.related_indicator_TTP_title.errors %}
+					</div>
+					<div class="col-sm-4 form-group{% if form.related_observable_title.errors%} has-error{%endif%}">
+						<label for="id_related_observable_title">{% trans "Related Observable" %}</label>
+                                                {{ form.related_observable_title|add_css_class:"form-control" }}
+						{% include 'events/_form_errors.html' with errors=form.related_observable_title.errors %}
+					</div>
+					<div class="col-sm-4 form-group{% if form.leveraged_TTP_resource_infrastructure_title.errors%} has-error{%endif%}">
+						<label for="id_leveraged_TTP_resource_infrastructure_title">{% trans "Leveraged TTP Resource Infrastructure" %}</label>
+                                                {{ form.leveraged_TTP_resource_infrastructure_title|add_css_class:"form-control" }}
+						{% include 'events/_form_errors.html' with errors=form.leveraged_TTP_resource_infrastructure_title.errors %}
+					</div>
+				</fieldset>
+			</div>
+			<div class="row">
+				<fieldset class="col-sm-12">
+					<div class="col-sm-4 form-group{% if form.threat_actor_title.errors%} has-error{%endif%}">
+						<label for="id_threat_actor_title">{% trans "Threat Actor" %}</label>
+                                                {{ form.threat_actor_title|add_css_class:"form-control" }}
+						{% include 'events/_form_errors.html' with errors=form.threat_actor_title.errors %}
+					</div>
+					<div class="col-sm-4 form-group{% if form.security_compromise_name.errors%} has-error{%endif%}">
+						<label for="id_security_compromise_name">{% trans "Security Compromise Name" %}</label>
+                                                {{ form.security_compromise_name|add_css_class:"form-control" }}
+						{% include 'events/_form_errors.html' with errors=form.security_compromise_name.errors %}
+					</div>
+					<div class="col-sm-4 form-group{% if form.discovery_method_name.errors%} has-error{%endif%}">
+						<label for="id_discovery_method_name">{% trans "Discovery Method Name" %}</label>
+                                                {{ form.discovery_method_name|add_css_class:"form-control" }}
+						{% include 'events/_form_errors.html' with errors=form.discovery_method_name.errors %}
+					</div>
+				</fieldset>
+			</div>
+			<div class="row">
+				<fieldset class="col-sm-12">
+					<div class="col-sm-6 form-group{% if form.intended_effect_description.errors%} has-error{%endif%}">
+						<label for="id_intended_effect_description">{% trans "Intended Effect Description" %}</label>
+                                                {{ form.intended_effect_description|add_css_class:"form-control" }}
+						{% include 'events/_form_errors.html' with errors=form.intended_effect_description.errors %}
+					</div>
+					<div class="col-sm-6 form-group{% if form.confidence_description.errors%} has-error{%endif%}">
+						<label for="id_confidence_description">{% trans "Confidence Description" %}</label>
+                                                {{ form.confidence_description|add_css_class:"form-control" }}
+						{% include 'events/_form_errors.html' with errors=form.confidence_description.errors %}
+					</div>
+				</fieldset>
+			</div>
+			<div class="row">
+				<fieldset class="col-sm-12">
+					<div class="col-sm-6 form-group{% if form.COA_requested_description.errors%} has-error{%endif%}">
+						<label for="id_COA_requested_description">{% trans "COA Requested Description" %}</label>
+                                                {{ form.COA_requested_description|add_css_class:"form-control" }}
+						{% include 'events/_form_errors.html' with errors=form.COA_requested_description.errors %}
+					</div>
+					<div class="col-sm-6 form-group{% if form.COA_taken_description.errors%} has-error{%endif%}">
+						<label for="id_COA_taken_description">{% trans "COA Taken Description" %}</label>
+                                                {{ form.COA_taken_description|add_css_class:"form-control" }}
+						{% include 'events/_form_errors.html' with errors=form.COA_taken_description.errors %}
+					</div>
+				</fieldset>
+			</div>
+            <!-- Seb informationsource is now in its own table
+			<div class="row">
+				<fieldset class="col-sm-12">
+					<div class="col-sm-6 form-group{% if form.confidence_description.errors%} has-error{%endif%}">
+						<label for="id_confidence_description">{% trans "Confidence Description" %}</label>
+                                                {{ form.confidence_description|add_css_class:"form-control" }}
+						{% include 'events/_form_errors.html' with errors=form.confidence_description.errors %}
+					</div>
+					<div class="col-sm-6 form-group{% if form.information_source_description.errors%} has-error{%endif%}">
+						<label for="id_information_source_description">{% trans "Information Source Description" %}</label>
+                                                {{ form.information_source_description|add_css_class:"form-control" }}
+						{% include 'events/_form_errors.html' with errors=form.information_source_description.errors %}
+					</div>
+				</fieldset>
+			</div>
+            -->
 			<button class="btn btn-primary" type="submit">{% trans "Save" %}</button>
 		</form>
+
 	</div>
 {% endblock %}
+
+
+

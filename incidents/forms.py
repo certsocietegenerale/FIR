@@ -3,6 +3,8 @@ from django import forms
 from incidents.models import IncidentCategory, Incident, Comments, BusinessLine
 from django.contrib.auth.forms import AuthenticationForm
 from fir.config.base import TF_INSTALLED
+# Seb added
+from incidents.models import InformationSources
 
 
 class CustomAuthenticationForm(AuthenticationForm):
@@ -96,3 +98,18 @@ class CommentForm(ModelForm):
 class UploadFileForm(forms.Form):
     title = forms.CharField()
     file = forms.FileField()
+
+# Seb added ==========================================================================
+class InformationSourceForm(ModelForm):
+    def __init__(self, *args, **kwargs):
+        super(ModelForm, self).__init__(*args, **kwargs)
+        self.fields['description'].error_messages['required'] = 'This field is required.'
+
+    class Meta:
+        model = InformationSources
+        exclude = ('incident',)
+        widgets = {
+            'action': forms.Select(attrs={'required': True, 'class': 'form-control'})
+        }
+
+
