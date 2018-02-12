@@ -24,7 +24,6 @@ RUN apk add --update \
     libxslt \
     libxslt-dev \
     postgresql-dev \
-
     && rm -rf /var/cache/apk/*
 
 RUN addgroup fir && \
