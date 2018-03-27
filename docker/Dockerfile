@@ -11,7 +11,7 @@
 # then access http://localhost:8000 in your browser
 
 # MAINTAINER Robert Haist, SleuthKid@mailbox.org
-FROM alpine:3.4
+FROM alpine:3.7
 
 RUN apk add --update \
     python \
