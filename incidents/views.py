@@ -335,6 +335,7 @@ def new_event(request):
             form.save_m2m()
             if hasattr(settings, "FIR_ID_SUBJECT_FORMAT") and settings.FIR_ID_SUBJECT_FORMAT:
                 subject_tag = settings.FIR_ID_SUBJECT_FORMAT.format(id=i.id)
+                subject_tag = re.sub(r'{date:(.*)}', i.date.strftime(r'\1'), subject_tag)
                 i.subject = '{tag} {subject}'.format(tag=subject_tag, subject=i.subject)
                 i.save()
             i.refresh_main_business_lines()

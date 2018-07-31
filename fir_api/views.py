@@ -45,6 +45,7 @@ class IncidentViewSet(viewsets.ModelViewSet):
         instance = serializer.save(opened_by=self.request.user)
         if hasattr(settings, "FIR_ID_SUBJECT_FORMAT") and settings.FIR_ID_SUBJECT_FORMAT:
             subject_tag = settings.FIR_ID_SUBJECT_FORMAT.format(id=instance.id)
+            subject_tag = re.sub(r'{date:(.*)}', instance.date.strftime(r'\1'), subject_tag)
             instance.subject = '{tag} {subject}'.format(tag=subject_tag, subject=instance.subject)
             instance.save()
         instance.refresh_main_business_lines()
