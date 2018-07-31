@@ -43,6 +43,10 @@ class IncidentViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         instance = serializer.save(opened_by=self.request.user)
+        if hasattr(settings, "FIR_ID_SUBJECT_FORMAT") and settings.FIR_ID_SUBJECT_FORMAT:
+            subject_tag = settings.FIR_ID_SUBJECT_FORMAT.format(id=instance.id)
+            instance.subject = '{tag} {subject}'.format(tag=subject_tag, subject=instance.subject)
+            instance.save()
         instance.refresh_main_business_lines()
         instance.done_creating()
 

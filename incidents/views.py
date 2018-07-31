@@ -333,6 +333,10 @@ def new_event(request):
             i.opened_by = request.user
             i.save()
             form.save_m2m()
+            if hasattr(settings, "FIR_ID_SUBJECT_FORMAT") and settings.FIR_ID_SUBJECT_FORMAT:
+                subject_tag = settings.FIR_ID_SUBJECT_FORMAT.format(id=i.id)
+                i.subject = '{tag} {subject}'.format(tag=subject_tag, subject=i.subject)
+                i.save()
             i.refresh_main_business_lines()
             i.done_creating()
 
