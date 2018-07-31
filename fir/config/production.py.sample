@@ -34,6 +34,12 @@ EMAIL_FROM = '"NAME" <address@email>'
 # SECRET KEY
 SECRET_KEY = 'CHANGE_DUMMY_KEY_PLEASE'
 
+# Uncomment this line to set an auto tag in subject
+# You can use these variables :
+#   - {id} : ID of the incident
+#   - {date:%format} : Date the incident was opened (formated by strftime, ex: %Y/%m/%d)
+# FIR_ID_SUBJECT_FORMAT = '[INC-{id}]'
+
 ################################################################
 
 DEBUG = False
