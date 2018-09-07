@@ -1,0 +1,683 @@
+[
+{
+    "pk": 1,
+    "model": "incidents.labelgroup",
+    "fields": {
+        "name": "plan"
+    }
+},
+{
+    "pk": 2,
+    "model": "incidents.labelgroup",
+    "fields": {
+        "name": "actor"
+    }
+},
+{
+    "pk": 3,
+    "model": "incidents.labelgroup",
+    "fields": {
+        "name": "action"
+    }
+},
+{
+    "pk": 4,
+    "model": "incidents.labelgroup",
+    "fields": {
+        "name": "detection"
+    }
+},
+{
+    "pk": 1,
+    "model": "incidents.label",
+    "fields": {
+        "group": 4,
+        "name": "CERT"
+    }
+},
+{
+    "pk": 2,
+    "model": "incidents.label",
+    "fields": {
+        "group": 4,
+        "name": "External"
+    }
+},
+{
+    "pk": 3,
+    "model": "incidents.label",
+    "fields": {
+        "group": 2,
+        "name": "CERT"
+    }
+},
+{
+    "pk": 4,
+    "model": "incidents.label",
+    "fields": {
+        "group": 2,
+        "name": "Entity"
+    }
+},
+{
+    "pk": 5,
+    "model": "incidents.label",
+    "fields": {
+        "group": 1,
+        "name": "A"
+    }
+},
+{
+    "pk": 6,
+    "model": "incidents.label",
+    "fields": {
+        "group": 1,
+        "name": "B"
+    }
+},
+{
+    "pk": 7,
+    "model": "incidents.label",
+    "fields": {
+        "group": 1,
+        "name": "C"
+    }
+},
+{
+    "pk": 8,
+    "model": "incidents.label",
+    "fields": {
+        "group": 1,
+        "name": "1"
+    }
+},
+{
+    "pk": 9,
+    "model": "incidents.label",
+    "fields": {
+        "group": 1,
+        "name": "2"
+    }
+},
+{
+    "pk": 10,
+    "model": "incidents.label",
+    "fields": {
+        "group": 1,
+        "name": "5"
+    }
+},
+{
+    "pk": 11,
+    "model": "incidents.label",
+    "fields": {
+        "group": 1,
+        "name": "6"
+    }
+},
+{
+    "pk": 12,
+    "model": "incidents.label",
+    "fields": {
+        "group": 3,
+        "name": "Opened"
+    }
+},
+{
+    "pk": 13,
+    "model": "incidents.label",
+    "fields": {
+        "group": 3,
+        "name": "Closed"
+    }
+},
+{
+    "pk": 14,
+    "model": "incidents.label",
+    "fields": {
+        "group": 3,
+        "name": "Monitor"
+    }
+},
+{
+    "pk": 15,
+    "model": "incidents.label",
+    "fields": {
+        "group": 3,
+        "name": "Takedown"
+    }
+},
+{
+    "pk": 16,
+    "model": "incidents.label",
+    "fields": {
+        "group": 3,
+        "name": "Info"
+    }
+},
+{
+    "pk": 17,
+    "model": "incidents.label",
+    "fields": {
+        "group": 3,
+        "name": "Alerting"
+    }
+},
+{
+    "pk": 18,
+    "model": "incidents.label",
+    "fields": {
+        "group": 3,
+        "name": "Investigation"
+    }
+},
+{
+    "pk": 19,
+    "model": "incidents.label",
+    "fields": {
+        "group": 4,
+        "name": "BL"
+    }
+},
+{
+    "pk": 20,
+    "model": "incidents.label",
+    "fields": {
+        "group": 4,
+        "name": "SOC"
+    }
+},
+{
+    "pk": 21,
+    "model": "incidents.label",
+    "fields": {
+        "group": 3,
+        "name": "Abuse"
+    }
+},
+{
+    "pk": 22,
+    "model": "incidents.label",
+    "fields": {
+        "group": 3,
+        "name": "Blocked"
+    }
+},
+{
+    "model": "incidents.businessline",
+    "pk": 1,
+    "fields": {
+        "path": "0002",
+        "depth": 1,
+        "numchild": 2,
+        "name": "Demo BusinessLine 1"
+    }
+},
+{
+    "model": "incidents.businessline",
+    "pk": 2,
+    "fields": {
+        "path": "00020002",
+        "depth": 2,
+        "numchild": 0,
+        "name": "Sub BL 1"
+    }
+},
+{
+    "model": "incidents.businessline",
+    "pk": 3,
+    "fields": {
+        "path": "00020003",
+        "depth": 2,
+        "numchild": 0,
+        "name": "Sub BL 2"
+    }
+},
+{
+    "model": "incidents.businessline",
+    "pk": 4,
+    "fields": {
+        "path": "0003",
+        "depth": 1,
+        "numchild": 0,
+        "name": "Demo BusinessLine 2"
+    }
+},
+{
+    "model": "incidents.businessline",
+    "pk": 5,
+    "fields": {
+        "path": "0001",
+        "depth": 1,
+        "numchild": 0,
+        "name": "CERT"
+    }
+},
+{
+    "pk": 1,
+    "model": "incidents.balecategory",
+    "fields": {
+        "category_number": 8,
+        "parent_category": null,
+        "name": "D\u00e9faillance des syst\u00e8mes d\u2019information",
+        "description": ""
+    }
+},
+{
+    "pk": 2,
+    "model": "incidents.balecategory",
+    "fields": {
+        "category_number": 44,
+        "parent_category": null,
+        "name": "D\u00e9faillance des syst\u00e8mes d\u2019information",
+        "description": ""
+    }
+},
+{
+    "pk": 3,
+    "model": "incidents.balecategory",
+    "fields": {
+        "category_number": 0,
+        "parent_category": null,
+        "name": "Other",
+        "description": ""
+    }
+},
+{
+    "pk": 4,
+    "model": "incidents.balecategory",
+    "fields": {
+        "category_number": 7,
+        "parent_category": null,
+        "name": "Pertes des moyens d\u2019exploitation",
+        "description": ""
+    }
+},
+{
+    "pk": 5,
+    "model": "incidents.balecategory",
+    "fields": {
+        "category_number": 5,
+        "parent_category": null,
+        "name": "Fraude et autres activit\u00e9s criminelles",
+        "description": ""
+    }
+},
+{
+    "pk": 6,
+    "model": "incidents.balecategory",
+    "fields": {
+        "category_number": 48,
+        "parent_category": 1,
+        "name": "Faiblesse de la s\u00e9curit\u00e9 logique",
+        "description": "D\u00e9faillance dans les contr\u00f4les d\u2019acc\u00e8s logique au syst\u00e8me (contr\u00f4le des acc\u00e8s utilisateurs, contr\u00f4le des acc\u00e8s au syst\u00e8me, aux applications, contr\u00f4le de l\u2019informatique mobile et t\u00e9l\u00e9travail)"
+    }
+},
+{
+    "pk": 7,
+    "model": "incidents.balecategory",
+    "fields": {
+        "category_number": 44,
+        "parent_category": 1,
+        "name": "D\u00e9faillance de mat\u00e9riel",
+        "description": "Dysfonctionnement d\u00fb \u00e0 l\u2019insuffisance de capacit\u00e9 de stockage du syst\u00e8me, \u00e0 la v\u00e9tust\u00e9 du mat\u00e9riel ;\r\nDysfonctionnement d\u00fb \u00e0 une mise \u00e0 niveau non faite ;\r\nDysfonctionnement d\u00fb \u00e0 l\u2019insuffisance du syst\u00e8me d\u2019architecture ;\r\nDysfonctionnement d\u00fb \u00e0 une maintenance insuffisante ;\r\nPanne mat\u00e9rielle\r\nDestruction accidentelle de mat\u00e9riel : court-circuit, inondation locale, feu, etc,\r\nSupport magn\u00e9tique et \u00e9lectromagn\u00e9tique d\u00e9t\u00e9rior\u00e9 avec le temps\r\nBogue constructeur\r\nMauvais param\u00e9trage du mat\u00e9riel, d\u2019un logiciel syst\u00e8me\r\n"
+    }
+},
+{
+    "pk": 8,
+    "model": "incidents.balecategory",
+    "fields": {
+        "category_number": 38,
+        "parent_category": 5,
+        "name": "Utilisation non autoris\u00e9e/ \u00e0 mauvais escient d'information privil\u00e9gi\u00e9e et confidentielle par le personnel (idem ci-dessus)",
+        "description": "Utilisation d\u2019informations confidentielles\r\nD\u00e9lit d\u2019initi\u00e9\r\nUtilisation illicite d\u2019informations par usurpation de droits et \u00e9l\u00e9vation de privil\u00e8ges.\r\nAtteinte \u00e0 la r\u00e9putation \u2013 d\u00e9gradation d\u2019image\r\n"
+    }
+},
+{
+    "pk": 9,
+    "model": "incidents.balecategory",
+    "fields": {
+        "category_number": 37,
+        "parent_category": 5,
+        "name": "Fraudes sur des transactions par le personnel ou avec sa complicit\u00e9 (collaborateur li\u00e9 par un contrat de travail ou sous traitant li\u00e9 par un contrat de service)",
+        "description": "Transactions fictives sur des comptes client ou des comptes g\u00e9n\u00e9raux.\r\nFraude par modification / ajout / suppression de donn\u00e9es de production (acc\u00e8s direct aux donn\u00e9es de production via ODBC\u2026)\r\nFraude par modification de fonctions applicatives (en d\u00e9veloppement, en mise en production, en exploitation, en maintenance)\r\nFraude par usurpation de droits d\u2019acc\u00e8s\r\nFraude par rejeu de transactions\r\nFraude par alt\u00e9ration du flux inter applicatif, car \u00e9quipements r\u00e9seaux compromis\r\nFraude par \u00e9l\u00e9vation de privil\u00e8ges\r\n"
+    }
+},
+{
+    "pk": 10,
+    "model": "incidents.balecategory",
+    "fields": {
+        "category_number": 36,
+        "parent_category": 5,
+        "name": "Vols par le personnel incluant les prestataires de services et stagiaires",
+        "description": ""
+    }
+},
+{
+    "pk": 11,
+    "model": "incidents.balecategory",
+    "fields": {
+        "category_number": 35,
+        "parent_category": 5,
+        "name": "Vols / escroquerie / fraudes commises par des tiers (sans complicit\u00e9)",
+        "description": ""
+    }
+},
+{
+    "pk": 12,
+    "model": "incidents.balecategory",
+    "fields": {
+        "category_number": 34,
+        "parent_category": 5,
+        "name": "Autres formes d\u2019actes criminels contre les actifs de la banque",
+        "description": ""
+    }
+},
+{
+    "pk": 13,
+    "model": "incidents.balecategory",
+    "fields": {
+        "category_number": 33,
+        "parent_category": 5,
+        "name": "Piratage informatique et autres attaques malveillantes des syst\u00e8mes informatiques de la banque par des tiers",
+        "description": ""
+    }
+},
+{
+    "pk": 1,
+    "model": "incidents.incidentcategory",
+    "fields": {
+        "name": "Phishing",
+        "is_major": true,
+        "bale_subcategory": 11
+    }
+},
+{
+    "pk": 3,
+    "model": "incidents.incidentcategory",
+    "fields": {
+        "name": "Scam (web)",
+        "is_major": true,
+        "bale_subcategory": 11
+    }
+},
+{
+    "pk": 4,
+    "model": "incidents.incidentcategory",
+    "fields": {
+        "name": "Malware",
+        "is_major": true,
+        "bale_subcategory": 11
+    }
+},
+{
+    "pk": 5,
+    "model": "incidents.incidentcategory",
+    "fields": {
+        "name": "Dataleak",
+        "is_major": true,
+        "bale_subcategory": 10
+    }
+},
+{
+    "pk": 6,
+    "model": "incidents.incidentcategory",
+    "fields": {
+        "name": "Cybersquatting",
+        "is_major": false,
+        "bale_subcategory": 11
+    }
+},
+{
+    "pk": 7,
+    "model": "incidents.incidentcategory",
+    "fields": {
+        "name": "Stolen data",
+        "is_major": true,
+        "bale_subcategory": 11
+    }
+},
+{
+    "pk": 8,
+    "model": "incidents.incidentcategory",
+    "fields": {
+        "name": "Scam (msg)",
+        "is_major": false,
+        "bale_subcategory": 11
+    }
+},
+{
+    "pk": 9,
+    "model": "incidents.incidentcategory",
+    "fields": {
+        "name": "Unavailability",
+        "is_major": false,
+        "bale_subcategory": 7
+    }
+},
+{
+    "pk": 10,
+    "model": "incidents.incidentcategory",
+    "fields": {
+        "name": "IS integrity",
+        "is_major": false,
+        "bale_subcategory": 7
+    }
+},
+{
+    "pk": 11,
+    "model": "incidents.incidentcategory",
+    "fields": {
+        "name": "Fraud",
+        "is_major": true,
+        "bale_subcategory": 11
+    }
+},
+{
+    "pk": 12,
+    "model": "incidents.incidentcategory",
+    "fields": {
+        "name": "Compromise",
+        "is_major": true,
+        "bale_subcategory": 13
+    }
+},
+{
+    "pk": 13,
+    "model": "incidents.incidentcategory",
+    "fields": {
+        "name": "Reputation",
+        "is_major": false,
+        "bale_subcategory": 3
+    }
+},
+{
+    "pk": 14,
+    "model": "incidents.incidentcategory",
+    "fields": {
+        "name": "Vulnerability",
+        "is_major": true,
+        "bale_subcategory": 6
+    }
+},
+{
+    "pk": 15,
+    "model": "incidents.incidentcategory",
+    "fields": {
+        "name": "Spam",
+        "is_major": false,
+        "bale_subcategory": 3
+    }
+},
+{
+    "pk": 16,
+    "model": "incidents.incidentcategory",
+    "fields": {
+        "name": "Social Eng.",
+        "is_major": false,
+        "bale_subcategory": 11
+    }
+},
+{
+    "pk": 17,
+    "model": "incidents.incidentcategory",
+    "fields": {
+        "name": "Consulting",
+        "is_major": false,
+        "bale_subcategory": 3
+    }
+},
+{
+    "pk": 18,
+    "model": "incidents.incidentcategory",
+    "fields": {
+        "name": "ThreatIntel",
+        "is_major": false,
+        "bale_subcategory": 3
+    }
+},
+{
+    "pk": 19,
+    "model": "incidents.incidentcategory",
+    "fields": {
+        "name": "Insider",
+        "is_major": true,
+        "bale_subcategory": 9
+    }
+},
+{
+    "pk": 20,
+    "model": "incidents.incidentcategory",
+    "fields": {
+        "name": "Blackmail",
+        "is_major": false,
+        "bale_subcategory": 11
+    }
+},
+{
+    "pk": 21,
+    "model": "incidents.incidentcategory",
+    "fields": {
+        "name": "DoS",
+        "is_major": true,
+        "bale_subcategory": 13
+    }
+},
+{
+    "pk": 22,
+    "model": "incidents.incidentcategory",
+    "fields": {
+        "name": "Scam (tel)",
+        "is_major": false,
+        "bale_subcategory": 11
+    }
+},
+{
+    "pk": 23,
+    "model": "incidents.incidentcategory",
+    "fields": {
+        "name": "Scam (social)",
+        "is_major": false,
+        "bale_subcategory": 11
+    }
+},
+{
+    "pk": 24,
+    "model": "incidents.incidentcategory",
+    "fields": {
+        "name": "Security Assess.",
+        "is_major": false,
+        "bale_subcategory": 3
+    }
+},
+{
+    "pk": 1,
+    "model": "auth.group",
+    "fields": {
+        "name": "Incident handlers",
+        "permissions": [
+            [
+                "handle_incidents",
+                "incidents",
+                "incident"
+            ],
+            [
+                "view_statistics",
+                "incidents",
+                "incident"
+            ],
+            [
+                "view_incidents",
+                "incidents",
+                "incident"
+            ],
+            [
+                "report_events",
+                "incidents",
+                "incident"
+            ]
+        ]
+    }
+},
+{
+    "model": "auth.group",
+    "pk": 2,
+    "fields": {
+        "name": "Event reporters",
+        "permissions": [
+            [
+                "report_events",
+                "incidents",
+                "incident"
+            ]
+        ]
+    }
+},
+{
+    "model": "auth.group",
+    "pk": 3,
+    "fields": {
+        "name": "Statistics and incident viewers",
+        "permissions": [
+            [
+                "view_statistics",
+                "incidents",
+                "incident"
+            ],
+            [
+                "view_incidents",
+                "incidents",
+                "incident"
+            ]
+        ]
+    }
+},
+{
+    "model": "auth.group",
+    "pk": 4,
+    "fields": {
+        "name": "Incident viewers",
+        "permissions": [
+            [
+                "view_incidents",
+                "incidents",
+                "incident"
+            ]
+        ]
+    }
+},
+{
+    "model": "auth.group",
+    "pk": 5,
+    "fields": {
+        "name": "Statistics only viewers",
+        "permissions": [
+            [
+                "view_statistics",
+                "incidents",
+                "incident"
+            ]
+        ]
+    }
+}
+]

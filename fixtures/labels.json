@@ -1,0 +1,203 @@
+/home/richi/git/FIR/static
+[
+{
+  "model": "incidents.label",
+  "pk": 1,
+  "fields": {
+    "name": "DB",
+    "group": 4
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 2,
+  "fields": {
+    "name": "Fail2Ban",
+    "group": 4
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 3,
+  "fields": {
+    "name": "wooxu.com",
+    "group": 2
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 4,
+  "fields": {
+    "name": "Entity",
+    "group": 2
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 5,
+  "fields": {
+    "name": "A",
+    "group": 1
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 6,
+  "fields": {
+    "name": "B",
+    "group": 1
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 7,
+  "fields": {
+    "name": "C",
+    "group": 1
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 8,
+  "fields": {
+    "name": "1",
+    "group": 1
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 9,
+  "fields": {
+    "name": "2",
+    "group": 1
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 10,
+  "fields": {
+    "name": "5",
+    "group": 1
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 11,
+  "fields": {
+    "name": "6",
+    "group": 1
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 12,
+  "fields": {
+    "name": "Opened",
+    "group": 3
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 13,
+  "fields": {
+    "name": "Closed",
+    "group": 3
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 14,
+  "fields": {
+    "name": "Monitor",
+    "group": 3
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 15,
+  "fields": {
+    "name": "Takedown",
+    "group": 3
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 16,
+  "fields": {
+    "name": "Info",
+    "group": 3
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 17,
+  "fields": {
+    "name": "Alerting",
+    "group": 3
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 18,
+  "fields": {
+    "name": "Investigation",
+    "group": 3
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 19,
+  "fields": {
+    "name": "BL",
+    "group": 4
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 20,
+  "fields": {
+    "name": "SOC",
+    "group": 4
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 21,
+  "fields": {
+    "name": "Abuse",
+    "group": 3
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 22,
+  "fields": {
+    "name": "Blocked",
+    "group": 3
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 23,
+  "fields": {
+    "name": "itnmarket.es",
+    "group": 2
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 24,
+  "fields": {
+    "name": "matricula.e-itaca.es",
+    "group": 2
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 25,
+  "fields": {
+    "name": "richardssen.com",
+    "group": 2
+  }
+}
+]

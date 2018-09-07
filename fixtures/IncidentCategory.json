@@ -1,0 +1,219 @@
+/home/richi/git/FIR/static
+[
+{
+  "model": "incidents.incidentcategory",
+  "pk": 1,
+  "fields": {
+    "name": "Phishing",
+    "bale_subcategory": 11,
+    "is_major": true
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 3,
+  "fields": {
+    "name": "Scam (web)",
+    "bale_subcategory": 11,
+    "is_major": true
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 4,
+  "fields": {
+    "name": "Malware",
+    "bale_subcategory": 11,
+    "is_major": true
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 5,
+  "fields": {
+    "name": "Dataleak",
+    "bale_subcategory": 10,
+    "is_major": true
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 6,
+  "fields": {
+    "name": "Cybersquatting",
+    "bale_subcategory": 11,
+    "is_major": false
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 7,
+  "fields": {
+    "name": "Stolen data",
+    "bale_subcategory": 11,
+    "is_major": true
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 8,
+  "fields": {
+    "name": "Scam (msg)",
+    "bale_subcategory": 11,
+    "is_major": false
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 9,
+  "fields": {
+    "name": "Unavailability",
+    "bale_subcategory": 7,
+    "is_major": false
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 10,
+  "fields": {
+    "name": "IS integrity",
+    "bale_subcategory": 7,
+    "is_major": false
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 11,
+  "fields": {
+    "name": "Fraud",
+    "bale_subcategory": 11,
+    "is_major": true
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 12,
+  "fields": {
+    "name": "Compromise",
+    "bale_subcategory": 13,
+    "is_major": true
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 13,
+  "fields": {
+    "name": "Reputation",
+    "bale_subcategory": 3,
+    "is_major": false
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 14,
+  "fields": {
+    "name": "Vulnerability",
+    "bale_subcategory": 6,
+    "is_major": true
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 15,
+  "fields": {
+    "name": "Spam",
+    "bale_subcategory": 3,
+    "is_major": false
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 16,
+  "fields": {
+    "name": "Social Eng.",
+    "bale_subcategory": 11,
+    "is_major": false
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 17,
+  "fields": {
+    "name": "Consulting",
+    "bale_subcategory": 3,
+    "is_major": false
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 18,
+  "fields": {
+    "name": "ThreatIntel",
+    "bale_subcategory": 3,
+    "is_major": false
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 19,
+  "fields": {
+    "name": "Insider",
+    "bale_subcategory": 9,
+    "is_major": true
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 20,
+  "fields": {
+    "name": "Blackmail",
+    "bale_subcategory": 11,
+    "is_major": false
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 21,
+  "fields": {
+    "name": "DoS",
+    "bale_subcategory": 13,
+    "is_major": true
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 22,
+  "fields": {
+    "name": "Scam (tel)",
+    "bale_subcategory": 11,
+    "is_major": false
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 23,
+  "fields": {
+    "name": "Scam (social)",
+    "bale_subcategory": 11,
+    "is_major": false
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 24,
+  "fields": {
+    "name": "Security Assess.",
+    "bale_subcategory": 3,
+    "is_major": false
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 25,
+  "fields": {
+    "name": "Brute Force",
+    "bale_subcategory": 13,
+    "is_major": true
+  }
+}
+]

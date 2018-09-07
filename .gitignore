@@ -1,8 +1,3 @@
-/fir/config/production.py
-/fir/config/prodendev.py
-/fir/config/dev.py
-/fir/config/installed_apps.txt
-fir-env/
 
 # Dev
 db.sqlite3
@@ -16,6 +11,8 @@ __pycache__/
 
 # Distribution / packaging
 .Python
+.settings/
+venv/
 env/
 build/
 develop-eggs/
