@@ -8,7 +8,7 @@ from fir.config.base import *
 ##### Change these values
 ################################################################
 
-ALLOWED_HOSTS = ['wooxu.com','127.0.0.1']
+ALLOWED_HOSTS = ['wooxu.com','127.0.0.1','185.76.77.133']
 
 DATABASES = {
     'default': {
