@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 from __future__ import absolute_import, unicode_literals
 
 import os
@@ -100,7 +102,7 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
+print(STATIC_ROOT)
 ROOT_URLCONF = 'fir.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
@@ -170,7 +172,7 @@ TEMPLATES = [
 ]
 
 # Show incident IDs in views?
-INCIDENT_SHOW_ID = False
+INCIDENT_SHOW_ID = True
 
 # Incident ID prefix in views and links
 INCIDENT_ID_PREFIX = "FID:"
@@ -185,7 +187,7 @@ INCIDENT_VIEWER_CAN_COMMENT = True
 # Escape HTML when displaying markdown
 MARKDOWN_SAFE_MODE = True
 
-ALLOWED_HOSTS = ["127.0.0.1", "10.0.0.194"]
+ALLOWED_HOSTS = ["*","127.0.0.1", "10.0.0.194"]
 
 
 # Allowed HTML tags in Markdown output (requires MARKDOWN_SAFE_MODE to be True)
@@ -227,4 +229,4 @@ USER_SELF_SERVICE = {
 NOTIFICATIONS_DISABLED_EVENTS = ()
 
 # Send 'incident:*' notification events for both Event and Incident if True
-NOTIFICATIONS_MERGE_INCIDENTS_AND_EVENTS = False
+NOTIFICATIONS_MERGE_INCIDENTS_AND_EVENTS = True

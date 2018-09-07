@@ -1,0 +1,48 @@
+.nugget_timestamp i {
+	margin-top:-1px;
+	margin-left:5px;
+	margin-right:5px;
+}
+
+.nugget {
+	margin: 0 20px 40px 20px;
+}
+
+#addNugget #date_control_group, #start_timestamp_control_group , #end_timestamp_control_group {
+	float: left;
+}
+
+#addNugget #id_date, #id_start_timestamp, #id_end_timestamp {
+	width: 150px;
+}
+
+#id_interpretation, #id_raw_data {
+	width: 99%;
+}
+
+#id_source {
+	width: 250px;
+}
+
+.nugget_timestamp {
+	width: 230px;
+}
+
+.edit-nugget-row, .delete-nugget-row {
+	width: 40px;
+}
+
+#nugget_modals .form-group {
+	margin: 0 10px 0 5px;
+}
+
+#nugget_modals .form-group input,
+#nugget_modals .form-group textarea {
+	font-size: 11px;
+	padding-left: 5px;
+	padding-right: 5px;
+}
+
+.nugget_interpretation {
+	white-space: pre;
+}

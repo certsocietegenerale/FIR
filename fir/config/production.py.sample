@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 # This is the production settings !
 # All settings that do not change across environments should be in 'fir.settings.base'
 from fir.config.base import *
@@ -6,37 +8,41 @@ from fir.config.base import *
 ##### Change these values
 ################################################################
 
-ALLOWED_HOSTS = ['FIR.DOMAIN.COM']
+ALLOWED_HOSTS = ['wooxu.com','*']
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'fir',
-        'USER': 'fir',
-        'PASSWORD': '',
-        'HOST': '',
-        'PORT': '',
+        'NAME': 'softkrates_FIR',
+        'USER': 'softkrates_fir',
+        'PASSWORD': '25000-Peladillas',
+        'HOST': '127.0.0.1',
+        'PORT': '3306',
     }
 }
 
+
+
+
 # SMTP SETTINGS
-EMAIL_HOST = 'SMTP.DOMAIN.COM'
+EMAIL_HOST = '127.0.0.1'
 EMAIL_PORT = 25
 
 # Uncomment this line to set a different reply-to address when sending alerts
 # REPLY_TO = other@address.com
-EMAIL_FROM = '"NAME" <address@email>'
+EMAIL_FROM = '"FIR root@wooxu.com" <root@wooxu.com>'
 
 # Uncomment these lines if you want additional CC or BCC for all sent emails
-# EMAIL_CC = ['address@email']
+EMAIL_CC = ['richardssen@icloud.com']
 # EMAIL_BCC = ['address@email']
 
 # SECRET KEY
-SECRET_KEY = 'CHANGE_DUMMY_KEY_PLEASE'
+SECRET_KEY = 'asdfdfñl345,g83kdfsñ3459dfgk4569045kdfgñg893456t_PLEASE'
+
 
 ################################################################
 
-DEBUG = False
+DEBUG = True
 TEMPLATES[0]['OPTIONS']['debug'] = DEBUG
 
 # List of callables that know how to import templates from various sources.
@@ -73,4 +79,4 @@ LOGGING = {
 }
 
 # External URL of your FIR application (used in fir_notification to render full URIs in templates)
-EXTERNAL_URL = 'http://fir.example.com'
+EXTERNAL_URL = 'http://wooxu.com'

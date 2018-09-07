@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # This file contains development specific settings
 # Base settings should go to settings/base.py
 # Production settings should go to settings/production.py
@@ -25,7 +26,7 @@ TEMPLATES[0]['OPTIONS']['loaders'] = (
 )
 
 # Dummy key for development
-SECRET_KEY = 'DUMMY_KEY_FOR_DEVELOPMENT_DO_NOT_USE_IN_PRODUCTION'
+SECRET_KEY = 'sdfasdf234234234234ñlklñkñlkds2345k2354jkl234j523kljkjlkj234l5fsdfs9'
 
 # Default REDIS configuration when using fir_celery
 REDIS_HOST = os.environ.get('REDIS_PORT_6379_TCP_ADDR', 'localhost')
@@ -33,6 +34,6 @@ REDIS_PORT = 6379
 REDIS_DB = 0
 
 try:
-    from fir.config.dev import *
+    from fir.config.production import *
 except ImportError:
     pass

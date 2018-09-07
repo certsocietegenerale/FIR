@@ -1,0 +1,1455 @@
+[
+{
+  "model": "contenttypes.contenttype",
+  "pk": 1,
+  "fields": {
+    "app_label": "incidents",
+    "model": "incident"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 2,
+  "fields": {
+    "app_label": "auth",
+    "model": "group"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 3,
+  "fields": {
+    "app_label": "auth",
+    "model": "permission"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 4,
+  "fields": {
+    "app_label": "auth",
+    "model": "user"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 5,
+  "fields": {
+    "app_label": "contenttypes",
+    "model": "contenttype"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 6,
+  "fields": {
+    "app_label": "sessions",
+    "model": "session"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 7,
+  "fields": {
+    "app_label": "sites",
+    "model": "site"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 8,
+  "fields": {
+    "app_label": "admin",
+    "model": "logentry"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 9,
+  "fields": {
+    "app_label": "authtoken",
+    "model": "token"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 10,
+  "fields": {
+    "app_label": "incidents",
+    "model": "attribute"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 11,
+  "fields": {
+    "app_label": "incidents",
+    "model": "log"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 12,
+  "fields": {
+    "app_label": "incidents",
+    "model": "comments"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 13,
+  "fields": {
+    "app_label": "incidents",
+    "model": "validattribute"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 14,
+  "fields": {
+    "app_label": "incidents",
+    "model": "incidenttemplate"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 15,
+  "fields": {
+    "app_label": "incidents",
+    "model": "label"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 16,
+  "fields": {
+    "app_label": "incidents",
+    "model": "balecategory"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 17,
+  "fields": {
+    "app_label": "incidents",
+    "model": "businessline"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 18,
+  "fields": {
+    "app_label": "incidents",
+    "model": "profile"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 19,
+  "fields": {
+    "app_label": "incidents",
+    "model": "accesscontrolentry"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 20,
+  "fields": {
+    "app_label": "incidents",
+    "model": "incidentcategory"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 21,
+  "fields": {
+    "app_label": "incidents",
+    "model": "labelgroup"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 22,
+  "fields": {
+    "app_label": "fir_artifacts",
+    "model": "artifactblacklistitem"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 23,
+  "fields": {
+    "app_label": "fir_artifacts",
+    "model": "artifact"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 24,
+  "fields": {
+    "app_label": "fir_artifacts",
+    "model": "file"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 25,
+  "fields": {
+    "app_label": "fir_alerting",
+    "model": "categorytemplate"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 26,
+  "fields": {
+    "app_label": "fir_alerting",
+    "model": "recipienttemplate"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 27,
+  "fields": {
+    "app_label": "fir_todos",
+    "model": "todoitem"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 28,
+  "fields": {
+    "app_label": "fir_todos",
+    "model": "todolisttemplate"
+  }
+},
+{
+  "model": "contenttypes.contenttype",
+  "pk": 29,
+  "fields": {
+    "app_label": "fir_nuggets",
+    "model": "nugget"
+  }
+},
+{
+  "model": "sites.site",
+  "pk": 1,
+  "fields": {
+    "domain": "wooxu.com",
+    "name": "wooxu.com"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 1,
+  "fields": {
+    "action_time": "2018-09-07T14:05:42",
+    "user": 1,
+    "content_type": 15,
+    "object_id": "3",
+    "object_repr": "wooxu.com",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"name\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 2,
+  "fields": {
+    "action_time": "2018-09-07T14:05:51",
+    "user": 1,
+    "content_type": 15,
+    "object_id": "23",
+    "object_repr": "itnmarket.es",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 3,
+  "fields": {
+    "action_time": "2018-09-07T14:06:07",
+    "user": 1,
+    "content_type": 15,
+    "object_id": "24",
+    "object_repr": "matricula.e-itaca.es",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 4,
+  "fields": {
+    "action_time": "2018-09-07T14:06:21",
+    "user": 1,
+    "content_type": 15,
+    "object_id": "25",
+    "object_repr": "richardssen.com",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 5,
+  "fields": {
+    "action_time": "2018-09-07T14:09:45",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "3",
+    "object_repr": "richi",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}, {\"added\": {\"object\": \"richi is Event reporters on CERT\", \"name\": \"access control entry\"}}, {\"added\": {\"object\": \"richi is Incident handlers on CERT\", \"name\": \"access control entry\"}}, {\"added\": {\"object\": \"richi is Incident viewers on CERT\", \"name\": \"access control entry\"}}, {\"added\": {\"object\": \"richi is Statistics and incident viewers on CERT\", \"name\": \"access control entry\"}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 6,
+  "fields": {
+    "action_time": "2018-09-07T14:24:13",
+    "user": 1,
+    "content_type": 4,
+    "object_id": "3",
+    "object_repr": "richi",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"first_name\", \"last_name\", \"email\", \"is_staff\", \"is_superuser\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 7,
+  "fields": {
+    "action_time": "2018-09-07T14:25:38",
+    "user": 1,
+    "content_type": 20,
+    "object_id": "25",
+    "object_repr": "Brute Force",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 8,
+  "fields": {
+    "action_time": "2018-09-07T14:26:34",
+    "user": 1,
+    "content_type": 17,
+    "object_id": "2",
+    "object_repr": "SSH",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"name\", \"_ref_node_id\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 9,
+  "fields": {
+    "action_time": "2018-09-07T14:27:03",
+    "user": 1,
+    "content_type": 15,
+    "object_id": "2",
+    "object_repr": "Fail2Ban",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"name\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 10,
+  "fields": {
+    "action_time": "2018-09-07T14:29:31",
+    "user": 1,
+    "content_type": 15,
+    "object_id": "3",
+    "object_repr": "wooxu.com",
+    "action_flag": 2,
+    "change_message": "[]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 11,
+  "fields": {
+    "action_time": "2018-09-07T14:29:46",
+    "user": 1,
+    "content_type": 15,
+    "object_id": "1",
+    "object_repr": "DB",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"name\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 12,
+  "fields": {
+    "action_time": "2018-09-07T14:30:16",
+    "user": 1,
+    "content_type": 17,
+    "object_id": "5",
+    "object_repr": "DB",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"name\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 13,
+  "fields": {
+    "action_time": "2018-09-07T14:30:37",
+    "user": 1,
+    "content_type": 17,
+    "object_id": "4",
+    "object_repr": "FTP",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"name\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 14,
+  "fields": {
+    "action_time": "2018-09-07T14:31:07",
+    "user": 1,
+    "content_type": 17,
+    "object_id": "6",
+    "object_repr": "VESTA",
+    "action_flag": 1,
+    "change_message": "[{\"added\": {}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 15,
+  "fields": {
+    "action_time": "2018-09-07T14:31:52",
+    "user": 1,
+    "content_type": 17,
+    "object_id": "3",
+    "object_repr": "MAIL",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"name\", \"_position\", \"_ref_node_id\"]}}]"
+  }
+},
+{
+  "model": "admin.logentry",
+  "pk": 16,
+  "fields": {
+    "action_time": "2018-09-07T14:31:59",
+    "user": 1,
+    "content_type": 17,
+    "object_id": "6",
+    "object_repr": "VESTA",
+    "action_flag": 2,
+    "change_message": "[{\"changed\": {\"fields\": [\"_position\", \"_ref_node_id\"]}}]"
+  }
+},
+{
+  "model": "incidents.profile",
+  "pk": 2,
+  "fields": {
+    "user": 1,
+    "incident_number": 50,
+    "hide_closed": false
+  }
+},
+{
+  "model": "incidents.log",
+  "pk": 1,
+  "fields": {
+    "who": 3,
+    "what": "Created incident",
+    "when": "2018-09-07T14:25:44",
+    "incident": 1,
+    "comment": null
+  }
+},
+{
+  "model": "incidents.log",
+  "pk": 2,
+  "fields": {
+    "who": 3,
+    "what": "Edit incident",
+    "when": "2018-09-07T14:25:44",
+    "incident": 1,
+    "comment": null
+  }
+},
+{
+  "model": "incidents.log",
+  "pk": 3,
+  "fields": {
+    "who": 3,
+    "what": "Created incident",
+    "when": "2018-09-07T14:27:53",
+    "incident": 2,
+    "comment": null
+  }
+},
+{
+  "model": "incidents.log",
+  "pk": 4,
+  "fields": {
+    "who": 3,
+    "what": "Edit incident",
+    "when": "2018-09-07T14:27:53",
+    "incident": 2,
+    "comment": null
+  }
+},
+{
+  "model": "incidents.log",
+  "pk": 5,
+  "fields": {
+    "who": 3,
+    "what": "Created incident",
+    "when": "2018-09-07T14:29:07",
+    "incident": 3,
+    "comment": null
+  }
+},
+{
+  "model": "incidents.log",
+  "pk": 6,
+  "fields": {
+    "who": 3,
+    "what": "Edit incident",
+    "when": "2018-09-07T14:29:07",
+    "incident": 3,
+    "comment": null
+  }
+},
+{
+  "model": "incidents.log",
+  "pk": 7,
+  "fields": {
+    "who": 3,
+    "what": "Created incident",
+    "when": "2018-09-07T14:31:13",
+    "incident": 4,
+    "comment": null
+  }
+},
+{
+  "model": "incidents.log",
+  "pk": 8,
+  "fields": {
+    "who": 3,
+    "what": "Edit incident",
+    "when": "2018-09-07T14:31:13",
+    "incident": 4,
+    "comment": null
+  }
+},
+{
+  "model": "incidents.log",
+  "pk": 9,
+  "fields": {
+    "who": 3,
+    "what": "Created incident",
+    "when": "2018-09-07T14:31:28",
+    "incident": 5,
+    "comment": null
+  }
+},
+{
+  "model": "incidents.log",
+  "pk": 10,
+  "fields": {
+    "who": 3,
+    "what": "Edit incident",
+    "when": "2018-09-07T14:31:28",
+    "incident": 5,
+    "comment": null
+  }
+},
+{
+  "model": "incidents.labelgroup",
+  "pk": 1,
+  "fields": {
+    "name": "plan"
+  }
+},
+{
+  "model": "incidents.labelgroup",
+  "pk": 2,
+  "fields": {
+    "name": "actor"
+  }
+},
+{
+  "model": "incidents.labelgroup",
+  "pk": 3,
+  "fields": {
+    "name": "action"
+  }
+},
+{
+  "model": "incidents.labelgroup",
+  "pk": 4,
+  "fields": {
+    "name": "detection"
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 1,
+  "fields": {
+    "name": "DB",
+    "group": 4
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 2,
+  "fields": {
+    "name": "Fail2Ban",
+    "group": 4
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 3,
+  "fields": {
+    "name": "wooxu.com",
+    "group": 2
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 4,
+  "fields": {
+    "name": "Entity",
+    "group": 2
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 5,
+  "fields": {
+    "name": "A",
+    "group": 1
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 6,
+  "fields": {
+    "name": "B",
+    "group": 1
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 7,
+  "fields": {
+    "name": "C",
+    "group": 1
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 8,
+  "fields": {
+    "name": "1",
+    "group": 1
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 9,
+  "fields": {
+    "name": "2",
+    "group": 1
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 10,
+  "fields": {
+    "name": "5",
+    "group": 1
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 11,
+  "fields": {
+    "name": "6",
+    "group": 1
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 12,
+  "fields": {
+    "name": "Opened",
+    "group": 3
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 13,
+  "fields": {
+    "name": "Closed",
+    "group": 3
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 14,
+  "fields": {
+    "name": "Monitor",
+    "group": 3
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 15,
+  "fields": {
+    "name": "Takedown",
+    "group": 3
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 16,
+  "fields": {
+    "name": "Info",
+    "group": 3
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 17,
+  "fields": {
+    "name": "Alerting",
+    "group": 3
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 18,
+  "fields": {
+    "name": "Investigation",
+    "group": 3
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 19,
+  "fields": {
+    "name": "BL",
+    "group": 4
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 20,
+  "fields": {
+    "name": "SOC",
+    "group": 4
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 21,
+  "fields": {
+    "name": "Abuse",
+    "group": 3
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 22,
+  "fields": {
+    "name": "Blocked",
+    "group": 3
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 23,
+  "fields": {
+    "name": "itnmarket.es",
+    "group": 2
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 24,
+  "fields": {
+    "name": "matricula.e-itaca.es",
+    "group": 2
+  }
+},
+{
+  "model": "incidents.label",
+  "pk": 25,
+  "fields": {
+    "name": "richardssen.com",
+    "group": 2
+  }
+},
+{
+  "model": "incidents.businessline",
+  "pk": 1,
+  "fields": {
+    "path": "0005",
+    "depth": 1,
+    "numchild": 0,
+    "name": "Demo BusinessLine 1"
+  }
+},
+{
+  "model": "incidents.businessline",
+  "pk": 2,
+  "fields": {
+    "path": "0002",
+    "depth": 1,
+    "numchild": 0,
+    "name": "SSH"
+  }
+},
+{
+  "model": "incidents.businessline",
+  "pk": 3,
+  "fields": {
+    "path": "0003",
+    "depth": 1,
+    "numchild": 0,
+    "name": "MAIL"
+  }
+},
+{
+  "model": "incidents.businessline",
+  "pk": 4,
+  "fields": {
+    "path": "0006",
+    "depth": 1,
+    "numchild": 0,
+    "name": "FTP"
+  }
+},
+{
+  "model": "incidents.businessline",
+  "pk": 5,
+  "fields": {
+    "path": "0004",
+    "depth": 1,
+    "numchild": 0,
+    "name": "DB"
+  }
+},
+{
+  "model": "incidents.businessline",
+  "pk": 6,
+  "fields": {
+    "path": "0001",
+    "depth": 1,
+    "numchild": 0,
+    "name": "VESTA"
+  }
+},
+{
+  "model": "incidents.accesscontrolentry",
+  "pk": 1,
+  "fields": {
+    "user": 3,
+    "business_line": 5,
+    "role": 2
+  }
+},
+{
+  "model": "incidents.accesscontrolentry",
+  "pk": 2,
+  "fields": {
+    "user": 3,
+    "business_line": 5,
+    "role": 1
+  }
+},
+{
+  "model": "incidents.accesscontrolentry",
+  "pk": 3,
+  "fields": {
+    "user": 3,
+    "business_line": 5,
+    "role": 4
+  }
+},
+{
+  "model": "incidents.accesscontrolentry",
+  "pk": 4,
+  "fields": {
+    "user": 3,
+    "business_line": 5,
+    "role": 3
+  }
+},
+{
+  "model": "incidents.balecategory",
+  "pk": 1,
+  "fields": {
+    "name": "D\u00e9faillance des syst\u00e8mes d\u2019information",
+    "description": "",
+    "category_number": 8,
+    "parent_category": null
+  }
+},
+{
+  "model": "incidents.balecategory",
+  "pk": 2,
+  "fields": {
+    "name": "D\u00e9faillance des syst\u00e8mes d\u2019information",
+    "description": "",
+    "category_number": 44,
+    "parent_category": null
+  }
+},
+{
+  "model": "incidents.balecategory",
+  "pk": 3,
+  "fields": {
+    "name": "Other",
+    "description": "",
+    "category_number": 0,
+    "parent_category": null
+  }
+},
+{
+  "model": "incidents.balecategory",
+  "pk": 4,
+  "fields": {
+    "name": "Pertes des moyens d\u2019exploitation",
+    "description": "",
+    "category_number": 7,
+    "parent_category": null
+  }
+},
+{
+  "model": "incidents.balecategory",
+  "pk": 5,
+  "fields": {
+    "name": "Fraude et autres activit\u00e9s criminelles",
+    "description": "",
+    "category_number": 5,
+    "parent_category": null
+  }
+},
+{
+  "model": "incidents.balecategory",
+  "pk": 6,
+  "fields": {
+    "name": "Faiblesse de la s\u00e9curit\u00e9 logique",
+    "description": "D\u00e9faillance dans les contr\u00f4les d\u2019acc\u00e8s logique au syst\u00e8me (contr\u00f4le des acc\u00e8s utilisateurs, contr\u00f4le des acc\u00e8s au syst\u00e8me, aux applications, contr\u00f4le de l\u2019informatique mobile et t\u00e9l\u00e9travail)",
+    "category_number": 48,
+    "parent_category": 1
+  }
+},
+{
+  "model": "incidents.balecategory",
+  "pk": 7,
+  "fields": {
+    "name": "D\u00e9faillance de mat\u00e9riel",
+    "description": "Dysfonctionnement d\u00fb \u00e0 l\u2019insuffisance de capacit\u00e9 de stockage du syst\u00e8me, \u00e0 la v\u00e9tust\u00e9 du mat\u00e9riel ;\r\nDysfonctionnement d\u00fb \u00e0 une mise \u00e0 niveau non faite ;\r\nDysfonctionnement d\u00fb \u00e0 l\u2019insuffisance du syst\u00e8me d\u2019architecture ;\r\nDysfonctionnement d\u00fb \u00e0 une maintenance insuffisante ;\r\nPanne mat\u00e9rielle\r\nDestruction accidentelle de mat\u00e9riel : court-circuit, inondation locale, feu, etc,\r\nSupport magn\u00e9tique et \u00e9lectromagn\u00e9tique d\u00e9t\u00e9rior\u00e9 avec le temps\r\nBogue constructeur\r\nMauvais param\u00e9trage du mat\u00e9riel, d\u2019un logiciel syst\u00e8me\r\n",
+    "category_number": 44,
+    "parent_category": 1
+  }
+},
+{
+  "model": "incidents.balecategory",
+  "pk": 8,
+  "fields": {
+    "name": "Utilisation non autoris\u00e9e/ \u00e0 mauvais escient d'information privil\u00e9gi\u00e9e et confidentielle par le personnel (idem ci-dessus)",
+    "description": "Utilisation d\u2019informations confidentielles\r\nD\u00e9lit d\u2019initi\u00e9\r\nUtilisation illicite d\u2019informations par usurpation de droits et \u00e9l\u00e9vation de privil\u00e8ges.\r\nAtteinte \u00e0 la r\u00e9putation \u2013 d\u00e9gradation d\u2019image\r\n",
+    "category_number": 38,
+    "parent_category": 5
+  }
+},
+{
+  "model": "incidents.balecategory",
+  "pk": 9,
+  "fields": {
+    "name": "Fraudes sur des transactions par le personnel ou avec sa complicit\u00e9 (collaborateur li\u00e9 par un contrat de travail ou sous traitant li\u00e9 par un contrat de service)",
+    "description": "Transactions fictives sur des comptes client ou des comptes g\u00e9n\u00e9raux.\r\nFraude par modification / ajout / suppression de donn\u00e9es de production (acc\u00e8s direct aux donn\u00e9es de production via ODBC\u2026)\r\nFraude par modification de fonctions applicatives (en d\u00e9veloppement, en mise en production, en exploitation, en maintenance)\r\nFraude par usurpation de droits d\u2019acc\u00e8s\r\nFraude par rejeu de transactions\r\nFraude par alt\u00e9ration du flux inter applicatif, car \u00e9quipements r\u00e9seaux compromis\r\nFraude par \u00e9l\u00e9vation de privil\u00e8ges\r\n",
+    "category_number": 37,
+    "parent_category": 5
+  }
+},
+{
+  "model": "incidents.balecategory",
+  "pk": 10,
+  "fields": {
+    "name": "Vols par le personnel incluant les prestataires de services et stagiaires",
+    "description": "",
+    "category_number": 36,
+    "parent_category": 5
+  }
+},
+{
+  "model": "incidents.balecategory",
+  "pk": 11,
+  "fields": {
+    "name": "Vols / escroquerie / fraudes commises par des tiers (sans complicit\u00e9)",
+    "description": "",
+    "category_number": 35,
+    "parent_category": 5
+  }
+},
+{
+  "model": "incidents.balecategory",
+  "pk": 12,
+  "fields": {
+    "name": "Autres formes d\u2019actes criminels contre les actifs de la banque",
+    "description": "",
+    "category_number": 34,
+    "parent_category": 5
+  }
+},
+{
+  "model": "incidents.balecategory",
+  "pk": 13,
+  "fields": {
+    "name": "Piratage informatique et autres attaques malveillantes des syst\u00e8mes informatiques de la banque par des tiers",
+    "description": "",
+    "category_number": 33,
+    "parent_category": 5
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 1,
+  "fields": {
+    "name": "Phishing",
+    "bale_subcategory": 11,
+    "is_major": true
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 3,
+  "fields": {
+    "name": "Scam (web)",
+    "bale_subcategory": 11,
+    "is_major": true
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 4,
+  "fields": {
+    "name": "Malware",
+    "bale_subcategory": 11,
+    "is_major": true
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 5,
+  "fields": {
+    "name": "Dataleak",
+    "bale_subcategory": 10,
+    "is_major": true
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 6,
+  "fields": {
+    "name": "Cybersquatting",
+    "bale_subcategory": 11,
+    "is_major": false
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 7,
+  "fields": {
+    "name": "Stolen data",
+    "bale_subcategory": 11,
+    "is_major": true
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 8,
+  "fields": {
+    "name": "Scam (msg)",
+    "bale_subcategory": 11,
+    "is_major": false
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 9,
+  "fields": {
+    "name": "Unavailability",
+    "bale_subcategory": 7,
+    "is_major": false
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 10,
+  "fields": {
+    "name": "IS integrity",
+    "bale_subcategory": 7,
+    "is_major": false
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 11,
+  "fields": {
+    "name": "Fraud",
+    "bale_subcategory": 11,
+    "is_major": true
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 12,
+  "fields": {
+    "name": "Compromise",
+    "bale_subcategory": 13,
+    "is_major": true
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 13,
+  "fields": {
+    "name": "Reputation",
+    "bale_subcategory": 3,
+    "is_major": false
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 14,
+  "fields": {
+    "name": "Vulnerability",
+    "bale_subcategory": 6,
+    "is_major": true
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 15,
+  "fields": {
+    "name": "Spam",
+    "bale_subcategory": 3,
+    "is_major": false
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 16,
+  "fields": {
+    "name": "Social Eng.",
+    "bale_subcategory": 11,
+    "is_major": false
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 17,
+  "fields": {
+    "name": "Consulting",
+    "bale_subcategory": 3,
+    "is_major": false
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 18,
+  "fields": {
+    "name": "ThreatIntel",
+    "bale_subcategory": 3,
+    "is_major": false
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 19,
+  "fields": {
+    "name": "Insider",
+    "bale_subcategory": 9,
+    "is_major": true
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 20,
+  "fields": {
+    "name": "Blackmail",
+    "bale_subcategory": 11,
+    "is_major": false
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 21,
+  "fields": {
+    "name": "DoS",
+    "bale_subcategory": 13,
+    "is_major": true
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 22,
+  "fields": {
+    "name": "Scam (tel)",
+    "bale_subcategory": 11,
+    "is_major": false
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 23,
+  "fields": {
+    "name": "Scam (social)",
+    "bale_subcategory": 11,
+    "is_major": false
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 24,
+  "fields": {
+    "name": "Security Assess.",
+    "bale_subcategory": 3,
+    "is_major": false
+  }
+},
+{
+  "model": "incidents.incidentcategory",
+  "pk": 25,
+  "fields": {
+    "name": "Brute Force",
+    "bale_subcategory": 13,
+    "is_major": true
+  }
+},
+{
+  "model": "incidents.incident",
+  "pk": 1,
+  "fields": {
+    "date": "2018-09-07T14:25:44",
+    "is_starred": false,
+    "subject": "TEST.COM > 192.168.12.1",
+    "description": "TEST.COM\nSSH",
+    "category": 25,
+    "detection": 2,
+    "severity": 1,
+    "is_incident": true,
+    "is_major": false,
+    "actor": 23,
+    "plan": 5,
+    "status": "O",
+    "opened_by": 3,
+    "confidentiality": 1,
+    "concerned_business_lines": [
+      2
+    ],
+    "main_business_lines": [
+      1
+    ],
+    "artifacts": [
+      1
+    ]
+  }
+},
+{
+  "model": "incidents.incident",
+  "pk": 2,
+  "fields": {
+    "date": "2018-09-07T14:27:53",
+    "is_starred": false,
+    "subject": "TEST.COM > 192.168.12.1",
+    "description": "TEST.COM\nFTP",
+    "category": 25,
+    "detection": 2,
+    "severity": 1,
+    "is_incident": true,
+    "is_major": false,
+    "actor": 23,
+    "plan": 5,
+    "status": "O",
+    "opened_by": 3,
+    "confidentiality": 1,
+    "concerned_business_lines": [
+      4
+    ],
+    "main_business_lines": [
+      4
+    ],
+    "artifacts": [
+      1
+    ]
+  }
+},
+{
+  "model": "incidents.incident",
+  "pk": 3,
+  "fields": {
+    "date": "2018-09-07T14:29:07",
+    "is_starred": false,
+    "subject": "wooxu.com > 192.168.12.1",
+    "description": "wooxu.com\nDB",
+    "category": 25,
+    "detection": 2,
+    "severity": 1,
+    "is_incident": true,
+    "is_major": false,
+    "actor": 3,
+    "plan": 5,
+    "status": "O",
+    "opened_by": 3,
+    "confidentiality": 1,
+    "concerned_business_lines": [
+      5
+    ],
+    "main_business_lines": [
+      5
+    ],
+    "artifacts": [
+      2
+    ]
+  }
+},
+{
+  "model": "incidents.incident",
+  "pk": 4,
+  "fields": {
+    "date": "2018-09-07T14:31:13",
+    "is_starred": false,
+    "subject": "wooxu.com > 192.168.12.1",
+    "description": "wooxu.com\nVESTA",
+    "category": 25,
+    "detection": 2,
+    "severity": 1,
+    "is_incident": true,
+    "is_major": false,
+    "actor": 3,
+    "plan": 5,
+    "status": "O",
+    "opened_by": 3,
+    "confidentiality": 1,
+    "concerned_business_lines": [
+      6
+    ],
+    "main_business_lines": [
+      6
+    ],
+    "artifacts": [
+      2
+    ]
+  }
+},
+{
+  "model": "incidents.incident",
+  "pk": 5,
+  "fields": {
+    "date": "2018-09-07T14:31:28",
+    "is_starred": false,
+    "subject": "wooxu.com > 192.168.12.1",
+    "description": "wooxu.com\nMAIL",
+    "category": 25,
+    "detection": 2,
+    "severity": 1,
+    "is_incident": true,
+    "is_major": false,
+    "actor": 3,
+    "plan": 5,
+    "status": "O",
+    "opened_by": 3,
+    "confidentiality": 1,
+    "concerned_business_lines": [
+      3
+    ],
+    "main_business_lines": [
+      1
+    ],
+    "artifacts": [
+      2
+    ]
+  }
+},
+{
+  "model": "incidents.comments",
+  "pk": 1,
+  "fields": {
+    "date": "2017-02-17T09:55:56",
+    "comment": "Incident opened",
+    "action": 12,
+    "incident": 1,
+    "opened_by": 3
+  }
+},
+{
+  "model": "incidents.comments",
+  "pk": 2,
+  "fields": {
+    "date": "2017-02-17T09:55:56",
+    "comment": "Incident opened",
+    "action": 12,
+    "incident": 2,
+    "opened_by": 3
+  }
+},
+{
+  "model": "incidents.comments",
+  "pk": 3,
+  "fields": {
+    "date": "2017-02-17T09:55:56",
+    "comment": "Incident opened",
+    "action": 12,
+    "incident": 3,
+    "opened_by": 3
+  }
+},
+{
+  "model": "incidents.comments",
+  "pk": 4,
+  "fields": {
+    "date": "2017-02-17T09:55:56",
+    "comment": "Incident opened",
+    "action": 12,
+    "incident": 4,
+    "opened_by": 3
+  }
+},
+{
+  "model": "incidents.comments",
+  "pk": 5,
+  "fields": {
+    "date": "2017-02-17T09:55:56",
+    "comment": "Incident opened",
+    "action": 12,
+    "incident": 5,
+    "opened_by": 3
+  }
+},
+{
+  "model": "fir_artifacts.artifact",
+  "pk": 1,
+  "fields": {
+    "type": "hostname",
+    "value": "test.com"
+  }
+},
+{
+  "model": "fir_artifacts.artifact",
+  "pk": 2,
+  "fields": {
+    "type": "hostname",
+    "value": "wooxu.com"
+  }
+}
+]

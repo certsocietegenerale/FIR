@@ -72,3 +72,4 @@ venv/
 
 # vim swap files
 *.swp
+/.project

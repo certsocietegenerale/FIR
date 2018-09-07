@@ -1,0 +1,5 @@
+p.deletelink-box a.deletelink {
+    box-sizing: initial;
+    -webkit-box-sizing: initial;
+    -moz-box-sizing: initial;
+}
