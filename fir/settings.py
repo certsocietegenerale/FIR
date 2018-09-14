@@ -15,6 +15,7 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+ALLOWED_HOSTS = ['*']
 
 # Do not send real emails, print them to the console instead:
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -34,6 +35,6 @@ REDIS_PORT = 6379
 REDIS_DB = 0
 
 try:
-    from fir.config.production import *
+    from fir.config.dev import *
 except ImportError:
     pass

@@ -13,8 +13,8 @@ ALLOWED_HOSTS = ['wooxu.com','127.0.0.1','185.76.77.133']
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'softkrates_FIR',
-        'USER': 'softkrates_fir',
+        'NAME': 'softkrates_fir',
+        'USER': 'softkrates_db',
         'PASSWORD': '25000-Peladillas',
         'HOST': '127.0.0.1',
         'PORT': '3306',
