@@ -1,7 +1,8 @@
 
 # Dev
 db.sqlite3
-
+static/*,*
+static
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
