@@ -1,0 +1,8 @@
+[sshd]
+enabled = true
+port = ssh
+#action = firewallcmd-ipset
+banaction = iptables-allports
+logpath = %(sshd_log)s
+maxretry = 5
+bantime = 86400
