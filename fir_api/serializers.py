@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from incidents.models import Incident, Artifact, Label, File, IncidentCategory, BusinessLine
+from incidents.models import Incident, Artifact, Label, File, IncidentCategory, BusinessLine, Comments
 
 
 # serializes data from the FIR User model
@@ -44,6 +44,23 @@ class FileSerializer(serializers.ModelSerializer):
         depth = 2
 
 
+# FIR Comment Model
+
+class CommentsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Comments
+        fields = ('id', 'comment', 'incident', 'opened_by', 'date', 'action')
+        read_only_fields = ('id', 'opened_by')
+
+
+# FIR Label Model
+
+class LabelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Label
+        read_only_fields = ('id',)
+
+
 # FIR Incident model
 
 class IncidentSerializer(serializers.ModelSerializer):
@@ -51,6 +68,7 @@ class IncidentSerializer(serializers.ModelSerializer):
     actor = serializers.PrimaryKeyRelatedField(queryset=Label.objects.filter(group__name='actor'))
     plan = serializers.PrimaryKeyRelatedField(queryset=Label.objects.filter(group__name='plan'))
     file_set = AttachedFileSerializer(many=True, read_only=True)
+    comments_set = CommentsSerializer(many=True, read_only=True)
 
     class Meta:
         model = Incident
