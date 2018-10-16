@@ -37,9 +37,16 @@ class IncidentViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows creation of, viewing, and closing of incidents
     """
-    queryset = Incident.objects.all()
     serializer_class = IncidentSerializer
     permission_classes = (IsAuthenticated, IsIncidentHandler)
+
+    def get_queryset(self):
+        queryset = Incident.objects.all()
+        status = self.request.query_params.get('status', None)
+        if status is not None:
+            queryset = queryset.filter(status=status)
+
+        return queryset
 
     def perform_create(self, serializer):
         instance = serializer.save(opened_by=self.request.user)

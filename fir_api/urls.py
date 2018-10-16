@@ -8,8 +8,9 @@ from fir_api import views
 # include login URLs for the browsable API.
 router = routers.DefaultRouter(trailing_slash=False)
 
-router.register(r'users', views.UserViewSet)
-router.register(r'incidents', views.IncidentViewSet)
+router.register(r'users', views.UserViewSet) 
+# base_name needed when using get_queryset in views.IncidentViewSet
+router.register(r'incidents', views.IncidentViewSet, base_name='incidents')
 router.register(r'artifacts', views.ArtifactViewSet)
 router.register(r'files', views.FileViewSet)
 
