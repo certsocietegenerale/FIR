@@ -41,7 +41,7 @@ class IncidentViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated, IsIncidentHandler)
 
     def get_queryset(self):
-        queryset = Incident.objects.all()
+        queryset = Incident.objects.all().order_by('id')
         status = self.request.query_params.get('status', None)
         if status is not None:
             queryset = queryset.filter(status=status)
