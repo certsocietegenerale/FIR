@@ -46,4 +46,6 @@ class ObjectPermissionBackend(object):
             return False
         if user_obj.has_perm(perm):
             return True
+
+        # TODO: this is a bug, can not "call" a bool like this
         return test_func(user_obj, perm)

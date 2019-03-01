@@ -3,6 +3,11 @@ from django.db import models
 from django.utils import six
 import re
 
+try:
+    Pattern = re._pattern_type
+except AttributeError:
+    # Python 3.7
+    Pattern = re.Pattern
 
 class LinkUrl(object):
     def __init__(self, url, request=None):
@@ -30,7 +35,7 @@ class Links(object):
         :param model: model label (app_label.model_name) or model class (used by fir_relations)
         :param reverse: string template to render object id to text (used by fir_relations)
         """
-        if not isinstance(parser_regex, re._pattern_type):
+        if not isinstance(parser_regex, Pattern):
             parser_regex = re.compile(parser_regex)
         self.reverse_links.append((parser_regex, url_name))
         if model is not None:
@@ -44,7 +49,7 @@ class Links(object):
         :param parser_regex: string or regex object
         :param template: template to pass to regex expand
         """
-        if not isinstance(parser_regex, re._pattern_type):
+        if not isinstance(parser_regex, Pattern):
             parser_regex = re.compile(parser_regex)
         self.regex_links.append((parser_regex, template))
 

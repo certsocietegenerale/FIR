@@ -9,10 +9,10 @@ def order_by(queryset, args):
 
 @register.filter
 def has(queryset, args):
-	d = {args+"__isnull": False}
-	return queryset.filter(**d)
+    d = {args+"__isnull": False}
+    return queryset.filter(**d)
 
 @register.filter
 def has_not(queryset, args):
-	d = {args+"__isnull": True}
-	return queryset.filter(**d)
+    d = {args+"__isnull": True}
+    return queryset.filter(**d)

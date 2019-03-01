@@ -3,6 +3,7 @@ from django.db import models
 from django.db.models import Q
 from django.utils import six
 from django.apps.registry import apps
+from functools import reduce
 
 from incidents.authorization import AuthorizationManager
 

@@ -39,7 +39,7 @@ def send_email(request):
 
             return HttpResponse(dumps({'status': 'ok'}), content_type="application/json")
 
-        except Exception, e:
+        except Exception as e:
             return HttpResponse(dumps({'status': 'ko', 'error': str(e)}), content_type="application/json")
 
     return HttpResponseBadRequest(dumps({'status': 'ko'}), content_type="application/json")
@@ -116,8 +116,9 @@ def get_template(request, incident_id, artifact_id, authorization_target=None):
     return HttpResponse(dumps(response), content_type="application/json")
 
 
-def get_best_record(artifact_type, category, model, filters={}):
-    if filters:
+def get_best_record(artifact_type, category, model, filters=None):
+
+    if filters is not None:
         collection = model.objects.filter(**filters)
     else:
         collection = model.objects
