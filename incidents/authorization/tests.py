@@ -6,6 +6,9 @@ from incidents import models
 
 # Create your tests here.
 
+def get_permission_for_app(codename, app_label='incidents'):
+    return Permission.objects.get(codename=codename, content_type__app_label=app_label)
+
 
 class BusinessLineTestCase(TestCase):
     def setUp(self):
@@ -33,9 +36,9 @@ class BusinessLineTestCase(TestCase):
 
         self.user5.groups.add(changer)
 
-        add = Permission.objects.get(codename='add_incident')
-        change = Permission.objects.get(codename='change_incident')
-        delete = Permission.objects.get(codename='delete_incident')
+        add = get_permission_for_app(codename='add_incident')
+        change = get_permission_for_app(codename='change_incident')
+        delete = get_permission_for_app(codename='delete_incident')
 
         adder.permissions.clear()
         adder.permissions.add(add)
@@ -101,9 +104,9 @@ class IncidentTestCase(TestCase):
 
         self.user5.groups.add(changer)
 
-        add = Permission.objects.get(codename='add_incident')
-        change = Permission.objects.get(codename='change_incident')
-        delete = Permission.objects.get(codename='delete_incident')
+        add = get_permission_for_app(codename='add_incident')
+        change = get_permission_for_app(codename='change_incident')
+        delete = get_permission_for_app(codename='delete_incident')
 
         adder.permissions.clear()
         adder.permissions.add(add)
@@ -204,9 +207,9 @@ class QuerySetBLTestCase(TestCase):
 
         self.user5.groups.add(changer)
 
-        add = Permission.objects.get(codename='add_incident')
-        change = Permission.objects.get(codename='change_incident')
-        delete = Permission.objects.get(codename='delete_incident')
+        add = get_permission_for_app(codename='add_incident')
+        change = get_permission_for_app(codename='change_incident')
+        delete = get_permission_for_app(codename='delete_incident')
 
         adder.permissions.clear()
         adder.permissions.add(add)
