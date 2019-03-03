@@ -1,3 +1,4 @@
+from __future__ import unicode_literals
 from fir_artifacts import artifacts
 from fir_artifacts.ip import IP
 from fir_artifacts.url import URL
