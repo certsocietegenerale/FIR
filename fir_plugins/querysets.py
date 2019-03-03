@@ -51,7 +51,13 @@ class IableSequence(object):
 
     def __nonzero__(self):
         try:
-            iter(self).__next__()
+            itr = iter(self)
+            if hasattr(itr, 'next'):
+                itr.next()
+            elif hasattr(itr, '__next__'):
+                itr.__next__()
+            else:
+                raise BaseException('no iterable next function available')
         except StopIteration:
             return False
         return True
@@ -61,10 +67,15 @@ class IableSequence(object):
             stop = len(self)
         sub_iables = []
         # collect sub sets
-        it = self.iables.__iter__()
+        itr = self.iables.__iter__()
         try:
             while stop > start:
-                i = it.__next__()
+                if hasattr(itr, 'next'):
+                    i = itr.next()
+                elif hasattr(itr, '__next__'):
+                    i = itr.__next__()
+                else:
+                    raise BaseException('no iterable next function available')
                 i_len = len(i)
                 if i_len > start:
                     # no problem with 'stop' being too big
