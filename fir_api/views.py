@@ -1,5 +1,8 @@
 # for token Generation
-import StringIO
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 from django.conf import settings
 from django.db.models.signals import post_save
@@ -75,7 +78,7 @@ class FileViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
         incident = get_object_or_404(Incident, pk=pk)
         files_added = []
         for i, file in enumerate(files):
-            file_obj = FileWrapper(StringIO.StringIO(file['content']))
+            file_obj = FileWrapper(StringIO(file['content']))
             file_obj.name = file['filename']
             description = file['description']
             f = handle_uploaded_file(file_obj, description, incident)
