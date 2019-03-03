@@ -8,7 +8,7 @@ class ArtifactBlacklistItem(models.Model):
     type = models.CharField(max_length=20)
     value = models.CharField(max_length=200)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.value
 
 
@@ -16,7 +16,7 @@ class Artifact(ManyLinkableModel):
     type = models.CharField(max_length=20)
     value = models.TextField()
 
-    def __unicode__(self):
+    def __str__(self):
         display = self.value
         if self.relations.count() > 1:
             display += " (%s)" % self.relations.count()
@@ -34,8 +34,8 @@ class File(OneLinkableModel):
     file = models.FileField(upload_to=upload_path)
     date = models.DateTimeField(auto_now_add=True)
 
-    def __unicode__(self):
-        return unicode(self.file.name)
+    def __str__(self):
+        return self.file.name
 
     def getfilename(self):
         return os.path.basename(self.file.name)

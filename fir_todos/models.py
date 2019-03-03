@@ -14,7 +14,7 @@ class TodoItem(models.Model):
     done_time = models.DateTimeField(null=True, blank=True)
     deadline = models.DateField(null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.description
 
 
@@ -43,5 +43,5 @@ class TodoListTemplate(models.Model):
     detection = models.ForeignKey(Label, limit_choices_to={'group__name': 'detection'}, null=True, blank=True)
     todolist = models.ManyToManyField(TodoItem, blank=True, limit_choices_to={"incident__isnull": True})
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name

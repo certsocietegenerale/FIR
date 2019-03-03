@@ -67,8 +67,8 @@ class Profile(models.Model):
     incident_number = models.IntegerField(default=50)
     hide_closed = models.BooleanField(default=False)
 
-    def __unicode__(self):
-        return u"Profile for user '{}'".format(self.user)
+    def __str__(self):
+        return "Profile for user '{}'".format(self.user)
 
 
 # Audit trail ================================================================
@@ -81,19 +81,19 @@ class Log(models.Model):
     incident = models.ForeignKey('Incident', null=True, blank=True)
     comment = models.ForeignKey('Comments', null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.incident:
-            return u"[%s] %s %s (%s)" % (self.when, self.what, self.incident, self.who)
+            return "[%s] %s %s (%s)" % (self.when, self.what, self.incident, self.who)
         elif self.comment:
-            return u"[%s] %s comment on %s (%s)" % (self.when, self.what, self.comment.incident, self.who)
+            return "[%s] %s comment on %s (%s)" % (self.when, self.what, self.comment.incident, self.who)
         else:
-            return u"[%s] %s (%s)" % (self.when, self.what, self.who)
+            return "[%s] %s (%s)" % (self.when, self.what, self.who)
 
 
 class LabelGroup(models.Model):
     name = models.CharField(max_length=50)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -101,17 +101,17 @@ class Label(models.Model):
     name = models.CharField(max_length=50)
     group = models.ForeignKey(LabelGroup)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s" % (self.name)
 
 
 class BusinessLine(MP_Node, AuthorizationModelMixin):
     name = models.CharField(max_length=100)
 
-    def __unicode__(self):
+    def __str__(self):
         parents = list(self.get_ancestors())
         parents.append(self)
-        return u" > ".join([bl.name for bl in parents])
+        return " > ".join([bl.name for bl in parents])
 
     class Meta:
         verbose_name = _('business line')
@@ -128,7 +128,7 @@ class AccessControlEntry(models.Model):
     business_line = models.ForeignKey(BusinessLine, verbose_name=_('business line'), related_name='acl')
     role = models.ForeignKey('auth.Group', verbose_name=_('role'))
 
-    def __unicode__(self):
+    def __str__(self):
         return _("{} is {} on {}").format(self.user, self.role, self.business_line)
 
     class Meta:
@@ -145,7 +145,7 @@ class BaleCategory(models.Model):
     class Meta:
         verbose_name_plural = "Bale categories"
 
-    def __unicode__(self):
+    def __str__(self):
         if self.parent_category:
             return "(%s > %s) %s" % (self.parent_category.category_number, self.category_number, self.name)
         else:
@@ -160,7 +160,7 @@ class IncidentCategory(models.Model):
     class Meta:
         verbose_name_plural = "Incident categories"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -190,7 +190,7 @@ class Incident(FIRModel, models.Model):
     opened_by = models.ForeignKey(User)
     confidentiality = models.IntegerField(choices=CONFIDENTIALITY_LEVEL, default='1')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.subject
 
     def is_open(self):
@@ -291,8 +291,8 @@ class Comments(models.Model):
     class Meta:
         verbose_name_plural = 'comments'
 
-    def __unicode__(self):
-        return u"Comment for incident %s" % self.incident.id
+    def __str__(self):
+        return "Comment for incident %s" % self.incident.id
 
     @classmethod
     def create_diff_comment(cls, incident, data, user):
@@ -346,7 +346,7 @@ class Attribute(models.Model):
     value = models.CharField(max_length=200)
     incident = models.ForeignKey(Incident)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s: %s" % (self.name, self.value)
 
 
@@ -356,7 +356,7 @@ class ValidAttribute(models.Model):
     description = models.CharField(max_length=500, null=True, blank=True)
     categories = models.ManyToManyField(IncidentCategory)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -374,7 +374,7 @@ class IncidentTemplate(models.Model):
     actor = models.ForeignKey(Label, limit_choices_to={'group__name': 'actor'}, related_name='+', blank=True, null=True)
     plan = models.ForeignKey(Label, limit_choices_to={'group__name': 'plan'}, related_name='+', blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 

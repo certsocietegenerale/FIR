@@ -2118,7 +2118,7 @@ def quarterly_major(request, start_date=None, num_months=3):
     for balecat in balecats:
         line = []
         q_balecat = Q(category__bale_subcategory=balecat) & q_major
-        line.append(balecat.__unicode__)
+        line.append(balecat.__str__)
         add = False
         for i in range(num_months):
             then = today - relativedelta(months=num_months - i)
@@ -2140,7 +2140,7 @@ def quarterly_major(request, start_date=None, num_months=3):
     for bl in parent_bls:
         line = []
         q_bl = Q(main_business_lines=bl) & q_major
-        line.append(bl.__unicode__)
+        line.append(bl.__str__)
         add = False
 
         total = 0

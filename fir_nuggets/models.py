@@ -20,8 +20,8 @@ class Nugget(models.Model):
     incident = models.ForeignKey(Incident)
     found_by = models.ForeignKey(User)
 
-    def __unicode__(self):
-        return u"Nugget: {} in {} ({})".format(self.source, self.incident, self.interpretation)
+    def __str__(self):
+        return "Nugget: {} in {} ({})".format(self.source, self.incident, self.interpretation)
 
 
 class NuggetForm(forms.ModelForm):

@@ -13,7 +13,7 @@ class RecipientTemplate(models.Model):
     recipient_bcc = models.TextField(null=True, blank=True)
     business_line = models.ForeignKey(BusinessLine, null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
@@ -27,7 +27,7 @@ class CategoryTemplate(models.Model):
     subject = models.TextField()
     incident_category = models.ForeignKey(IncidentCategory)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     class Meta:
