@@ -18,10 +18,11 @@ from rest_framework.decorators import detail_route
 from rest_framework import renderers
 
 
-from fir_api.serializers import UserSerializer, IncidentSerializer, ArtifactSerializer, FileSerializer
+from fir_api.serializers import UserSerializer, IncidentSerializer, ArtifactSerializer, FileSerializer, NuggetSerializer
 from fir_api.permissions import IsIncidentHandler
 from fir_artifacts.files import handle_uploaded_file, do_download
 from incidents.models import Incident, Artifact, Comments, File
+from fir_nuggets.models import Nugget
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -83,6 +84,15 @@ class FileViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
         resp_data = FileSerializer(files_added, many=True, context={'request': request}).data
         return HttpResponse(JSONRenderer().render(resp_data), content_type='application/json')
 
+
+class NuggetViewSet(viewsets.ModelViewSet):
+    queryset = Nugget.objects.all()
+    serializer_class = NuggetSerializer
+    lookup_field = 'id'
+    permission_classes = (IsAuthenticated, IsIncidentHandler)
+
+    def perform_create(self, serializer):
+        nugget = serializer.save(found_by=self.request.user)
 
 # Token Generation ===========================================================
 
