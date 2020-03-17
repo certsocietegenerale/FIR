@@ -3,7 +3,7 @@ dj-database-url==0.4.1
 Django==1.11
 django-filter==0.14.0
 djangorestframework==3.4.6
-flup==1.0.2
+flup==1.0.3
 gunicorn==19.6.0
 lxml==3.4.2
 Markdown==2.6.6
