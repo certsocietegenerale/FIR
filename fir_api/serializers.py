@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from rest_framework import serializers
 
 from incidents.models import Incident, Artifact, Label, File, IncidentCategory, BusinessLine
+from fir_nuggets.models import Nugget
 
 
 # serializes data from the FIR User model
@@ -56,3 +57,14 @@ class IncidentSerializer(serializers.ModelSerializer):
         model = Incident
         exclude = ['main_business_lines', 'artifacts']
         read_only_fields = ('id', 'opened_by', 'main_business_lines', 'file_set')
+
+
+# FIR Nugget model
+class NuggetSerializer(serializers.ModelSerializer):
+    #incident = serializers.HyperlinkedRelatedField(many=False, read_only=True, view_name='api:incident-detail')
+    #found_by = User.get_user()
+    class Meta:
+        model = Nugget
+        fields = ('raw_data', 'source', 'start_timestamp', 'end_timestamp', 'interpretation', 'incident')
+        read_only_fields = ('id', 'found_by')
+
