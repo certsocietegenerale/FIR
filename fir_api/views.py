@@ -8,6 +8,7 @@ from django.dispatch import receiver
 from django.shortcuts import get_object_or_404
 from django.core.files import File as FileWrapper
 from django.contrib.auth.models import User
+from django.db.models import Q
 
 from rest_framework.renderers import JSONRenderer
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -16,7 +17,6 @@ from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
 from rest_framework import viewsets
 from rest_framework.decorators import detail_route
 from rest_framework import renderers
-
 
 from fir_api.serializers import UserSerializer, IncidentSerializer, ArtifactSerializer, FileSerializer
 from fir_api.permissions import IsIncidentHandler
@@ -40,6 +40,24 @@ class IncidentViewSet(viewsets.ModelViewSet):
     queryset = Incident.objects.all()
     serializer_class = IncidentSerializer
     permission_classes = (IsAuthenticated, IsIncidentHandler)
+
+    def get_queryset(self):
+         queryset = Incident.objects.all()
+         category = self.request.query_params.get('category', None)
+         subject = self.request.query_params.get('subject', None)
+         description = self.request.query_params.get('description', None)
+         bl = self.request.query_params.get('bl', None)
+         q = Q()
+         if category is not None:
+             q = q & Q(category__name__icontains=category)
+         if subject is not None:
+             q = q & Q(subject__icontains=subject)
+         if description is not None:
+             q = q & Q(description__icontains=description)
+         if bl is not None:
+             q = q & (Q(concerned_business_lines__in=bls) | Q(main_business_lines__in=[bls]))
+         queryset = queryset.filter(q)
+         return queryset
 
     def perform_create(self, serializer):
         instance = serializer.save(opened_by=self.request.user)
