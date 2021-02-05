@@ -1,0 +1,102 @@
+version: '3.4'
+
+networks:
+  backend.fir:
+
+volumes:
+  static-content:
+
+services:
+  fir:
+    image: fir:latest
+    build:
+      context: ../
+      dockerfile: docker/Dockerfile
+    entrypoint: /bin/sh
+    command: -c "wait-for -t 10 fir_db:3306 && python manage.py migrate && python manage.py loaddata incidents/fixtures/*.json && python manage.py collectstatic --no-input && python manage.py runserver 0.0.0.0:8000"
+    container_name: fir
+    hostname: fir
+    depends_on:
+      - fir_db
+      - fir_redis
+    env_file:
+      - fir.env
+    networks:
+      backend.fir:
+#    ports:
+#      - 8000:8000
+    expose:
+      - 8000
+    volumes:
+      - /tmp/uploads:/app/uploads
+      - static-content:/var/www/static
+
+  fir_db:
+    image: mariadb
+    container_name: fir_db
+    hostname: fir_db
+    networks:
+      backend.fir:
+    expose:
+      - 3306    
+    volumes:
+      - /tmp/data:/var/lib/mysql
+    environment: 
+      MYSQL_ROOT_PASSWORD: toor
+      MYSQL_DATABASE: fir
+      MYSQL_USER: fir
+      MYSQL_PASSWORD: fir
+
+  fir_redis:
+    image: "redis:alpine"
+    container_name: fir_redis
+    hostname: fir_redis
+    networks:
+      backend.fir:
+    expose:
+      - 6379
+    
+  fir_celery_worker:
+    image: fir:latest
+    entrypoint: /bin/sh
+    command: -c "wait-for -t 10 fir_redis:6379 && wait-for -t 30 fir:8000 -- celery -A fir_celery.celeryconf.celery_app worker -l debug"
+    container_name: fir_celery_worker
+    hostname: fir_celery_worker
+    depends_on:
+      - fir
+      - fir_db
+      - fir_redis
+    env_file:
+      - fir.env  
+    networks:
+      backend.fir:
+    
+  fir_celery_beat:
+    image: fir:latest
+    entrypoint: /bin/sh
+    command: -c "wait-for -t 10 fir_redis:6379 && wait-for -t 30 fir:8000 -- celery -A fir_celery.celeryconf.celery_app beat -l debug"
+    container_name: fir_celery_beat
+    hostname: fir_celery_beat
+    depends_on:
+      - fir
+      - fir_db
+      - fir_redis
+    env_file:
+      - fir.env 
+    networks:
+      backend.fir:
+
+  fir_web:
+    image: nginx
+    container_name: fir_web
+    hostname: fir_web
+    depends_on:
+      - fir
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - static-content:/usr/share/nginx/html:ro
+    ports:
+      - 80:80
+    networks:
+      backend.fir:
+  

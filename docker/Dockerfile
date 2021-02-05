@@ -1,52 +1,32 @@
-# Dockerfile for FIR development instance
-# written by Robert Haist
-#
-# Mostly based on the ubuntu image by Kyle Maxwell
-#
-# build with the command:
-#
-# sudo docker build -t fir .
-# sudo docker run -it -p 8000:8000 fir
-#
-# then access http://localhost:8000 in your browser
-
-# MAINTAINER Robert Haist, SleuthKid@mailbox.org
-FROM alpine:3.7
-
-RUN apk add --update \
-    python \
-    python-dev \
-    py-pip \
-    build-base \
-    git \
-    libxml2 \
-    libxml2-dev \
-    libxslt \
-    libxslt-dev \
-    postgresql-dev \
-    && rm -rf /var/cache/apk/*
-
-RUN addgroup fir && \
-    adduser -D -G fir -s /sbin/nologin fir
-
+FROM python:2.7-alpine AS builder
 WORKDIR /app
+COPY . /app
+RUN apk add --update python-dev \
+    libxml2-dev \
+    libxslt-dev \
+    build-base \
+    mariadb-dev \
+    musl-dev \
+    gcc && \
+    pip install virtualenv && \
+    virtualenv venv && \
+    source venv/bin/activate && \
+    find . -name requirements.txt -exec pip install -r {} \; && \
+    rm -rf .env .git .travis.yml docker Procfile README.md requirements.txt runtime.txt && \
+    mv fir/config/installed_apps.txt.sample fir/config/installed_apps.txt && \
+    deactivate
 
-RUN git clone https://github.com/certsocietegenerale/FIR.git && \
-    chown -R fir:fir /app/FIR && \
-    cd FIR && \
-    pip install -r requirements.txt && \
-    cp fir/config/installed_apps.txt.sample fir/config/installed_apps.txt
+FROM python:2.7-alpine AS fir
+COPY --from=builder /app /app
+RUN apk add libxml2 libxslt mariadb-connector-c && \
+    rm -rf /var/cache/apk/* && \
+    wget -O /bin/wait-for https://raw.githubusercontent.com/eficode/wait-for/master/wait-for && \
+    chmod +x /bin/wait-for
 
-USER fir
-ENV HOME /app/FIR
-ENV USER fir
-
-WORKDIR /app/FIR
-
-RUN ./manage.py migrate && \
-    ./manage.py loaddata incidents/fixtures/seed_data.json && \
-    ./manage.py loaddata incidents/fixtures/dev_users.json
-
+WORKDIR /app/
+ENV VIRTUAL_ENV /app/venv
+ENV PATH /app/venv/bin:$PATH
+ENV HOME /app/
 EXPOSE 8000
-ENTRYPOINT ["/app/FIR/manage.py"]
-CMD ["runserver", "0.0.0.0:8000"]
+ENTRYPOINT ["/app/manage.py"]
+CMD ["runserver", "--settings", "fir.config.production", "0.0.0.0:8000"]

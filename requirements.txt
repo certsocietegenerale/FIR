@@ -1,5 +1,9 @@
 cssselect==0.9.1
 dj-database-url==0.4.1
+dj-email-url
+environs
+future
+mysqlclient
 Django==1.11
 django-filter==0.14.0
 djangorestframework==3.4.6
