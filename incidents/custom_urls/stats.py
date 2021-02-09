@@ -2,6 +2,8 @@ from django.conf.urls import url
 
 from incidents import views
 
+app_name='stats'
+
 urlpatterns = [
     url(r'^yearly$', views.yearly_stats, name='yearly'),
     url(r'^data/yearly/incidents$', views.data_yearly_incidents, name='data_yearly_incidents'),

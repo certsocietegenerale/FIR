@@ -1,7 +1,8 @@
-FROM python:2.7-alpine AS builder
+FROM python:3.8-alpine AS builder
 WORKDIR /app
 COPY . /app
-RUN apk add --update python-dev \
+RUN apk add --update git \
+    python3-dev \
     libxml2-dev \
     libxslt-dev \
     build-base \
@@ -16,7 +17,7 @@ RUN apk add --update python-dev \
     mv fir/config/installed_apps.txt.sample fir/config/installed_apps.txt && \
     deactivate
 
-FROM python:2.7-alpine AS fir
+FROM python:3.8-alpine AS fir
 COPY --from=builder /app /app
 RUN apk add libxml2 libxslt mariadb-connector-c && \
     rm -rf /var/cache/apk/* && \

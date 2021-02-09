@@ -2,6 +2,8 @@ from django.conf.urls import url
 
 from fir_todos import views
 
+app_name='fir_todos'
+
 urlpatterns = [
     url(r'^(?P<incident_id>\d+)/list/$', views.list, name='list'),
     url(r'^(?P<incident_id>\d+)/create/$', views.create, name='create'),

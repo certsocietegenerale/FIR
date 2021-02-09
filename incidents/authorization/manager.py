@@ -1,10 +1,8 @@
 from django.db import models
-from django.utils import six
-
 
 class AuthorizationManager(models.Manager):
     def for_user(self, user, permission=None):
-        if isinstance(permission, six.string_types):
+        if isinstance(permission, str):
             permission = (permission,)
         if user.is_superuser:
             return self.get_queryset()

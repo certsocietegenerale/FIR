@@ -63,11 +63,11 @@ class FIRModel:
 
 
 class Profile(models.Model):
-    user = models.OneToOneField(User)
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     incident_number = models.IntegerField(default=50)
     hide_closed = models.BooleanField(default=False)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"Profile for user '{}'".format(self.user)
 
 
@@ -75,13 +75,13 @@ class Profile(models.Model):
 
 
 class Log(models.Model):
-    who = models.ForeignKey(User, null=True, blank=True)
+    who = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     what = models.CharField(max_length=100, choices=STATUS_CHOICES)
     when = models.DateTimeField(auto_now_add=True)
-    incident = models.ForeignKey('Incident', null=True, blank=True)
-    comment = models.ForeignKey('Comments', null=True, blank=True)
+    incident = models.ForeignKey('Incident', on_delete=models.CASCADE, null=True, blank=True)
+    comment = models.ForeignKey('Comments', on_delete=models.CASCADE, null=True, blank=True)
 
-    def __unicode__(self):
+    def __str__(self):
         if self.incident:
             return u"[%s] %s %s (%s)" % (self.when, self.what, self.incident, self.who)
         elif self.comment:
@@ -93,22 +93,22 @@ class Log(models.Model):
 class LabelGroup(models.Model):
     name = models.CharField(max_length=50)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
 class Label(models.Model):
     name = models.CharField(max_length=50)
-    group = models.ForeignKey(LabelGroup)
+    group = models.ForeignKey(LabelGroup, on_delete=models.CASCADE)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s" % (self.name)
 
 
 class BusinessLine(MP_Node, AuthorizationModelMixin):
     name = models.CharField(max_length=100)
 
-    def __unicode__(self):
+    def __str__(self):
         parents = list(self.get_ancestors())
         parents.append(self)
         return u" > ".join([bl.name for bl in parents])
@@ -124,11 +124,11 @@ class BusinessLine(MP_Node, AuthorizationModelMixin):
 
 
 class AccessControlEntry(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name=_('user'), on_delete=models.CASCADE)
-    business_line = models.ForeignKey(BusinessLine, verbose_name=_('business line'), related_name='acl')
-    role = models.ForeignKey('auth.Group', verbose_name=_('role'))
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name=_('user'))
+    business_line = models.ForeignKey(BusinessLine, on_delete=models.CASCADE, verbose_name=_('business line'), related_name='acl')
+    role = models.ForeignKey('auth.Group', on_delete=models.CASCADE, verbose_name=_('role'))
 
-    def __unicode__(self):
+    def __str__(self):
         return _("{} is {} on {}").format(self.user, self.role, self.business_line)
 
     class Meta:
@@ -140,12 +140,12 @@ class BaleCategory(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True, null=True)
     category_number = models.IntegerField()
-    parent_category = models.ForeignKey('BaleCategory', null=True, blank=True)
+    parent_category = models.ForeignKey('BaleCategory', on_delete=models.CASCADE, null=True, blank=True)
 
     class Meta:
         verbose_name_plural = "Bale categories"
 
-    def __unicode__(self):
+    def __str__(self):
         if self.parent_category:
             return "(%s > %s) %s" % (self.parent_category.category_number, self.category_number, self.name)
         else:
@@ -154,13 +154,13 @@ class BaleCategory(models.Model):
 
 class IncidentCategory(models.Model):
     name = models.CharField(max_length=100)
-    bale_subcategory = models.ForeignKey(BaleCategory)
+    bale_subcategory = models.ForeignKey(BaleCategory, on_delete=models.CASCADE)
     is_major = models.BooleanField(default=False)
 
     class Meta:
         verbose_name_plural = "Incident categories"
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -175,22 +175,22 @@ class Incident(FIRModel, models.Model):
     is_starred = models.BooleanField(default=False)
     subject = models.CharField(max_length=256)
     description = models.TextField()
-    category = models.ForeignKey(IncidentCategory)
+    category = models.ForeignKey(IncidentCategory, on_delete=models.CASCADE)
     concerned_business_lines = models.ManyToManyField(BusinessLine, blank=True)
     main_business_lines = models.ManyToManyField(BusinessLine, related_name='incidents_affecting_main', blank=True)
-    detection = models.ForeignKey(Label, limit_choices_to={'group__name': 'detection'}, related_name='detection_label')
+    detection = models.ForeignKey(Label, on_delete=models.CASCADE, limit_choices_to={'group__name': 'detection'}, related_name='detection_label')
     severity = models.IntegerField(choices=SEVERITY_CHOICES)
     is_incident = models.BooleanField(default=False)
     is_major = models.BooleanField(default=False)
-    actor = models.ForeignKey(Label, limit_choices_to={'group__name': 'actor'}, related_name='actor_label', blank=True,
+    actor = models.ForeignKey(Label, on_delete=models.CASCADE, limit_choices_to={'group__name': 'actor'}, related_name='actor_label', blank=True,
                               null=True)
-    plan = models.ForeignKey(Label, limit_choices_to={'group__name': 'plan'}, related_name='plan_label', blank=True,
+    plan = models.ForeignKey(Label, on_delete=models.CASCADE, limit_choices_to={'group__name': 'plan'}, related_name='plan_label', blank=True,
                              null=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=_("Open"))
-    opened_by = models.ForeignKey(User)
+    opened_by = models.ForeignKey(User, on_delete=models.CASCADE)
     confidentiality = models.IntegerField(choices=CONFIDENTIALITY_LEVEL, default='1')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.subject
 
     def is_open(self):
@@ -235,7 +235,7 @@ class Incident(FIRModel, models.Model):
         mainbls = set()
         for bl in self.concerned_business_lines.all():
             mainbls.add(bl.get_root())
-        self.main_business_lines = list(mainbls)
+        self.main_business_lines.set(list(mainbls))
 
     def refresh_artifacts(self, data=""):
         if data == "":
@@ -284,14 +284,14 @@ class Incident(FIRModel, models.Model):
 class Comments(models.Model):
     date = models.DateTimeField(default=datetime.datetime.now, blank=True)
     comment = models.TextField()
-    action = models.ForeignKey(Label, limit_choices_to={'group__name': 'action'}, related_name='action_label')
-    incident = models.ForeignKey(Incident)
-    opened_by = models.ForeignKey(User)
+    action = models.ForeignKey(Label, on_delete=models.CASCADE, limit_choices_to={'group__name': 'action'}, related_name='action_label')
+    incident = models.ForeignKey(Incident, on_delete=models.CASCADE)
+    opened_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
         verbose_name_plural = 'comments'
 
-    def __unicode__(self):
+    def __str__(self):
         return u"Comment for incident %s" % self.incident.id
 
     @classmethod
@@ -344,9 +344,9 @@ class Comments(models.Model):
 class Attribute(models.Model):
     name = models.CharField(max_length=50)
     value = models.CharField(max_length=200)
-    incident = models.ForeignKey(Incident)
+    incident = models.ForeignKey(Incident, on_delete=models.CASCADE)
 
-    def __unicode__(self):
+    def __str__(self):
         return "%s: %s" % (self.name, self.value)
 
 
@@ -356,7 +356,7 @@ class ValidAttribute(models.Model):
     description = models.CharField(max_length=500, null=True, blank=True)
     categories = models.ManyToManyField(IncidentCategory)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -366,15 +366,15 @@ class IncidentTemplate(models.Model):
     name = models.CharField(max_length=100)
     subject = models.CharField(max_length=256, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
-    category = models.ForeignKey(IncidentCategory, null=True, blank=True)
+    category = models.ForeignKey(IncidentCategory, on_delete=models.CASCADE, null=True, blank=True)
     concerned_business_lines = models.ManyToManyField(BusinessLine, blank=True)
-    detection = models.ForeignKey(Label, limit_choices_to={'group__name': 'detection'}, null=True, blank=True)
+    detection = models.ForeignKey(Label, on_delete=models.CASCADE, limit_choices_to={'group__name': 'detection'}, null=True, blank=True)
     severity = models.IntegerField(choices=SEVERITY_CHOICES, null=True, blank=True)
     is_incident = models.BooleanField(default=False)
-    actor = models.ForeignKey(Label, limit_choices_to={'group__name': 'actor'}, related_name='+', blank=True, null=True)
-    plan = models.ForeignKey(Label, limit_choices_to={'group__name': 'plan'}, related_name='+', blank=True, null=True)
+    actor = models.ForeignKey(Label, on_delete=models.CASCADE, limit_choices_to={'group__name': 'actor'}, related_name='+', blank=True, null=True)
+    plan = models.ForeignKey(Label, on_delete=models.CASCADE, limit_choices_to={'group__name': 'plan'}, related_name='+', blank=True, null=True)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 

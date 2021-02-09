@@ -1,6 +1,5 @@
 from django.contrib.auth.models import Permission
 from django.db import models
-from django.utils import six
 
 from incidents.authorization import AuthorizationManager
 
@@ -68,7 +67,7 @@ class AuthorizationModelMixin(models.Model):
         lookup = models.Q(pk=0)
         if not paths.count():
             return lookup
-        if isinstance(fields, six.string_types):
+        if isinstance(fields, str):
             fields = (fields,)
         for field in fields:
             key = '{field}__path__startswith'.format(field=field)

@@ -43,7 +43,7 @@ class Migration(migrations.Migration):
                 ('name', models.CharField(max_length=200)),
                 ('description', models.TextField(null=True, blank=True)),
                 ('category_number', models.IntegerField()),
-                ('parent_category', models.ForeignKey(blank=True, to='incidents.BaleCategory', null=True)),
+                ('parent_category', models.ForeignKey(blank=True, to='incidents.BaleCategory', on_delete=models.CASCADE, null=True)),
             ],
             options={
                 'verbose_name_plural': 'Bale categories',
@@ -55,7 +55,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=100)),
-                ('parent', models.ForeignKey(blank=True, to='incidents.BusinessLine', null=True)),
+                ('parent', models.ForeignKey(blank=True, to='incidents.BusinessLine', on_delete=models.CASCADE, null=True)),
             ],
             options={
                 'ordering': ['parent__name', 'name'],
@@ -111,7 +111,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=100)),
                 ('is_major', models.BooleanField(default=False)),
-                ('bale_subcategory', models.ForeignKey(to='incidents.BaleCategory')),
+                ('bale_subcategory', models.ForeignKey(to='incidents.BaleCategory', on_delete=models.CASCADE)),
             ],
             options={
                 'verbose_name_plural': 'Incident categories',
@@ -158,9 +158,9 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('what', models.CharField(max_length=100, choices=[(b'O', b'Open'), (b'C', b'Closed'), (b'B', b'Blocked')])),
                 ('when', models.DateTimeField(auto_now_add=True)),
-                ('comment', models.ForeignKey(blank=True, to='incidents.Comments', null=True)),
-                ('incident', models.ForeignKey(blank=True, to='incidents.Incident', null=True)),
-                ('who', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('comment', models.ForeignKey(blank=True, to='incidents.Comments', on_delete=models.CASCADE, null=True)),
+                ('incident', models.ForeignKey(blank=True, to='incidents.Incident', on_delete=models.CASCADE, null=True)),
+                ('who', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             options={
             },
@@ -172,7 +172,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('incident_number', models.IntegerField(default=50)),
                 ('hide_closed', models.BooleanField(default=False)),
-                ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL)),
+                ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             options={
             },
@@ -194,19 +194,19 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='label',
             name='group',
-            field=models.ForeignKey(to='incidents.LabelGroup'),
+            field=models.ForeignKey(to='incidents.LabelGroup', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='incidenttemplate',
             name='actor',
-            field=models.ForeignKey(related_name='+', blank=True, to='incidents.Label', null=True),
+            field=models.ForeignKey(related_name='+', blank=True, to='incidents.Label', on_delete=models.CASCADE, null=True),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='incidenttemplate',
             name='category',
-            field=models.ForeignKey(blank=True, to='incidents.IncidentCategory', null=True),
+            field=models.ForeignKey(blank=True, to='incidents.IncidentCategory', on_delete=models.CASCADE, null=True),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -218,25 +218,25 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='incidenttemplate',
             name='detection',
-            field=models.ForeignKey(blank=True, to='incidents.Label', null=True),
+            field=models.ForeignKey(blank=True, to='incidents.Label', on_delete=models.CASCADE, null=True),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='incidenttemplate',
             name='plan',
-            field=models.ForeignKey(related_name='+', blank=True, to='incidents.Label', null=True),
+            field=models.ForeignKey(related_name='+', blank=True, to='incidents.Label', on_delete=models.CASCADE, null=True),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='incident',
             name='actor',
-            field=models.ForeignKey(related_name='actor_label', blank=True, to='incidents.Label', null=True),
+            field=models.ForeignKey(related_name='actor_label', blank=True, to='incidents.Label', on_delete=models.CASCADE, null=True),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='incident',
             name='category',
-            field=models.ForeignKey(to='incidents.IncidentCategory'),
+            field=models.ForeignKey(to='incidents.IncidentCategory', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -248,7 +248,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='incident',
             name='detection',
-            field=models.ForeignKey(related_name='detection_label', to='incidents.Label'),
+            field=models.ForeignKey(related_name='detection_label', to='incidents.Label', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
@@ -260,43 +260,43 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='incident',
             name='opened_by',
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='incident',
             name='plan',
-            field=models.ForeignKey(related_name='plan_label', blank=True, to='incidents.Label', null=True),
+            field=models.ForeignKey(related_name='plan_label', blank=True, to='incidents.Label', on_delete=models.CASCADE, null=True),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='file',
             name='incident',
-            field=models.ForeignKey(to='incidents.Incident'),
+            field=models.ForeignKey(to='incidents.Incident', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='comments',
             name='action',
-            field=models.ForeignKey(related_name='action_label', to='incidents.Label'),
+            field=models.ForeignKey(related_name='action_label', to='incidents.Label', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='comments',
             name='incident',
-            field=models.ForeignKey(to='incidents.Incident'),
+            field=models.ForeignKey(to='incidents.Incident', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='comments',
             name='opened_by',
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL),
+            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
             model_name='attribute',
             name='incident',
-            field=models.ForeignKey(to='incidents.Incident'),
+            field=models.ForeignKey(to='incidents.Incident', on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(

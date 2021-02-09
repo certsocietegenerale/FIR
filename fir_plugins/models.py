@@ -25,7 +25,7 @@ class OneLinkableModel(models.Model):
 
     LinkedModelDoesNotExist = LinkedModelDoesNotExist
 
-    content_type = models.ForeignKey(ContentType, null=True)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True)
     object_id = models.PositiveIntegerField(null=True)
     content_object = GenericForeignKey('content_type', 'object_id')
 

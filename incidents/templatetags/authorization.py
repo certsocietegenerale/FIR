@@ -2,7 +2,6 @@ from django import template
 from django.apps import apps
 from django.forms import ModelForm
 from django.conf import settings
-from django.utils import six
 
 register = template.Library()
 
@@ -14,7 +13,7 @@ def has_perm(context, *permissions, **kwargs):
         obj = kwargs.get('model', None)
         if isinstance(obj, ModelForm):
             obj = obj._meta.model
-        elif isinstance(obj, six.string_types):
+        elif isinstance(obj, str):
             obj = apps.get_model(*obj.split('.'))
     return context['user'].has_perm(permissions, obj=obj)
 

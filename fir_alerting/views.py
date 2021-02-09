@@ -41,7 +41,7 @@ def get_template(request, incident_id, template_type, bl=None, authorization_tar
 
     try:
         cat_template = CategoryTemplate.objects.get(incident_category=i.category, type=template_type)
-    except Exception, e:
+    except Exception as e:
         cat_template = None
 
     rec_template = None
@@ -119,7 +119,7 @@ def send_email(request):
 
             return HttpResponse(dumps({'status': 'ok'}), content_type="application/json")
 
-        except Exception, e:
+        except Exception as e:
             return HttpResponse(dumps({'status': 'ko', 'error': str(e)}), content_type="application/json")
 
     return HttpResponseBadRequest(dumps({'status': 'ko'}), content_type="application/json")

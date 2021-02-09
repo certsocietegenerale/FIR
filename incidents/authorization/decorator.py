@@ -1,7 +1,6 @@
 from django.core.exceptions import PermissionDenied
 from django.db import models
 from django.db.models import Q
-from django.utils import six
 from django.apps.registry import apps
 
 from incidents.authorization import AuthorizationManager
@@ -10,12 +9,12 @@ from incidents.authorization import AuthorizationManager
 def get_authorization_filter(cls, user, permission=None, fields=None):
     if not hasattr(cls, '_authorization_meta'):
         raise Exception("No Authorization metadata for model {}".format(cls.__name__))
-    if isinstance(permission, six.string_types):
+    if isinstance(permission, str):
         permission = [permission, ]
 
     if fields is None:
         fields = cls._authorization_meta.fields
-    if isinstance(fields, six.string_types):
+    if isinstance(fields, str):
         fields = (fields,)
     objects = cls._authorization_meta.model.get_authorization_objects_filter(user, fields, permission=permission)
     if cls._authorization_meta.owner_field and cls._authorization_meta.owner_permission and \
@@ -27,7 +26,7 @@ def get_authorization_filter(cls, user, permission=None, fields=None):
 def has_perm(self, user, permission):
     if user.is_superuser:
         return True
-    if isinstance(permission, six.string_types):
+    if isinstance(permission, str):
         permission = [permission, ]
     if user.has_perms(permission):
         return True
@@ -70,7 +69,7 @@ def tree_authorization(fields=None, tree_model='incidents.BusinessLine', owner_f
 
                 @property
                 def model(self):
-                    if isinstance(self.tree_model, six.string_types):
+                    if isinstance(self.tree_model, str):
                         self.tree_model = apps.get_model(*self.tree_model.split('.'))
                     return self.tree_model
 
@@ -79,7 +78,7 @@ def tree_authorization(fields=None, tree_model='incidents.BusinessLine', owner_f
         if fields is not None:
             if isinstance(fields, (tuple, list)):
                 cls._authorization_meta.fields = fields
-            elif isinstance(fields, six.string_types):
+            elif isinstance(fields, str):
                 cls._authorization_meta.fields = (fields,)
             else:
                 raise Exception("Linking field unrecognized")
@@ -87,7 +86,7 @@ def tree_authorization(fields=None, tree_model='incidents.BusinessLine', owner_f
             f = cls._meta.get_field(field)
             if not isinstance(f, (models.ForeignKey, models.ManyToManyField)):
                 raise Exception("Linking field not a link")
-        if isinstance(owner_permission, six.string_types) and isinstance(owner_field, six.string_types):
+        if isinstance(owner_permission, str) and isinstance(owner_field, str):
             f = cls._meta.get_field(owner_field)
             if isinstance(f, models.ForeignKey):
                 cls._authorization_meta.owner_permission = owner_permission
@@ -106,7 +105,7 @@ def authorization_required(perm, model, view_arg=None):
     def _decorator(view_func):
         def _view(request, *args, **kwargs):
             obj = model
-            if isinstance(view_arg, six.string_types):
+            if isinstance(view_arg, str):
                 try:
                     obj_id = kwargs.get(view_arg)
                     obj = model.authorization.for_user(request.user, perm).get(pk=obj_id)

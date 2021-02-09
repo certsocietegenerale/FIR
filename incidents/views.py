@@ -23,7 +23,7 @@ from fir.decorators import fir_auth_required
 from django.core import serializers
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.db.models import Q, Max
 from django.http import HttpResponse, HttpResponseServerError
 from django.shortcuts import get_object_or_404, render, redirect, resolve_url
@@ -224,7 +224,7 @@ def log(what, user, incident=None, comment=None):
     # dirty hack to not log when in debug mode
     import sys
     if getattr(settings, 'DEBUG', False):
-        print "DEBUG: Not logging"
+        print("DEBUG: Not logging")
         return
 
     log = Log()
@@ -925,7 +925,7 @@ def quarterly_bl_stats(request, business_line=None, num_months=3):
 
     today = datetime.date.today()
     q_month = Q()
-    for i in xrange(num_months):
+    for i in range(num_months):
         previous = today - relativedelta(months=i + 1)
         month = previous.month
         year = previous.year
@@ -982,7 +982,7 @@ def data_sandbox(request):
     delta = relativedelta(end, start)
     months = delta.years * 12 + delta.months
 
-    for i in xrange(months):
+    for i in range(months):
         dates.append(end - relativedelta(months=i + 1))
 
     q_categories = Q()
@@ -1035,7 +1035,7 @@ def data_sandbox(request):
     if graph_type == 'table':
         if divisor == 'all':
             qs = Q()
-            for i in xrange(months):
+            for i in range(months):
                 qs |= Q(date__year=dates[i].year, date__month=dates[i].month)
 
             incidents = Incident.authorization.for_user(request.user, 'incidents.view_incidents').filter(
@@ -1061,7 +1061,7 @@ def data_sandbox(request):
     if graph_type == 'line':
 
         if divisor == 'all':
-            for i in xrange(months):
+            for i in range(months):
                 plot = {}
                 plot['date'] = str(dates[i].year) + "-" + str(dates[i].month)
                 plot['N'] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
@@ -1071,7 +1071,7 @@ def data_sandbox(request):
                 chart_data.append(plot)
 
         if divisor == 'category':
-            for i in xrange(months):
+            for i in range(months):
                 plot = {}
                 plot['date'] = str(dates[i].year) + "-" + str(dates[i].month)
 
@@ -1084,7 +1084,7 @@ def data_sandbox(request):
     if graph_type == 'bar':
 
         if divisor == 'months':
-            for i in xrange(months):
+            for i in range(months):
                 plot = {}
                 plot['label'] = '%s-%s' % (dates[i].year, dates[i].month)
                 plot['value'] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
@@ -1093,7 +1093,7 @@ def data_sandbox(request):
                 chart_data.append(plot)
 
         if divisor == 'monitoring':
-            for i in xrange(months):
+            for i in range(months):
                 plot = {}
                 plot['label'] = '%s-%s' % (dates[i].year, dates[i].month)
                 plot['value'] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
@@ -1102,7 +1102,7 @@ def data_sandbox(request):
                 chart_data.append(plot)
 
         if divisor == 'open':
-            for i in xrange(months):
+            for i in range(months):
                 plot = {}
                 plot['label'] = '%s-%s' % (dates[i].year, dates[i].month)
                 plot['value'] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
@@ -1111,7 +1111,7 @@ def data_sandbox(request):
                 chart_data.append(plot)
 
         if divisor == 'blocked':
-            for i in xrange(months):
+            for i in range(months):
                 plot = {}
                 plot['label'] = '%s-%s' % (dates[i].year, dates[i].month)
                 plot['value'] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
@@ -1122,11 +1122,11 @@ def data_sandbox(request):
     if graph_type == 'donut' or graph_type == 'stacked':
 
         if divisor == 'severity':
-            for i in xrange(months):
+            for i in range(months):
                 plot = {}
                 plot['entry'] = '%s-%s' % (dates[i].year, dates[i].month)
                 append = False
-                for severity in xrange(1, 5):
+                for severity in range(1, 5):
                     plot['%s/4' % severity] = Incident.authorization.for_user(request.user,
                                                                               'incidents.view_statistics').filter(
                         Q(date__year=dates[i].year, date__month=dates[i].month,
@@ -1144,7 +1144,7 @@ def data_sandbox(request):
                 bl = BusinessLine.objects.get(id=bl)
                 children = bl.get_children()
 
-            for i in xrange(months):
+            for i in range(months):
                 plot = {}
                 for cbl in children:
                     plot[cbl.name] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
@@ -1155,7 +1155,7 @@ def data_sandbox(request):
                 chart_data.append(plot)
 
         if divisor == 'actor':
-            for i in xrange(months):
+            for i in range(months):
                 plot = {}
                 for actor in Label.objects.filter(group__name='actor'):
                     plot[actor.name] = Incident.authorization.for_user(request.user,
@@ -1166,7 +1166,7 @@ def data_sandbox(request):
                 chart_data.append(plot)
 
         if divisor == 'category':
-            for i in xrange(months):
+            for i in range(months):
                 plot = {}
                 for category in category_selection:
                     plot[category.name] = Incident.authorization.for_user(request.user,
@@ -1309,7 +1309,7 @@ def stats_attributes_date_ranges(start, end):
     result = []
     # Less than 3 days, use hours
     if delta.days < 3:
-        for i in xrange(int(delta.total_seconds()) / 3600 + 1):
+        for i in range(int(delta.total_seconds() / 3600) + 1):
             fr = start + relativedelta(hours=i, minute=0, second=0, microsecond=0)
             to = fr + relativedelta(hours=1)
             result.append({
@@ -1320,7 +1320,7 @@ def stats_attributes_date_ranges(start, end):
             })
     # Between 3 days and 1 month, use days
     elif delta.days < 31:
-        for i in xrange(int(delta.total_seconds()) / 86400 + 1):
+        for i in range(int(delta.total_seconds() / 86400) + 1):
             fr = start + relativedelta(days=i, hour=0, minute=0, second=0, microsecond=0)
             to = fr + relativedelta(days=1)
             result.append({
@@ -1331,7 +1331,7 @@ def stats_attributes_date_ranges(start, end):
             })
     # Between 1 month a 10 months, use weeks
     elif delta.days < 305:
-        for i in xrange(int(delta.total_seconds()) / 604800 + 1):
+        for i in range(int(delta.total_seconds() / 604800) + 1):
             fr = start + relativedelta(weeks=i, weekday=MO(-1), hour=0, minute=0, second=0, microsecond=0)
             to = fr + relativedelta(days=7)
             result.append({
@@ -1342,7 +1342,7 @@ def stats_attributes_date_ranges(start, end):
             })
     # Between 10 months and 5 years, use months
     elif delta.days < 1825:
-        for i in xrange(int(delta.total_seconds()) / 2592000 + 1):
+        for i in range(int(delta.total_seconds() / 2592000) + 1):
             fr = start + relativedelta(months=i, day=1, hour=0, minute=0, second=0, microsecond=0)
             to = fr + relativedelta(months=1)
             result.append({
@@ -1353,7 +1353,7 @@ def stats_attributes_date_ranges(start, end):
             })
     # Otherwise, use years
     else:
-        for i in xrange(int(delta.total_seconds()) / 31536000 + 1):
+        for i in range(int(delta.total_seconds() / 31536000) + 1):
             fr = start + relativedelta(years=i, month=1, day=1, hour=0, minute=0, second=0, microsecond=0)
             to = fr + relativedelta(years=1)
             result.append({
@@ -1605,10 +1605,10 @@ def data_yearly_compare(request, year, type='all', slide=True):
     if slide:
         dates = []
         today = datetime.date.today().replace(year=year)
-        for i in xrange(12):
+        for i in range(12):
             dates.append(today - relativedelta(months=i + 1))
 
-        for i in xrange(12):
+        for i in range(12):
             chart_data.append({'date': str(dates[i].year) + "-" + str(dates[i].month),
                                str(year): Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(q).filter(date__year=dates[i].year,
                                                                             date__month=dates[i].month).count(),
@@ -1617,7 +1617,7 @@ def data_yearly_compare(request, year, type='all', slide=True):
                                })
 
     else:
-        for i in xrange(12):
+        for i in range(12):
             chart_data.append({'date': str(year) + "-" + str(i + 1),
                                str(year): Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(q).filter(date__year=year, date__month=i + 1).count(),
                                str(year - 1): Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(q).filter(date__year=year - 1,
@@ -1660,12 +1660,12 @@ def data_yearly_evolution(request, year, type='all', divisor='bl', slide=True):
         if slide:
             today = datetime.datetime.now().replace(day=1, year=year)
             dates = Q()
-            for i in xrange(12):
+            for i in range(12):
                 dates |= Q(date__month=(today - relativedelta(months=i)).month,
                            date__year=(today - relativedelta(months=i)).year)
             d['value'] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(new_q & dates).distinct().count()
             dates = Q()
-            for i in xrange(12):
+            for i in range(12):
                 dates |= Q(date__month=(today - relativedelta(months=i)).month,
                            date__year=(today - relativedelta(months=i)).year - 1)
 
@@ -1700,9 +1700,9 @@ def data_yearly_incidents(request):
 
     dates = []
     today = datetime.date.today()
-    for i in xrange(12):
+    for i in range(12):
         dates.append(today - relativedelta(months=i + 1))
-    for i in xrange(12):
+    for i in range(12):
         chart_data.append({'date': str(dates[i].year) + "-" + str(dates[i].month),
                            today.year - 1: Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(date__year=dates[i].year, date__month=dates[i].month,
                                                                    confidentiality__lte=2).count()})
@@ -1804,7 +1804,7 @@ def data_yearly_bl_severity(request):
         d['entry'] = bl.name
 
         append = False
-        for i in xrange(4):
+        for i in range(4):
             d[str(i + 1) + '/4'] = bl.get_incident_count(q & Q(severity=i + 1))
             if d[str(i + 1) + '/4'] > 0:
                 append = True
@@ -1942,7 +1942,7 @@ def data_quarterly_bl(request, business_line, divisor, num_months=3, is_incident
     chart_data = []
 
     if divisor == 'incidents':
-        for i in xrange(num_months):
+        for i in range(num_months):
             d = {}
 
             today = datetime.datetime.today() - relativedelta(months=num_months - i)
@@ -1956,7 +1956,7 @@ def data_quarterly_bl(request, business_line, divisor, num_months=3, is_incident
             chart_data.append(d)
 
     elif divisor == 'severity':
-        for i in xrange(num_months):
+        for i in range(num_months):
             d = {}
 
             today = datetime.datetime.today() - relativedelta(months=num_months - i)
@@ -1975,7 +1975,7 @@ def data_quarterly_bl(request, business_line, divisor, num_months=3, is_incident
             chart_data.append(d)
 
     elif divisor == 'category':
-        for i in xrange(num_months):
+        for i in range(num_months):
             d = {}
 
             today = datetime.datetime.today() - relativedelta(months=num_months - i)
@@ -1989,7 +1989,7 @@ def data_quarterly_bl(request, business_line, divisor, num_months=3, is_incident
             chart_data.append(d)
 
     elif divisor == 'entity':
-        for i in xrange(num_months):
+        for i in range(num_months):
             d = {}
 
             today = datetime.datetime.today() - relativedelta(months=num_months - i)
@@ -2006,7 +2006,7 @@ def data_quarterly_bl(request, business_line, divisor, num_months=3, is_incident
             chart_data.append(d)
 
     elif divisor == 'actor':
-        for i in xrange(num_months):
+        for i in range(num_months):
             d = {}
 
             today = datetime.datetime.today() - relativedelta(months=num_months - i)
@@ -2020,7 +2020,7 @@ def data_quarterly_bl(request, business_line, divisor, num_months=3, is_incident
             chart_data.append(d)
 
     elif divisor == 'monitoring':
-        for i in xrange(num_months):
+        for i in range(num_months):
             d = {}
 
             today = datetime.datetime.today() - relativedelta(months=num_months - i)
@@ -2034,7 +2034,7 @@ def data_quarterly_bl(request, business_line, divisor, num_months=3, is_incident
             chart_data.append(d)
 
     elif divisor == 'open':
-        for i in xrange(num_months):
+        for i in range(num_months):
             d = {}
 
             today = datetime.datetime.today() - relativedelta(months=num_months - i)
@@ -2047,7 +2047,7 @@ def data_quarterly_bl(request, business_line, divisor, num_months=3, is_incident
             chart_data.append(d)
 
     elif divisor == 'blocked':
-        for i in xrange(num_months):
+        for i in range(num_months):
             d = {}
 
             today = datetime.datetime.today() - relativedelta(months=num_months - i)
@@ -2085,7 +2085,7 @@ def quarterly_major(request, start_date=None, num_months=3):
         today = datetime.datetime.strptime(start_date, "%Y-%m-%d")
 
     cert.append(['Category'])
-    for i in xrange(num_months):
+    for i in range(num_months):
         then = today - relativedelta(months=num_months - i)
         cert[0].append(cal[then.month - 1])
     cert[0].append('Total')
@@ -2095,7 +2095,7 @@ def quarterly_major(request, start_date=None, num_months=3):
         line.append(certcat.name)
         add = False
         total = 0
-        for i in xrange(num_months):
+        for i in range(num_months):
             then = today - relativedelta(months=num_months - i)
             q_date = q_certcat & Q(date__month=then.month, date__year=then.year)
             count = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(q_date & q_confid).count()
@@ -2111,16 +2111,16 @@ def quarterly_major(request, start_date=None, num_months=3):
             cert.append(line)
 
     bale.append(['Bale category'])
-    for i in xrange(num_months):
+    for i in range(num_months):
         then = today - relativedelta(months=num_months - i)
         bale[0].append(cal[then.month - 1])
 
     for balecat in balecats:
         line = []
         q_balecat = Q(category__bale_subcategory=balecat) & q_major
-        line.append(balecat.__unicode__)
+        line.append(str(balecat))
         add = False
-        for i in xrange(num_months):
+        for i in range(num_months):
             then = today - relativedelta(months=num_months - i)
             q_date = q_balecat & Q(date__month=then.month, date__year=then.year)
             count = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(q_date & q_confid).count()
@@ -2132,7 +2132,7 @@ def quarterly_major(request, start_date=None, num_months=3):
             bale.append(line)
 
     bls.append(['Business Line'])
-    for i in xrange(num_months):
+    for i in range(num_months):
         then = today - relativedelta(months=num_months - i)
         bls[0].append(cal[then.month - 1])
     bls[0].append('Total')
@@ -2140,11 +2140,11 @@ def quarterly_major(request, start_date=None, num_months=3):
     for bl in parent_bls:
         line = []
         q_bl = Q(main_business_lines=bl) & q_major
-        line.append(bl.__unicode__)
+        line.append(str(bl))
         add = False
 
         total = 0
-        for i in xrange(num_months):
+        for i in range(num_months):
             then = today - relativedelta(months=num_months - i)
             q_date = q_bl & Q(date__month=then.month, date__year=then.year)
 
@@ -2158,12 +2158,12 @@ def quarterly_major(request, start_date=None, num_months=3):
             bls.append(line)
 
     total_major = 0
-    for i in xrange(num_months):
+    for i in range(num_months):
         d = today - relativedelta(months=num_months - i)
         total_major += Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(date__month=d.month, date__year=d.year, confidentiality__lte=2).count()
 
     past_months = Q()
-    for i in xrange(num_months):
+    for i in range(num_months):
         d = today - relativedelta(months=num_months - i)
         past_months |= Q(date__month=d.month, date__year=d.year)
 

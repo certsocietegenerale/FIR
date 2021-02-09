@@ -17,10 +17,10 @@ class Nugget(models.Model):
     end_timestamp = models.DateTimeField(blank=True, null=True)
     interpretation = models.TextField()
 
-    incident = models.ForeignKey(Incident)
-    found_by = models.ForeignKey(User)
+    incident = models.ForeignKey(Incident, on_delete=models.CASCADE)
+    found_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
-    def __unicode__(self):
+    def __str__(self):
         return u"Nugget: {} in {} ({})".format(self.source, self.incident, self.interpretation)
 
 

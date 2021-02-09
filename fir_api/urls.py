@@ -4,6 +4,8 @@ from rest_framework.authtoken import views as token_views
 
 from fir_api import views
 
+app_name='fir_api'
+
 # automatic URL routing for API
 # include login URLs for the browsable API.
 router = routers.DefaultRouter(trailing_slash=False)

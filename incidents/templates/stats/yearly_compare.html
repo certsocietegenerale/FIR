@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load i18n %}
-{% load staticfiles %}
+{% load static %}
 
 {% block header %}
 <h1>{% blocktrans with current_year=year previous_year=year|add:-1 %}Comparison for {{ current_year }} - {{previous_year}}{% endblocktrans %}</h1>
