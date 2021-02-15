@@ -47,6 +47,7 @@ class IncidentViewSet(viewsets.ModelViewSet):
          subject = self.request.query_params.get('subject', None)
          description = self.request.query_params.get('description', None)
          bl = self.request.query_params.get('bl', None)
+         status = self.request.query_params.get('status', None)
          q = Q()
          if category is not None:
              q = q & Q(category__name__icontains=category)
@@ -56,6 +57,8 @@ class IncidentViewSet(viewsets.ModelViewSet):
              q = q & Q(description__icontains=description)
          if bl is not None:
              q = q & (Q(concerned_business_lines__in=bls) | Q(main_business_lines__in=[bls]))
+         if status is not None:
+             q = q & Q(status=status)
          queryset = queryset.filter(q)
          return queryset
 
