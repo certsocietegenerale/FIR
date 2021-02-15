@@ -57,6 +57,7 @@ class CommentsSerializer(serializers.ModelSerializer):
 class LabelSerializer(serializers.ModelSerializer):
     class Meta:
         model = Label
+        fields = ('id', 'name', 'group')
         read_only_fields = ('id',)
 
 
