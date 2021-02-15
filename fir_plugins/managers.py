@@ -1,6 +1,5 @@
 from django.db.models.manager import BaseManager
-from fir_plugins.querysets import QuerySetSequence
-
+from queryset_sequence import QuerySetSequence
 
 class LinkableManager(BaseManager):
     def __init__(self, instance, user=None, permission='incidents.view_incidents'):

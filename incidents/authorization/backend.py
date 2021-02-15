@@ -24,7 +24,7 @@ def check_support(user_obj, obj):
     """
     Combination of ``check_object_support`` and user check
     """
-    if user_obj.is_authenticated() and user_obj.is_active:
+    if user_obj.is_authenticated and user_obj.is_active:
         return check_object_support(obj)
     return False
 

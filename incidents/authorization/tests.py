@@ -33,9 +33,9 @@ class BusinessLineTestCase(TestCase):
 
         self.user5.groups.add(changer)
 
-        add = Permission.objects.get(codename='add_incident')
-        change = Permission.objects.get(codename='change_incident')
-        delete = Permission.objects.get(codename='delete_incident')
+        add = Permission.objects.get(codename='add_incident', content_type__app_label='incidents')
+        change = Permission.objects.get(codename='change_incident', content_type__app_label='incidents')
+        delete = Permission.objects.get(codename='delete_incident', content_type__app_label='incidents')
 
         adder.permissions.clear()
         adder.permissions.add(add)
@@ -74,7 +74,7 @@ class BusinessLineTestCase(TestCase):
 
 
 class IncidentTestCase(TestCase):
-    fixtures = ['incidents/fixtures/seed_data.json', ]
+    fixtures = ['incidents/fixtures/01_seed_data.json', ]
 
     def setUp(self):
         self.root_1 = models.BusinessLine.add_root(name='Root 1')
@@ -101,9 +101,9 @@ class IncidentTestCase(TestCase):
 
         self.user5.groups.add(changer)
 
-        add = Permission.objects.get(codename='add_incident')
-        change = Permission.objects.get(codename='change_incident')
-        delete = Permission.objects.get(codename='delete_incident')
+        add = Permission.objects.get(codename='add_incident', content_type__app_label='incidents')
+        change = Permission.objects.get(codename='change_incident', content_type__app_label='incidents')
+        delete = Permission.objects.get(codename='delete_incident', content_type__app_label='incidents')
 
         adder.permissions.clear()
         adder.permissions.add(add)
@@ -134,14 +134,14 @@ class IncidentTestCase(TestCase):
                                                                                 opened_by=self.admin, category=category,
                                                                                 detection=detection, severity=1)
         if created:
-            self.incident_root_1.concerned_business_lines = [self.root_1, ]
-            self.incident_root_1.main_business_lines = [self.root_1, ]
+            self.incident_root_1.concerned_business_lines.set([self.root_1, ])
+            self.incident_root_1.main_business_lines.set([self.root_1, ])
             self.incident_root_1.save()
-            self.incident_child_12.concerned_business_lines = [self.child12, ]
-            self.incident_child_12.main_business_lines = [self.root_1, ]
+            self.incident_child_12.concerned_business_lines.set([self.child12, ])
+            self.incident_child_12.main_business_lines.set([self.root_1, ])
             self.incident_child_12.save()
-            self.incident_child_22.concerned_business_lines = [self.child22, ]
-            self.incident_child_22.main_business_lines = [self.root_2, ]
+            self.incident_child_22.concerned_business_lines.set([self.child22, ])
+            self.incident_child_22.main_business_lines.set([self.root_2, ])
             self.incident_child_22.save()
 
     def test_superuser(self):
@@ -204,9 +204,9 @@ class QuerySetBLTestCase(TestCase):
 
         self.user5.groups.add(changer)
 
-        add = Permission.objects.get(codename='add_incident')
-        change = Permission.objects.get(codename='change_incident')
-        delete = Permission.objects.get(codename='delete_incident')
+        add = Permission.objects.get(codename='add_incident', content_type__app_label='incidents')
+        change = Permission.objects.get(codename='change_incident', content_type__app_label='incidents')
+        delete = Permission.objects.get(codename='delete_incident', content_type__app_label='incidents')
 
         adder.permissions.clear()
         adder.permissions.add(add)

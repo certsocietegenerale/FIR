@@ -11,3 +11,4 @@ whitenoise # useful for Heroku
 django-treebeard
 markdown2
 bleach
+django-querysetsequence

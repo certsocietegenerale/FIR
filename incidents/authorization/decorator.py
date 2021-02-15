@@ -1,3 +1,5 @@
+import functools
+
 from django.core.exceptions import PermissionDenied
 from django.db import models
 from django.db.models import Q
@@ -41,7 +43,7 @@ def has_perm(self, user, permission):
         f = self._meta.get_field(field)
         relation = getattr(self, field)
         if isinstance(f, models.ManyToManyField):
-            qs_filter = reduce(lambda x, y: x | y, [Q(path__startswith=path) for path in paths])
+            qs_filter = functools.reduce(lambda x, y: x | y, [Q(path__startswith=path) for path in paths])
             if relation.filter(qs_filter).distinct().exists():
                 return True
         elif isinstance(f, models.ForeignKey):

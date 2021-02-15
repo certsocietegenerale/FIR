@@ -1,6 +1,7 @@
 from django.conf.urls import url
 from incidents import views
 
+app_name='ajax'
 
 urlpatterns = [
     url(r'^comment/(?P<comment_id>\d+)$', views.update_comment, name='update_comment'),
