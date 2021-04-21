@@ -9,7 +9,7 @@ BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__fil
 # Django settings for fir project.
 
 
-ENFORCE_2FA = False
+ENFORCE_2FA = bool(strtobool(os.getenv('ENFORCE_2FA', 'False')))
 
 tf_error_message = """Django two factor is not installed and ENFORCE_2FA is set to True.
 Either set ENFORCE_2FA to False or pip install django-two-factor-auth
