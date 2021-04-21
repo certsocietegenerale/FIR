@@ -34,7 +34,7 @@ from django.template import Template
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.forms.models import model_to_dict, modelform_factory
 from django.utils.translation import ugettext_lazy as _
-from django.utils.http import is_safe_url
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.conf import settings
 from django.contrib import messages
 
@@ -135,7 +135,7 @@ if TF_INSTALLED:
                 self.redirect_field_name,
                 self.request.GET.get(self.redirect_field_name, '')
             )
-            if not is_safe_url(url=redirect_to, host=self.request.get_host()):
+            if not url_has_allowed_host_and_scheme(url=redirect_to, allowed_hosts=self.request.get_host()):
                 redirect_to = resolve_url(settings.LOGIN_REDIRECT_URL)
 
             is_auth = False
