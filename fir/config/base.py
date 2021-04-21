@@ -84,7 +84,7 @@ MIDDLEWARE = (
 
 if TF_INSTALLED:
     TF_MIDDLEWARE = ('django_otp.middleware.OTPMiddleware',)
-    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + TF_MIDDLEWARE
+    MIDDLEWARE = MIDDLEWARE + TF_MIDDLEWARE
 
 
 # Authentication and authorization backends
