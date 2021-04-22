@@ -3,6 +3,7 @@ from __future__ import absolute_import, unicode_literals
 import os
 from pkgutil import find_loader
 from importlib import import_module
+from distutils.util import strtobool
 
 BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
