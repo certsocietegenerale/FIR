@@ -96,11 +96,5 @@ LOGGING = {
     },
 }
 
-# Rest framework default pagination
-REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 100
-}
-
 # External URL of your FIR application (used in fir_notification to render full URIs in templates)
 #EXTERNAL_URL = 'http://fir.example.com'
