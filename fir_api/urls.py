@@ -16,6 +16,8 @@ router.register(r'artifacts', views.ArtifactViewSet)
 router.register(r'files', views.FileViewSet)
 router.register(r'comments', views.CommentViewSet)
 router.register(r'labels', views.LabelViewSet)
+router.register(r'attributes', views.AttributeViewSet)
+
 
 # urls for core FIR components
 urlpatterns = [

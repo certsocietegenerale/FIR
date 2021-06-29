@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from rest_framework import serializers
 
-from incidents.models import Incident, Artifact, Label, File, IncidentCategory, BusinessLine, Comments
+from incidents.models import Incident, Artifact, Label, File, IncidentCategory, BusinessLine, Comments, Attribute
 
 
 # serializes data from the FIR User model
@@ -74,3 +74,12 @@ class IncidentSerializer(serializers.ModelSerializer):
         model = Incident
         exclude = ['main_business_lines', 'artifacts']
         read_only_fields = ('id', 'opened_by', 'main_business_lines', 'file_set')
+
+
+# FIR attribute model
+
+class AttributeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Attribute
+        fields = ('id', 'name', 'value', 'incident')
+        read_only_fields = ('id', )
