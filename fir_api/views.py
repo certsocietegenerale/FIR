@@ -18,10 +18,10 @@ from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework import renderers
 
-from fir_api.serializers import UserSerializer, IncidentSerializer, ArtifactSerializer, FileSerializer, CommentsSerializer, LabelSerializer, AttributeSerializer
+from fir_api.serializers import UserSerializer, IncidentSerializer, ArtifactSerializer, FileSerializer, CommentsSerializer, LabelSerializer, AttributeSerializer, BusinessLineSerializer
 from fir_api.permissions import IsIncidentHandler
 from fir_artifacts.files import handle_uploaded_file, do_download
-from incidents.models import Incident, Artifact, Comments, File, Label, Attribute
+from incidents.models import Incident, Artifact, Comments, File, Label, Attribute, BusinessLine
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -124,7 +124,13 @@ class AttributeViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated, IsIncidentHandler)
 
     def perform_create(self, serializer):
-        serializer.save(opened_by=self.request.user)
+        serializer.save()
+
+
+class BusinessLinesViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = BusinessLine.objects.all()
+    serializer_class = BusinessLineSerializer
+    permission_classes = (IsAuthenticated, IsIncidentHandler)
 
 # Token Generation ===========================================================
 
