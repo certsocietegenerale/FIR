@@ -89,3 +89,9 @@ class BusinessLineSerializer(serializers.ModelSerializer):
         model = Attribute
         fields = ('id', 'name')
         read_only_fields = ('id', 'name')
+
+class IncidentCategoriesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = IncidentCategory
+        fields = ('id', 'name', 'is_major')
+        read_only_fields = ('id', 'name', 'is_major')
