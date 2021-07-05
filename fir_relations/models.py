@@ -6,13 +6,11 @@ from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
-from django.utils.encoding import python_2_unicode_compatible
 
 from fir_plugins.links import registry
 from incidents.models import Incident, Comments
 
 
-@python_2_unicode_compatible
 class TemplateRelation(object):
     def __init__(self, relation, request, relation_type='target'):
         self.relation = relation

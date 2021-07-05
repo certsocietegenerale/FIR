@@ -1,6 +1,7 @@
+import functools
+
 from django.contrib.auth.models import Permission
 from django.db import models
-from django.utils import six
 
 from incidents.authorization import AuthorizationManager
 
@@ -59,7 +60,7 @@ class AuthorizationModelMixin(models.Model):
         paths = cls.get_authorization_paths(user, permission=permission)
         if not paths.count():
             return lookup
-        lookup |= reduce(lambda x, y: x | y, [models.Q(**{'path__startswith': path}) for path in paths])
+        lookup |= functools.reduce(lambda x, y: x | y, [models.Q(**{'path__startswith': path}) for path in paths])
         return lookup
 
     @classmethod
@@ -68,11 +69,11 @@ class AuthorizationModelMixin(models.Model):
         lookup = models.Q(pk=0)
         if not paths.count():
             return lookup
-        if isinstance(fields, six.string_types):
+        if isinstance(fields, str):
             fields = (fields,)
         for field in fields:
             key = '{field}__path__startswith'.format(field=field)
-            lookup |= reduce(lambda x, y: x | y, [models.Q(**{key: path}) for path in paths])
+            lookup |= functools.reduce(lambda x, y: x | y, [models.Q(**{key: path}) for path in paths])
         return lookup
 
     def has_perm(self, user, permission):

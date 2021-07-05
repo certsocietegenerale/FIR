@@ -67,7 +67,7 @@ services:
       - fir_db
       - fir_redis
     env_file:
-      - fir.env  
+      - fir.env
     networks:
       backend.fir:
     

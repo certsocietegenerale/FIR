@@ -5,17 +5,18 @@ from django.contrib import admin
 from fir.config.base import INSTALLED_APPS, TF_INSTALLED
 from incidents import views
 
+
 # urls for core FIR components
 urlpatterns = [
     url(r'^logout/', views.user_logout, name='logout'),
-    url(r'^incidents/', include('incidents.urls', namespace='incidents')),
+    url(r'^incidents/', include(('incidents.urls', 'incidents'), namespace='incidents')),
     url(r'^search/$', views.search, name='search'),
-    url(r'^events/', include('incidents.custom_urls.events', namespace='events')),
-    url(r'^stats/', include('incidents.custom_urls.stats', namespace='stats')),
-    url(r'^ajax/', include('incidents.custom_urls.ajax', namespace='ajax')),
-    url(r'^user/', include('incidents.custom_urls.user', namespace='user')),
-    url(r'^dashboard/', include('incidents.custom_urls.dashboard', namespace='dashboard')),
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^events/', include(('incidents.custom_urls.events', 'url_events'), namespace='events')),
+    url(r'^stats/', include(('incidents.custom_urls.stats', 'stats'), namespace='stats')),
+    url(r'^ajax/', include(('incidents.custom_urls.ajax', 'ajax'), namespace='ajax')),
+    url(r'^user/', include(('incidents.custom_urls.user', 'user'), namespace='user')),
+    url(r'^dashboard/', include(('incidents.custom_urls.dashboard', 'dashboard'), namespace='dashboard')),
+    url(r'^admin/', admin.site.urls),
     url(r'^$', views.dashboard_main),
 ]
 
@@ -39,4 +40,4 @@ for app in INSTALLED_APPS:
         app_name = app[4:]
         app_urls = '{}.urls'.format(app)
         if find_loader(app_urls):
-            urlpatterns.append(url('^{}/'.format(app_name), include(app_urls, namespace=app_name)))
+            urlpatterns.append(url('^{}/'.format(app_name), include((app_urls, app), namespace=app_name)))

@@ -2,6 +2,8 @@ from django.conf.urls import url
 
 from incidents import views
 
+app_name = "incidents"
+
 urlpatterns = [
     url(r'^$', views.index, {'is_incident': True}, name='index'),
     url(r'^all/$', views.incidents_all, name='all'),

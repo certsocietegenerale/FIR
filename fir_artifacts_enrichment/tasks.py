@@ -15,7 +15,7 @@ ENRICHMENT_FUNCTIONS = {
 @celery_app.task
 def enrich_artifact(artifact_id):
     artifact = Artifact.objects.get(pk=artifact_id)
-    print "Enrichment for {}".format(artifact.value)
+    print("Enrichment for {}".format(artifact.value))
 
     if artifact.type in ENRICHMENT_FUNCTIONS:
         results = ENRICHMENT_FUNCTIONS[artifact.type](artifact.value)

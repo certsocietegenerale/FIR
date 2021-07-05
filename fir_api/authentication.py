@@ -13,26 +13,15 @@ class TokenAuthentication(authentication.TokenAuthentication):
 
     def authenticate(self, request):
         meta = api_settings.user_settings['TOKEN_AUTHENTICATION_META']
-        auth = request.META.get(meta)
-        
+        auth = request.META.get(meta)        
         if not auth:
             return None
-
-        auth = auth.split(' ')
-        if auth[0].lower() != self.keyword.lower().encode():
-            return None
-        
-        if len(auth) == 1:
-            msg = _('Invalid token header. No credentials provided.')
-            raise exceptions.AuthenticationFailed(msg)
-        elif len(auth) > 2:
-            msg = _('Invalid token header. Token string should not contain spaces.')
-            raise exceptions.AuthenticationFailed(msg)
-
         try:
-            token = auth[1].decode()
-        except UnicodeError:
-            msg = _('Invalid token header. Token string should not contain invalid characters.')
+            auth_keyword, auth_token = auth.split(' ')
+        except ValueError:
+            msg = "Invalid token header. Header must be defined the following way: 'Token hexstring'"
             raise exceptions.AuthenticationFailed(msg)
-
-        return self.authenticate_credentials(token)
+        if auth_keyword.lower() != self.keyword.lower():
+            msg = f"Provided keyword '{auth_keyword.lower()}' does not match defined one '{self.keyword.lower()}'"
+            raise exceptions.AuthenticationFailed(msg)
+        return self.authenticate_credentials(auth_token)

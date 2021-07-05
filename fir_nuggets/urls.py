@@ -2,6 +2,8 @@ from django.conf.urls import url
 
 from fir_nuggets import views
 
+app_name='fir_nuggets'
+
 urlpatterns = [
     url(r'^(?P<event_id>\d+)/list', views.list, name='list'),
     url(r'^(?P<event_id>\d+)/new', views.new, name='new'),

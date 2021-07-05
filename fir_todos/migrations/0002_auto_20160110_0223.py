@@ -17,9 +17,9 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('name', models.CharField(max_length=100)),
-                ('category', models.ForeignKey(blank=True, to='incidents.IncidentCategory', null=True)),
+                ('category', models.ForeignKey(blank=True, to='incidents.IncidentCategory', on_delete=models.deletion.CASCADE, null=True)),
                 ('concerned_business_lines', models.ManyToManyField(to='incidents.BusinessLine', null=True, blank=True)),
-                ('detection', models.ForeignKey(blank=True, to='incidents.Label', null=True)),
+                ('detection', models.ForeignKey(blank=True, to='incidents.Label', on_delete=models.deletion.CASCADE, null=True)),
             ],
             options={
             },
@@ -28,7 +28,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='todoitem',
             name='incident',
-            field=models.ForeignKey(blank=True, to='incidents.Incident', null=True),
+            field=models.ForeignKey(blank=True, to='incidents.Incident', on_delete=models.deletion.CASCADE, null=True),
             preserve_default=True,
         ),
     ]

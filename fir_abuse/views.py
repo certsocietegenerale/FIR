@@ -39,7 +39,7 @@ def send_email(request):
 
             return HttpResponse(dumps({'status': 'ok'}), content_type="application/json")
 
-        except Exception, e:
+        except Exception as e:
             return HttpResponse(dumps({'status': 'ko', 'error': str(e)}), content_type="application/json")
 
     return HttpResponseBadRequest(dumps({'status': 'ko'}), content_type="application/json")

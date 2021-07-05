@@ -3,13 +3,14 @@ from __future__ import absolute_import, unicode_literals
 import os
 from pkgutil import find_loader
 from importlib import import_module
+from distutils.util import strtobool
 
 BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 # Django settings for fir project.
 
 
-ENFORCE_2FA = False
+ENFORCE_2FA = bool(strtobool(os.getenv('ENFORCE_2FA', 'False')))
 
 tf_error_message = """Django two factor is not installed and ENFORCE_2FA is set to True.
 Either set ENFORCE_2FA to False or pip install django-two-factor-auth
@@ -71,7 +72,7 @@ STATICFILES_FINDERS = (
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -84,7 +85,7 @@ MIDDLEWARE_CLASSES = (
 
 if TF_INSTALLED:
     TF_MIDDLEWARE = ('django_otp.middleware.OTPMiddleware',)
-    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES + TF_MIDDLEWARE
+    MIDDLEWARE = MIDDLEWARE + TF_MIDDLEWARE
 
 
 # Authentication and authorization backends
