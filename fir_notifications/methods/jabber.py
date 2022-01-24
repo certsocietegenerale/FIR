@@ -7,7 +7,7 @@ from django import forms
 from fir_notifications.methods import NotificationMethod
 from fir_notifications.methods.utils import request
 from fir_plugins.links import registry as link_registry
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 
 class Client(xmpp.Client):

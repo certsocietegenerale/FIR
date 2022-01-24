@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.conf import settings
-from django.utils.translation import ugettext_lazy as _, pgettext_lazy
+from django.utils.translation import gettext_lazy as _, pgettext_lazy
 
 from fir_plugins.admin import MarkdownModelAdmin
 from fir_notifications.models import MethodConfiguration, NotificationTemplate, NotificationPreference
