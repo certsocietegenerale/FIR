@@ -3,7 +3,7 @@ dj-email-url
 environs
 future
 mysqlclient
-Django
+Django==3.2.11
 djangorestframework
 pymongo
 python-dateutil
