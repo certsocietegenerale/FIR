@@ -46,9 +46,9 @@ CONFIDENTIALITY_LEVEL = (
 # Special Model class that handles signals
 
 
-model_created = Signal(providing_args=['instance'])
-model_updated = Signal(providing_args=['instance'])
-model_status_changed = Signal(providing_args=['instance', 'previous_status'])
+model_created = Signal()
+model_updated = Signal()
+model_status_changed = Signal()
 
 
 class FIRModel:
