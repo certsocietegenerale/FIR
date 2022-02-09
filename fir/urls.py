@@ -27,7 +27,7 @@ if TF_INSTALLED:
     for tf_url in tf_urls[0]:
         if tf_url.name != "login":
             custom_urls.append(tf_url)
-    custom_urls.append(re_path(regex=r'^account/login/$',
+    custom_urls.append(re_path(r'^account/login/$',
                            view=views.CustomLoginView.as_view(),
                            name='login',))
     urlpatterns.append(re_path(r'', include((custom_urls, 'two_factor'))))
