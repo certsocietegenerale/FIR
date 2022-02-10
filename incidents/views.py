@@ -510,7 +510,7 @@ def add_attribute(request, incident_id, authorization_target=None):
         a.incident = i
         a.save()
 
-        if request.is_ajax():
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             return render(request, 'events/_attributes.html', {'attributes': i.attribute_set.all(), 'event': i})
 
     return redirect('incidents:details', incident_id=incident_id)
@@ -662,7 +662,7 @@ def search(request):
     if ('q' in request.GET) and request.GET['q'].strip():
         query_string = request.GET['q']
 
-        if request.is_ajax():
+        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
             asc = request.GET.get('asc', 'false')
             q = Q()
 
@@ -797,7 +797,7 @@ def search(request):
     else:
         return redirect('incidents:index')
 
-    if request.is_ajax():
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
         query_string = ''
         found_entries = None
         if ('q' in request.GET) and request.GET['q'].strip():
