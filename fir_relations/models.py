@@ -1,4 +1,3 @@
-from __future__ import unicode_literals
 
 from django.db import models
 from django.db.models.signals import post_save
@@ -66,7 +65,7 @@ class TemplateRelation(object):
         return self.object._meta.verbose_name
 
     def __str__(self):
-        return unicode(self.object)
+        return self.object
 
 
 class RelationQuerySet(models.QuerySet):

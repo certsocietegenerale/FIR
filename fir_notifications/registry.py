@@ -1,14 +1,12 @@
 from collections import OrderedDict
 
 from django.apps import apps
-from django.utils.encoding import python_2_unicode_compatible
 from django.conf import settings
 
 from fir_notifications.methods.email import EmailMethod
 from fir_notifications.methods.jabber import XmppMethod
 
 
-@python_2_unicode_compatible
 class RegisteredEvent(object):
     def __init__(self, name, model, verbose_name=None, section=None):
         self.name = name
