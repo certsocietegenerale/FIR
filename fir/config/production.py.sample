@@ -7,6 +7,7 @@ from fir.config.base import *
 ################################################################
 
 ALLOWED_HOSTS = ['FIR.DOMAIN.COM']
+CSRF_TRUSTED_ORIGINS = ['http://' + h for h in ALLOWED_HOSTS] + ['https://' + h for h in ALLOWED_HOSTS]
 
 DATABASES = {
     'default': {

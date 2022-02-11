@@ -1,4 +1,4 @@
-from django.conf.urls import include, url
+from django.urls import include, re_path
 from rest_framework import routers
 from rest_framework.authtoken import views as token_views
 
@@ -22,6 +22,6 @@ router.register(r'incident_categories', views.IncidentCategoriesViewSet)
 
 # urls for core FIR components
 urlpatterns = [
-    url(r'^', include(router.urls)),
-    url(r'^token/', token_views.obtain_auth_token),
+    re_path(r'^', include(router.urls)),
+    re_path(r'^token/', token_views.obtain_auth_token),
 ]

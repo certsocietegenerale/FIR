@@ -5,6 +5,7 @@ networks:
 
 volumes:
   static-content:
+  mariadb-data:
 
 services:
   fir:
@@ -40,7 +41,7 @@ services:
     expose:
       - 3306    
     volumes:
-      - /tmp/data:/var/lib/mysql
+      - mariadb-data:/var/lib/mysql
     environment: 
       MYSQL_ROOT_PASSWORD: toor
       MYSQL_DATABASE: fir

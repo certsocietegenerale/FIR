@@ -187,7 +187,7 @@ INCIDENT_VIEWER_CAN_COMMENT = True
 MARKDOWN_SAFE_MODE = True
 
 ALLOWED_HOSTS = ["127.0.0.1", "0.0.0.0"]
-
+CSRF_TRUSTED_ORIGINS = ['http://' + h for h in ALLOWED_HOSTS] + ['https://' + h for h in ALLOWED_HOSTS]
 
 # Allowed HTML tags in Markdown output (requires MARKDOWN_SAFE_MODE to be True)
 MARKDOWN_ALLOWED_TAGS = [

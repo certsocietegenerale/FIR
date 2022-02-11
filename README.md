@@ -27,7 +27,7 @@ A dedicated users mailing list is available https://groups.google.com/d/forum/fi
 
 # Technical specs
 
-FIR is written in Python (but you probably already knew that), using Django 1.9. It uses Bootstrap 3 and some Ajax and d3js to make it pretty. We use it with a MySQL back-end, but feel free to use any other DB adaptor you might want - as long as it's compatible with Django, you shouldn't run into any major issues.
+FIR is written in Python (but you probably already knew that), using Django. It uses Bootstrap and some Ajax and d3js to make it pretty. We use it with a MySQL back-end, but feel free to use any other DB adaptor you might want - as long as it's compatible with Django, you shouldn't run into any major issues.
 
 FIR is not greedy performance-wise. It will run smoothly on a Ubuntu 14.04 virtual machine with 1 core, a 40 GB disk and 1 GB RAM.
 

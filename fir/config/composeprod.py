@@ -11,8 +11,9 @@ env.read_env(env.str('ENV_PATH', '.env'), recurse=False)
 ##### Change these values
 ################################################################
 
-# Configure ALLOWED_HOSTS
+# Configure ALLOWED_HOSTS, CSRF_TRUSTED_ORIGINS
 ALLOWED_HOSTS = env.list('ALLOWED_HOSTS', ['localhost', '127.0.0.1'])
+CSRF_TRUSTED_ORIGINS = ['http://' + h for h in ALLOWED_HOSTS] + ['https://' + h for h in ALLOWED_HOSTS]
 
 # Configure SECRET KEY
 SECRET_KEY = env('SECRET_KEY', 'I 4m tH3 d3f4u17 s3cr37')
