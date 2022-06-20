@@ -75,7 +75,7 @@ if not settings.NOTIFICATIONS_MERGE_INCIDENTS_AND_EVENTS:
     @notification_event('event:commented', post_save, Comments, verbose_name=_('Event commented'),
                         section=_('Event'))
     def event_commented(sender, instance, **kwargs):
-        if not instance.incident and instance.incident.is_incident:
+        if instance.is_incident:
             return None, None
         if instance.action.name in ['Opened', 'Blocked', 'Closed']:
             return None, None
