@@ -12,3 +12,5 @@ django-treebeard
 markdown2
 bleach
 django-querysetsequence
+django-otp-yubikey
+django-two-factor-auth[phonenumbers]

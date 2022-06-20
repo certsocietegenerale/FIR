@@ -122,6 +122,12 @@ if TF_INSTALLED:
         )
 
         def __init__(self, **kwargs):
+            try:
+                from otp_yubikey.models import ValidationService
+                if ValidationService.objects.count() == 0:
+                    ValidationService.objects.create(name='default', use_ssl=True, param_sl='', param_timeout='') # Validate Yubikey against YubiCloud by default
+            except ImportError:
+                pass
             super(CustomLoginView, self).__init__(**kwargs)
 
 

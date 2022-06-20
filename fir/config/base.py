@@ -134,7 +134,7 @@ if TF_INSTALLED:
     INSTALLED_APPS = INSTALLED_APPS + TF_APPS
     try:
         import otp_yubikey
-        INSTALLED_APPS = INSTALLED_APPS + ('otp_yubikey',)
+        INSTALLED_APPS = INSTALLED_APPS + ('otp_yubikey', 'two_factor.plugins.yubikey')
     except ImportError:
         pass
 
