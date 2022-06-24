@@ -5,6 +5,7 @@ from django.conf import settings
 
 from fir_notifications.methods.email import EmailMethod
 from fir_notifications.methods.jabber import XmppMethod
+from fir_notifications.methods.webhook import WebhookMethod
 
 
 class RegisteredEvent(object):
@@ -81,3 +82,4 @@ class Notifications(object):
 registry = Notifications()
 registry.register_method(EmailMethod())
 registry.register_method(XmppMethod())
+registry.register_method(WebhookMethod())
