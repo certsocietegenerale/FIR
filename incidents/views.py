@@ -131,6 +131,12 @@ if TF_INSTALLED:
             super(CustomLoginView, self).__init__(**kwargs)
 
 
+        def post(self, *args, **kwargs):
+            if not self.request.POST.get('auth-remember', None) and not 'token' in self.request.POST.get('custom_login_view-current_step', []):
+                self.request.session.set_expiry(0)
+            return super(CustomLoginView, self).post(**kwargs)
+
+
         def done(self, form_list, **kwargs):
             """
             Login the user and redirect to the desired page.
@@ -143,8 +149,6 @@ if TF_INSTALLED:
             )
             if not url_has_allowed_host_and_scheme(url=redirect_to, allowed_hosts=self.request.get_host()):
                 redirect_to = resolve_url(settings.LOGIN_REDIRECT_URL)
-            if not self.request.POST.get('auth-remember', None):
-                self.request.session.set_expiry(0)
 
             is_auth = False
             user = self.get_user()
