@@ -143,6 +143,8 @@ if TF_INSTALLED:
             )
             if not url_has_allowed_host_and_scheme(url=redirect_to, allowed_hosts=self.request.get_host()):
                 redirect_to = resolve_url(settings.LOGIN_REDIRECT_URL)
+            if not self.request.POST.get('auth-remember', None):
+                self.request.session.set_expiry(0)
 
             is_auth = False
             user = self.get_user()
@@ -157,8 +159,6 @@ if TF_INSTALLED:
             else:
                 redirect_to = resolve_url("dashboard:main")
                 is_auth = True
-            if not self.request.POST.get('auth-remember', None):
-                self.request.session.set_expiry(0)
             try:
                 Profile.objects.get(user=user)
             except ObjectDoesNotExist:
