@@ -157,7 +157,7 @@ if TF_INSTALLED:
             else:
                 redirect_to = resolve_url("dashboard:main")
                 is_auth = True
-            if not self.request.POST.get('remember', None):
+            if not self.request.POST.get('auth-remember', None):
                 self.request.session.set_expiry(0)
             try:
                 Profile.objects.get(user=user)

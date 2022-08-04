@@ -189,6 +189,12 @@ MARKDOWN_SAFE_MODE = True
 ALLOWED_HOSTS = ["127.0.0.1", "0.0.0.0"]
 CSRF_TRUSTED_ORIGINS = ['http://' + h for h in ALLOWED_HOSTS] + ['https://' + h for h in ALLOWED_HOSTS]
 
+CSRF_COOKIE_HTTPONLY = True
+
+if bool(strtobool(os.getenv('HTTPS', 'False'))):
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+
 # Allowed HTML tags in Markdown output (requires MARKDOWN_SAFE_MODE to be True)
 MARKDOWN_ALLOWED_TAGS = [
     'a',
