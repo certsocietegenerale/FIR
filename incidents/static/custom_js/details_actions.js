@@ -33,7 +33,7 @@ $(function () {
 		$('#filetable').append("<thead><tr><th>Filename</th><th>Description</th></tr></thead>");
 		for (var i = 0; i < files.length; i++) {
 			var input = "<input type='text' name='description' class='input-medium' />";
-			$('#filetable').append("<tr><td>"+files[i].name+"</td><td>"+input+"</td></tr>");
+			$('#filetable').append("<tr><td>"+files[i].name.replace(/</g, "&lt;").replace(/>/g, "&gt;")+"</td><td>"+input+"</td></tr>");
 		}
 	})
 
