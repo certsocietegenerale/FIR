@@ -99,3 +99,9 @@ LOGGING = {
 
 # External URL of your FIR application (used in fir_notification to render full URIs in templates)
 #EXTERNAL_URL = 'http://fir.example.com'
+
+# Show incident IDs in views?
+INCIDENT_SHOW_ID = env.bool('INCIDENT_SHOW_ID', default=False)
+
+# Incident ID prefix in views and links
+INCIDENT_ID_PREFIX = env('INCIDENT_ID_PREFIX', "FIR-")
