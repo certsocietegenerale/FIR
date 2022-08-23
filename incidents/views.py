@@ -691,6 +691,16 @@ def search(request):
             except Exception:
                 pass
 
+            fir_id = re.search("id:({})?(\d+)".format(settings.INCIDENT_ID_PREFIX), query_string)
+            if fir_id:
+                q = q & Q(id=fir_id.group(2))
+                query_string = query_string.replace('id:' + str(fir_id.group(1) or '') + fir_id.group(2), '')
+
+            fir_id = re.search("^({})?(\d+)$".format(settings.INCIDENT_ID_PREFIX), query_string)
+            if fir_id:
+                q = q & Q(id=fir_id.group(2))
+                query_string = query_string.replace(str(fir_id.group(1) or '') + fir_id.group(2), '')
+
             opened_by = re.search("opened_by:(\S+)", query_string)
             if opened_by:
                 q = q & Q(opened_by__username=opened_by.group(1))
