@@ -49,14 +49,14 @@ def get_template(request, incident_id, template_type, bl=None, authorization_tar
     if not bl:
         q_bl = Q(business_line__in=i.concerned_business_lines.all())
         bl_name = i.get_business_lines_names()
+        parents = list(set(i.concerned_business_lines.all()))
     else:
         bl = get_object_or_404(BusinessLine, pk=bl)
         q_bl = Q(business_line=bl)
         bl_name = bl.name
+        parents = [bl]
 
     rec_template = get_rec_template(q_bl & Q(type=template_type))
-
-    parents = list(set(i.concerned_business_lines.all()))
 
     while not rec_template and len(parents):
         parents = list(set([b.get_parent() for b in parents if not b.is_root()]))
