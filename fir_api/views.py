@@ -56,7 +56,7 @@ class IncidentViewSet(viewsets.ModelViewSet):
          if description is not None:
              q = q & Q(description__icontains=description)
          if bl is not None:
-             q = q & (Q(concerned_business_lines__in=bls) | Q(main_business_lines__in=[bls]))
+             q = q & (Q(concerned_business_lines__in=bl) | Q(main_business_lines__in=[bl]))
          if status is not None:
              q = q & Q(status=status)
          queryset = queryset.filter(q)
