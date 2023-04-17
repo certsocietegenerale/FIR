@@ -25,6 +25,7 @@ from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 
 from django.urls import reverse
 from django.db.models import Q, Max
+from django.db.models.query import QuerySet
 from django.http import HttpResponse, HttpResponseServerError
 from django.shortcuts import get_object_or_404, render, redirect, resolve_url
 from django.template import RequestContext
@@ -938,10 +939,14 @@ def close_old(request):
 def quarterly_bl_stats(request, business_line=None, num_months=3):
     bls = BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics')
 
+    bl_all = BusinessLine(name="All")
     try:
         bl = BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics').get(name=business_line)
     except:
-        bl = bls[0]
+        bl = BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics').filter(depth=1)
+
+    len(bls) # Trick to trigger evaluation
+    bls._result_cache.insert(0, bl_all)
 
     today = datetime.date.today()
     q_month = Q()
@@ -953,8 +958,15 @@ def quarterly_bl_stats(request, business_line=None, num_months=3):
         q_month |= Q(date__month=month, date__year=year)
 
     q = q_month & Q(confidentiality__lte=2)
-    qbl = (
-        Q(concerned_business_lines=bl) | Q(main_business_lines=bl) | Q(concerned_business_lines__in=bl.get_children()))
+
+    if isinstance(bl, QuerySet):
+        qbl = Q()
+        for obj in bl:
+            qbl |= Q(concerned_business_lines=obj) | Q(main_business_lines=obj) | Q(concerned_business_lines__in=obj.get_children())
+        bl = bl_all
+    else:
+        qbl = (
+            Q(concerned_business_lines=bl) | Q(main_business_lines=bl) | Q(concerned_business_lines__in=bl.get_children()))
     q &= qbl
 
     incident_list = [i for i in
@@ -1900,13 +1912,23 @@ def data_yearly_bl_plan(request):
 @fir_auth_required
 @user_passes_test(can_view_statistics)
 def data_incident_variation(request, business_line, num_months=3):
-    bl = get_object_or_404(BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics'), name=business_line)
+    if business_line != "All":
+        bl = get_object_or_404(BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics'), name=business_line)
+    else:
+        bl = BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics').filter(depth=1)
 
     categories = IncidentCategory.objects.all()
 
     chart_data = []
 
-    q = Q(concerned_business_lines=bl) | Q(main_business_lines=bl) | Q(concerned_business_lines__in=bl.get_children())
+    if isinstance(bl, QuerySet):
+        q = Q()
+        for obj in bl:
+            q |= Q(concerned_business_lines=obj) | Q(main_business_lines=obj) | Q(concerned_business_lines__in=obj.get_children())
+    else:
+        q = Q(concerned_business_lines=bl) | Q(main_business_lines=bl) | Q(concerned_business_lines__in=bl.get_children())
+
+
     q &= Q(confidentiality__lte=2)
 
     total = 0
@@ -1952,11 +1974,18 @@ def data_incident_variation(request, business_line, num_months=3):
 @fir_auth_required
 @user_passes_test(can_view_statistics)
 def data_quarterly_bl(request, business_line, divisor, num_months=3, is_incident=True):
-    bl = get_object_or_404(BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics'),
-                           name=business_line)
-    children = bl.get_children()
+    if business_line != "All":
+        bl = get_object_or_404(BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics'), name=business_line)
+    else:
+        bl = BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics').filter(depth=1)
 
-    q = Q(main_business_lines=bl) | Q(concerned_business_lines=bl) | Q(concerned_business_lines__in=children)
+    if isinstance(bl, QuerySet):
+        q = Q()
+        for obj in bl:
+            q |= Q(concerned_business_lines=obj) | Q(main_business_lines=obj) | Q(concerned_business_lines__in=obj.get_children())
+    else:
+        q = Q(concerned_business_lines=bl) | Q(main_business_lines=bl) | Q(concerned_business_lines__in=bl.get_children())
+
     q = q & Q(confidentiality__lte=2)
 
     chart_data = []
@@ -2014,14 +2043,21 @@ def data_quarterly_bl(request, business_line, divisor, num_months=3, is_incident
 
             today = datetime.datetime.today() - relativedelta(months=num_months - i)
             d['entry'] = cal[today.month - 1]
-
             q_date = q & Q(date__month=today.month, date__year=today.year)
-            d[bl.name] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
-                q_date).distinct().count()
 
-            for entity in bl.get_children():
-                d[entity.name] = entity.get_incident_count(q_date)
-                d[bl.name] -= d[entity.name]
+            if isinstance(bl, QuerySet):
+                for obj in bl:
+                   d[obj.name] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
+                       q_date).distinct().count()
+                   for entity in obj.get_children():
+                       d[entity.name] = entity.get_incident_count(q_date)
+                       d[obj.name] -= d[entity.name]
+            else:
+                d[bl.name] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
+                    q_date).distinct().count()
+                for entity in bl.get_children():
+                    d[entity.name] = entity.get_incident_count(q_date)
+                    d[bl.name] -= d[entity.name]
 
             chart_data.append(d)
 
