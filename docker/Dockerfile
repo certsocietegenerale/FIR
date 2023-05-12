@@ -13,6 +13,7 @@ RUN apk add --update git \
     virtualenv venv && \
     source venv/bin/activate && \
     find . -name requirements.txt -exec pip install -r {} \; && \
+    pip install uwsgitop==0.11 && \
     rm -rf .env .git .travis.yml docker Procfile README.md requirements.txt runtime.txt && \
     mv fir/config/installed_apps.txt.sample fir/config/installed_apps.txt && \
     deactivate
