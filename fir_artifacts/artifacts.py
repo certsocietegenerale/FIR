@@ -1,4 +1,5 @@
 import re
+from urllib.parse import urlparse
 
 from django import template
 from django.template.loader import get_template
@@ -13,6 +14,13 @@ def install(artifact_class):
     INSTALLED_ARTIFACTS[artifact_class.key] = artifact_class
 
 
+def _hostname_from_url(url):
+    try:
+        return urlparse(url).hostname
+    except Exception:
+        return None
+
+
 def find(data):
     from fir_artifacts.models import ArtifactBlacklistItem
 
@@ -20,7 +28,15 @@ def find(data):
     for key in INSTALLED_ARTIFACTS:
         blacklist = ArtifactBlacklistItem.objects.filter(type=key).values_list('value', flat=True)
         values = INSTALLED_ARTIFACTS[key].find(data)
-        values = [v for v in values if v not in blacklist]
+        if key == "url":
+            blacklist_hostname = ArtifactBlacklistItem.objects.filter(type="hostname").values_list(
+                'value', flat=True
+            )
+            values = [
+                v for v in values if v not in blacklist and _hostname_from_url(v) not in blacklist_hostname
+            ]
+        else:
+            values = [v for v in values if v not in blacklist]
         result[key] = values
 
     return result
