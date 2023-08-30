@@ -86,6 +86,7 @@ def get_template(request, incident_id, template_type, bl=None, authorization_tar
         'phishing_url': i.subject.replace('http://', "hxxp://").replace('https://', 'hxxps://'),
         'artifacts': artifacts,
         'incident_id': i.id,
+	'severity': i.severity,
         'enrich': enrich
     })
 
