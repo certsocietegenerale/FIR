@@ -36,12 +36,8 @@ LOG_ACTIONS = (
     ("LO", "Logged out"),
 )
 
-CONFIDENTIALITY_LEVEL = (
-    (0, "C0"),
-    (1, "C1"),
-    (2, "C2"),
-    (3, "C3"),
-)
+CONFIDENTIALITY_LEVEL = [(i, settings.INCIDENT_CONFIDENTIALITY_LEVEL[i])
+                         for i in range(0, len(settings.INCIDENT_CONFIDENTIALITY_LEVEL))]
 
 # Special Model class that handles signals
 
@@ -66,6 +62,9 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     incident_number = models.IntegerField(default=50)
     hide_closed = models.BooleanField(default=False)
+    confidentiality = models.IntegerField(choices=CONFIDENTIALITY_LEVEL,
+                                          default=settings.INCIDENT_DEFAULT_USER_CONFIDENTIALITY,
+                                          verbose_name=_(u"security clearance"))
 
     def __str__(self):
         return u"Profile for user '{}'".format(self.user)
@@ -167,7 +166,8 @@ class IncidentCategory(models.Model):
 # Core models ================================================================
 
 @tree_authorization(fields=['concerned_business_lines', ], tree_model='incidents.BusinessLine',
-                    owner_field='opened_by', owner_permission=settings.INCIDENT_CREATOR_PERMISSION)
+                    owner_field='opened_by', owner_permission=settings.INCIDENT_CREATOR_PERMISSION,
+                    extra_tests={'confidentiality__lte': lambda u: u.profile.confidentiality})
 @link_to(File)
 @link_to(Artifact)
 class Incident(FIRModel, models.Model):

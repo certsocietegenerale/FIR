@@ -17,6 +17,9 @@
 <script src="{% static "select/select2.min.js" %}"></script>
 {% rich_edit_static %}
 <script>
+function format_confidentiality(state) {
+    return "<span class='label confidentiality-"+state.id+"'>"+state.text+"</span>";
+}
 $(document).ready(function() {
 	$("select#id_concerned_business_lines").select2({ dropdownAutoWidth: true, width: '100%' });
 	$("select#id_category").select2();
@@ -25,7 +28,8 @@ $(document).ready(function() {
 	$('select#id_severity').select2({minimumResultsForSearch: -1, width: '90px'});
 	$('select#id_actor').select2({minimumResultsForSearch: -1, width: '90px'});
 	$('select#id_plan').select2({minimumResultsForSearch: -1, width: '90px'});
-	$('select#id_confidentiality').select2({minimumResultsForSearch: -1, width: '90px'});
+	$('select#id_confidentiality').select2({minimumResultsForSearch: -1, width: '140px',
+        formatResult: format_confidentiality, formatSelection: format_confidentiality});
 });
 </script>
 

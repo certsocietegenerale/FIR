@@ -50,6 +50,8 @@ class IncidentForm(ModelForm):
                 permissions.append('incidents.report_events')
             self.fields['concerned_business_lines'].queryset = BusinessLine.authorization.for_user(self.user,
                                                                                                    permissions)
+            self.fields['confidentiality'].choices = self.fields['confidentiality'].choices[
+                                                     :self.user.profile.confidentiality + 1]
         self.fields['subject'].error_messages['required'] = 'This field is required.'
         self.fields['category'].error_messages['required'] = 'This field is required.'
         self.fields['concerned_business_lines'].error_messages['required'] = 'This field is required.'

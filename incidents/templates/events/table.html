@@ -31,8 +31,8 @@
 						{% include 'events/column.html' with name=t_leader field='actor' %}
 						{% include 'events/column.html' with name=t_lastaction field='last_action' %}
 						{% include 'events/column.html' with name=t_plan field='plan' %}
-						{% include 'events/column.html' with name=t_lvl field='confidentiality' %}
 					{% endif %}
+                    {% include 'events/column.html' with name=t_lvl field='confidentiality' %}
 					{% include 'events/column.html' with name=t_ih field='opened_by' %}
 					<th>{%  trans "Edit" %}</th>
 				</tr>
@@ -76,9 +76,13 @@
 								{%endif%}
 							</td>
 							<td>{{ incident.plan|default:t_none }}</td>
-							<td>{{ incident.get_confidentiality_display }}</td>
 						{% endif %}
 
+                        <td>
+                            <span class='label confidentiality-{{ incident.confidentiality }}'>
+                                {{ incident.get_confidentiality_display}}
+                            </span>
+                        </td>
 						<td>{{ incident.opened_by }}</td>
 						<td>
                             {% if can_handle_incident %}

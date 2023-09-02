@@ -22,6 +22,11 @@ def get_authorization_filter(cls, user, permission=None, fields=None):
     if cls._authorization_meta.owner_field and cls._authorization_meta.owner_permission and \
                     cls._authorization_meta.owner_permission in permission:
         objects |= Q(**{cls._authorization_meta.owner_field: user.pk})
+    if cls._authorization_meta.extra_tests is not None:
+        for k, v in cls._authorization_meta.extra_tests.items():
+            if callable(v):
+                v = v(user)
+            objects &= Q(**{k: v})
     return objects
 
 
@@ -60,7 +65,8 @@ def has_model_perm(cls, user, permission):
     return model_perm
 
 
-def tree_authorization(fields=None, tree_model='incidents.BusinessLine', owner_field=None, owner_permission=None):
+def tree_authorization(fields=None, tree_model='incidents.BusinessLine', owner_field=None, owner_permission=None,
+                       extra_tests=None):
     def set_meta(cls):
         if not hasattr(cls, '_authorization_meta'):
             class AuthorizationMeta:
@@ -68,6 +74,7 @@ def tree_authorization(fields=None, tree_model='incidents.BusinessLine', owner_f
                 owner_permission = None
                 fields = ('business_lines',)
                 tree_model = None
+                extra_tests = None
 
                 @property
                 def model(self):
@@ -76,6 +83,7 @@ def tree_authorization(fields=None, tree_model='incidents.BusinessLine', owner_f
                     return self.tree_model
 
             AuthorizationMeta.tree_model = tree_model
+            AuthorizationMeta.extra_tests = extra_tests
             cls._authorization_meta = AuthorizationMeta()
         if fields is not None:
             if isinstance(fields, (tuple, list)):
