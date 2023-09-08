@@ -43,5 +43,7 @@ def render_markdown(data):
                               link_patterns=registry.link_patterns(),
                               safe_mode=settings.MARKDOWN_SAFE_MODE)
     if settings.MARKDOWN_SAFE_MODE:
-        html = bleach.clean(html, tags=settings.MARKDOWN_ALLOWED_TAGS)
+        html = bleach.clean(text=html, tags=settings.MARKDOWN_ALLOWED_TAGS,
+                            attributes=settings.MARKDOWN_ALLOWED_ATTRIBUTES,
+                            protocols=settings.MARKDOWN_ALLOWED_PROTOCOLS)
     return mark_safe(html)

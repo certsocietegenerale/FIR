@@ -5,6 +5,8 @@ from pkgutil import find_loader
 from importlib import import_module
 from distutils.util import strtobool
 
+import bleach
+
 BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 # Django settings for fir project.
@@ -188,26 +190,20 @@ if bool(strtobool(os.getenv('HTTPS', 'False'))):
     CSRF_COOKIE_SECURE = True
 
 # Allowed HTML tags in Markdown output (requires MARKDOWN_SAFE_MODE to be True)
-MARKDOWN_ALLOWED_TAGS = [
-    'a',
-    'abbr',
-    'acronym',
-    'b',
-    'blockquote',
-    'code',
-    'em',
-    'i',
-    'li',
-    'ol',
-    'strong',
-    'ul',
+MARKDOWN_ALLOWED_TAGS = frozenset(bleach.sanitizer.ALLOWED_TAGS) | {
     'p',
     'h1', 'h2', 'h3', 'h4',
     'table', 'thead', 'th', 'tbody', 'tr', 'td',
     'br',
     'hr',
     'pre'
-]
+}
+
+# Map of allowed attributes by HTML tag in Markdown output (requires MARKDOWN_SAFE_MODE to be True)
+MARKDOWN_ALLOWED_ATTRIBUTES = bleach.sanitizer.ALLOWED_ATTRIBUTES
+
+# Set of allowed protocols in Markdown output (requires MARKDOWN_SAFE_MODE to be True)
+MARKDOWN_ALLOWED_PROTOCOLS = frozenset(bleach.sanitizer.ALLOWED_PROTOCOLS)
 
 # User self-service features
 USER_SELF_SERVICE = {
