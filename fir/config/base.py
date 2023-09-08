@@ -180,7 +180,7 @@ INCIDENT_VIEWER_CAN_COMMENT = True
 # Escape HTML when displaying markdown
 MARKDOWN_SAFE_MODE = True
 
-ALLOWED_HOSTS = ["127.0.0.1", "0.0.0.0"]
+ALLOWED_HOSTS = ["127.0.0.1", "0.0.0.0", "localhost"]
 CSRF_TRUSTED_ORIGINS = ['http://' + h for h in ALLOWED_HOSTS] + ['https://' + h for h in ALLOWED_HOSTS]
 
 if bool(strtobool(os.getenv('HTTPS', 'False'))):
@@ -227,3 +227,9 @@ NOTIFICATIONS_DISABLED_EVENTS = ()
 
 # Send 'incident:*' notification events for both Event and Incident if True
 NOTIFICATIONS_MERGE_INCIDENTS_AND_EVENTS = False
+
+# Show incident IDs in views?
+INCIDENT_SHOW_ID = False
+
+# Incident ID prefix in views and links
+INCIDENT_ID_PREFIX = 'FIR-'
