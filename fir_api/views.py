@@ -14,9 +14,10 @@ from rest_framework.renderers import JSONRenderer
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.authtoken.models import Token
 from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework import renderers
+from rest_framework.response import Response
 
 from fir_api.serializers import UserSerializer, IncidentSerializer, ArtifactSerializer, FileSerializer, CommentsSerializer, LabelSerializer, AttributeSerializer, BusinessLineSerializer, IncidentCategoriesSerializer
 from fir_api.permissions import IsIncidentHandler
@@ -105,17 +106,23 @@ class FileViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
 
     @action(detail=True, methods=["POST"])
     def upload(self, request, pk):
-        files = request.data['files']
         incident = get_object_or_404(Incident, pk=pk)
         files_added = []
-        for i, file in enumerate(files):
-            file_obj = FileWrapper(io.StringIO(file['content']))
-            file_obj.name = file['filename']
-            description = file['description']
-            f = handle_uploaded_file(file_obj, description, incident)
-            files_added.append(f)
+
+        uploaded_files = request.FILES.getlist("files")
+        descriptions = request.data.getlist("descriptions") if "descriptions" in request.data else None
+
+        if descriptions is None or len(descriptions) != len(uploaded_files):
+            return Response(data={"Error": "Missing 'descriptions' or 'files'."}, status=status.HTTP_400_BAD_REQUEST)
+
+        for uploaded_file, description in zip(request.FILES.getlist("files"), request.data.getlist("descriptions")):
+            file_wrapper = FileWrapper(uploaded_file.file)
+            file_wrapper.name = uploaded_file.name
+            file = handle_uploaded_file(file_wrapper, description, incident)
+            files_added.append(file)
+
         resp_data = FileSerializer(files_added, many=True, context={'request': request}).data
-        return HttpResponse(JSONRenderer().render(resp_data), content_type='application/json')
+        return Response(resp_data)
 
 
 class AttributeViewSet(viewsets.ModelViewSet):
