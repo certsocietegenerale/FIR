@@ -20,7 +20,7 @@ RUN apk add --update git \
 
 FROM python:3.8-alpine AS fir
 COPY --from=builder /app /app
-RUN apk add libxml2 libxslt mariadb-connector-c && \
+RUN apk add libxml2 libxslt mariadb-connector-c libmagic && \
     rm -rf /var/cache/apk/* && \
     wget -O /bin/wait-for https://raw.githubusercontent.com/eficode/wait-for/master/wait-for && \
     chmod +x /bin/wait-for
