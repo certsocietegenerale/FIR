@@ -48,7 +48,9 @@
         "user": [
             "dev"
         ]
-    },
+    }
+},
+{
     "pk": 2,
     "model": "incidents.profile",
     "fields": {
