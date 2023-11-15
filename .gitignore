@@ -5,7 +5,8 @@
 fir-env/
 
 # Dev
-db.sqlite3
+/db.sqlite3
+/celerybeat-schedule
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -72,3 +73,7 @@ venv/
 
 # vim swap files
 *.swp
+
+# JetBrains projects
+/.idea/*
+!/.idea/runConfigurations/
