@@ -70,6 +70,7 @@ target/
 /include
 /bin
 venv/
+.venv/
 
 # vim swap files
 *.swp
