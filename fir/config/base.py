@@ -233,3 +233,9 @@ INCIDENT_SHOW_ID = False
 
 # Incident ID prefix in views and links
 INCIDENT_ID_PREFIX = 'FIR-'
+
+# Rest framework default pagination
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 100
+}
