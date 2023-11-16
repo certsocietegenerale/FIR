@@ -24,12 +24,6 @@ TEMPLATES[0]['OPTIONS']['loaders'] = (
     'django.template.loaders.app_directories.Loader',
 )
 
-# Rest framework default pagination
-REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 100
-}
-
 # Dummy key for development
 SECRET_KEY = 'DUMMY_KEY_FOR_DEVELOPMENT_DO_NOT_USE_IN_PRODUCTION'
 

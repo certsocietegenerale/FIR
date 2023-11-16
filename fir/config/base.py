@@ -5,6 +5,8 @@ from pkgutil import find_loader
 from importlib import import_module
 from distutils.util import strtobool
 
+import bleach
+
 BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
 # Django settings for fir project.
@@ -180,7 +182,7 @@ INCIDENT_VIEWER_CAN_COMMENT = True
 # Escape HTML when displaying markdown
 MARKDOWN_SAFE_MODE = True
 
-ALLOWED_HOSTS = ["127.0.0.1", "0.0.0.0"]
+ALLOWED_HOSTS = ["127.0.0.1", "0.0.0.0", "localhost"]
 CSRF_TRUSTED_ORIGINS = ['http://' + h for h in ALLOWED_HOSTS] + ['https://' + h for h in ALLOWED_HOSTS]
 
 if bool(strtobool(os.getenv('HTTPS', 'False'))):
@@ -188,26 +190,20 @@ if bool(strtobool(os.getenv('HTTPS', 'False'))):
     CSRF_COOKIE_SECURE = True
 
 # Allowed HTML tags in Markdown output (requires MARKDOWN_SAFE_MODE to be True)
-MARKDOWN_ALLOWED_TAGS = [
-    'a',
-    'abbr',
-    'acronym',
-    'b',
-    'blockquote',
-    'code',
-    'em',
-    'i',
-    'li',
-    'ol',
-    'strong',
-    'ul',
+MARKDOWN_ALLOWED_TAGS = frozenset(bleach.sanitizer.ALLOWED_TAGS) | {
     'p',
     'h1', 'h2', 'h3', 'h4',
     'table', 'thead', 'th', 'tbody', 'tr', 'td',
     'br',
     'hr',
     'pre'
-]
+}
+
+# Map of allowed attributes by HTML tag in Markdown output (requires MARKDOWN_SAFE_MODE to be True)
+MARKDOWN_ALLOWED_ATTRIBUTES = bleach.sanitizer.ALLOWED_ATTRIBUTES
+
+# Set of allowed protocols in Markdown output (requires MARKDOWN_SAFE_MODE to be True)
+MARKDOWN_ALLOWED_PROTOCOLS = frozenset(bleach.sanitizer.ALLOWED_PROTOCOLS)
 
 # User self-service features
 USER_SELF_SERVICE = {
@@ -227,3 +223,30 @@ NOTIFICATIONS_DISABLED_EVENTS = ()
 
 # Send 'incident:*' notification events for both Event and Incident if True
 NOTIFICATIONS_MERGE_INCIDENTS_AND_EVENTS = False
+
+# Show incident IDs in views?
+INCIDENT_SHOW_ID = False
+
+# Incident ID prefix in views and links
+INCIDENT_ID_PREFIX = 'FIR-'
+
+REST_FRAMEWORK = {
+    # Django REST framework default pagination.
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 100,
+
+    # Any access to the API requires the user to be authenticated.
+    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
+
+    # If you prefer to use default TokenAuthentication using Basic Auth mechanism,
+    # replace fir_api.authentication.TokenAuthentication with rest_framework.authentication.TokenAuthentication.
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'fir_api.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication'),
+
+    # Following configuration is dedicated to fir_api.authentication.TokenAuthentication.
+    'TOKEN_AUTHENTICATION_KEYWORD': 'Token',
+
+    # HTTP_X_API == "X-Api" in HTTP headers.
+    'TOKEN_AUTHENTICATION_META': 'HTTP_X_API',
+}
