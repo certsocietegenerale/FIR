@@ -75,7 +75,7 @@ if not settings.NOTIFICATIONS_MERGE_INCIDENTS_AND_EVENTS:
     @notification_event('event:commented', post_save, Comments, verbose_name=_('Event commented'),
                         section=_('Event'))
     def event_commented(sender, instance, **kwargs):
-        if instance.is_incident:
+        if instance.incident.is_incident:
             return None, None
         if instance.action.name in ['Opened', 'Blocked', 'Closed']:
             return None, None
@@ -109,7 +109,7 @@ def incident_updated(sender, instance, **kwargs):
 @notification_event('incident:commented', post_save, Comments, verbose_name=_('Incident commented'),
                     section=_('Incident'))
 def incident_commented(sender, instance, **kwargs):
-    if not instance.incident and not settings.NOTIFICATIONS_MERGE_INCIDENTS_AND_EVENTS and not instance.incident.is_incident:
+    if not settings.NOTIFICATIONS_MERGE_INCIDENTS_AND_EVENTS and not instance.incident.is_incident:
         return None, None
     if instance.action.name in ['Opened', 'Blocked', 'Closed']:
         return None, None

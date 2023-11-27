@@ -37,7 +37,7 @@ def get_user_templates(event, business_lines):
     depth = 1
     all_templates = {}
     while len(business_lines):
-        for lower in business_lines.keys():
+        for lower in list(business_lines.keys()):
             if lower not in all_templates:
                 all_templates[lower] = []
             path = business_lines[lower]
