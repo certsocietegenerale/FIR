@@ -48,6 +48,7 @@ class IncidentViewSet(viewsets.ModelViewSet):
          description = self.request.query_params.get('description', None)
          bl = self.request.query_params.get('bl', None)
          status = self.request.query_params.get('status', None)
+         is_starred = self.request.query_params.get('is_starred', None)
          q = Q()
          if category is not None:
              q = q & Q(category__name__icontains=category)
@@ -59,6 +60,10 @@ class IncidentViewSet(viewsets.ModelViewSet):
              q = q & (Q(concerned_business_lines__in=bl) | Q(main_business_lines__in=[bl]))
          if status is not None:
              q = q & Q(status=status)
+         if is_starred is not None:
+             if isinstance(is_starred,str):
+                is_starred= is_starred.lower()=="true"
+             q = q & Q(is_starred=is_starred)
          queryset = queryset.filter(q)
          return queryset
 
