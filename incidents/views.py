@@ -929,7 +929,7 @@ def close_old(request):
     old = Incident.authorization.for_user(request.user, 'incidents.handle_incidents').filter(query)
     for i in old:
         if i.status != "C":
-            i.close_timeout()
+            i.close_timeout(username = request.user.username)
 
     return redirect('stats:quarterly_bl_stats_default')
 
