@@ -196,7 +196,7 @@ class Incident(FIRModel, models.Model):
     def is_open(self):
         return self.get_last_action != "Closed"
 
-    def close_timeout(self):
+    def close_timeout(self, username='cert'):
         previous_status = self.status
         self.status = 'C'
         self.save()
@@ -207,7 +207,7 @@ class Incident(FIRModel, models.Model):
         c.date = datetime.datetime.now()
         c.action = Label.objects.get(name='Closed', group__name='action')
         c.incident = self
-        c.opened_by = User.objects.get(username='cert')
+        c.opened_by = User.objects.get(username= username)
         c.save()
 
     def get_last_comment(self):
