@@ -61,7 +61,7 @@ def list(request, incident_id, authorization_target=None):
 @login_required
 def delete(request, todo_id):
     todo = get_object_or_404(TodoItem, pk=todo_id)
-    if not request.user.has_perm(todo.incident, 'incidents.handle_incidents'):
+    if not request.user.has_perm('incidents.handle_incidents', obj=todo.incident):
         raise PermissionDenied()
     todo.delete()
 
