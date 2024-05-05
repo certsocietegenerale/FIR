@@ -1,6 +1,7 @@
 {% load static %}
 {% load i18n %}
 
+{% load fir_plugins %}
 {% load fir_threatintel %}
 
 {% for artifact_type in artifacts %}
@@ -101,14 +102,14 @@ No intelligence available for this incident. Please check your configuration set
 			<tr>
 				<td><input id="check-all" data-target="observable" class="check-all" type="checkbox" name="name" value=""></td>
 				<td>&nbsp;<strong><label for="check-all">Select all / tags for all observables</label></strong></td>
-				<td class="tags">asd<input type="text" class="tagsinput tag-azure-yeti all-tags" value=""></td>
+				<td class="tags"><input type="text" class="tagsinput tag-azure-yeti all-tags" value=""></td>
 				<td></td>
 			</tr>
 		</tbody>
 	</table>
 		<button class="btn btn-danger" id="send-to-yeti" href="#" role="button">Send it! <span class="glyphicon glyphicon-cloud-upload" aria-hidden="true"></span></button>
 		{% endverbatim %}
-			<strong>Note</strong>: Observables added this way will have the following <code>FIR</code> context <code id="fid" data-fid="{{event.id}}">{FID: {{event.id}}}</code>
+			<strong>Note</strong>: Observables added this way will have the following context: <code id="fid" data-fid="{{ event|object_id }}">{{ event|object_id }}</code>
 		{% verbatim %}
 	</div>
 
