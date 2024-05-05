@@ -14,9 +14,21 @@ from fir_threatintel.models import YetiProfile
 def get_yp(user):
     yp, _ = YetiProfile.objects.get_or_create(user_id=user)
     # Allow Yeti connection to be defined via global settings
-    if not yp.endpoint and not yp.api_key and hasattr(settings, "YETI_URL") and hasattr(settings, "YETI_APIKEY"):
+    if (
+        not yp.endpoint
+        and not yp.api_key
+        and hasattr(settings, "YETI_URL")
+        and hasattr(settings, "YETI_APIKEY")
+    ):
         yp.endpoint = settings.YETI_URL
         yp.api_key = settings.YETI_APIKEY
+
+    auth = requests.post(
+        yp.endpoint + "/api/v2/auth/api-token",
+        headers={"X-Yeti-Apikey": yp.api_key},
+    )
+    auth.raise_for_status()
+    yp.access_token = "Bearer " + auth.json()["access_token"]
     return yp
 
 
@@ -46,21 +58,33 @@ def query_yeti_artifacts(request):
     except (KeyError, ValueError):
         return JsonResponse({"error": "Invalid request"}, status=401)
 
-    yp = get_yp(request.user)
     try:
+        yp = get_yp(request.user)
         ret = requests.post(
-            yp.endpoint + "/analysis/match",
-            json={"observables": observables},
-            headers={"X-Api-Key": yp.api_key, "Accept": "application/json"},
+            f"{yp.endpoint}/api/v2/observables/search",
+            json={"query": {"value__in": observables}},
+            headers={"Authorization": yp.access_token},
         )
         ret.raise_for_status()
-        ret = ret.json()
+        results = {"known": [], "unknown": []}
+        for entry in ret.json()["observables"]:
+            results["known"].append(
+                {
+                    "url": yp.endpoint + "/observables/" + entry["id"],
+                    "value": entry["value"],
+                    "tags": [t for t in entry["tags"]],
+                    "source": [s["source"] for s in entry["context"]],
+                }
+            )
+        for obs in req["observables"]:
+            if all([a["value"] != obs for a in results["known"]]):
+                results["unknown"].append(obs)
     except (requests.exceptions.RequestException, ValueError) as e:
         return JsonResponse(
             {"error": "Unable to retrieve content from Yeti", "details": str(e)},
             status=500,
         )
-    return JsonResponse({"results": ret})
+    return JsonResponse(results)
 
 
 @login_required
@@ -89,17 +113,56 @@ def send_yeti_artifacts(request):
             )
     except (KeyError, ValueError):
         return JsonResponse({"error": "Invalid request"}, status=401)
-
-    yp = get_yp(request.user)
     try:
-        ret = requests.post(
-            yp.endpoint + "/observable/bulk",
-            json={"observables": observables, "refang": False},
-            headers={"X-Api-Key": yp.api_key, "Accept": "application/json"},
-        )
-        ret.raise_for_status()
-        ret = ret.json()
-    except (requests.exceptions.RequestException, ValueError) as e:
+        yp = get_yp(request.user)
+        for obs in req["observables"]:
+            search = requests.post(
+                f"{yp.endpoint}/api/v2/observables/search",
+                json={"query": {"value": obs["value"]}},
+                headers={"Authorization": yp.access_token},
+            )
+            search.raise_for_status()
+            if len(search.json()["observables"]) == 1:
+                obs_id = search.json()["observables"][0]["id"]
+                tag_edition = requests.post(
+                    f"{yp.endpoint}/api/v2/observables/tag",
+                    json={"tags": obs["tags"], "ids": [obs_id]},
+                    headers={"Authorization": yp.access_token},
+                )
+                tag_edition.raise_for_status()
+            else:
+                observable_creation = requests.post(
+                    f"{yp.endpoint}/api/v2/observables/bulk",
+                    json={
+                        "observables": [
+                            {
+                                "value": obs["value"],
+                                "tags": obs["tags"],
+                                "type": "guess",
+                            }
+                        ]
+                    },
+                    headers={"Authorization": yp.access_token},
+                )
+                observable_creation.raise_for_status()
+                search = requests.post(
+                    f"{yp.endpoint}/api/v2/observables/search",
+                    json={"query": {"value": obs["value"]}},
+                    headers={"Authorization": yp.access_token},
+                )
+                search.raise_for_status()
+                obs_id = search.json()["observables"][0]["id"]
+
+            ret = requests.post(
+                f"{yp.endpoint}/api/v2/observables/{obs_id}/context",
+                json={
+                    "context": {"Description": "Seen in " + obs["fid"]},
+                    "source": "FIR",
+                },
+                headers={"Authorization": yp.access_token},
+            )
+            ret.raise_for_status()
+    except requests.exceptions.RequestException as e:
         return JsonResponse(
             {"error": "Unable to send data to Yeti", "details": str(e)},
             status=500,

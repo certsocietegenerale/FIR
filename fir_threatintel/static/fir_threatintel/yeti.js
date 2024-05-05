@@ -1,5 +1,4 @@
 var observables_template = Handlebars.compile($("#yeti-observables-template").html());
-var matches_template = Handlebars.compile($("#yeti-matches-template").html());
 var tab_data_template = Handlebars.compile($("#yeti-tab-data-template").html());
 
 $(function () {
@@ -25,24 +24,23 @@ function yeti_query_artifacts(observables) {
     data: JSON.stringify({"observables": observables}),
     success: function(data) {
       $("#tab_threatintel").empty();
-      render_results(data['results']);
+      render_results(data);
     }
   });
 }
 
 function render_results(data) {
 
-  Handlebars.registerHelper("join", function(array, sep, key) {
-    ar = {}
-    for (var i in array) {
-      ar[array[i][key]] = 1;
+  Handlebars.registerHelper("join", function(array, sep) {
+    if (!Array.isArray(array)) {
+      return "";
     }
-    return Object.keys(ar).join(sep);
+    return array.join(sep);
   });
 
 
 
-  $("#tab_threatintel").html(matches_template(data)).append(observables_template(data));
+  $("#tab_threatintel").html(observables_template(data));
   $("#ti-tab .ti-count").html(tab_data_template(data))
 
   $('.tagsinput').tagsInput();
