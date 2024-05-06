@@ -7,5 +7,5 @@ You can also send your artifacts to Yeti directly from FIR.
 
 First, follow the generic plugin installation instructions in [the FIR wiki](https://github.com/certsocietegenerale/FIR/wiki/Plugins).
 
-Then, each user need to set his Yeti API key and the location of the Yeti instance in his profile page (by clicking on his username).
+Then, each user needs to set his Yeti API key and the location of the Yeti instance in his profile page (by clicking on his username).
 Alternatively, an administrator you can also set up the API key and location globally, by defining the settings `YETI_URL` and `YETI_APIKEY` in FIR config.
