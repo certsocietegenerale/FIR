@@ -1,5 +1,3 @@
-version: '3.4'
-
 networks:
   backend.fir:
 
@@ -100,4 +98,10 @@ services:
       - 80:80
     networks:
       backend.fir:
-  
+
+  fir_fake_smtp:
+    image: mailhog/mailhog
+    container_name: fir_fake_smtp
+    hostname: fir_fake_smtp
+    networks:
+      backend.fir:
