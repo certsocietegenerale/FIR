@@ -14,7 +14,7 @@
               <input type="text" class="form-control" name="yeti_api" placeholder="Yeti API key" value="{{ user.yetiprofile.api_key}}" />
             </div>
             <div class="form-group">
-              <input type="text" class="form-control" name="endpoint" placeholder="http://localhost:5000/api" value="{{ user.yetiprofile.endpoint}}" />
+              <input type="text" class="form-control" name="endpoint" placeholder="http://localhost" value="{{ user.yetiprofile.endpoint}}" />
             </div>
             {% csrf_token %}
             <button type="submit" class="btn btn-primary">Save</button>

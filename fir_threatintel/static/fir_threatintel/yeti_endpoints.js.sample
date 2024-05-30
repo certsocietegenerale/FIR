@@ -1,3 +1,0 @@
-// Set optional basic auth
-YETI_HTTP_AUTH_USERNAME = ""
-YETI_HTTP_AUTH_PASSWORD = ""
