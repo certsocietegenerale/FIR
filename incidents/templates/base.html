@@ -86,6 +86,7 @@
                   <li><a href="{%url 'stats:quarterly_major' %}">{% trans "Major incidents" %}</a></li>
                   <li><a href="{%url 'stats:sandbox' %}">{% trans "Sandbox" %} <i class='glyphicon glyphicon-asterisk'></i></a></li>
                   <li><a href="{%url 'stats:attributes' %}">{% trans "Attributes" %}</a></li>
+                  {% plugin_point 'stats_element' %}
                 </ul>
               </li>
               {% endif %}
