@@ -37,3 +37,9 @@ FIR is not greedy performance-wise. It will run smoothly on a Ubuntu 14.04 virtu
 * REST API
 * Mailman
 * You name it :)
+
+### Infrastructure model
+![Infrastructure main model](.infragenie/infrastructure_main_model.svg)
+- [fir component model](.infragenie/fir_component_model.svg)
+
+---
