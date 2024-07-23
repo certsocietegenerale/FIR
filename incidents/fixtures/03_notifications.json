@@ -1,0 +1,74 @@
+[
+{
+    "model": "fir_notifications.notificationpreference",
+    "pk": 1,
+    "fields": {
+        "user": 1,
+        "event": "event:created",
+        "method": "email", "business_lines": [
+            5,
+            1,
+            4
+	]
+    }
+},
+{
+    "model": "fir_notifications.notificationpreference",
+    "pk": 2,
+    "fields": {
+        "user": 1,
+        "event": "incident:created",
+        "method": "email",
+        "business_lines": [
+            5,
+            1,
+            4
+        ]
+    }
+},
+{
+    "model": "fir_notifications.notificationpreference",
+    "pk": 3,
+    "fields": {
+        "user": 2,
+        "event": "event:created",
+        "method": "email",
+        "business_lines": [
+            5,
+            1,
+            4
+        ]
+    }
+},
+{
+    "model": "fir_notifications.notificationpreference",
+    "pk": 4,
+    "fields": {
+        "user": 2,
+        "event": "incident:created",
+        "method": "email",
+        "business_lines": [
+            5,
+            1,
+            4
+        ]
+    }
+},
+{
+    "model": "fir_notifications.notificationtemplate",
+    "pk": 1,
+    "fields": {
+        "event": "incident:created",
+        "subject": "Incident {{instance.id}} created: {{instance.subject}}",
+        "short_description": "",
+        "description": "{{instance.description}}",
+        "business_lines": [
+            5,
+            1,
+            2,
+            3,
+            4
+        ]
+    }
+}
+]
