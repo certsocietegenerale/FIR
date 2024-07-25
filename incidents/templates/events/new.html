@@ -49,9 +49,6 @@ $(document).ready(function() {
 				{% else %}
 					<h1 class="col-sm-11">{% if i.is_incident %}{% trans "Incident" %}{%else%}{% trans "Event" %}{%endif%}: {{ i.subject }}</h1>
 				{% endif %}
-				<div class="col-sm-1">
-					<button class="btn btn-primary" type="submit">{% trans "Save" %}</button>
-				</div>
 			</div>
 
 			<div class="row">

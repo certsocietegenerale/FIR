@@ -123,7 +123,8 @@ INSTALLED_APPS = (
     'incidents',
     'fir_artifacts',
     'treebeard',
-    'fir_email'
+    'fir_email',
+    'colorfield'
 )
 
 if TF_INSTALLED:

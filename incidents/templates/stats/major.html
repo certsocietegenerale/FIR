@@ -102,7 +102,7 @@
 			<td><a href="{% url 'incidents:details' incident.id %}">{{ incident.subject }}</a></td>
 			<td>{{ incident.category }}</td>
 			<td>{{ incident.get_confidentiality_display }}</td>
-			<td><span class='badge threatcon-{{incident.severity}}'>{{ incident.severity }}</span></td>
+			<td><span class='badge' style='background-color:{{ incident.severity.color }}!important;'>{{ incident.severity }}</span></td>
 			<td>{{ incident.concerned_business_line }}</td>
 			<td>{{ incident.get_status_display }}</td>
 			<td>{{ incident.detection }}</td>

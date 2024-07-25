@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import datetime
 
+from colorfield.fields import ColorField
 from django.db.models.signals import post_save
 from django.dispatch import Signal, receiver
 from django.db import models
@@ -19,13 +20,6 @@ STATUS_CHOICES = (
     ("O", _("Open")),
     ("C", _("Closed")),
     ("B", _("Blocked")),
-)
-
-SEVERITY_CHOICES = (
-    (1, '1'),
-    (2, '2'),
-    (3, '3'),
-    (4, '4'),
 )
 
 LOG_ACTIONS = (
@@ -179,7 +173,8 @@ class Incident(FIRModel, models.Model):
     concerned_business_lines = models.ManyToManyField(BusinessLine, blank=True)
     main_business_lines = models.ManyToManyField(BusinessLine, related_name='incidents_affecting_main', blank=True)
     detection = models.ForeignKey(Label, on_delete=models.CASCADE, limit_choices_to={'group__name': 'detection'}, related_name='detection_label')
-    severity = models.IntegerField(choices=SEVERITY_CHOICES)
+    severity = models.ForeignKey(
+        'SeverityChoice', null=True, blank=True, on_delete=models.SET_NULL)
     is_incident = models.BooleanField(default=False)
     is_major = models.BooleanField(default=False)
     actor = models.ForeignKey(Label, on_delete=models.CASCADE, limit_choices_to={'group__name': 'actor'}, related_name='actor_label', blank=True,
@@ -360,6 +355,14 @@ class ValidAttribute(models.Model):
         return self.name
 
 
+class SeverityChoice(models.Model):
+    name = models.CharField(max_length=50)
+    color = ColorField(default='#777')
+
+    def __str__(self):
+        return self.name
+
+
 # Templating =================================================================
 
 class IncidentTemplate(models.Model):
@@ -369,7 +372,8 @@ class IncidentTemplate(models.Model):
     category = models.ForeignKey(IncidentCategory, on_delete=models.CASCADE, null=True, blank=True)
     concerned_business_lines = models.ManyToManyField(BusinessLine, blank=True)
     detection = models.ForeignKey(Label, on_delete=models.CASCADE, limit_choices_to={'group__name': 'detection'}, null=True, blank=True)
-    severity = models.IntegerField(choices=SEVERITY_CHOICES, null=True, blank=True)
+    severity = models.ForeignKey(
+        'SeverityChoice', null=True, blank=True, on_delete=models.SET_NULL)
     is_incident = models.BooleanField(default=False)
     actor = models.ForeignKey(Label, on_delete=models.CASCADE, limit_choices_to={'group__name': 'actor'}, related_name='+', blank=True, null=True)
     plan = models.ForeignKey(Label, on_delete=models.CASCADE, limit_choices_to={'group__name': 'plan'}, related_name='+', blank=True, null=True)

@@ -9,7 +9,7 @@ from django.template.response import TemplateResponse
 from django.views.decorators.http import require_POST
 
 from incidents.models import IncidentCategory, Incident, Comments, BusinessLine, model_status_changed
-from incidents.models import Label, Log, BaleCategory
+from incidents.models import Label, Log, BaleCategory, SeverityChoice
 from incidents.models import Attribute, ValidAttribute, IncidentTemplate, Profile
 from incidents.forms import IncidentForm, CommentForm
 
@@ -727,14 +727,17 @@ def search(request):
                 q = q & Q(is_starred=True)
                 query_string = query_string.replace('starred', '')
 
-            severity = re.search("severity(?P<eval>[:<>])(?P<value>\d)", query_string)
+            severity = re.search("severity(?P<eval>[:<>])(?P<value>\S+)", query_string)
             if severity:
                 if severity.group('eval') == ':':
-                    q = q & Q(severity=severity.group("value"))
+                    if severity.group('value') == 'None':
+                        q = q & Q(severity=None)
+                    else:
+                        q = q & Q(severity__name=severity.group("value"))
                 elif severity.group('eval') == ">":
-                    q = q & Q(severity__gt=severity.group("value"))
+                    q = q & Q(severity__name__gt=severity.group("value"))
                 elif severity.group('eval') == "<":
-                    q = q & Q(severity__lt=severity.group("value"))
+                    q = q & Q(severity__name__lt=severity.group("value"))
                 query_string = query_string.replace('severity' + severity.group('eval') + severity.group("value"), '')
 
             # app keyword_filters go here
@@ -898,19 +901,20 @@ def toggle_closed(request):
 # Statistics ====================================================================
 
 def delete_empty_keys(chart_data):
-    to_delete = []
+    if len(chart_data) > 0:
+        to_delete = []
 
-    for key in list(chart_data[0].keys()):
-        delete = True
-        for i in range(len(chart_data)):
-            if chart_data[i].get(key) != 0:
-                delete = False
-        if delete:
-            to_delete.append(key)
+        for key in list(chart_data[0].keys()):
+            delete = True
+            for i in range(len(chart_data)):
+                if chart_data[i].get(key) != 0:
+                    delete = False
+            if delete:
+                to_delete.append(key)
 
-    for key in to_delete:
-        for d in chart_data:
-            del d[key]
+        for key in to_delete:
+            for d in chart_data:
+                del d[key]
 
     return chart_data
 
@@ -1296,15 +1300,15 @@ def stats_attributes_filter(request):
     q_severity = Q()
     if request.GET["severity"] != "":
         if request.GET['severity_comparator'] == 'lt':
-            q_severity = Q(severity__lt=int(request.GET["severity"]))
+            q_severity = Q(severity__name__lt=request.GET["severity"])
         elif request.GET['severity_comparator'] == 'lte':
-            q_severity = Q(severity__lte=int(request.GET["severity"]))
+            q_severity = Q(severity__name__lte=request.GET["severity"])
         elif request.GET['severity_comparator'] == 'gt':
-            q_severity = Q(severity__gt=int(request.GET["severity"]))
+            q_severity = Q(severity__name__gt=request.GET["severity"])
         elif request.GET['severity_comparator'] == 'gte':
-            q_severity = Q(severity__gte=int(request.GET["severity"]))
+            q_severity = Q(severity__name__gte=request.GET["severity"])
         else:
-            q_severity = Q(severity=int(request.GET["severity"]))
+            q_severity = Q(severity__name=request.GET["severity"])
 
     # Only incidents if needed
     q_is_incident = Q()
@@ -1756,8 +1760,6 @@ def data_yearly_field(request, field):
 
     chart_data = []
     for label, value in field_dict.items():
-        if field == 'severity':
-            label += "/4"
         chart_data.append(
             {'label': label, 'value': value, 'percentage': float(str(round(float(value) / total, 2) * 100))})
 
@@ -1824,28 +1826,30 @@ def data_yearly_bl_detection(request):
 @fir_auth_required
 @user_passes_test(can_view_statistics)
 def data_yearly_bl_severity(request):
-    bls = BusinessLine.authorization.for_user(request.user, 'incidents.view_statistics').filter(depth=1)
+    bls = BusinessLine.authorization.for_user(
+        request.user, 'incidents.view_statistics').filter(depth=1)
 
     q = Q(date__year=datetime.datetime.now().year)
     q = q & Q(confidentiality__lte=2)
 
     chart_data = []
+    severity_choices = SeverityChoice.objects.all()
 
     for bl in bls:
         d = {}
         d['entry'] = bl.name
 
         append = False
-        for i in range(4):
-            d[str(i + 1) + '/4'] = bl.get_incident_count(q & Q(severity=i + 1))
-            if d[str(i + 1) + '/4'] > 0:
+        for severity_choice in severity_choices:
+            d[severity_choice.name] = bl.get_incident_count(
+                q & Q(severity=severity_choice))
+            if d[severity_choice.name] > 0:
                 append = True
 
         if append:
             chart_data.append(d)
 
     chart_data = delete_empty_keys(chart_data)
-
     return HttpResponse(dumps(chart_data), content_type='application/json')
 
 
@@ -2005,22 +2009,18 @@ def data_quarterly_bl(request, business_line, divisor, num_months=3, is_incident
             chart_data.append(d)
 
     elif divisor == 'severity':
-        for i in range(num_months):
+        severity_choices = SeverityChoice.objects.all()
+        for i in xrange(num_months):
             d = {}
 
             today = datetime.datetime.today() - relativedelta(months=num_months - i)
             d['entry'] = cal[today.month - 1]
             q_date = q & Q(date__month=today.month, date__year=today.year)
 
-            d['1/4'] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
-                Q(severity=1) & q_date).distinct().count()
-            d['2/4'] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
-                Q(severity=2) & q_date).distinct().count()
-            d['3/4'] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
-                Q(severity=3) & q_date).distinct().count()
-            d['4/4'] = Incident.authorization.for_user(request.user, 'incidents.view_statistics').filter(
-                Q(severity=4) & q_date).distinct().count()
-
+            for severity_choice in severity_choices:
+                d[severity_choice.name] = Incident.authorization.for_user(
+                    request.user, 'incidents.view_statistics').filter(Q(
+                        severity=severity_choice) & q_date).distinct().count()
             chart_data.append(d)
 
     elif divisor == 'category':
