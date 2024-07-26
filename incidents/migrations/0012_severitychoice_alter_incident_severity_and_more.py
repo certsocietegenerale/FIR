@@ -23,11 +23,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='incident',
             name='severity',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='incidents.severitychoice'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='incidents.severitychoice', db_constraint=False),
         ),
         migrations.AlterField(
             model_name='incidenttemplate',
             name='severity',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='incidents.severitychoice'),
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='incidents.severitychoice', db_constraint=False),
         ),
     ]
+
