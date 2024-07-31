@@ -28,7 +28,6 @@ def prepare_email_message(to, subject, body, behalf=None, cc=None, bcc=None, req
     if hasattr(settings, 'EMAIL_CC'):
         cc = settings.EMAIL_CC
 
-
     email_message = EmailMultiAlternatives(
         subject=subject,
         body=body,
