@@ -28,7 +28,8 @@ class EmailMethod(NotificationMethod):
                 continue
             params = self.prepare(template, instance)
             email_message = prepare_email_message([user.email, ], params['subject'], params['description'],
-                                                  request=request)
+                                                  request=request, cc=getattr(settings, 'EMAIL_CC'),
+                                                  bcc=getattr(settings, 'EMAIL_BCC'))
             messages.append(email_message)
         if len(messages):
             connection = mail.get_connection()
