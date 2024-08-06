@@ -1,11 +1,15 @@
 # Quick Start
 
+You can run FIR on your device with 4 simple commands:
+
 ```
+git clone https://github.com/certsocietegenerale/FIR.git
+cd FIR/docker
 docker-compose build
 docker-compose up -d
 ```
 
-Browse to http://localhost and log in with default credentials admin:admin or dev:dev
+Then browse to http://localhost and log in with default credentials admin:admin or dev:dev
 
 Enjoy!
 
