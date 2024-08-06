@@ -148,10 +148,16 @@ class CommentViewSet(viewsets.ModelViewSet):
         )
         self.check_object_permissions(self.request, incident_object)
         serializer.save(opened_by=self.request.user)
+        serializer.validated_data["incident"].refresh_artifacts(
+            serializer.validated_data["comment"]
+        )
 
     def perform_update(self, serializer):
         self.check_object_permissions(self.request, serializer.instance.incident)
         serializer.save()
+        serializer.validated_data["incident"].refresh_artifacts(
+            serializer.validated_data["comment"]
+        )
 
     def perform_destroy(self, instance):
         self.check_object_permissions(self.request, instance.incident)
