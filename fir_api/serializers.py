@@ -168,7 +168,12 @@ if apps.is_installed("fir_todos"):
             many=False, read_only=True, slug_field="name"
         )
         business_line = serializers.SlugRelatedField(
-            required=False, many=False, read_only=False, slug_field="name", default=None
+            queryset=BusinessLine.objects.all(),
+            required=False,
+            many=False,
+            read_only=False,
+            slug_field="name",
+            default=None,
         )
 
         class Meta:
