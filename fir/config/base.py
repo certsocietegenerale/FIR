@@ -119,6 +119,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'rest_framework',
     'rest_framework.authtoken',
+    'django_filters',
     'fir_plugins',
     'incidents',
     'fir_artifacts',

@@ -1,6 +1,7 @@
 from rest_framework import authentication, exceptions
 from rest_framework.settings import api_settings
 
+
 class TokenAuthentication(authentication.TokenAuthentication):
     """
     Simple token based authentication.
@@ -9,15 +10,15 @@ class TokenAuthentication(authentication.TokenAuthentication):
         X-Api: Token 401f7ac837da42b97f613d789819ff93537bee6a
     """
 
-    keyword = api_settings.user_settings['TOKEN_AUTHENTICATION_KEYWORD']
+    keyword = api_settings.user_settings["TOKEN_AUTHENTICATION_KEYWORD"]
 
     def authenticate(self, request):
-        meta = api_settings.user_settings['TOKEN_AUTHENTICATION_META']
-        auth = request.META.get(meta)        
+        meta = api_settings.user_settings["TOKEN_AUTHENTICATION_META"]
+        auth = request.META.get(meta)
         if not auth:
             return None
         try:
-            auth_keyword, auth_token = auth.split(' ')
+            auth_keyword, auth_token = auth.split(" ")
         except ValueError:
             msg = "Invalid token header. Header must be defined the following way: 'Token hexstring'"
             raise exceptions.AuthenticationFailed(msg)
