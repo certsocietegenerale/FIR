@@ -11,7 +11,7 @@
           <p>You need to be authenticated in order to use the API. It will accept session or token based authentication.
           Tokens can be managed in the administration interface and should be specified as a <strong>request header</strong>.</p>
           Example:<br/>
-          <pre>Authorization: Token {{ user.auth_token.key }}</pre>
+          <pre>X-Api: Token {{ user.auth_token.key }}</pre>
       </div>
       <table class='table'>
         <tr><th>{% trans "Token" %}</th><td><code>{{ user.auth_token.key }}</code></td></tr>
