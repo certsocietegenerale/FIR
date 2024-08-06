@@ -6,10 +6,20 @@ This plugins allows you to send notifications to users.
 
 ## Installation
 
+This plugin need redis to work. You can install it using `sudo apt install redis`.
+
 In your FIR virtualenv, launch:
 
 ```bash
-(fir-env)$ pip install -r fir_notifications/requirements.txt
+(env-FIR)$ pip install -r fir_notifications/requirements.txt
+
+```
+In *$FIR_HOME/fir/config/production.py*, add:
+
+```
+REDIS_HOST = "localhost"
+REDIS_PORT = 6379
+REDIS_DB = 0
 ```
 
 In *$FIR_HOME/fir/config/installed_app.txt*, add:
@@ -21,7 +31,7 @@ fir_notifications
 In your *$FIR_HOME*, launch:
 
 ```bash
-(fir-env)$ ./manage.py migrate fir_notifications
+(env-FIR)$ ./manage.py migrate fir_notifications
 ```
 
 You should configure fir_celery (broker and result backend).
