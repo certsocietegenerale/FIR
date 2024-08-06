@@ -1,6 +1,5 @@
 FROM python:3.8-alpine AS builder
 WORKDIR /app
-COPY . /app
 RUN apk add --update git \
     python3-dev \
     libxml2-dev \
@@ -12,11 +11,17 @@ RUN apk add --update git \
     pip install virtualenv && \
     virtualenv venv && \
     source venv/bin/activate && \
+    pip install uwsgitop==0.11 numpy && \
+    deactivate
+
+COPY . /app
+
+RUN source venv/bin/activate && \
     find . -name requirements.txt -exec pip install -r {} \; && \
-    pip install uwsgitop==0.11 && \
-    rm -rf .env .git .travis.yml docker Procfile README.md requirements.txt runtime.txt && \
+    rm -rf .env .travis.yml docker Procfile README.md runtime.txt && \
     mv fir/config/installed_apps.txt.sample fir/config/installed_apps.txt && \
     deactivate
+
 
 FROM python:3.8-alpine AS fir
 COPY --from=builder /app /app
