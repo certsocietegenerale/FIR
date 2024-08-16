@@ -18,7 +18,6 @@ COPY . /app
 
 RUN source venv/bin/activate && \
     find . -name requirements.txt -exec pip install -r {} \; && \
-    rm -rf .env .travis.yml docker Procfile README.md runtime.txt && \
     mv fir/config/installed_apps.txt.sample fir/config/installed_apps.txt && \
     deactivate
 
