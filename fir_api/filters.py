@@ -17,8 +17,9 @@ from incidents.models import (
     Comments,
     File,
     STATUS_CHOICES,
+    CONFIDENTIALITY_LEVEL,
 )
-from fir_artifacts.models import File
+from fir_artifacts.models import File, Artifact
 
 
 class AllValuesMultipleFilterAllAllowed(MultipleChoiceFilter):
@@ -39,6 +40,24 @@ class AllValuesMultipleFilterAllAllowed(MultipleChoiceFilter):
         return super().field
 
 
+class ValueChoiceFilter(ChoiceFilter):
+    def __init__(self, choices, **kwargs):
+        self._choices = choices
+        super(ValueChoiceFilter, self).__init__(choices=choices, **kwargs)
+
+    def filter(self, qs, value):
+        for choice in self._choices:
+            if choice[1] == value:
+                return super().filter(qs, choice[0])
+        return qs
+
+    @property
+    def field(self):
+        fields = super().field
+        fields.choices = [(b[1], b[1]) for b in self._choices]
+        return fields
+
+
 class IncidentFilter(FilterSet):
     """
     A custom filter class for Incidents filtering
@@ -49,15 +68,26 @@ class IncidentFilter(FilterSet):
     created_before = DateTimeFilter(field_name="date", lookup_expr="lte")
     created_after = DateTimeFilter(field_name="date", lookup_expr="gte")
     subject = CharFilter(field_name="subject", lookup_expr="icontains")
-    status = ChoiceFilter(field_name="status", choices=STATUS_CHOICES)
+    status = ValueChoiceFilter(field_name="status", choices=STATUS_CHOICES)
+    confidentiality = ValueChoiceFilter(
+        field_name="confidentiality", choices=CONFIDENTIALITY_LEVEL
+    )
     is_starred = BooleanFilter(field_name="is_starred")
+    concerned_business_lines = AllValuesMultipleFilterAllAllowed(
+        field_name="concerned_business_lines__name", lookup_expr="icontains"
+    )
     category = ModelChoiceFilter(
-        field_name="category__name", queryset=IncidentCategory.objects.all()
+        to_field_name="name",
+        field_name="category__name",
+        queryset=IncidentCategory.objects.all(),
     )
     detection = ModelChoiceFilter(
         field_name="detection__name",
+        to_field_name="name",
         queryset=Label.objects.filter(group__name="detection"),
     )
+    is_incident = BooleanFilter(field_name="is_incident")
+    is_major = BooleanFilter(field_name="is_major")
 
     class Meta:
         model = Incident
@@ -80,7 +110,12 @@ class ArtifactFilter(FilterSet):
 
     id = NumberFilter(field_name="id")
     type = CharFilter(field_name="type")
-    incident = AllValuesMultipleFilterAllAllowed(field_name="incidents")
+    value = CharFilter(field_name="value", lookup_expr="icontains")
+    incidents = NumberFilter(field_name="incidents__id")
+
+    class Meta:
+        model = Artifact
+        fields = ["id", "type", "incidents", "value"]
 
 
 class LabelFilter(FilterSet):
@@ -96,21 +131,15 @@ class LabelFilter(FilterSet):
         fields = ["id", "name", "group"]
 
 
-class AttributeFilter(FilterSet):
-    id = NumberFilter(field_name="id")
-    name = CharFilter(field_name="name")
-    value = CharFilter(field_name="value", lookup_expr="icontains")
-    incident = NumberFilter(field_name="incident")
-
-
 class ValidAttributeFilter(FilterSet):
     id = NumberFilter(field_name="id")
     name = CharFilter(field_name="name")
-    is_major = BooleanFilter(field_name="is_major")
     unit = NumberFilter(field_name="unit")
     description = CharFilter(field_name="description")
     categories = ModelChoiceFilter(
-        field_name="category__name", queryset=IncidentCategory.objects.all()
+        to_field_name="name",
+        field_name="categories__name",
+        queryset=IncidentCategory.objects.all(),
     )
 
 
@@ -122,6 +151,13 @@ class IncidentCategoriesFilter(FilterSet):
     id = NumberFilter(field_name="id")
     name = CharFilter(field_name="name")
     is_major = BooleanFilter(field_name="is_major")
+
+
+class AttributeFilter(FilterSet):
+    id = NumberFilter(field_name="id")
+    name = CharFilter(field_name="name")
+    value = CharFilter(field_name="value", lookup_expr="icontains")
+    incident = NumberFilter(field_name="incident")
 
 
 class FileFilter(FilterSet):
@@ -146,7 +182,31 @@ class BLFilter(FilterSet):
     """
 
     id = NumberFilter(field_name="id")
-    name = CharFilter(field_name="name", lookup_expr="icontains")
+    name = CharFilter(field_name="name", lookup_expr="icontains", method="filter_name")
+
+    def filter_name(self, queryset, name, value):
+        """
+        And custom handling that we do return children
+        of the searched name
+        """
+        split_values = []
+        if " > " in value:
+            split_values = value.split(" > ")
+            lookup = {name + "__icontains": split_values[-1]}
+        else:
+            lookup = {name + "__icontains": value}
+        filtered_queryset = queryset.filter(**lookup)
+        if split_values:
+            for node in filtered_queryset:
+                ancestors = node.get_ancestors()
+                for value in split_values[:-1]:
+                    if not ancestors.filter(name=value):
+                        filtered_queryset = filtered_queryset.exclude(pk=node.pk)
+                        break
+        for node in filtered_queryset:
+            if node.numchild > 0:
+                filtered_queryset = filtered_queryset.union(node.get_descendants())
+        return filtered_queryset
 
 
 class CommentFilter(FilterSet):
@@ -159,6 +219,7 @@ class CommentFilter(FilterSet):
     created_after = DateTimeFilter(field_name="date", lookup_expr="gte")
     opened_by = CharFilter(field_name="opened_by__username")
     action = ModelChoiceFilter(
+        to_field_name="name",
         field_name="action__name",
         queryset=Label.objects.filter(group__name="action"),
     )
@@ -170,7 +231,6 @@ class CommentFilter(FilterSet):
 
 
 if apps.is_installed("fir_todos"):
-    from fir_todos.models import TodoItem
 
     class TodoFilter(FilterSet):
         """
@@ -179,13 +239,12 @@ if apps.is_installed("fir_todos"):
 
         id = NumberFilter(field_name="id")
         incident = NumberFilter(field_name="incident__id")
+        category = CharFilter(field_name="category__name")
+        business_line = CharFilter(field_name="business_line__name")
+        deadline = DateTimeFilter(field_name="deadline")
         done_time_before = DateTimeFilter(field_name="done_time", lookup_expr="lte")
         done_time_after = DateTimeFilter(field_name="done_time", lookup_expr="gte")
         done = BooleanFilter(field_name="done")
-
-        class Meta:
-            model = TodoItem
-            fields = ["id", "category", "done", "done_time", "incident"]
 
 
 if apps.is_installed("fir_nuggets"):

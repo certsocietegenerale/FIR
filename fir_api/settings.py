@@ -2,7 +2,7 @@
 REST_FRAMEWORK = {
     # Django REST framework default pagination.
     "DEFAULT_PAGINATION_CLASS": "fir_api.pagination.CustomPageNumberPagination",
-    "PAGE_SIZE": 100,
+    "PAGE_SIZE": 25,
     # Any access to the API requires the user to be authenticated.
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
     # If you prefer to use default TokenAuthentication using Basic Auth mechanism,

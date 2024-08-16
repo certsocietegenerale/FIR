@@ -13,12 +13,27 @@ from django.db.models import Q
 from rest_framework.renderers import JSONRenderer
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.authtoken.models import Token
-from rest_framework.mixins import ListModelMixin, RetrieveModelMixin
+from rest_framework.mixins import (
+    ListModelMixin,
+    RetrieveModelMixin,
+    CreateModelMixin,
+    UpdateModelMixin,
+)
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework import renderers
 from rest_framework.response import Response
 from rest_framework.filters import OrderingFilter
+from django_filters.rest_framework import (
+    DjangoFilterBackend,
+    FilterSet,
+    DateTimeFilter,
+    CharFilter,
+    NumberFilter,
+    MultipleChoiceFilter,
+    AllValuesFilter,
+    BooleanFilter,
+)
 
 from fir_api.serializers import (
     UserSerializer,
@@ -32,7 +47,6 @@ from fir_api.serializers import (
     IncidentCategoriesSerializer,
     ValidAttributeSerializer,
 )
-from django_filters.rest_framework import DjangoFilterBackend
 from fir_api.filters import (
     IncidentFilter,
     ArtifactFilter,
@@ -60,7 +74,7 @@ from incidents.models import (
 
 class UserViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows users to be viewed or edited.
+    API endpoints that allow users to be viewed or edited.
     """
 
     queryset = User.objects.all().order_by("-date_joined")
@@ -68,9 +82,15 @@ class UserViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAuthenticated, IsAdminUser)
 
 
-class IncidentViewSet(viewsets.ModelViewSet):
+class IncidentViewSet(
+    viewsets.GenericViewSet,
+    ListModelMixin,
+    CreateModelMixin,
+    RetrieveModelMixin,
+    UpdateModelMixin,
+):
     """
-    API endpoint that allows creation of, viewing, and closing of incidents
+    API endpoints for viewing, creating and editing incidents
     """
 
     queryset = Incident.objects.all()
@@ -86,9 +106,39 @@ class IncidentViewSet(viewsets.ModelViewSet):
         )
         return queryset
 
+    def get_businesslines(self, businesslines):
+        """
+        ::
+
+                Gets businessline objects based on a list
+                of businesslines
+
+                Args:
+                    businesslines (_type_): _description_
+
+                Returns:
+                    QuerySet: A QuerySet with BusinessLine objects as per filter
+        """
+        bl_filter = Q()
+        for bline in businesslines:
+            bl_filter = bl_filter | Q(name=bline)
+        bls = BusinessLine.authorization.for_user(
+            self.request.user, permission=["incidents.report_events"]
+        ).filter(bl_filter)
+        return bls
+
     def perform_create(self, serializer):
+        opened_by = self.request.user
         serializer.is_valid(raise_exception=True)
-        instance = serializer.save(opened_by=self.request.user)
+        bls = self.request.data.getlist("concerned_business_lines", [])
+        concerned_business_lines = []
+        if bls:
+            concerned_business_lines = self.get_businesslines(businesslines=bls)
+        serializer.is_valid(raise_exception=True)
+        instance = serializer.save(
+            opened_by=opened_by,
+            concerned_business_lines=concerned_business_lines,
+        )
         instance.refresh_main_business_lines()
         instance.done_creating()
 
@@ -98,15 +148,26 @@ class IncidentViewSet(viewsets.ModelViewSet):
         Comments.create_diff_comment(
             self.get_object(), serializer.validated_data, self.request.user
         )
-        instance = serializer.save()
+        bls = self.request.data.getlist("concerned_business_lines", [])
+        extra_dataset = {}
+        if bls:
+            extra_dataset["concerned_business_lines"] = self.get_businesslines(
+                businesslines=bls
+            )
+        instance = serializer.save(**extra_dataset)
         instance.refresh_main_business_lines()
+        instance.refresh_artifacts(serializer.validated_data["description"])
 
 
-class ArtifactViewSet(ListModelMixin, viewsets.GenericViewSet):
+class ArtifactViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
+    """
+    API endpoint to list artifacts.
+    Artifacts can't be created or edited via the API, they are automatically generated from incident descriptions and comments.
+    You can view all incidents having an artifact by accessing /artifacts/<id>
+    """
+
     queryset = Artifact.objects.all()
     serializer_class = ArtifactSerializer
-    lookup_field = "value"
-    lookup_value_regex = ".+"
     permission_classes = (IsAuthenticated, IsIncidentHandler)
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = ["id", "type", "value"]
@@ -118,6 +179,14 @@ class ArtifactViewSet(ListModelMixin, viewsets.GenericViewSet):
         )
         queryset = Artifact.objects.filter(incidents__in=incidents_allowed).distinct()
         return queryset
+
+    def retrieve(self, request, *args, **kwargs):
+        artifact = self.get_queryset().get(pk=self.kwargs.get("pk"))
+        correlations = artifact.relations_for_user(user=None).group()
+        if all([not link_type.objects.exists() for link_type in correlations.values()]):
+            raise PermissionError
+        serializer = self.get_serializer(artifact)
+        return Response(serializer.data)
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -140,12 +209,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         return queryset
 
     def perform_create(self, serializer):
-        incident_object = get_object_or_404(
-            Incident.authorization.for_user(
-                self.request.user, "incidents.handle_incidents"
-            ),
-            pk=self.request.data.get("incident"),
-        )
+        incident_object = Incident.objects.get(pk=self.request.data.get("incident"))
         self.check_object_permissions(self.request, incident_object)
         serializer.save(opened_by=self.request.user)
         serializer.validated_data["incident"].refresh_artifacts(
@@ -165,6 +229,10 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 
 class LabelViewSet(ListModelMixin, viewsets.GenericViewSet):
+    """
+    API endpoint for viewing labels
+    """
+
     queryset = Label.objects.all()
     serializer_class = LabelSerializer
     permission_classes = (IsAuthenticated,)
@@ -176,6 +244,11 @@ class LabelViewSet(ListModelMixin, viewsets.GenericViewSet):
 
 
 class FileViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
+    """
+    API endpoint for listing files.
+    Files can be uploaded and downloaded via endpoints /files/<incidentID>/upload and /files/<incidentID>/download
+    """
+
     queryset = File.objects.all()
     serializer_class = FileSerializer
     permission_classes = (IsAuthenticated, IsIncidentHandler)
@@ -234,6 +307,11 @@ class FileViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
 
 
 class AttributeViewSet(viewsets.ModelViewSet):
+    """
+    API endpoints for listing, creating or editing incident attributes.
+    Before adding an attribute to an incident, you have to register the said attribute in ValidAttributes (see endpoints /validattributes)
+    """
+
     queryset = Attribute.objects.all()
     serializer_class = AttributeSerializer
     permission_classes = (IsAuthenticated, IsIncidentHandler)
@@ -249,12 +327,8 @@ class AttributeViewSet(viewsets.ModelViewSet):
         return queryset
 
     def perform_create(self, serializer):
-        incident_object = get_object_or_404(
-            Incident.authorization.for_user(
-                self.request.user, "incidents.handle_incidents"
-            ),
-            pk=self.request.data.get("incident"),
-        )
+        incident_object_id = self.request.data.get("incident")
+        incident_object = Incident.objects.get(pk=incident_object_id)
         self.check_object_permissions(self.request, incident_object)
         get_object_or_404(ValidAttribute, name=self.request.data.get("name"))
         # See if there is already an attribute in this incident with that name
@@ -285,6 +359,10 @@ class AttributeViewSet(viewsets.ModelViewSet):
 
 
 class ValidAttributeViewSet(viewsets.ModelViewSet):
+    """
+    API endpoints for listing, creating or editing valid (possible) attributes.
+    """
+
     queryset = ValidAttribute.objects.all()
     serializer_class = ValidAttributeSerializer
     permission_classes = (IsAuthenticated, IsIncidentHandler)
@@ -294,6 +372,10 @@ class ValidAttributeViewSet(viewsets.ModelViewSet):
 
 
 class BusinessLinesViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    API endpoint for listing Business Lines.
+    """
+
     queryset = BusinessLine.objects.all()
     serializer_class = BusinessLineSerializer
     permission_classes = (IsAuthenticated,)
@@ -309,13 +391,17 @@ class BusinessLinesViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class IncidentCategoriesViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    API endpoint for listing Incident Categories.
+    """
+
     queryset = IncidentCategory.objects.all()
     serializer_class = IncidentCategoriesSerializer
     permission_classes = (IsAuthenticated, IsIncidentHandler)
     filterset_class = IncidentCategoriesFilter
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
 
 
-# Todos API
 if apps.is_installed("fir_todos"):
     from fir_todos.models import TodoItem
     from fir_api.serializers import TodoSerializer
@@ -323,7 +409,7 @@ if apps.is_installed("fir_todos"):
 
     class TodoViewSet(viewsets.ModelViewSet):
         """
-        API endpoint for Todo items
+        API endpoints for listing, creating or editing Todo items
         """
 
         queryset = TodoItem.objects.all()
@@ -341,18 +427,45 @@ if apps.is_installed("fir_todos"):
             return queryset
 
         def perform_create(self, serializer):
-            incident_object = get_object_or_404(
-                Incident.authorization.for_user(
-                    self.request.user, "incidents.handle_incidents"
-                ),
-                pk=self.request.data.get("incident"),
+            business_line = BusinessLine.objects.get(
+                name=self.request.data.get("business_line")
             )
+            if business_line:
+                allowed_businesslines = BusinessLine.authorization.for_user(
+                    self.request.user, "incidents.handle_incidents"
+                )
+                if business_line not in allowed_businesslines:
+                    return Response(
+                        data={"Error": "Chosen businessline not allowed for user"},
+                        status=status.HTTP_403_FORBIDDEN,
+                    )
+            else:
+                request_business_line = None
+            incident_object_id = self.request.data.get("incident")
+            incident_object = Incident.objects.get(pk=incident_object_id)
             self.check_object_permissions(self.request, incident_object)
-            serializer.save()
+            category = incident_object.category
+            serializer.save(category=category, business_line=business_line),
 
         def perform_update(self, serializer):
             self.check_object_permissions(self.request, serializer.instance.incident)
-            serializer.save()
+            business_line = BusinessLine.objects.get(
+                name=self.request.data.get("business_line")
+            )
+            if business_line:
+                allowed_businesslines = BusinessLine.authorization.for_user(
+                    self.request.user, "incidents.handle_incidents"
+                )
+                if business_line not in allowed_businesslines:
+                    return Response(
+                        {"error": "Chosen businessline not allowed for user"},
+                        status=401,
+                    )
+            incident_object_id = self.request.data.get("incident")
+            incident_object = Incident.objects.get(pk=incident_object_id)
+            self.check_object_permissions(self.request, incident_object)
+            category = incident_object.category
+            serializer.save(category=category, business_line=business_line)
 
         def perform_destroy(self, instance):
             self.check_object_permissions(self.request, instance.incident)
@@ -365,6 +478,10 @@ if apps.is_installed("fir_nuggets"):
     from fir_api.filters import NuggetFilter
 
     class NuggetViewSet(viewsets.ModelViewSet):
+        """
+        API endpoints for listing, creating or editing Nuggets
+        """
+
         queryset = Nugget.objects.all()
         serializer_class = NuggetSerializer
         permission_classes = (IsAuthenticated, IsIncidentHandler)
@@ -387,26 +504,22 @@ if apps.is_installed("fir_nuggets"):
             return queryset
 
         def perform_create(self, serializer):
-            incident_object = get_object_or_404(
-                Incident.authorization.for_user(
-                    self.request.user, "incidents.handle_incidents"
-                ),
-                pk=self.request.data.get("incident"),
-            )
+            incident_object_id = self.request.data.get("incident")
+            incident_object = Incident.objects.get(pk=incident_object_id)
             self.check_object_permissions(self.request, incident_object)
             instance = serializer.save(found_by=self.request.user)
             incident_object.refresh_artifacts(instance.raw_data)
 
         def perform_update(self, serializer):
             self.check_object_permissions(self.request, serializer.instance.incident)
-            incident_object = get_object_or_404(
+            instance = serializer.save()
+            e = get_object_or_404(
                 Incident.authorization.for_user(
                     self.request.user, "incidents.handle_incidents"
                 ),
-                pk=self.request.data.get("incident"),
+                pk=instance.incident_id,
             )
-            instance = serializer.save(found_by=self.request.user)
-            incident_object.refresh_artifacts(instance.raw_data)
+            e.refresh_artifacts(instance.raw_data)
 
         def perform_destroy(self, instance):
             self.check_object_permissions(self.request, instance.incident)
