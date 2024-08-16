@@ -233,9 +233,8 @@ INCIDENT_SHOW_ID = False
 INCIDENT_ID_PREFIX = 'FIR-'
 
 REST_FRAMEWORK = {
-    # Django REST framework default pagination.
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
-    'PAGE_SIZE': 100,
+    'DEFAULT_PAGINATION_CLASS': 'fir_api.pagination.PageNumberPagination',
+    'PAGE_SIZE': 25,
 
     # Any access to the API requires the user to be authenticated.
     'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
