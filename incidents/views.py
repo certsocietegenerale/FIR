@@ -2353,10 +2353,17 @@ def user_self_service(request):
         password_form = PasswordChangeForm(request.user)
     else:
         password_form = False
-    return render(request, 'user/profile.html', {
-        'user_form': user_form,
-        'profile_form': profile_form,
-        'password_form': password_form
+
+    oidc_enabled = (
+        "fir_auth_oidc.backend.ClaimMappingOIDCAuthenticationBackend"
+        in settings.AUTHENTICATION_BACKENDS
+    )
+
+    return render(request, "user/profile.html", {
+        "user_form": user_form,
+        "profile_form": profile_form,
+        "password_form": password_form,
+        "oidc_enabled": oidc_enabled,
     })
 
 

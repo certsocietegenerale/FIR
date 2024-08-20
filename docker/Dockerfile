@@ -6,6 +6,8 @@ RUN apk add --update git \
     libxslt-dev \
     build-base \
     mariadb-dev \
+    libffi-dev \
+    openldap-dev \
     musl-dev \
     gcc && \
     pip install virtualenv && \
@@ -24,7 +26,7 @@ RUN source venv/bin/activate && \
 
 FROM python:3.8-alpine AS fir
 COPY --from=builder /app /app
-RUN apk add libxml2 libxslt mariadb-connector-c libmagic && \
+RUN apk add libxml2 libxslt mariadb-connector-c libmagic openldap-dev && \
     rm -rf /var/cache/apk/* && \
     wget -O /bin/wait-for https://raw.githubusercontent.com/eficode/wait-for/master/wait-for && \
     chmod +x /bin/wait-for

@@ -1,5 +1,5 @@
 {% load i18n %}
-{% if perms.incidents.handle_incidents %}
+{% if perms.incidents.handle_incidents and not oidc_enabled %}
 <div class="row">
 
   <div class="col-sm-8 col-sm-offset-2">
