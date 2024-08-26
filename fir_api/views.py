@@ -121,6 +121,8 @@ class IncidentViewSet(
         """
         bl_filter = Q()
         for bline in businesslines:
+            if " > " in bline:
+                bline = bline.split(" > ")[-1]
             bl_filter = bl_filter | Q(name=bline)
         bls = BusinessLine.authorization.for_user(
             self.request.user, permission=["incidents.report_events"]

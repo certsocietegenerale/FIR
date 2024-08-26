@@ -140,6 +140,23 @@ class CommentsSerializer(serializers.ModelSerializer):
         read_only_fields = ("id", "opened_by")
 
 
+class BusinessLineSlugField(serializers.SlugRelatedField):
+    """Custom Businessline Slug serializer field."""
+
+    def to_representation(self, instance):
+        return_object = super().to_representation(instance)
+        if hasattr(instance, "depth") and instance.depth > 1:
+            ancestors = instance.get_ancestors()
+            for ancestor in reversed(ancestors):
+                return_object = ancestor.name + " > " + return_object
+        return return_object
+
+    def to_internal_value(self, data):
+        if " > " in data:
+            data = data.split(" > ")[-1]
+        return super(BusinessLineSlugField, self).to_internal_value(data)
+
+
 class BusinessLineSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         return_object = super().to_representation(instance)
@@ -209,7 +226,7 @@ class IncidentSerializer(serializers.ModelSerializer):
         required=True,
     )
     status = ValueChoiceField(choices=STATUS_CHOICES, default="O")
-    concerned_business_lines = serializers.SlugRelatedField(
+    concerned_business_lines = BusinessLineSlugField(
         many=True,
         slug_field="name",
         queryset=BusinessLine.objects.all(),
