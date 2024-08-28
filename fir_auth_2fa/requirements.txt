@@ -1,0 +1,3 @@
+django-otp-yubikey
+django-two-factor-auth[phonenumbers]
+django-two-factor-auth[webauthn]

@@ -1,0 +1,1 @@
+import fir_auth_2fa.decorator

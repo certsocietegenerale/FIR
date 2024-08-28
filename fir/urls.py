@@ -2,7 +2,7 @@ from pkgutil import find_loader
 from django.urls import include, re_path
 from django.contrib import admin
 
-from fir.config.base import INSTALLED_APPS, TF_INSTALLED
+from fir.config.base import INSTALLED_APPS
 from incidents import views
 
 
@@ -18,21 +18,8 @@ urlpatterns = [
     re_path(r'^dashboard/', include(('incidents.custom_urls.dashboard', 'dashboard'), namespace='dashboard')),
     re_path(r'^admin/', admin.site.urls),
     re_path(r'^$', views.dashboard_main),
+    re_path(r'^login/', views.user_login, name='login')
 ]
-
-if TF_INSTALLED:
-    from two_factor.views import LoginView
-    from two_factor.urls import urlpatterns as tf_urls
-    custom_urls = []
-    for tf_url in tf_urls[0]:
-        if tf_url.name != "login":
-            custom_urls.append(tf_url)
-    custom_urls.append(re_path(r'^account/login/$',
-                           view=views.CustomLoginView.as_view(),
-                           name='login',))
-    urlpatterns.append(re_path(r'', include((custom_urls, 'two_factor'))))
-else:
-    urlpatterns.append(re_path(r'^login/', views.user_login, name='login'))
 
 
 for app in INSTALLED_APPS:
