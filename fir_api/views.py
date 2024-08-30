@@ -132,7 +132,10 @@ class IncidentViewSet(
     def perform_create(self, serializer):
         opened_by = self.request.user
         serializer.is_valid(raise_exception=True)
-        bls = self.request.data.getlist("concerned_business_lines", [])
+        if isinstance(self.request.data, dict):
+            bls = self.request.data.get("concerned_business_lines", [])
+        else:
+            bls = self.request.data.getlist("concerned_business_lines", [])
         concerned_business_lines = []
         if bls:
             concerned_business_lines = self.get_businesslines(businesslines=bls)
@@ -150,7 +153,10 @@ class IncidentViewSet(
         Comments.create_diff_comment(
             self.get_object(), serializer.validated_data, self.request.user
         )
-        bls = self.request.data.getlist("concerned_business_lines", [])
+        if isinstance(self.request.data, dict):
+            bls = self.request.data.get("concerned_business_lines", [])
+        else:
+            bls = self.request.data.getlist("concerned_business_lines", [])
         extra_dataset = {}
         if bls:
             extra_dataset["concerned_business_lines"] = self.get_businesslines(
@@ -280,22 +286,24 @@ class FileViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
             pk=pk,
         )
         files_added = []
+        if isinstance(request.data, dict):
+            uploaded_files = request.FILES.get("file", [])
+        else:
+            uploaded_files = request.FILES.getlist("file", [])
 
-        uploaded_files = request.FILES.getlist("file")
-        descriptions = (
-            request.data.getlist("description")
-            if "description" in request.data
-            else None
-        )
+        if isinstance(request.data, dict):
+            descriptions = request.data.get("description", [])
+        else:
+            descriptions = request.data.getlist("description", [])
 
-        if descriptions is None or len(descriptions) != len(uploaded_files):
+        if len(descriptions) != len(uploaded_files):
             return Response(
                 data={"Error": "Missing 'description' or 'file'."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
         for uploaded_file, description in zip(
-            request.FILES.getlist("file"), request.data.getlist("description")
+            uploaded_files, descriptions
         ):
             file_wrapper = FileWrapper(uploaded_file.file)
             file_wrapper.name = uploaded_file.name
