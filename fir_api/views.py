@@ -132,7 +132,7 @@ class IncidentViewSet(
     def perform_create(self, serializer):
         opened_by = self.request.user
         serializer.is_valid(raise_exception=True)
-        if isinstance(self.request.data, dict):
+        if type(self.request.data).__name__ == 'dict':
             bls = self.request.data.get("concerned_business_lines", [])
         else:
             bls = self.request.data.getlist("concerned_business_lines", [])
@@ -153,7 +153,7 @@ class IncidentViewSet(
         Comments.create_diff_comment(
             self.get_object(), serializer.validated_data, self.request.user
         )
-        if isinstance(self.request.data, dict):
+        if type(self.request.data).__name__ == 'dict':
             bls = self.request.data.get("concerned_business_lines", [])
         else:
             bls = self.request.data.getlist("concerned_business_lines", [])
@@ -164,7 +164,8 @@ class IncidentViewSet(
             )
         instance = serializer.save(**extra_dataset)
         instance.refresh_main_business_lines()
-        instance.refresh_artifacts(serializer.validated_data["description"])
+        if "description" in serializer.validated_data:
+            instance.refresh_artifacts(serializer.validated_data["description"])
 
 
 class ArtifactViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
@@ -286,12 +287,12 @@ class FileViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
             pk=pk,
         )
         files_added = []
-        if isinstance(request.data, dict):
+        if type(self.request.data).__name__ == 'dict':
             uploaded_files = request.FILES.get("file", [])
         else:
             uploaded_files = request.FILES.getlist("file", [])
 
-        if isinstance(request.data, dict):
+        if type(self.request.data).__name__ == 'dict':
             descriptions = request.data.get("description", [])
         else:
             descriptions = request.data.getlist("description", [])
