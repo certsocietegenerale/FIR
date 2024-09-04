@@ -1,0 +1,24 @@
+{% extends "two_factor/_base_focus.html" %}
+{% load i18n %}
+
+{% block content %}
+  <h1>{% block title %}{% trans "Enable Two-Factor Authentication" %}{% endblock %}</h1>
+
+  <p>{% blocktrans trimmed %}Congratulations, you've successfully enabled two-factor
+      authentication.{% endblocktrans %}</p>
+
+  {% if not phone_methods %}
+    <p><a href="{% url 'dashboard:main' %}"
+        class="btn btn-block btn-secondary">{% trans "Back to FIR homepage" %}</a></p>
+  {% else %}
+    <p>{% blocktrans trimmed %}However, it might happen that you don't have access to
+      your primary token device. To enable account recovery, add a phone
+      number.{% endblocktrans %}</p>
+
+    <a href="{% url 'dashboard:main' %}"
+        class="float-right btn btn-link">{% trans "Back to FIR homepage" %}</a>
+    <p><a href="{% url 'two_factor:phone_create' %}"
+        class="btn btn-success">{% trans "Add Phone Number" %}</a></p>
+  {% endif %}
+
+{% endblock %}

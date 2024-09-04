@@ -14,7 +14,7 @@ from incidents.models import Attribute, ValidAttribute, IncidentTemplate, Profil
 from incidents.forms import IncidentForm, CommentForm
 
 from incidents.authorization.decorator import authorization_required
-from fir.config.base import INSTALLED_APPS, ENFORCE_2FA, TF_INSTALLED
+from fir.config.base import INSTALLED_APPS
 import importlib
 
 from django.contrib.auth import authenticate, login, logout
@@ -35,7 +35,6 @@ from django.template import Template
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.forms.models import model_to_dict, modelform_factory
 from django.utils.translation import gettext_lazy as _
-from django.utils.http import url_has_allowed_host_and_scheme
 from django.conf import settings
 from django.contrib import messages
 
@@ -106,78 +105,6 @@ if getattr(settings, 'INCIDENT_VIEWER_CAN_COMMENT', False):
 
 # login / logout =================================================
 
-if TF_INSTALLED:
-    from two_factor.views.core import LoginView
-    from two_factor import signals
-    from incidents.forms import CustomAuthenticationForm, CustomAuthenticationTokenForm
-    from two_factor.forms import AuthenticationTokenForm, BackupTokenForm
-
-
-    class CustomLoginView(LoginView):
-        template_name = 'two_factor/login.html'
-
-        form_list = (
-            ('auth', CustomAuthenticationForm),
-            ('token', CustomAuthenticationTokenForm),
-            ('backup', BackupTokenForm),
-        )
-
-        def __init__(self, **kwargs):
-            try:
-                from otp_yubikey.models import ValidationService
-                if ValidationService.objects.count() == 0:
-                    ValidationService.objects.create(name='default', use_ssl=True, param_sl='', param_timeout='') # Validate Yubikey against YubiCloud by default
-            except ImportError:
-                pass
-            super(CustomLoginView, self).__init__(**kwargs)
-
-
-        def post(self, *args, **kwargs):
-            if not self.request.POST.get('auth-remember', None) and not 'token' in self.request.POST.get('custom_login_view-current_step', []):
-                self.request.session.set_expiry(0)
-            return super(CustomLoginView, self).post(**kwargs)
-
-
-        def done(self, form_list, **kwargs):
-            """
-            Login the user and redirect to the desired page.
-            """
-            login(self.request, self.get_user())
-
-            redirect_to = self.request.POST.get(
-                self.redirect_field_name,
-                self.request.GET.get(self.redirect_field_name, '')
-            )
-            if not url_has_allowed_host_and_scheme(url=redirect_to, allowed_hosts=self.request.get_host()):
-                redirect_to = resolve_url(settings.LOGIN_REDIRECT_URL)
-
-            is_auth = False
-            user = self.get_user()
-            device = getattr(self.get_user(), 'otp_device', None)
-            if device:
-                signals.user_verified.send(sender=__name__, request=self.request,
-                                           user=self.get_user(), device=device)
-                redirect_to = resolve_url("dashboard:main")
-                is_auth = True
-            elif ENFORCE_2FA:
-                redirect_to = resolve_url("two_factor:profile")
-            else:
-                redirect_to = resolve_url("dashboard:main")
-                is_auth = True
-            try:
-                Profile.objects.get(user=user)
-            except ObjectDoesNotExist:
-                profile = Profile()
-                profile.user = user
-                profile.hide_closed = False
-                profile.incident_number = 50
-                profile.save()
-            if user.is_active:
-                log("Login success", user)
-                init_session(self.request)
-            return redirect(redirect_to)
-
-
 def user_login(request):
     if request.method == "POST":
         username = request.POST['username']
@@ -214,13 +141,11 @@ def user_login(request):
 def user_logout(request):
     logout(request)
     request.session.flush()
-    if TF_INSTALLED:
-        return redirect('two_factor:login')
-    else:
-        return redirect('login')
+    if settings.LOGOUT_REDIRECT_URL is not None:
+        return redirect(settings.LOGOUT_REDIRECT_URL)
+    return redirect('/login/')
 
 def init_session(request):
-    pass
     # Put all the incident templates in the session
     request.session['incident_templates'] = list(IncidentTemplate.objects.exclude(name='default').values('name'))
     request.session['has_incident_templates'] = len(request.session['incident_templates']) > 0
@@ -2353,10 +2278,17 @@ def user_self_service(request):
         password_form = PasswordChangeForm(request.user)
     else:
         password_form = False
-    return render(request, 'user/profile.html', {
-        'user_form': user_form,
-        'profile_form': profile_form,
-        'password_form': password_form
+
+    oidc_enabled = (
+        "fir_auth_oidc.backend.ClaimMappingOIDCAuthenticationBackend"
+        in settings.AUTHENTICATION_BACKENDS
+    )
+
+    return render(request, "user/profile.html", {
+        "user_form": user_form,
+        "profile_form": profile_form,
+        "password_form": password_form,
+        "oidc_enabled": oidc_enabled,
     })
 
 

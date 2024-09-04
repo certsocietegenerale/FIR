@@ -11,28 +11,8 @@ BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__fil
 
 # Django settings for fir project.
 
-
-ENFORCE_2FA = bool(strtobool(os.getenv('ENFORCE_2FA', 'False')))
-
-tf_error_message = """Django two factor is not installed and ENFORCE_2FA is set to True.
-Either set ENFORCE_2FA to False or pip install django-two-factor-auth
-"""
-
-try:
-    import two_factor
-    TF_INSTALLED = True
-except ImportError:
-    if ENFORCE_2FA:
-        raise RuntimeWarning(tf_error_message)
-    TF_INSTALLED = False
-
-
-if TF_INSTALLED:
-    LOGIN_URL = 'two_factor:login'
-    LOGIN_REDIRECT_URL = 'two_factor:profile'
-else:
-    LOGIN_URL = "/login/"
-    LOGOUT_URL = "/logout/"
+LOGIN_URL = "/login/"
+LOGOUT_URL = "/logout/"
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -85,10 +65,6 @@ MIDDLEWARE = (
     # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-if TF_INSTALLED:
-    TF_MIDDLEWARE = ('django_otp.middleware.OTPMiddleware',)
-    MIDDLEWARE = MIDDLEWARE + TF_MIDDLEWARE
-
 
 # Authentication and authorization backends
 AUTHENTICATION_BACKENDS = (
@@ -127,20 +103,6 @@ INSTALLED_APPS = (
     'fir_email',
     'colorfield'
 )
-
-if TF_INSTALLED:
-    TF_APPS = (
-        'django_otp',
-        'django_otp.plugins.otp_static',
-        'django_otp.plugins.otp_totp',
-        'two_factor'
-    )
-    INSTALLED_APPS = INSTALLED_APPS + TF_APPS
-    try:
-        import otp_yubikey
-        INSTALLED_APPS = INSTALLED_APPS + ('otp_yubikey', 'two_factor.plugins.yubikey')
-    except ImportError:
-        pass
 
 apps_file = os.path.join(BASE_DIR, 'fir', 'config', 'installed_apps.txt')
 if os.path.exists(apps_file):
