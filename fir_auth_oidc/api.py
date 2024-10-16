@@ -31,6 +31,11 @@ class APIOIDCAuthentication(OIDCAuthentication):
                     return SuspiciousOperation("User does not exist.")
 
             user = self.backend.set_roles(user[0], roles)
+
+            if callable(self.get_settings("AUTH_OIDC_CLAIM_MAP_FUNCTION", False)):
+                user = self.get_settings("AUTH_OIDC_CLAIM_MAP_FUNCTION")(user, claims)
+            user.save()
+
         except Exception as e:
             raise exceptions.AuthenticationFailed(e)
 

@@ -71,7 +71,7 @@ AUTH_OIDC_ROLE_MAP = {
 }
 
 LOGIN_URL = "oidc_authentication_init"
-LOGIN_REDIRECT_URL_FAILURE = "/account/login/"
+LOGIN_REDIRECT_URL_FAILURE = "/login/"
 OIDC_TOKEN_USE_BASIC_AUTH = True
 OIDC_RP_SIGN_ALGO = "RS256"
 OIDC_STORE_ACCESS_TOKEN = True
@@ -87,4 +87,33 @@ REST_FRAMEWORK["DEFAULT_AUTHENTICATION_CLASSES"] += (
 
 # If you wish to view user claims as seen by FIR, you can enable debug logs:
 LOGGING["loggers"]["mozilla_django_oidc"] = {"handlers": ["console"], "level": "DEBUG"}
+
+
+## If you wish to set users permissions without using claim mapping
+## you can alternatively use a custom function, like this:
+#
+# def myCustomClaim2permissions(user, claims):
+#     """
+#     :param user: the current django user object
+#     :param claims: the claims as retrieved from the OpenID Connect Provider
+#     :return: the django user object. An user wihout groups will be denied connection.
+#     """
+#     from django.contrib.auth.models import Group
+#
+#     # Then do whatever you want to the user object.
+#     # Here is an example using claims "companyName" and "Department"
+#     if (
+#         "fitbit" in claims.get("companyName", "").lower()
+#         or "android" in claims.get("companyName", "").lower()
+#     ):
+#         try:
+#             grp = Group.object.get(name="FIR.alphabet." + claims.get("Department", ""))
+#             user.groups.add(grp)
+#             user.is_active = True
+#         except Group.DoesNotExist:
+#             pass
+#
+#     return user
+#
+# AUTH_OIDC_CLAIM_MAP_FUNCTION = myCustomClaim2permissions
 ```
