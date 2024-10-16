@@ -124,7 +124,7 @@ $(function () {
     // Add form to the page
     $('#addComment').after(data);
 
-    editors["id_body"] = init_simplemde($("#id_body"));
+    editors["id_body"] = init_easymde($("#id_body"));
 
     // Activate 'Send Email' button
     $('#send_email').click(function (event) {

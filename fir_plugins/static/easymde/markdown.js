@@ -3,7 +3,7 @@ var editors = {}
 $(function () {
 
   $('.markdown').each(function (index) {
-    editors[$(this).attr("id")] = init_simplemde($(this));
+    editors[$(this).attr("id")] = init_easymde($(this));
   });
 
   $('.markdown-text').each(function (index) {
@@ -16,8 +16,8 @@ $(function () {
 
 });
 
-function init_simplemde(textarea, initial_text) {
-  var simplemde = new SimpleMDE({
+function init_easymde(textarea, initial_text) {
+  var easymde = new EasyMDE({
     element: textarea[0],
     renderingConfig: {
       codeSyntaxHighlighting: true
@@ -43,5 +43,5 @@ function init_simplemde(textarea, initial_text) {
     ]
   });
 
-  return simplemde
+  return easymde
 }

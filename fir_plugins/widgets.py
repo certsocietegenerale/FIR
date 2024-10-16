@@ -10,12 +10,11 @@ class MarkdownTextarea(Textarea):
 
     class Media:
         css = {
-            'all': ('simplemde/simplemde.min.css',)
+            'all': ('easymde/easymde.min.css',)
         }
         js = (
-            "simplemde/marked.min.js",
-            "simplemde/simplemde.min.js",
-            "simplemde/inline-attachment.min.js",
-            "simplemde/codemirror.inline-attachment.js",
-            "simplemde/markdown.js",
+            "easymde/marked.min.js",
+            "easymde/easymde.min.js",
+            "easymde/codemirror.js",
+            "easymde/markdown.js",
         )

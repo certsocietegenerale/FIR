@@ -604,10 +604,14 @@ div#concerned_business_lines {
 }
 
 
-/* Simple MDE / CodeMirror CSS */
+/* Easy MDE / CodeMirror CSS */
 
 .CodeMirror {
     height: 300px !important;
+}
+
+.editor-toolbar .table {
+    width: auto;
 }
 
 .modal-body {
