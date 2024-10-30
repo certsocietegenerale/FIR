@@ -1935,7 +1935,7 @@ def data_quarterly_bl(request, business_line, divisor, num_months=3, is_incident
 
     elif divisor == 'severity':
         severity_choices = SeverityChoice.objects.all()
-        for i in xrange(num_months):
+        for i in range(num_months):
             d = {}
 
             today = datetime.datetime.today() - relativedelta(months=num_months - i)
