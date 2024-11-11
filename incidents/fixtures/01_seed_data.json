@@ -28,11 +28,19 @@
     }
 },
 {
+    "pk": 5,
+    "model": "incidents.labelgroup",
+    "fields": {
+        "name": "severity"
+    }
+},
+{
     "pk": 1,
     "model": "incidents.label",
     "fields": {
         "group": 4,
-        "name": "CERT"
+        "name": "CERT",
+        "dynamic_config": {}
     }
 },
 {
@@ -40,7 +48,8 @@
     "model": "incidents.label",
     "fields": {
         "group": 4,
-        "name": "External"
+        "name": "External",
+        "dynamic_config": {}
     }
 },
 {
@@ -48,7 +57,8 @@
     "model": "incidents.label",
     "fields": {
         "group": 2,
-        "name": "CERT"
+        "name": "CERT",
+        "dynamic_config": {}
     }
 },
 {
@@ -56,7 +66,8 @@
     "model": "incidents.label",
     "fields": {
         "group": 2,
-        "name": "Entity"
+        "name": "Entity",
+        "dynamic_config": {}
     }
 },
 {
@@ -64,7 +75,8 @@
     "model": "incidents.label",
     "fields": {
         "group": 1,
-        "name": "A"
+        "name": "A",
+        "dynamic_config": {}
     }
 },
 {
@@ -72,7 +84,8 @@
     "model": "incidents.label",
     "fields": {
         "group": 1,
-        "name": "B"
+        "name": "B",
+        "dynamic_config": {}
     }
 },
 {
@@ -80,7 +93,8 @@
     "model": "incidents.label",
     "fields": {
         "group": 1,
-        "name": "C"
+        "name": "C",
+        "dynamic_config": {}
     }
 },
 {
@@ -88,7 +102,8 @@
     "model": "incidents.label",
     "fields": {
         "group": 1,
-        "name": "1"
+        "name": "1",
+        "dynamic_config": {}
     }
 },
 {
@@ -96,7 +111,8 @@
     "model": "incidents.label",
     "fields": {
         "group": 1,
-        "name": "2"
+        "name": "2",
+        "dynamic_config": {}
     }
 },
 {
@@ -104,7 +120,8 @@
     "model": "incidents.label",
     "fields": {
         "group": 1,
-        "name": "5"
+        "name": "5",
+        "dynamic_config": {}
     }
 },
 {
@@ -112,7 +129,8 @@
     "model": "incidents.label",
     "fields": {
         "group": 1,
-        "name": "6"
+        "name": "6",
+        "dynamic_config": {}
     }
 },
 {
@@ -120,7 +138,8 @@
     "model": "incidents.label",
     "fields": {
         "group": 3,
-        "name": "Opened"
+        "name": "Opened",
+        "dynamic_config": {}
     }
 },
 {
@@ -128,7 +147,8 @@
     "model": "incidents.label",
     "fields": {
         "group": 3,
-        "name": "Closed"
+        "name": "Closed",
+        "dynamic_config": {}
     }
 },
 {
@@ -136,7 +156,8 @@
     "model": "incidents.label",
     "fields": {
         "group": 3,
-        "name": "Monitor"
+        "name": "Monitor",
+        "dynamic_config": {}
     }
 },
 {
@@ -144,7 +165,8 @@
     "model": "incidents.label",
     "fields": {
         "group": 3,
-        "name": "Takedown"
+        "name": "Takedown",
+        "dynamic_config": {}
     }
 },
 {
@@ -152,7 +174,8 @@
     "model": "incidents.label",
     "fields": {
         "group": 3,
-        "name": "Info"
+        "name": "Info",
+        "dynamic_config": {}
     }
 },
 {
@@ -160,7 +183,8 @@
     "model": "incidents.label",
     "fields": {
         "group": 3,
-        "name": "Alerting"
+        "name": "Alerting",
+        "dynamic_config": {}
     }
 },
 {
@@ -168,7 +192,8 @@
     "model": "incidents.label",
     "fields": {
         "group": 3,
-        "name": "Investigation"
+        "name": "Investigation",
+        "dynamic_config": {}
     }
 },
 {
@@ -176,7 +201,8 @@
     "model": "incidents.label",
     "fields": {
         "group": 4,
-        "name": "BL"
+        "name": "BL",
+        "dynamic_config": {}
     }
 },
 {
@@ -184,7 +210,8 @@
     "model": "incidents.label",
     "fields": {
         "group": 4,
-        "name": "SOC"
+        "name": "SOC",
+        "dynamic_config": {}
     }
 },
 {
@@ -192,7 +219,8 @@
     "model": "incidents.label",
     "fields": {
         "group": 3,
-        "name": "Abuse"
+        "name": "Abuse",
+        "dynamic_config": {}
     }
 },
 {
@@ -200,7 +228,52 @@
     "model": "incidents.label",
     "fields": {
         "group": 3,
-        "name": "Blocked"
+        "name": "Blocked",
+        "dynamic_config": {}
+    }
+},
+{
+    "model": "incidents.label",
+    "pk": 23,
+    "fields": {
+        "name": "1",
+        "group": 5,
+        "dynamic_config": {
+          "color": "#468847"
+        }
+    }
+},
+{
+    "model": "incidents.label",
+    "pk": 24,
+    "fields": {
+        "name": "2",
+        "group": 5,
+        "dynamic_config": {
+          "color": "#fefe00"
+        }
+    }
+},
+{
+    "model": "incidents.label",
+    "pk": 25,
+    "fields": {
+        "name": "3",
+        "group": 5,
+        "dynamic_config": {
+          "color": "#f89406"
+        }
+    }
+},
+{
+    "model": "incidents.label",
+    "pk": 26,
+    "fields": {
+        "name": "4",
+        "group": 5,
+        "dynamic_config": {
+          "color": "#f81920"
+        }
     }
 },
 {
@@ -678,38 +751,6 @@
                 "incident"
             ]
         ]
-    }
-},
-{
-    "model": "incidents.severitychoice",
-    "pk": 1,
-    "fields": {
-        "name": "1",
-        "color": "#468847"
-    }
-},
-{
-    "model": "incidents.severitychoice",
-    "pk": 2,
-    "fields": {
-        "name": "2",
-        "color": "#c8c800"
-    }
-},
-{
-    "model": "incidents.severitychoice",
-    "pk": 3,
-    "fields": {
-        "name": "3",
-        "color": "#f89406"
-    }
-},
-{
-    "model": "incidents.severitychoice",
-    "pk": 4,
-    "fields": {
-        "name": "4",
-        "color": "#f81920"
     }
 }
 ]

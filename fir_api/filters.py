@@ -125,10 +125,13 @@ class LabelFilter(FilterSet):
 
     id = NumberFilter(field_name="id")
     name = CharFilter(field_name="name")
+    color = CharFilter(
+        field_name="dynamic_config__color", lookup_expr="icontains", label="color"
+    )
 
     class Meta:
         model = Label
-        fields = ["id", "name", "group"]
+        fields = ["id", "name", "group", "color"]
 
 
 class ValidAttributeFilter(FilterSet):

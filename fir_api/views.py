@@ -24,6 +24,7 @@ from rest_framework.decorators import action
 from rest_framework import renderers
 from rest_framework.response import Response
 from rest_framework.filters import OrderingFilter
+from rest_framework.serializers import ValidationError
 from django_filters.rest_framework import (
     DjangoFilterBackend,
     FilterSet,
@@ -58,7 +59,7 @@ from fir_api.filters import (
     ValidAttributeFilter,
     FileFilter,
 )
-from fir_api.permissions import IsIncidentHandler
+from fir_api.permissions import IsIncidentHandler, IsAdminUserOrReadOnly
 from fir_artifacts.files import handle_uploaded_file, do_download
 from fir_artifacts.models import Artifact, File
 from incidents.models import (
@@ -132,7 +133,7 @@ class IncidentViewSet(
     def perform_create(self, serializer):
         opened_by = self.request.user
         serializer.is_valid(raise_exception=True)
-        if type(self.request.data).__name__ == 'dict':
+        if type(self.request.data).__name__ == "dict":
             bls = self.request.data.get("concerned_business_lines", [])
         else:
             bls = self.request.data.getlist("concerned_business_lines", [])
@@ -153,7 +154,7 @@ class IncidentViewSet(
         Comments.create_diff_comment(
             self.get_object(), serializer.validated_data, self.request.user
         )
-        if type(self.request.data).__name__ == 'dict':
+        if type(self.request.data).__name__ == "dict":
             bls = self.request.data.get("concerned_business_lines", [])
         else:
             bls = self.request.data.getlist("concerned_business_lines", [])
@@ -237,19 +238,31 @@ class CommentViewSet(viewsets.ModelViewSet):
         return super().perform_destroy(instance)
 
 
-class LabelViewSet(ListModelMixin, viewsets.GenericViewSet):
+class LabelViewSet(viewsets.ModelViewSet):
     """
     API endpoint for viewing labels
     """
 
-    queryset = Label.objects.all()
+    queryset = Label.objects.all().order_by('id')
     serializer_class = LabelSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAdminUserOrReadOnly,)
     filter_backends = [DjangoFilterBackend]
     filterset_class = LabelFilter
 
-    def get_queryset(self):
-        return super().get_queryset()
+    def perform_update(self, serializer):
+        self.perform_create(serializer)
+
+    def perform_create(self, serializer):
+        if serializer.is_valid():
+            try:
+                serializer.Meta.model.validate_dynamic_config(
+                    serializer.validated_data["name"],
+                    serializer.validated_data["group"],
+                    serializer.validated_data["dynamic_config"],
+                )
+            except Exception as e:
+                raise ValidationError(e.message)
+            serializer.save()
 
 
 class FileViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
@@ -287,12 +300,12 @@ class FileViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
             pk=pk,
         )
         files_added = []
-        if type(self.request.data).__name__ == 'dict':
+        if type(self.request.data).__name__ == "dict":
             uploaded_files = request.FILES.get("file", [])
         else:
             uploaded_files = request.FILES.getlist("file", [])
 
-        if type(self.request.data).__name__ == 'dict':
+        if type(self.request.data).__name__ == "dict":
             descriptions = request.data.get("description", [])
         else:
             descriptions = request.data.getlist("description", [])
@@ -303,9 +316,7 @@ class FileViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        for uploaded_file, description in zip(
-            uploaded_files, descriptions
-        ):
+        for uploaded_file, description in zip(uploaded_files, descriptions):
             file_wrapper = FileWrapper(uploaded_file.file)
             file_wrapper.name = uploaded_file.name
             file = handle_uploaded_file(file_wrapper, description, incident)

@@ -9,7 +9,7 @@ from django.template.response import TemplateResponse
 from django.views.decorators.http import require_POST
 
 from incidents.models import IncidentCategory, Incident, Comments, BusinessLine, model_status_changed
-from incidents.models import Label, Log, BaleCategory, SeverityChoice
+from incidents.models import Label, Log, BaleCategory
 from incidents.models import Attribute, ValidAttribute, IncidentTemplate, Profile
 from incidents.forms import IncidentForm, CommentForm
 
@@ -1758,7 +1758,7 @@ def data_yearly_bl_severity(request):
     q = q & Q(confidentiality__lte=2)
 
     chart_data = []
-    severity_choices = SeverityChoice.objects.all()
+    severity_choices = Label.objects.filter(group__name='severity')
 
     for bl in bls:
         d = {}
@@ -1934,7 +1934,7 @@ def data_quarterly_bl(request, business_line, divisor, num_months=3, is_incident
             chart_data.append(d)
 
     elif divisor == 'severity':
-        severity_choices = SeverityChoice.objects.all()
+        severity_choices = Label.objects.filter(group__name='severity')
         for i in range(num_months):
             d = {}
 

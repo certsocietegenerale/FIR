@@ -24,18 +24,22 @@ class BusinessLineAdmin(TreeAdmin):
 class IncidentAdmin(admin.ModelAdmin):
     exclude = ("artifacts", )
 
+class LabelAdmin(admin.ModelAdmin):
+    class Media:
+       js = ("colorfield/jscolor/jscolor.js", "custom_js/admin_labels.js", )
+
+
 admin.site.register(Incident, IncidentAdmin)
 admin.site.register(BusinessLine, BusinessLineAdmin)
 admin.site.register(BaleCategory)
 admin.site.register(Comments)
 admin.site.register(LabelGroup)
-admin.site.register(Label)
+admin.site.register(Label, LabelAdmin)
 admin.site.register(IncidentCategory)
 admin.site.register(Log)
 admin.site.register(Profile)
 admin.site.register(IncidentTemplate)
 admin.site.register(Attribute)
 admin.site.register(ValidAttribute)
-admin.site.register(SeverityChoice)
 admin.site.unregister(User)
 admin.site.register(User, UserAdmin)
