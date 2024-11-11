@@ -150,7 +150,7 @@ class Label(models.Model):
                 )
 
     def clean(self):
-        validate_dynamic_config(self.name, self.group, self.dynamic_config)
+        self.validate_dynamic_config(self.name, self.group, self.dynamic_config)
         return super().clean()
 
 
