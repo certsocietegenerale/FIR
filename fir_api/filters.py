@@ -13,6 +13,7 @@ from django_filters.rest_framework import (
 from incidents.models import (
     Incident,
     Label,
+    LabelGroup,
     IncidentCategory,
     Comments,
     File,
@@ -125,6 +126,11 @@ class LabelFilter(FilterSet):
 
     id = NumberFilter(field_name="id")
     name = CharFilter(field_name="name")
+    group = ModelChoiceFilter(
+        to_field_name="name",
+        field_name="group__name",
+        queryset=LabelGroup.objects.all(),
+    )
     color = CharFilter(
         field_name="dynamic_config__color", lookup_expr="icontains", label="color"
     )
