@@ -18,6 +18,10 @@ class ClaimMappingOIDCAuthenticationBackend(OIDCAuthenticationBackend):
         if is_api:
             claims_mapping = self.get_settings("AUTH_OICD_API_CLAIM_MAP")
 
+        if callable(self.get_settings("AUTH_OIDC_CLAIM_MAP_FUNCTION", False)):
+            # users permissions are handled through a custom function
+            return True
+
         role_map = self.get_settings("AUTH_OIDC_ROLE_MAP")
         group_map = self.get_settings("AUTH_OIDC_GROUP_MAP")
         flag_map = self.get_settings("AUTH_OIDC_FLAG_MAP")
@@ -117,7 +121,6 @@ class ClaimMappingOIDCAuthenticationBackend(OIDCAuthenticationBackend):
                 except Group.DoesNotExist:
                     pass
 
-            user.save()
             acls = role_mapping.get(role, [])
             for acl in acls:
                 try:
@@ -140,16 +143,20 @@ class ClaimMappingOIDCAuthenticationBackend(OIDCAuthenticationBackend):
         username = self.jsonpath_get(claims_mapping, claims, "username")[:30]
         if user is None and self.get_settings("OIDC_CREATE_USER", True):
             user = self.UserModel.objects.create_user(username, email=email)
+            user.save()
         elif user is None:
             return SuspiciousOperation("User does not exist.")
 
         user.first_name = self.jsonpath_get(claims_mapping, claims, "first_name")
         user.last_name = self.jsonpath_get(claims_mapping, claims, "last_name")
         user.email = email
-        user.save()
 
         roles = self.jsonpath_get(claims_mapping, claims, "roles", multi=True)
         user = self.set_roles(user, roles)
+
+        if callable(self.get_settings("AUTH_OIDC_CLAIM_MAP_FUNCTION", False)):
+            user = self.get_settings("AUTH_OIDC_CLAIM_MAP_FUNCTION")(user, claims)
+        user.save()
 
         incidents.models.Profile.objects.get_or_create(user=user)
 
