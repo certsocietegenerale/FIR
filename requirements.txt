@@ -11,3 +11,5 @@ markdown2
 bleach
 django-querysetsequence
 django-colorfield
+django-filter
+djangorestframework
