@@ -12,6 +12,7 @@ from django.db.models import Q
 
 from rest_framework.renderers import JSONRenderer
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.authtoken.models import Token
 from rest_framework.mixins import (
     ListModelMixin,
@@ -132,13 +133,25 @@ class IncidentViewSet(
     def perform_create(self, serializer):
         opened_by = self.request.user
         serializer.is_valid(raise_exception=True)
-        if type(self.request.data).__name__ == 'dict':
+        if type(self.request.data).__name__ == "dict":
             bls = self.request.data.get("concerned_business_lines", [])
         else:
             bls = self.request.data.getlist("concerned_business_lines", [])
         concerned_business_lines = []
         if bls:
             concerned_business_lines = self.get_businesslines(businesslines=bls)
+        if bls and not concerned_business_lines:
+            raise PermissionDenied(
+                {
+                    "message": "You don't have write permission on the business lines associated with this incident."
+                }
+            )
+        if not (bls or opened_by.has_perm("incidents.handle_incidents")):
+            raise PermissionDenied(
+                {
+                    "message": "Incidents without business line can only be created by global incident handlers."
+                }
+            )
         serializer.is_valid(raise_exception=True)
         instance = serializer.save(
             opened_by=opened_by,
@@ -153,7 +166,7 @@ class IncidentViewSet(
         Comments.create_diff_comment(
             self.get_object(), serializer.validated_data, self.request.user
         )
-        if type(self.request.data).__name__ == 'dict':
+        if type(self.request.data).__name__ == "dict":
             bls = self.request.data.get("concerned_business_lines", [])
         else:
             bls = self.request.data.getlist("concerned_business_lines", [])
@@ -162,6 +175,19 @@ class IncidentViewSet(
             extra_dataset["concerned_business_lines"] = self.get_businesslines(
                 businesslines=bls
             )
+        if bls and not extra_dataset["concerned_business_lines"]:
+            raise PermissionDenied(
+                {
+                    "message": "You don't have write permission on the business lines associated with this incident."
+                }
+            )
+        if not (bls or self.request.user.has_perm("incidents.handle_incidents")):
+            raise PermissionDenied(
+                {
+                    "message": "Incidents without business line can only be created by global incident handlers."
+                }
+            )
+
         instance = serializer.save(**extra_dataset)
         instance.refresh_main_business_lines()
         if "description" in serializer.validated_data:
@@ -287,12 +313,12 @@ class FileViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
             pk=pk,
         )
         files_added = []
-        if type(self.request.data).__name__ == 'dict':
+        if type(self.request.data).__name__ == "dict":
             uploaded_files = request.FILES.get("file", [])
         else:
             uploaded_files = request.FILES.getlist("file", [])
 
-        if type(self.request.data).__name__ == 'dict':
+        if type(self.request.data).__name__ == "dict":
             descriptions = request.data.get("description", [])
         else:
             descriptions = request.data.getlist("description", [])
@@ -303,9 +329,7 @@ class FileViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        for uploaded_file, description in zip(
-            uploaded_files, descriptions
-        ):
+        for uploaded_file, description in zip(uploaded_files, descriptions):
             file_wrapper = FileWrapper(uploaded_file.file)
             file_wrapper.name = uploaded_file.name
             file = handle_uploaded_file(file_wrapper, description, incident)

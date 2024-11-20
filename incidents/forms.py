@@ -56,13 +56,10 @@ class IncidentForm(ModelForm):
         if self.user is not None:
             business_lines = cleaned_data.get("concerned_business_lines")
             is_incident = cleaned_data.get("is_incident")
-            if is_incident:
-                bl_ids = business_lines.values_list('id', flat=True)
-                handling_bls = BusinessLine.authorization.for_user(self.user, 'incidents.handle_incidents').filter(
-                    pk__in=bl_ids).count()
-                if len(bl_ids) != handling_bls:
-                    self.add_error('is_incident',
-                                   forms.ValidationError(_('You cannot create incidents for these business lines')))
+            if not (business_lines or self.user.has_perm("incidents.handle_incidents")):
+                self.add_error('concerned_business_lines',
+                                forms.ValidationError("Incidents without business line can only be created by global incident handlers."))
+
         return cleaned_data
 
     class Meta:
