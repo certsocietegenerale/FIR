@@ -207,7 +207,7 @@ div.upload span {
 
 /* Navbar  --------------------------------------*/
 
-.navbar-sm .navbar { min-height:40px; height: 40px; background-color: #101010; }
+/* .navbar-sm .navbar { min-height:40px; height: 40px; background-color: #101010; }
 .navbar-sm .navbar .navbar-brand { height: 40px; padding: 0px 12px; font-size: 16px; line-height: 40px; }
 .navbar-sm .navbar .navbar-nav > li > a {  padding-top: 0px; padding-bottom: 0px; line-height: 40px; }
 .navbar-sm .navbar .navbar-btn { margin-top: 4px; margin-bottom: 4px; }
@@ -231,7 +231,7 @@ div.upload span {
 .navbar-collapse {
 	background-color: #101010;
 	max-height: none !important;
-}
+} */
 
 #header-collapse {
 	padding: 4px 5px;
