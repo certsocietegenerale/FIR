@@ -73,7 +73,7 @@
             {% plugin_point 'base_navbar' %}
               {% has_perm 'incidents.view_statistics' model='incidents.Incident' as can_view_statistics %}
               {% if can_view_statistics %}
-              <li class="nav-item dropdown" id='incidents-nav' >
+              <li class="nav-item dropdown" id='stats-nav' >
                 <a class='nav-link dropdown-toggle' data-bs-toggle='dropdown' href="#">{% trans "Stats" %}</a>
                 <ul class='dropdown-menu'>
                   <li><a class="dropdown-item" href="{% url 'stats:yearly' %}">{% trans "Yearly" %}</a></li>
