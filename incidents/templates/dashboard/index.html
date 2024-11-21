@@ -10,39 +10,53 @@
 {% endblock %}
 
 {% block content %}
-<h4>{%  trans "Starred Incidents" %}</h4>
+<div class="card mb-3">
+	<div class="card-body">
+		<h4><i class="bi bi-stars"></i>{%  trans "Starred Incidents" %}</h4>
 
-<div id='starred_incidents' class='incident_display' data-url="{% url 'dashboard:starred' %}">
-{%  trans "Loading ..." %}
+		<div id='starred_incidents' class='incident_display' data-url="{% url 'dashboard:starred' %}">
+		{%  trans "Loading ..." %}
+		</div>
+	</div>
+
 </div>
 
-<div class='tabbable'>
-	<ul class='nav nav-tabs'>
-		<li class='active'>
-			<a href='#tab_open' data-toggle='tab'>{%  trans "Open" %}</a>
-		</li>
-		<li>
-			<a href='#tab_blocked' data-toggle='tab'>{%  trans "Blocked" %}</a>
-		</li>
-		<li>
-			<a href='#tab_old' data-toggle='tab'>{%  trans "Old" %}</a>
-		</li>
-		{% plugin_point 'dashboard_tab' %}
-	</ul>
 
-	<div class='tab-content tabs'>
-		<div class='tab-pane active incident_display table-responsive' id='tab_open' data-url="{% url 'dashboard:open' %}">
-			{%  trans "Loading ..." %}
+<div class="card mt-3">
+	<div class='tabbable'>
+		<div class="card-header">
+ 
+				<ul class='nav nav-tabs card-header-tabs'>
+					<li class="nav-item">
+						<button class="nav-link active" data-bs-target='#tab_open' data-bs-toggle='tab'>{%  trans "Open" %}</button>
+					</li>
+					<li class="nav-item">
+						<button class="nav-link"  data-bs-target='#tab_blocked' data-bs-toggle='tab'>{%  trans "Blocked" %}</button>
+					</li>
+					<li class="nav-item">
+						<button class="nav-link"  data-bs-target='#tab_old' data-bs-toggle='tab'>{%  trans "Old" %}</button>
+					</li>
+					{% plugin_point 'dashboard_tab' %}
+				</ul>
+			</div>
 		</div>
-
-		<div class='tab-pane incident_display table-responsive' id='tab_blocked' data-url="{% url 'dashboard:blocked' %}">
-			{%  trans "Loading ..." %}
+		<div class="card-body">
+ 
+			<div class='tab-content tabs'>
+				<div class='tab-pane active incident_display table-responsive' id='tab_open' data-url="{% url 'dashboard:open' %}">
+					{%  trans "Loading ..." %}
+				</div>
+ 
+				<div class='tab-pane incident_display table-responsive' id='tab_blocked' data-url="{% url 'dashboard:blocked' %}">
+					{%  trans "Loading ..." %}
+				</div>
+ 
+				<div class='tab-pane incident_display table-responsive' id='tab_old' data-url="{% url 'dashboard:old' %}">
+					{%  trans "Loading ..." %}
+				</div>
+				{% plugin_point 'dashboard_tab_content' %}
+			</div>
 		</div>
-
-		<div class='tab-pane incident_display table-responsive' id='tab_old' data-url="{% url 'dashboard:old' %}">
-			{%  trans "Loading ..." %}
-		</div>
-		{% plugin_point 'dashboard_tab_content' %}
 	</div>
 </div>
 {% endblock %}
