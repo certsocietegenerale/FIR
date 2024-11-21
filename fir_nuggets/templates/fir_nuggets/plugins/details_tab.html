@@ -1,7 +1,7 @@
 {% load i18n %}
 
-<li {% if event.nugget_set.count == 0 %}class="hidden"{% endif %} id="tab_nuggets_title">
-	<a data-bs-target='#tab_nuggets' data-bs-toggle='tab'>
+<li class="nav-item {% if event.nugget_set.count == 0 %}hidden{% endif %}" id="tab_nuggets_title">
+	<button class="nav-link" data-bs-target='#tab_nuggets' data-bs-toggle='tab'>
 		{% blocktrans with count=event.nugget_set.count %}Investigation timeline (<span id='nuggets-count'>{{count}}</span> elements){% endblocktrans %}
-	</a>
+	</button>
 </li>

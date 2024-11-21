@@ -159,10 +159,10 @@
 
 		<div id='main_tabs' class='tabbable'>
 			<ul class='nav nav-tabs'>
-				<li class='active'>
-					<a href='#tab_comments' data-toggle='tab'>
+				<li class='nav-item'>
+					<button class="nav-link active" data-bs-target='#tab_comments' data-bs-toggle='tab'>
 						{% trans "Comments" %} (<span id='comment-count'>{{ comments.count }}</span>)
-					</a>
+					</button>
 				</li>
 				{% plugin_point 'details_tab' %}
 			</ul>
