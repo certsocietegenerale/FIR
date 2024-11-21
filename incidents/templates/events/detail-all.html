@@ -23,9 +23,9 @@
 	<div id='details-actions-all'>
 	<div class="details-actions-supmenu" id="details-actions-add">
 		<ul class="list-unstyled">
-			<li><a href="#" id="details-add-file"><i class="glyphicon glyphicon-file"></i>{%  trans "File" %}</a></li>
+			<li><a href="#" id="details-add-file"><i class="bi bi-file-earmark"></i>{%  trans "File" %}</a></li>
 			{% if valid_attributes|length > 0 %}
-				<li><a href="#" id="details-add-attribute"><i class="glyphicon glyphicon-list"></i>{%  trans "Attribute" %}</a></li>
+				<li><a href="#" id="details-add-attribute"><i class="bi bi-card-list"></i>{%  trans "Attribute" %}</a></li>
 			{% endif %}
 			{% plugin_point 'details_actions_add' %}
 		</ul>
@@ -36,20 +36,20 @@
 	<div id="details-actions">
 		<ul class="list-unstyled">
             {% if can_handle_incident %}
-			<li><a href="#" id="details-actions-add-link"><i class="glyphicon glyphicon-plus"></i>{%  trans "Add" %}</a></li>
+			<li><a href="#" id="details-actions-add-link"><i class="bi bi-plus-circle"></i> {%  trans "Add" %}</a></li>
             {% endif %}
             {% if can_comment_incident %}
 			<li><a href="#" id='details-actions-comment' data-target='#addComment'>
-				<i class="glyphicon glyphicon-comment"></i>{%  trans "Comment" context "verb" %}
+				<i class="bi bi-chat-left"></i> {%  trans "Comment" context "verb" %}
 			</a></li>
             {% endif %}
             {% if can_handle_incident %}
-			<li><a href="{% url 'incidents:edit' event.id %}"><i class="glyphicon glyphicon-pencil"></i>{%  trans "Edit" %}</a></li>
+			<li><a href="{% url 'incidents:edit' event.id %}"><i class="bi bi-pencil"></i> {%  trans "Edit" %}</a></li>
 			{% if event.status != 'O' %}
 				<li>
 					<form action="{% url 'incidents:change_status' event.id 'O' %}" method='POST' class='icon'>
 						{% csrf_token %}
-						<a href='#' class='submit'><i class="glyphicon glyphicon-fire"></i>{% trans "Open" %}</a>
+						<a href='#' class='submit'><i class="bi bi-fire"></i> {% trans "Open" %}</a>
 					</form>
 				</li>
 			{% endif %}
@@ -57,7 +57,7 @@
 				<li>
 					<form action="{% url 'incidents:change_status' event.id 'B' %}" method='POST' class='icon'>
 						{% csrf_token %}
-						<a href="#" class='submit'><i class="glyphicon glyphicon-ban-circle"></i>{%  trans "Block" %}</a>
+						<a href="#" class='submit'><i class="bi bi-ban"></i> {%  trans "Block" %}</a>
 					</form>
 				</li>
 			{% endif %}
@@ -65,12 +65,12 @@
 				<li>
 					<form action="{% url 'incidents:change_status' event.id 'C' %}" method='POST' class='icon'>
 						{% csrf_token %}
-						<a href='#' class='submit'><i class="glyphicon glyphicon-ok-sign"></i>{% trans "Close" %}</a>
+						<a href='#' class='submit'><i class="bi bi-check-circle"></i> {% trans "Close" %}</a>
 					</form>
 				</li>
 			{% endif %}
             {% endif %}
-			<li><a href="{% url 'incidents:followup' event.id %}"><i class="glyphicon glyphicon-retweet"></i>{%  trans "Incident followup" %}</a></li>
+			<li><a href="{% url 'incidents:followup' event.id %}"><i class="bi bi-repeat"></i> {%  trans "Incident followup" %}</a></li>
 			{% plugin_point 'details_actions' %}
 		</ul>
 	</div>
@@ -173,8 +173,8 @@
 				<table class="table table-hover table-condensed">
 					<thead>
 						<tr>
-							<th><i class='glyphicon glyphicon-calendar'></i></th>
-							<th><i class='glyphicon glyphicon-user'></i></th>
+							<th><i class='bi bi-calendar'></i></th>
+							<th><i class='bi bi-person-circle'></i></th>
 							<th>{%  trans "Comment" context "noun" %}</th>
 							<th>{%  trans "Action" %}</th>
 							<th></th>

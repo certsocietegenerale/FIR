@@ -29,7 +29,7 @@
                         <form id='details-file-delete' action="{% url 'artifacts:remove_file' file.id %}" method='POST'>
                             {% csrf_token %}
                             <button type="submit" class="btn btn-link btn-xs icon">
-                                <i class="glyphicon glyphicon-trash"></i>
+                                <i class="bi bi-trash"></i>
                             </button>
                         </form>
                         {% endif %}
@@ -48,15 +48,15 @@
         <table id='filetable' class='table table-condensed'></table>
     </form>
     <a class="btn btn-sm btn-default" href="#" onclick='javascript:$("#id_file").click();'>
-        <i class="glyphicon glyphicon-file"></i> {%  trans "Browse..." %}
+        <i class="bi bi-file-earmark"></i> {%  trans "Browse..." %}
     </a>
     <a class="btn btn-sm btn-default" href="#" onclick='javascript:$("#upload_form").submit();'>
-        <i class="glyphicon glyphicon-upload"></i> {%  trans "Upload files" %}
+        <i class="bi bi-upload"></i> {%  trans "Upload files" %}
     </a>
     {% endif %}
     {% if event.file_set.count > 0 %}
         <a class="btn btn-sm btn-default" href="{% url 'artifacts:download_archive' event|content_type event.id %}">
-            <i class="glyphicon glyphicon-download-alt"></i> {%  trans "Download archive" %}
+            <i class="bi bi-download"></i> {%  trans "Download archive" %}
         </a>
     {% endif %}
 </div>
