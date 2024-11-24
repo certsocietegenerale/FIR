@@ -12,7 +12,7 @@ services:
       context: ../
       dockerfile: docker/Dockerfile
     entrypoint: /bin/sh
-    command: -c "wait-for -t 10 fir_db:3306 && python manage.py makemigrations && python manage.py migrate && python manage.py loaddata incidents/fixtures/*.json && python manage.py collectstatic --no-input && python manage.py runserver 0.0.0.0:8000"
+    command: -c "wait-for -t 20 fir_db:3306 && python manage.py makemigrations && python manage.py migrate && python manage.py loaddata incidents/fixtures/*.json && python manage.py collectstatic --no-input && python manage.py runserver 0.0.0.0:8000"
     container_name: fir
     hostname: fir
     depends_on:
@@ -58,7 +58,7 @@ services:
   fir_celery_worker:
     image: fir:latest
     entrypoint: /bin/sh
-    command: -c "wait-for -t 10 fir_redis:6379 && wait-for -t 30 fir:8000 -- celery -A fir_celery.celeryconf.celery_app worker -l debug"
+    command: -c "wait-for -t 20 fir_redis:6379 && wait-for -t 40 fir:8000 -- celery -A fir_celery.celeryconf.celery_app worker -l debug"
     container_name: fir_celery_worker
     hostname: fir_celery_worker
     depends_on:
@@ -73,7 +73,7 @@ services:
   fir_celery_beat:
     image: fir:latest
     entrypoint: /bin/sh
-    command: -c "wait-for -t 10 fir_redis:6379 && wait-for -t 30 fir:8000 -- celery -A fir_celery.celeryconf.celery_app beat -l debug"
+    command: -c "wait-for -t 20 fir_redis:6379 && wait-for -t 40 fir:8000 -- celery -A fir_celery.celeryconf.celery_app beat -l debug"
     container_name: fir_celery_beat
     hostname: fir_celery_beat
     depends_on:

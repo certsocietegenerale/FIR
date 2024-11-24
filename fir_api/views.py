@@ -25,6 +25,7 @@ from rest_framework.decorators import action
 from rest_framework import renderers
 from rest_framework.response import Response
 from rest_framework.filters import OrderingFilter
+from rest_framework.serializers import ValidationError
 from django_filters.rest_framework import (
     DjangoFilterBackend,
     FilterSet,
@@ -59,7 +60,7 @@ from fir_api.filters import (
     ValidAttributeFilter,
     FileFilter,
 )
-from fir_api.permissions import IsIncidentHandler
+from fir_api.permissions import IsIncidentHandler, IsAdminUserOrReadOnly
 from fir_artifacts.files import handle_uploaded_file, do_download
 from fir_artifacts.models import Artifact, File
 from incidents.models import (
@@ -263,19 +264,31 @@ class CommentViewSet(viewsets.ModelViewSet):
         return super().perform_destroy(instance)
 
 
-class LabelViewSet(ListModelMixin, viewsets.GenericViewSet):
+class LabelViewSet(viewsets.ModelViewSet):
     """
     API endpoint for viewing labels
     """
 
-    queryset = Label.objects.all()
+    queryset = Label.objects.all().order_by('id')
     serializer_class = LabelSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = (IsAdminUserOrReadOnly,)
     filter_backends = [DjangoFilterBackend]
     filterset_class = LabelFilter
 
-    def get_queryset(self):
-        return super().get_queryset()
+    def perform_update(self, serializer):
+        self.perform_create(serializer)
+
+    def perform_create(self, serializer):
+        if serializer.is_valid():
+            try:
+                serializer.Meta.model.validate_dynamic_config(
+                    serializer.validated_data["name"],
+                    serializer.validated_data["group"],
+                    serializer.validated_data["dynamic_config"],
+                )
+            except Exception as e:
+                raise ValidationError(e.message)
+            serializer.save()
 
 
 class FileViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
