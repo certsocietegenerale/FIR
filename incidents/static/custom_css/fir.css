@@ -161,7 +161,8 @@ form.icon {
 
 button.icon {
 	margin: 0;
-	color: black;
+	/*color: black;*/
+	color: var(--bs-dark-text-emphasis);
 	padding: 0;
 	margin-top: -1px;
 }
@@ -319,6 +320,21 @@ footer div {
 a .glyphicon {
 	color: black;
 }
+
+a, 
+button.nav-link, 
+.btn-link,
+button.bi {
+	color: var(--bs-info-text-emphasis);
+	text-decoration-line: none;
+}
+
+a:hover, 
+button.nav-link:hover, 
+.btn-link:hover {
+	text-decoration-line: underline;
+}
+
 
 /* Detail -------------------------------------*/
 
