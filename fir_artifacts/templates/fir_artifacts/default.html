@@ -16,7 +16,7 @@
                 {% if can_handle_incident %}
 				<form class='icon' action="{% url 'artifacts:detach' a.id event|relation_name event.id %}" method='POST'>
 					{% csrf_token %}
-					<button type="submit" class='btn btn-xs btn-link icon'>
+					<button type="submit" class='btn btn-sm btn-link icon'>
 						<i class='bi bi-x-circle'></i>
 					</button>
 				</form>

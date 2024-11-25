@@ -9,6 +9,6 @@
 	</a>{% endif %}</td>
 	<td>{% if can_handle_incident or user == comment.opened_by %}<form id='delete_comment_{{comment.id}}' name='delete' action="{% url 'incidents:delete_comment' event.id comment.id %}" method='POST' data-ajaxform data-action='remove' data-target='#comment_id_{{comment.id}}'>
 		{% csrf_token %}
-		<button type='submit' class='btn btn-xs btn-link icon'><i class='bi bi-x-circle'></i></button>
+		<button type='submit' class='btn btn-sm btn-link icon'><i class='bi bi-x-circle'></i></button>
 	</form>{% endif %}</td>
 </tr>

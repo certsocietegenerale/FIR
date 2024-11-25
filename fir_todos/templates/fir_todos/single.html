@@ -6,7 +6,7 @@
 			{% if can_view_incident or can_handle_incident %}
 				<form action="{% url 'todos:toggle_status' item.id %}" method='POST' data-ajaxform data-action='replaceWith' data-target='#todo-{{item.id}}'>
 				{% csrf_token %}
-				<button type='submit' class='btn btn-xs btn-link icon'>
+				<button type='submit' class='btn btn-sm btn-link icon'>
 					{% if item.done %}
 						<i class='bi bi-check-square'></i>
 					{% else %}
@@ -32,7 +32,7 @@
 	{% if can_handle_incident %}
 		<form action="{% url 'todos:delete' item.id %}" method='POST' data-ajaxform data-action='remove' data-target='#todo-{{item.id}}' data-hideifnone='#fir_todos' data-hideifnone-selector='.fir_todo_item'>
 			{% csrf_token %}
-			<button type='submit' class='btn btn-xs btn-link icon'><i class='bi bi-trash'></i></button>
+			<button type='submit' class='btn btn-sm btn-link icon'><i class='bi bi-trash'></i></button>
 		</form>
 	{% endif %}
 	</td>

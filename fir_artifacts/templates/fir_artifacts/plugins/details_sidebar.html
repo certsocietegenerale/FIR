@@ -28,7 +28,7 @@
                         {% if can_handle_incident %}
                         <form id='details-file-delete' action="{% url 'artifacts:remove_file' file.id %}" method='POST'>
                             {% csrf_token %}
-                            <button type="submit" class="btn btn-link btn-xs icon">
+                            <button type="submit" class="btn btn-link btn-sm icon">
                                 <i class="bi bi-trash"></i>
                             </button>
                         </form>
