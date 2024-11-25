@@ -343,9 +343,9 @@ button.nav-link:hover,
 	display: block;
 }
 
-#addComment select {
+/*#addComment select {
 	height: 25px;
-}
+}*/
 
 #sendEmail .form-horizontal .control-group {
  margin-bottom: 0px;

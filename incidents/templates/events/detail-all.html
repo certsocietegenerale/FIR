@@ -5,6 +5,7 @@
 {% load static %}
 {% load authorization %}
 {% load markdown %}
+{% load add_css_class %}
 
 {% block custom_css %}
 {% endblock %}
@@ -200,12 +201,12 @@
 					  	<div class="modal-body">
 							<div>
 								{% csrf_token %}
-								<div class="form-group row mb-3">
+								<div class="form-group row mb-3 lh-1">
 									<div class="col-sm-1">
 										<label for="id_action">{%  trans "Action" %}</label>
 									</div>
 									<div class="col-sm-4">
-										{{ comment_form.action }}
+										{{ comment_form.action|add_css_class:"lh-1"}}
 										<span class='help-block'>
 											{% for error in comment_form.action.errors %}
 												{{error}}
