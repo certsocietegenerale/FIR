@@ -30,11 +30,11 @@
                     <div class="col-sm-8 col-sm-offset-2">
 
                       <div id="#action_result" class="alerts">
-                          <div id="passwordChangedAlert" class="alert alert-success hidden alert-dismissible" role="alert">
+                          <div id="passwordChangedAlert" class="alert alert-success visually-hidden alert-dismissible" role="alert">
                               <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "Close" %}"><span aria-hidden="true">&times;</span></button>
                               {% trans "Password changed!" %}
                           </div>
-                          <div id="passwordNotChangedAlert" class="alert alert-danger hidden alert-dismissible" role="alert">
+                          <div id="passwordNotChangedAlert" class="alert alert-danger visually-hidden alert-dismissible" role="alert">
                               <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "Close" %}"><span aria-hidden="true">&times;</span></button>
                               {% trans "Error: password not changed." %}
                           </div>
@@ -191,12 +191,12 @@
         window.onload = function(){
             $('#password_form').on('fir.form.success', function (event) {
                 $('#changePassword').modal('hide');
-                $('#passwordChangedAlert').removeClass('hidden');
+                $('#passwordChangedAlert').removeClass('visually-hidden');
                 event.stopPropagation();
             });
             $('#password_form').on('fir.form.error', function (event) {
                 $('#changePassword').modal('hide');
-                $('#passwordNotChangedAlert').removeClass('hidden');
+                $('#passwordNotChangedAlert').removeClass('visually-hidden');
                 event.stopPropagation();
             });
         };

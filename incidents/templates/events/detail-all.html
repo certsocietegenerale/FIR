@@ -118,7 +118,7 @@
 			<div class="col-sm-5 col-xs-12" id="incident-sidebar">
 
 				{% if valid_attributes|length > 0 %}
-					<div class='widget border border-info-subtle {% if attributes.count == 0 %}hidden{% endif %}' id='attributes'>
+					<div class='widget border border-info-subtle {% if attributes.count == 0 %}visually-hidden{% endif %}' id='attributes'>
 						<h4 class='widget text-info-emphasis bg-info-subtle border border-info-subtle '>{%  trans "Attributes" %}</h4>
 
 						<table class='table table-condensed'>
@@ -137,7 +137,7 @@
 							<tr id="show_attribute_form">
 								<td colspan='3'><a href='#'>+ {%  trans "Add attribute" %}</a></td>
 							</tr>
-							<tr id="attribute_form" class='hidden'>
+							<tr id="attribute_form" class='visually-hidden'>
 							<td class="head">{% csrf_token %}
 								<select name="name">
 									{% for valid_attribute in valid_attributes %}

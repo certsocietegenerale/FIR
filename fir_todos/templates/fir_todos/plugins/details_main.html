@@ -2,7 +2,7 @@
 {% load authorization %}
 
 {%  has_perm 'incidents.handle_incidents' obj=event as can_handle_incident %}
-<div class='widget hidden  border border-info-subtle id='fir_todos>
+<div class='widget visually-hidden  border border-info-subtle id='fir_todos>
 	<h4 class='widget  text-info-emphasis bg-info-subtle border border-info-subtle'>{% trans "To-Do List" %}</h4>
 
 	<div id='fir_todos_list' data-url="{% url 'todos:list' event.id %}">
