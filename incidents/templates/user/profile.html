@@ -15,7 +15,7 @@
 
 {% block content %}
     <div id='details-actions-all'>
-        <div id="details-actions">
+        <div id="details-actions" class="bg-primary-subtle">
             <ul class="list-unstyled">
                 {% if password_form %}
                     <li><a href="#" id="user_change_password" data-toggle='modal' data-target='#changePassword'><i class="bi bi-lock"></i>{%  trans "Change password" %}</a></li>
@@ -25,7 +25,7 @@
         </div>
     </div>
     <div class="container-fluid " id="details-container">
-            <div class="row">
+            <div class="row justify-content-md-center">
                     {% csrf_token %}
                     <div class="col-sm-8 col-sm-offset-2">
 
@@ -48,11 +48,11 @@
                         {% endfor %}
                       {% endif %}
 
-                      <div class="panel panel-primary">
-                        <div class="panel-heading">
-                          <h3 class="panel-title">{% blocktrans with user_name=user.username %}{{ user_name }}'s profile{% endblocktrans %}</h3>
-                        </div>
-                        <div class="panel-body">
+                      <div class="card mb-3">
+                        <h5 class="card-header bg-primary-subtle text-primary-emphasis">
+                          {% blocktrans with user_name=user.username %}{{ user_name }}'s profile{% endblocktrans %}
+                        </h5>
+                        <div class="card-body">
 
                           <form action="{% url 'user:profile' %}" method="post">
                           <fieldset>
