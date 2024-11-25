@@ -21,11 +21,11 @@
     {%  has_perm 'incidents.handle_incidents' obj=event as can_handle_incident %}
     {% can_comment event as can_comment_incident %}
 	<div id='details-actions-all'>
-	<div class="details-actions-supmenu" id="details-actions-add">
+	<div class="details-actions-supmenu bg-info-subtle" id="details-actions-add">
 		<ul class="list-unstyled">
-			<li><a href="#" id="details-add-file"><i class="bi bi-file-earmark"></i>{%  trans "File" %}</a></li>
+			<li><a href="#" id="details-add-file"><i class="bi bi-file-earmark"></i> {%  trans "File" %}</a></li>
 			{% if valid_attributes|length > 0 %}
-				<li><a href="#" id="details-add-attribute"><i class="bi bi-card-list"></i>{%  trans "Attribute" %}</a></li>
+				<li><a href="#" id="details-add-attribute"><i class="bi bi-card-list"></i> {%  trans "Attribute" %}</a></li>
 			{% endif %}
 			{% plugin_point 'details_actions_add' %}
 		</ul>
@@ -33,7 +33,7 @@
 
 	{% plugin_point 'details_actions_menu' %}
 
-	<div id="details-actions">
+	<div id="details-actions" class="bg-primary-subtle">
 		<ul class="list-unstyled">
             {% if can_handle_incident %}
 			<li><a href="#" id="details-actions-add-link"><i class="bi bi-plus-circle"></i> {%  trans "Add" %}</a></li>

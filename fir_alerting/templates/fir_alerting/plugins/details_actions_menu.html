@@ -1,5 +1,5 @@
 {% load authorization %}
-<div class="details-actions-supmenu" id="details-actions-alert-bls" data-url="{% url 'alerting:emailform' %}">
+<div class="details-actions-supmenu bg-info-subtle" id="details-actions-alert-bls" data-url="{% url 'alerting:emailform' %}">
 	<ul class="list-unstyled">
 		{% for bl in event.concerned_business_lines.all %}
             {% has_perm 'incidents.handle_incidents' obj=bl as can_handle_incident %}
