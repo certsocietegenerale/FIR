@@ -107,8 +107,8 @@
                 {% trans "someone" as someone %}
 				<p><i>{% blocktrans with date=event.date opened_by=event.opened_by|default:someone %}Opened on {{ date }} by {{ opened_by }}{% endblocktrans %}</i></p>
 
-				<div class='widget' id='description'>
-					<h4 class='widget'>{%  trans "Description" %}</h4>
+				<div class='widget border border-primary-subtle' id='description'>
+					<h4 class='widget text-primary-emphasis bg-primary-subtle border border-primary-subtle'>{%  trans "Description" %}</h4>
 					<p>{{ event.description|markdown }}</p>
 				</div>
 
@@ -118,8 +118,8 @@
 			<div class="col-sm-5 col-xs-12" id="incident-sidebar">
 
 				{% if valid_attributes|length > 0 %}
-					<div class='widget {% if attributes.count == 0 %}hidden{% endif %}' id='attributes'>
-						<h4 class='widget'>{%  trans "Attributes" %}</h4>
+					<div class='widget border border-info-subtle {% if attributes.count == 0 %}hidden{% endif %}' id='attributes'>
+						<h4 class='widget text-info-emphasis bg-info-subtle border border-info-subtle '>{%  trans "Attributes" %}</h4>
 
 						<table class='table table-condensed'>
 							<thead>
