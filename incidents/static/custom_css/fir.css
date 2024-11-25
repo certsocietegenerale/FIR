@@ -228,7 +228,7 @@ div.upload span {
 }
 
 
-.navbar-collapse {
+.navbar-collapse {	
 	background-color: #101010;
 	max-height: none !important;
 } */
@@ -385,8 +385,10 @@ h1.float {
 }
 
 #incident-properties {
-	background-color: #DDD;
+	/*background-color: #DDD;*/
 	margin-top: -20px;
+	margin-left: calc(var(--bs-gutter-x) * -0.5);
+	margin-right: calc(var(--bs-gutter-x) * -0.5)
 }
 
 #incident-properties .minitable {
@@ -405,7 +407,7 @@ h1.float {
 }
 
 .minitable .delim {
-	border-right: 1px solid #CCC;
+	border-right: 1px solid; /*#CCC;*/
 	padding-right: 15px;
 }
 
