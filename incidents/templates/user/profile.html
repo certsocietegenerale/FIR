@@ -31,12 +31,12 @@
 
                       <div id="#action_result" class="alerts">
                           <div id="passwordChangedAlert" class="alert alert-success visually-hidden alert-dismissible" role="alert">
-                              <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "Close" %}"><span aria-hidden="true">&times;</span></button>
                               {% trans "Password changed!" %}
+                              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{% trans "Close" %}"><span aria-hidden="true"></span></button>
                           </div>
                           <div id="passwordNotChangedAlert" class="alert alert-danger visually-hidden alert-dismissible" role="alert">
-                              <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "Close" %}"><span aria-hidden="true">&times;</span></button>
                               {% trans "Error: password not changed." %}
+                              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{% trans "Close" %}"><span aria-hidden="true"></span></button>
                           </div>
                       </div>
 
@@ -130,8 +130,8 @@
 				<div class="modal-content">
 					<form id="password_form" method="POST" data-ajaxform action="{% url 'user:change_password' %}">
 					 	<div class="modal-header">
-					    	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 							<h4 id="changePasswordLabel" class="modal-title">{% trans "Change password" %}</h4>
+					    	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
 					  	</div>
 					  	<div class="modal-body">
 							<div>
@@ -179,7 +179,7 @@
 					  	</div>
 
 						<div class="modal-footer">
-							<button class="btn btn-default" data-dismiss="modal" aria-hidden="true">{%  trans "Cancel" %}</button>
+							<button class="btn btn-default" data-bs-dismiss="modal" aria-hidden="true">{%  trans "Cancel" %}</button>
 							<button type="submit" class="btn btn-primary">{%  trans "Change password" %}</button>
 					  	</div>
 					</form>

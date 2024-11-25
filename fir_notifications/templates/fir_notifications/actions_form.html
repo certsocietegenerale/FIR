@@ -7,8 +7,8 @@
             <div class="modal-content">
                 <form id="configure_{{method}}_form" method="POST" action="{% url 'notifications:method_configuration' method %}">
                     <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                         <h4 id="configure_{{method}}_label" class="modal-title">{{method_form.title}}</h4>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
                     </div>
                     <div class="modal-body">
                         <div>
@@ -35,7 +35,7 @@
                     </div>
 
                     <div class="modal-footer">
-                        <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">{%  trans "Cancel" %}</button>
+                        <button class="btn btn-default" data-bs-dismiss="modal" aria-hidden="true">{%  trans "Cancel" %}</button>
                         <button type="submit" class="btn btn-primary">{%  trans "Save" %}</button>
                     </div>
                 </form>

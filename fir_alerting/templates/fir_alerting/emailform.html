@@ -4,8 +4,8 @@
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content">
 			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 				<h4 id="sendEmailLabel" class="modal-title">{% trans "Send email" %}</h4>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
 			</div>
 
 			<form id="email_form" action="{% url 'alerting:send_email' %}" method="POST" class='form-horizontal'>
@@ -51,7 +51,7 @@
 			</form>
 
 			<div class="modal-footer">
-				<button class="btn btn-default" data-dismiss="modal" aria-hidden="true">{% trans "Close" %}</button>
+				<button class="btn btn-default" data-bs-dismiss="modal" aria-hidden="true">{% trans "Close" %}</button>
 				<button data-sent-text="Message sent" data-loading-text="Sending..." id='send_email' class="btn btn-primary">{% trans "Send email" %}</button>
 			</div>
 		</div>

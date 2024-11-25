@@ -194,8 +194,8 @@
 				<div class="modal-content">
 					<form id="comment_form" method="POST" data-ajaxform data-target='#tab_comments tbody' data-action='prepend' data-new-comment-url="{% url 'incidents:comment' event.id %}">
 					 	<div class="modal-header">
-					    	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 							<h4 id="addCommentLabel" class="modal-title">{% trans "Add comment" %}</h4>
+					    	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
 					  	</div>
 					  	<div class="modal-body">
 							<div>
@@ -237,7 +237,7 @@
 					  	</div>
 
 						<div class="modal-footer">
-							<button class="btn btn-default" data-dismiss="modal" aria-hidden="true">{%  trans "Cancel" %}</button>
+							<button class="btn btn-default" data-bs-dismiss="modal" aria-hidden="true">{%  trans "Cancel" %}</button>
 							<button type="submit" class="btn btn-primary">{%  trans "Save changes" %}</button>
 					  	</div>
 					</form>
