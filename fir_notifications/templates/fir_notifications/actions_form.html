@@ -14,7 +14,7 @@
                         <div>
                             {% csrf_token %}
                             {% for field in method_form %}
-                            <div class="form-group row">
+                            <div class="form-group row mb-3">
                                 <div class="col-sm-4">
                                     {{ field.label_tag }}
                                 </div>

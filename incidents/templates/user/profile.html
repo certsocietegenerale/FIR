@@ -57,10 +57,10 @@
                           <form action="{% url 'user:profile' %}" method="post">
                           <fieldset>
                               <div class="row">
-                                  <div class="col-sm-6 form-group">
+                                  <div class="col-sm-6 form-group mb-3">
                                       <h3>{% trans "Username" %}:<code>{{ user.username }}</code></h3>
                                   </div>
-                                  <div class="col-sm-6 form-group {% if user_form.email and user_form.email.errors%} has-error{%endif%}">
+                                  <div class="col-sm-6 form-group mb-3 {% if user_form.email and user_form.email.errors%} has-error{%endif%}">
                                       <label for="id_email">{% trans "Email" %}</label>
                                       {% if user_form.email %}
                                           {{ user_form.email|add_css_class:"form-control" }}
@@ -72,7 +72,7 @@
                               </div>
 
                               <div class="row">
-                                  <div class="col-sm-6 form-group{% if user_form.first_name and user_form.first_name.errors%} has-error{%endif%}">
+                                  <div class="col-sm-6 form-group mb-3{% if user_form.first_name and user_form.first_name.errors%} has-error{%endif%}">
                                       <label for="id_first_name">{% trans "First name" %}</label>
                                           {% if user_form.first_name %}
                                           {{ user_form.first_name|add_css_class:"form-control" }}
@@ -81,7 +81,7 @@
                                           <p id="id_first_name" class="form-control-static form-control">{{ user.first_name }}</p>
                                       {% endif %}
                                   </div>
-                                  <div class="col-sm-6 form-group {% if user_form.last_name and user_form.last_name.errors%} has-error{%endif%}">
+                                  <div class="col-sm-6 form-group mb-3 {% if user_form.last_name and user_form.last_name.errors%} has-error{%endif%}">
                                       <label for="id_last_name">{% trans "Last name" %}</label>
                                       {% if user_form.last_name %}
                                           {{ user_form.last_name|add_css_class:"form-control" }}
@@ -94,7 +94,7 @@
                           </fieldset>
                           <fieldset>
                               <div class="row">
-                                  <div class="col-sm-6 form-group{% if profile_form.incident_number.errors%} has-error{%endif%}">
+                                  <div class="col-sm-6 form-group mb-3{% if profile_form.incident_number.errors%} has-error{%endif%}">
                                       <label for="id_incident_number">{% trans "Number of incidents per page" %}</label>
                                       {% if profile_form.incident_number %}
                                           {{ profile_form.incident_number|add_css_class:"form-control" }}
@@ -136,7 +136,7 @@
 					  	<div class="modal-body">
 							<div>
 								{% csrf_token %}
-								<div class="form-group row">
+								<div class="form-group row mb-3">
 									<div class="col-sm-4">
 										<label for="id_old_password">{{ password_form.old_password.label }}</label>
 									</div>
@@ -149,7 +149,7 @@
 										</span>
 									</div>
                                 </div>
-                                <div class="form-group row">
+                                <div class="form-group row mb-3">
 									<div class="col-sm-4">
 										<label for="id_new_password1">{{ password_form.new_password1.label }}</label>
 									</div>
@@ -162,7 +162,7 @@
 										</span>
 									</div>
                                 </div>
-                                <div class="form-group row">
+                                <div class="form-group row mb-3">
                                     <div class="col-sm-4">
 										<label for="id_new_password2">{{ password_form.new_password2.label }}</label>
 									</div>

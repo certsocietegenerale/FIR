@@ -10,10 +10,10 @@
       <div class="panel-body">
           You need an API key for the FIR ThreatIntel plugin to work.
           <form class="" action="{% url 'threatintel:update_api' %}" method="post">
-            <div class="form-group">
+            <div class="form-group mb-3">
               <input type="text" class="form-control" name="yeti_api" placeholder="Yeti API key" value="{{ user.yetiprofile.api_key}}" />
             </div>
-            <div class="form-group">
+            <div class="form-group mb-3">
               <input type="text" class="form-control" name="endpoint" placeholder="http://localhost" value="{{ user.yetiprofile.endpoint}}" />
             </div>
             {% csrf_token %}
