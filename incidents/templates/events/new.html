@@ -110,7 +110,7 @@ $(document).ready(function() {
                             {%  has_perm 'incidents.handle_incidents' model=form as can_handle_incident %}
                             {% if can_handle_incident %}
 							<div class="col-sm-3 col-sm-offset-2 checkbox aligned-with-stack{% if form.is_incident.errors%} has-error{%endif%}">
-								<label data-toggle='collapse' data-target='#incident_fields'>{{ form.is_incident }} {% trans "Is an incident" %}</label>
+								<label data-bs-toggle='collapse' data-bs-target='#incident_fields'>{{ form.is_incident }} {% trans "Is an incident" %}</label>
 								{% include 'events/_form_errors.html' with errors=form.is_incident.errors %}
 							</div>
                             {% endif %}
