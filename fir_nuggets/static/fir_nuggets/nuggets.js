@@ -81,7 +81,7 @@ function delete_nugget (data) {
 	count = parseInt($('#nuggets-count').text());
 	$('#nuggets-count').text(count - 1);
 	if (count-1 == 0) {
-		$('#tab_nuggets_title').addClass('hidden');
+		$('#tab_nuggets_title').addClass('visually-hidden');
 	}
 }
 
@@ -123,7 +123,7 @@ function submit_nugget () {
 					  count = parseInt($('#nuggets-count').text());
 					  $('#nuggets-count').text(count + 1);
 
-					  $('#tab_nuggets_title').removeClass('hidden');
+					  $('#tab_nuggets_title').removeClass('visually-hidden');
 					  $('#tab_nuggets_title a').tab('show');
 					  $("#nugget_"+msg.nugget_id).effect('highlight', 2000);
 					});

@@ -20,7 +20,7 @@ $(function () {
 				});
 
 				if ($('.fir_todo_item').length > 0) {
-					$('#fir_todos').removeClass('hidden');
+					$('#fir_todos').removeClass('visually-hidden');
 				}
 			});
 		}
@@ -38,7 +38,7 @@ $(function () {
 
 		// Click on 'Add' so that form appears
 		$('#fir_todos_add').click(function (event) {
-			$('#fir_todos_new').removeClass('hidden');
+			$('#fir_todos_new').removeClass('visually-hidden');
 			$('#fir_todos_new input:text:first').focus();
 
 			event.preventDefault();
@@ -46,7 +46,7 @@ $(function () {
 
 		// Click in the action bar to make form appear
 		$('#details-add-todo').click(function (event) {
-			$('#fir_todos').removeClass('hidden');
+			$('#fir_todos').removeClass('visually-hidden');
 			$('#fir_todos_add').click();
 
 			event.preventDefault();
