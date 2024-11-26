@@ -57,7 +57,7 @@ $(document).ready(function() {
 				<div class="col-sm-6">
 					<fieldset>
 
-						<legend>{% trans "Summary" %}</legend>
+						<legend class="border-bottom mb-3">{% trans "Summary" %}</legend>
 						{% if error_message %}
 							<p class='text-error'>{{ error_message }}</p>
 						{% endif %}
@@ -102,7 +102,7 @@ $(document).ready(function() {
 								{{ form.date|add_css_class:"form-control datetime" }}
 								{% include 'events/_form_errors.html' with errors=form.date.errors %}
 							</div>
-							<div class="col-sm-1 form-group mb-3{% if form.confidentiality.errors%} has-error{%endif%}">
+							<div class="col-sm-2 form-group mb-3{% if form.confidentiality.errors%} has-error{%endif%}">
 								<label id="id_confidentiality">{% trans "Confidentiality" %}</label>
 								{{ form.confidentiality|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.confidentiality.errors %}
@@ -122,7 +122,7 @@ $(document).ready(function() {
 					{% if can_handle_incident %}
 
 					<fieldset id="incident_fields" class='details collapse {% if form.is_incident.value %}in{%endif%}'>
-						<legend>{% trans "Incident details" %}</legend>
+						<legend class="border-bottom mb-3">{% trans "Incident details" %}</legend>
 
 						<div class="row">
 							<div class="col-sm-2 form-group mb-3{% if form.actor.errors%} has-error{%endif%}">
@@ -146,7 +146,8 @@ $(document).ready(function() {
 			</div>
 			<div class="row">
 				<fieldset class="col-sm-12">
-					<legend>{% trans "Description" %}</legend>
+					<legend class="border-bottom mb-3">{% trans "Description" %}</legend>
+					<div></div>
 					{% rich_edit form.description %}
 					{% include 'events/_form_errors.html' with errors=form.description.errors %}
 				</fieldset>
