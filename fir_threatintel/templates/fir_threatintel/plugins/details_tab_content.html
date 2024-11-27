@@ -24,8 +24,8 @@ No intelligence available for this incident. Please check your configuration set
 </script>
 
 <script id="yeti-observables-template" type="text/x-handlebars-template">
-<div class="col-sm-12 widget yeti-matches">
-	<h4 class='widget'>Observables</h4>
+<div class="col-sm-12 widget order border-info-subtle yeti-matches">
+	<h4 class='widget text-info-emphasis bg-info-subtle border border-info-subtle'>Observables</h4>
 	<div class="read">
 		<table class="table table-condensed yeti-read">
 			<tbody class="known">
@@ -76,13 +76,13 @@ No intelligence available for this incident. Please check your configuration set
 			</tr>
 		</tbody>
 	</table>
-		<button class="btn btn-danger" id="send-to-yeti" href="#" role="button">Send it! <span class="bi bi-cloud-upload" aria-hidden="true"></span></button>
+		<button class="btn btn-outline-danger mt-2 me-2" id="send-to-yeti" href="#" role="button">Send it! <span class="bi bi-cloud-upload" aria-hidden="true"></span></button>
 		{% endverbatim %}
 			<strong>Note</strong>: Observables added this way will have the following context: <code id="fid" data-fid="{{ event|object_id }}">{{ event|object_id }}</code>
 		{% verbatim %}
 	</div>
 
-	<a class="btn btn-default btn-sm" id="toggle-send" href="#" role="button">Send to Yeti...</a>
+	<a class="btn btn-default btn-sm mb-2 mt-2" id="toggle-send" href="#" role="button">Send to Yeti...</a>
 
 </div>
 </script>
