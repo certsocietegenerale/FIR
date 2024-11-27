@@ -335,6 +335,16 @@ button.nav-link:hover,
 	text-decoration-line: underline;
 }
 
+.btn-default {
+	border-color: var(--bs-info-text-emphasis);
+}
+
+.btn-default:hover {
+	background-color: var(--bs-info-text-emphasis);
+	text-decoration-line: none;
+	color: var(--bs-light);
+}
+
 
 /* Detail -------------------------------------*/
 
