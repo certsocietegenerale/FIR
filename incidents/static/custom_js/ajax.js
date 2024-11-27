@@ -64,6 +64,6 @@ function bind_button_checkbox(button, checkbox) {
 $(
 function navigation_highlight() {
   var page = location.pathname.split("/")[1];
-  $('#'+page+"-nav a").addClass('active')
+  $('#'+page+"-nav a").eq(0).addClass('active')
 }
 );
