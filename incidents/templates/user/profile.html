@@ -18,7 +18,7 @@
         <div id="details-actions" class="bg-primary-subtle">
             <ul class="list-unstyled">
                 {% if password_form %}
-                    <li><a href="#" id="user_change_password" data-toggle='modal' data-target='#changePassword'><i class="bi bi-lock"></i>{%  trans "Change password" %}</a></li>
+                    <li><a href="#" id="user_change_password" data-bs-toggle='modal' data-bs-target='#changePassword'><i class="bi bi-lock"></i>{%  trans "Change password" %}</a></li>
                 {% endif %}
                 {% plugin_point "user_profile_actions" %}
             </ul>
@@ -192,7 +192,7 @@
 					  	</div>
 
 						<div class="modal-footer">
-							<button class="btn btn-default" data-bs-dismiss="modal" aria-hidden="true">{%  trans "Cancel" %}</button>
+							<button type="button" class="btn btn-default" data-bs-dismiss="modal" aria-hidden="true">{%  trans "Cancel" %}</button>
 							<button type="submit" class="btn btn-primary">{%  trans "Change password" %}</button>
 					  	</div>
 					</form>
