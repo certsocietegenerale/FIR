@@ -4,7 +4,7 @@
 {% load authorization %}
 {%  has_perm 'incidents.handle_incidents' obj=event as can_handle_incident %}
 <div class='widget border border-info-subtle {% if event.file_set.count == 0 %}visually-hidden{% endif%}' id='details-files'>
-<h4 class='widget test-info-emphasis bg-info-subtle border border-info-subtle'>{%  trans "Related files" %}</h4>
+<h4 class='widget text-info-emphasis bg-info-subtle border border-info-subtle'>{%  trans "Related files" %}</h4>
     {% if event.file_set.count > 0 %}
         <table class='table table-condensed files fixed'>
             <thead>
