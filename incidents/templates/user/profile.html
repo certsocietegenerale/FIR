@@ -114,6 +114,19 @@
                                   </div>
                               </div>
                           </fieldset>
+                          <fieldset>
+                            <div class="row">
+                                <div class="col-sm-6 form-group mb-3{% if profile_form.light_mode.errors%} has-error{%endif%}">
+                                    <label for="id_light_mode">{% trans "Preferred light mode" %}</label>
+                                    {% if profile_form.light_mode %}
+                                        {{ profile_form.light_mode|add_css_class:"form-control" }}
+                                        {% include 'events/_form_errors.html' with errors=profile_form.light_mode.errors %}
+                                    {% else %}
+                                        <p id="id_light_mode" class="form-control-static form-control">{{ user.profile.light_mode }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </fieldset>
                           {% csrf_token %}
                           <button type="submit" class="btn btn-primary">Save</button>
                         </form>
