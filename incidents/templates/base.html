@@ -3,7 +3,7 @@
 {% load static %}
 {% load authorization %}
 <!DOCTYPE html>
-<html lang="{{ LANGUAGE_CODE }}">
+<html lang="{{ LANGUAGE_CODE }}" data-bs-theme="{{user.profile.light_mode}}">
   <head>
     <meta charset="utf-8">
     <title>{%block title%}FIR{%endblock%}</title>
