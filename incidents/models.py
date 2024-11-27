@@ -37,6 +37,11 @@ CONFIDENTIALITY_LEVEL = (
     (3, "C3"),
 )
 
+LIGHT_MODE_CHOICES = (
+    ("light", "light"),
+    ("dark", "dark")
+)
+
 # Special Model class that handles signals
 
 
@@ -60,6 +65,7 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     incident_number = models.IntegerField(default=50)
     hide_closed = models.BooleanField(default=False)
+    light_mode = models.CharField(max_length=10, choices=LIGHT_MODE_CHOICES, default="light")
 
     def __str__(self):
         return u"Profile for user '{}'".format(self.user)
