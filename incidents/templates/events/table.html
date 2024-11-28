@@ -54,9 +54,9 @@
 						</td>
 						<td>{{ incident.category }}</td>
 						{% if incident.is_incident %}
-							<td><a href="{% url 'incidents:details' incident.id %}">{{ incident.subject }}</a></td>
+							<td class="text-break"><a href="{% url 'incidents:details' incident.id %}">{{ incident.subject }}</a></td>
 						{% else %}
-							<td><a href="{% url 'events:details' incident.id %}">{{ incident.subject }}</a></td>
+							<td class="text-break"><a href="{% url 'events:details' incident.id %}">{{ incident.subject }}</a></td>
 						{% endif %}
 						<td>{{ incident.get_business_lines_names }}</td>
 						<td><span class='badge' style='background-color:{{ incident.severity.color }}!important;'>{{ incident.severity }}</span></td>

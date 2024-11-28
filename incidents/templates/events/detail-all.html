@@ -102,13 +102,13 @@
 			</table>
 		</div>
 
-		<h1>{% if event.is_incident %}{%  trans "Incident" %}{% else %}{%  trans "Event" %}{% endif %}{% if incident_show_id %} {{ event|object_id }}{% endif %} / {{event.category}} / {{event.subject}}</h1>
+		<h1 class="text-break">{% if event.is_incident %}{%  trans "Incident" %}{% else %}{%  trans "Event" %}{% endif %}{% if incident_show_id %} {{ event|object_id }}{% endif %} / {{event.category}} / {{event.subject}}</h1>
 		<div class="row">
 			<div class="col-sm-7 col-xs-12">
                 {% trans "someone" as someone %}
 				<p><i>{% blocktrans with date=event.date opened_by=event.opened_by|default:someone %}Opened on {{ date }} by {{ opened_by }}{% endblocktrans %}</i></p>
 
-				<div class='widget border border-primary-subtle' id='description'>
+				<div class='widget border border-primary-subtle text-break' id='description'>
 					<h4 class='widget text-primary-emphasis bg-primary-subtle border border-primary-subtle'>{%  trans "Description" %}</h4>
 					<p>{{ event.description|markdown }}</p>
 				</div>
