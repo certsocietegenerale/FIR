@@ -18,14 +18,14 @@
 {% rich_edit_static %}
 <script>
 $(document).ready(function() {
-	$("select#id_concerned_business_lines").select2({ dropdownAutoWidth: true, width: '100%' });
-	$("select#id_category").select2();
-	$('select#id_status').select2({minimumResultsForSearch: -1, width: '90px'});
-	$('select#id_detection').select2({minimumResultsForSearch: -1, width: '90px'});
-	$('select#id_severity').select2({minimumResultsForSearch: -1, width: '90px'});
-	$('select#id_actor').select2({minimumResultsForSearch: -1, width: '90px'});
-	$('select#id_plan').select2({minimumResultsForSearch: -1, width: '90px'});
-	$('select#id_confidentiality').select2({minimumResultsForSearch: -1, width: '90px'});
+	$("select#id_concerned_business_lines").select2({theme: "bootstrap-5", width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',});
+	$("select#id_category").select2({theme: "bootstrap-5", width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style'});
+	$('select#id_status').select2({minimumResultsForSearch: -1, theme: "bootstrap-5", width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style'});
+	$('select#id_detection').select2({minimumResultsForSearch: -1, theme: "bootstrap-5", width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style'});
+	$('select#id_severity').select2({minimumResultsForSearch: -1, theme: "bootstrap-5", width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style'});
+	$('select#id_actor').select2({minimumResultsForSearch: -1, theme: "bootstrap-5", width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style'});
+	$('select#id_plan').select2({minimumResultsForSearch: -1, theme: "bootstrap-5", width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style'});
+	$('select#id_confidentiality').select2({minimumResultsForSearch: -1, theme: "bootstrap-5", width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style'});
 });
 </script>
 
