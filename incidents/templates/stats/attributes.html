@@ -171,15 +171,15 @@ function refresh_stats() {
 }
 
 $(document).ready(function() {
-  $("#id_concerned_business_lines").select2({ dropdownAutoWidth: true });
-  $('#severity_comparator').select2({minimumResultsForSearch: -1});
-  $('#id_status').select2({minimumResultsForSearch: -1});
-  $('#id_detection').select2({minimumResultsForSearch: -1});
-  $('#id_severity').select2({minimumResultsForSearch: -1});
-  $('#id_actor').select2({minimumResultsForSearch: -1});
-  $('#id_plan').select2({minimumResultsForSearch: -1});
-  $('#id_confidentiality').select2({minimumResultsForSearch: -1});
-  $('#bars').select2({minimumResultsForSearch: -1});
+  $("#id_concerned_business_lines").select2({ dropdownAutoWidth: true, theme: "bootstrap-5", width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',});
+  $('#severity_comparator').select2({minimumResultsForSearch: -1, theme: "bootstrap-5", width: "20%"});
+  $('#id_status').select2({minimumResultsForSearch: -1, theme: "bootstrap-5", width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',});
+  $('#id_detection').select2({minimumResultsForSearch: -1, theme: "bootstrap-5", width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',});
+  $('#id_severity').select2({minimumResultsForSearch: -1, theme: "bootstrap-5", width: "80%"});
+  $('#id_actor').select2({minimumResultsForSearch: -1, theme: "bootstrap-5", width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',});
+  $('#id_plan').select2({minimumResultsForSearch: -1, theme: "bootstrap-5", width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',});
+  $('#id_confidentiality').select2({minimumResultsForSearch: -1, theme: "bootstrap-5", width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',});
+  $('#bars').select2({minimumResultsForSearch: -1, theme: "bootstrap-5", width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',});
 
   $('#from_date').datetimepicker({
     format: 'yyyy-mm-dd hh:ii',
@@ -224,6 +224,7 @@ $(document).ready(function() {
 
 {% block custom_css %}
 <link href="{% static "select/select2.css" %}" rel="stylesheet"/>
+<link href="{% static "select/select2-bootstrap.css" %}" rel="stylesheet"/>
 <link href="{% static "css/bootstrap-datetimepicker.min.css" %}" rel="stylesheet"/>
 <link href="{% static "css/nv.d3.min.css" %}" rel="stylesheet" />
 
@@ -353,7 +354,7 @@ input.date {
 
   <div class='form-group'>
     <label for="id_severity" class="control-label">{% trans "Severity" %}</label>
-    <div class='controls'>
+    <div class='controls d-flex'>
       <select name='severity_comparator' id='severity_comparator'>
         <option value="et">=</option>
         <option value="lt">&lt;</option>
@@ -372,7 +373,7 @@ input.date {
       <div class='controls categories checkbox'>
         {% for c in categories %}
           <label class="checkbox">
-            <input type="checkbox" name="category_selection" {% if c.id in categories_checked %}checked='checked'{% endif %} value="{{c.id}}">{{c.name}}
+            <input type="checkbox" name="category_selection" {% if c.id in categories_checked %}checked='checked'{% endif %} value="{{c.id}}"> {{c.name}}
           </label>
         {% endfor %}
       </div>
@@ -380,7 +381,7 @@ input.date {
     </fieldset>
 
     <fieldset class='businessline'>
-    	<div class='form-group'>
+    	<div class='form-group col-sm-3'>
 			<label for="id_concerned_business_lines" class="control-label">{% trans "Business lines" %}</label>
 	  		<div class='controls' id='concerned_business_lines'>
 				{{ form.concerned_business_lines }}
