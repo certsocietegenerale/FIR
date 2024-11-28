@@ -16,7 +16,9 @@ $(function () {
 
 				$("#fir_todos #id_business_line").select2({
 					width: '45%',
-					height: '15px'
+					theme: "bootstrap-5",
+					selectionCssClass: 'select2--small mt-2',
+					dropdownCssClass: 'select2--small',
 				});
 
 				if ($('.fir_todo_item').length > 0) {
@@ -54,7 +56,7 @@ $(function () {
 
 		// Custom behavior when comment is added
 		$('#fir_todos_list').on('fir.form.success', '#fir_todos_new', function (event) {
-			$('form#fir_todos_new .select2-container').select2('data', null);
+			$("#fir_todos #id_business_line").val("").trigger("change") 
 			event.stopPropagation();
 		});
 	}

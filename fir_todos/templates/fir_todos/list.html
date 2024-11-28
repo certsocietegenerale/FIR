@@ -1,4 +1,5 @@
 {% load i18n %}
+{% load add_css_class %}
 <table id='fir_todos_list_table'>
 	<thead>
 		<tr><td class='fir_todos_status'></td><td class='fir_todos_description'>{% trans "Action" %}</td><td>{% trans "Accountable" %}</td><td class='fir_todos_delete'></td></tr>
@@ -13,8 +14,10 @@
 {% if form %}
 <form action="{% url 'todos:create' incident_id %}" method='post' id='fir_todos_new' data-ajaxform data-action='append' data-target='#fir_todos_list_table' data-hide='self' class='visually-hidden'>
 	{% csrf_token %}
-	{{ form.description }}
-	{{ form.business_line }}
-	<button type='submit' class='btn btn-link btn-sm icon'><i class='bi bi-plus-circle'></i></button>
+	<div class="d-flex justify-content-between">
+		{{ form.description}}
+		{{ form.business_line|add_css_class:"mt-2"}}
+		<button type='submit' class='btn btn-link btn-sm icon col-auto mt-2'><i class='bi bi-plus-circle'></i></button>
+	</div>
 </form>
 {% endif %}
