@@ -10,35 +10,35 @@
 			<form id="abuse_email_form" action="{% url 'abuse:send_email' %}" method="POST" class='form-horizontal'>
 				<div class="modal-body">
 					{% csrf_token %}
-					<div class='form-group nomargin mb-3'>
+					<div class='form-group nomargin mb-3 row'>
 						<label for="abuse_to" class="col-sm-1 text-right">{% trans "To:" %}</label>
 						<div class='col-sm-11'>
 							{{ form.to }}
 						</div>
 					</div>
-					<div class='form-group nomargin mb-3'>
+					<div class='form-group nomargin mb-3 row'>
 						<label for="abuse_cc" class="col-sm-1 text-right">{% trans "CC:" %}</label>
 						<div class='col-sm-11'>
 							{{ form.cc }}
 						</div>
 					</div>
-					<div class='form-group nomargin mb-3'>
+					<div class='form-group nomargin mb-3 row'>
 						<label for="abuse_bcc" class="col-sm-1 text-right">{% trans "BCC:" %}</label>
 						<div class='col-sm-11'>
 							{{ form.bcc }}
 						</div>
 					</div>
-					<div class='form-group mb-3'>
+					<div class='form-group mb-3 row'>
 						<label for="abuse_subject" class="col-sm-1 text-right">{% trans "Subject" %}</label>
 						<div class='col-sm-11'>
 							{{ form.subject|safe }}
 						</div>
 					</div>
-					<div class='form-group mb-3'>
-                        <div class='col-sm-11 col-sm-offset-1'>
-                            <ul class="nav nav-pills" role="tablist">
-                                <li class="active"><a href="#abuse_tab_body" data-toggle="pill">{% trans "Body" %}</a></li>
-                                <li><a id="abuse_tab_enrichment_link" href="#abuse_tab_enrichment" data-toggle="pill">{% trans "Enrichment" %}</a></li>
+					<div class='form-group mb-3 row'>
+                        <div class='col-sm-12 col-sm-offset-1'>
+                            <ul class="nav nav-pills mb-2" role="tablist">
+                                <li class="nav-item"><a class="nav-link active" href="#abuse_tab_body" data-bs-toggle="pill">{% trans "Body" %}</a></li>
+                                <li class="nav-item"><a class="nav-link" id="abuse_tab_enrichment_link" href="#abuse_tab_enrichment" data-bs-toggle="pill"> {% trans "Enrichment" %}</a></li>
                             </ul>
 
                             <div class="tab-content">

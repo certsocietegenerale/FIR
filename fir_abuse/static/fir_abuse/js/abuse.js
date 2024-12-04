@@ -2,7 +2,7 @@ $(function () {
 
   // Contextmenu on ROW
   // Trigger action when the contextual menu is about to be shown
-  $(".artifacts-table a").bind("contextmenu", function (e) {
+  $(document).ready(function() { $(".artifacts-table a").bind("contextmenu", function (e) {
 
     artifact_id = $(this).data('id')
     abuse_link = $("#send_abuse_link").data('urltemplate')
@@ -47,7 +47,7 @@ $(function () {
         top: e.pageY + "px",
         left: e.pageX + "px"
       });
-  });
+  });});
 
   // Discard contextual menu if click happen else where
   $(document).bind("mousedown", function (e) {
