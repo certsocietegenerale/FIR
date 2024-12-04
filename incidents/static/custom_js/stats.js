@@ -166,11 +166,15 @@ function generate_stacked_chart(selector, url, width, height, label, legend) {
 	      .attr("y", function(d) { return y(d.y1); })
 	      .attr("height", function(d) { return y(d.y0) - y(d.y1); })
 	      .attr('title', function(d) { return d.y1-d.y0})
-	      .attr('data-toggle', 'tooltip')
+	      .attr('data-bs-toggle', 'tooltip')
 	      .style("fill", function(d) {
 	      	return color(d.name)
 	      });
 
+	  // enable tooltips
+	  const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+	  const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+		  
 
 	  var legend = svg.selectAll(".legend")
 	      .data(color.domain().slice().reverse())
