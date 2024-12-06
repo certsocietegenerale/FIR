@@ -20,7 +20,7 @@ $(function () {
 	// File Uploads
 	//
 	$('#details-add-file').click(function (event) {
-		$('#details-files').removeClass('hidden');
+		$('#details-files').removeClass('visually-hidden');
 		$('#id_file').click();
 		event.preventDefault();
 	});
@@ -54,9 +54,9 @@ $(function () {
 	}
 
 	$('#show_attribute_form a').click(function (event) {
-		$('#attribute_form').removeClass('hidden');
+		$('#attribute_form').removeClass('visually-hidden');
 		$('#attribute_form select:first').focus();
-		$('#show_attribute_form').addClass('hidden');
+		$('#show_attribute_form').addClass('visually-hidden');
 
 		event.preventDefault();
 	});
@@ -66,7 +66,7 @@ $(function () {
 	});
 
 	$('#details-add-attribute').click(function (event) {
-		$('#attributes').removeClass('hidden');
+		$('#attributes').removeClass('visually-hidden');
 		$('#show_attribute_form a').click();
 
 		event.preventDefault();
