@@ -26,7 +26,7 @@ function virustotal_tooltip(hash) {
 	li = $('<li />')
 	li.text("Virustotal on ")
 	a = $('<a></a>')
-	a.attr("href","https://www.virustotal.com/en/search/?query="+hash)
+	a.attr("href","https://www.virustotal.com/gui/search/"+hash)
 	a.attr('target','_blank')
 	a.text(hash)
 	li.append(a)
