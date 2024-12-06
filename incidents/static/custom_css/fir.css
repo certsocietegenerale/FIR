@@ -208,32 +208,6 @@ div.upload span {
 
 /* Navbar  --------------------------------------*/
 
-/* .navbar-sm .navbar { min-height:40px; height: 40px; background-color: #101010; }
-.navbar-sm .navbar .navbar-brand { height: 40px; padding: 0px 12px; font-size: 16px; line-height: 40px; }
-.navbar-sm .navbar .navbar-nav > li > a {  padding-top: 0px; padding-bottom: 0px; line-height: 40px; }
-.navbar-sm .navbar .navbar-btn { margin-top: 4px; margin-bottom: 4px; }
-.navbar-sm .navbar .navbar-btn button { font-size: 12px; }
-.navbar-sm .navbar .navbar-form { margin-top: 7px; margin-bottom: 7px; }
-.navbar-sm .navbar .form-group input { padding-top: 2px; padding-bottom: 2px; height: 32px; }
-.navbar-sm .navbar .form-group .input-group { margin-top: 4px; }
-.navbar-sm .navbar-header { min-height: 40px; height: 40px; }
-
-.navbar-inverse input, .navbar-inverse .input-group-addon {
-  background: black;
-  border-color: #555;
-  color: #ddd;
-}
-
-.navbar-inverse .glyphicon {
-  color: white;
-}
-
-
-.navbar-collapse {	
-	background-color: #101010;
-	max-height: none !important;
-} */
-
 #header-collapse {
 	padding: 4px 5px;
 }
@@ -353,10 +327,6 @@ button.nav-link:hover,
 	display: block;
 }
 
-/*#addComment select {
-	height: 25px;
-}*/
-
 #sendEmail .form-horizontal .control-group {
  margin-bottom: 0px;
 }
@@ -411,7 +381,6 @@ h1.float {
 }
 
 #incident-properties {
-	/*background-color: #DDD;*/
 	margin-top: -20px;
 	margin-left: calc(var(--bs-gutter-x) * -0.5);
 	margin-right: calc(var(--bs-gutter-x) * -0.5)
@@ -433,7 +402,7 @@ h1.float {
 }
 
 .minitable .delim {
-	border-right: 1px solid; /*#CCC;*/
+	border-right: 1px solid; 
 	padding-right: 15px;
 }
 
@@ -624,6 +593,8 @@ div#concerned_business_lines {
 {
 	clear:both;
 }
+
+/* Adapt select2 to be compatible with bootstrap light themes -------------------------------------*/
 
 .select2-search-choice {
 	background-image: linear-gradient(to bottom, #DEE7F8, #DEE7F8) !important;
@@ -900,4 +871,19 @@ body
 
 .EasyMDEContainer .CodeMirror-focused .CodeMirror-selected {
     background: var(--bs-secondary-bg)!important
+}
+
+/* Tooltip -------------------------------------*/
+
+.tooltip {
+  --bs-tooltip-color: var(--bs-body-color)!important;
+  --bs-tooltip-bg: var(--bs-secondary-bg)!important;
+}
+
+.tooltip-inner {
+	color: var(--bs-body-color)!important;
+}
+
+.tooltip ul {
+	padding-left: 0px;
 }
