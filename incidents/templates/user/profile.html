@@ -15,28 +15,28 @@
 
 {% block content %}
     <div id='details-actions-all'>
-        <div id="details-actions">
+        <div id="details-actions" class="bg-primary-subtle">
             <ul class="list-unstyled">
                 {% if password_form %}
-                    <li><a href="#" id="user_change_password" data-toggle='modal' data-target='#changePassword'><i class="glyphicon glyphicon-lock"></i>{%  trans "Change password" %}</a></li>
+                    <li><a href="#" id="user_change_password" data-bs-toggle='modal' data-bs-target='#changePassword'><i class="bi bi-lock"></i>{%  trans "Change password" %}</a></li>
                 {% endif %}
                 {% plugin_point "user_profile_actions" %}
             </ul>
         </div>
     </div>
     <div class="container-fluid " id="details-container">
-            <div class="row">
+            <div class="row justify-content-md-center">
                     {% csrf_token %}
                     <div class="col-sm-8 col-sm-offset-2">
 
                       <div id="#action_result" class="alerts">
-                          <div id="passwordChangedAlert" class="alert alert-success hidden alert-dismissible" role="alert">
-                              <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "Close" %}"><span aria-hidden="true">&times;</span></button>
+                          <div id="passwordChangedAlert" class="alert alert-success visually-hidden alert-dismissible" role="alert">
                               {% trans "Password changed!" %}
+                              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{% trans "Close" %}"><span aria-hidden="true"></span></button>
                           </div>
-                          <div id="passwordNotChangedAlert" class="alert alert-danger hidden alert-dismissible" role="alert">
-                              <button type="button" class="close" data-dismiss="alert" aria-label="{% trans "Close" %}"><span aria-hidden="true">&times;</span></button>
+                          <div id="passwordNotChangedAlert" class="alert alert-danger visually-hidden alert-dismissible" role="alert">
                               {% trans "Error: password not changed." %}
+                              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{% trans "Close" %}"><span aria-hidden="true"></span></button>
                           </div>
                       </div>
 
@@ -48,19 +48,19 @@
                         {% endfor %}
                       {% endif %}
 
-                      <div class="panel panel-primary">
-                        <div class="panel-heading">
-                          <h3 class="panel-title">{% blocktrans with user_name=user.username %}{{ user_name }}'s profile{% endblocktrans %}</h3>
-                        </div>
-                        <div class="panel-body">
+                      <div class="card mb-3">
+                        <h5 class="card-header bg-primary-subtle text-primary-emphasis">
+                          {% blocktrans with user_name=user.username %}{{ user_name }}'s profile{% endblocktrans %}
+                        </h5>
+                        <div class="card-body">
 
                           <form action="{% url 'user:profile' %}" method="post">
                           <fieldset>
                               <div class="row">
-                                  <div class="col-sm-6 form-group">
+                                  <div class="col-sm-6 form-group mb-3">
                                       <h3>{% trans "Username" %}:<code>{{ user.username }}</code></h3>
                                   </div>
-                                  <div class="col-sm-6 form-group {% if user_form.email and user_form.email.errors%} has-error{%endif%}">
+                                  <div class="col-sm-6 form-group mb-3 {% if user_form.email and user_form.email.errors%} has-error{%endif%}">
                                       <label for="id_email">{% trans "Email" %}</label>
                                       {% if user_form.email %}
                                           {{ user_form.email|add_css_class:"form-control" }}
@@ -72,7 +72,7 @@
                               </div>
 
                               <div class="row">
-                                  <div class="col-sm-6 form-group{% if user_form.first_name and user_form.first_name.errors%} has-error{%endif%}">
+                                  <div class="col-sm-6 form-group mb-3{% if user_form.first_name and user_form.first_name.errors%} has-error{%endif%}">
                                       <label for="id_first_name">{% trans "First name" %}</label>
                                           {% if user_form.first_name %}
                                           {{ user_form.first_name|add_css_class:"form-control" }}
@@ -81,7 +81,7 @@
                                           <p id="id_first_name" class="form-control-static form-control">{{ user.first_name }}</p>
                                       {% endif %}
                                   </div>
-                                  <div class="col-sm-6 form-group {% if user_form.last_name and user_form.last_name.errors%} has-error{%endif%}">
+                                  <div class="col-sm-6 form-group mb-3 {% if user_form.last_name and user_form.last_name.errors%} has-error{%endif%}">
                                       <label for="id_last_name">{% trans "Last name" %}</label>
                                       {% if user_form.last_name %}
                                           {{ user_form.last_name|add_css_class:"form-control" }}
@@ -94,7 +94,7 @@
                           </fieldset>
                           <fieldset>
                               <div class="row">
-                                  <div class="col-sm-6 form-group{% if profile_form.incident_number.errors%} has-error{%endif%}">
+                                  <div class="col-sm-6 form-group mb-3{% if profile_form.incident_number.errors%} has-error{%endif%}">
                                       <label for="id_incident_number">{% trans "Number of incidents per page" %}</label>
                                       {% if profile_form.incident_number %}
                                           {{ profile_form.incident_number|add_css_class:"form-control" }}
@@ -114,6 +114,19 @@
                                   </div>
                               </div>
                           </fieldset>
+                          <fieldset>
+                            <div class="row">
+                                <div class="col-sm-6 form-group mb-3{% if profile_form.light_mode.errors%} has-error{%endif%}">
+                                    <label for="id_light_mode">{% trans "Preferred light mode" %}</label>
+                                    {% if profile_form.light_mode %}
+                                        {{ profile_form.light_mode|add_css_class:"form-control" }}
+                                        {% include 'events/_form_errors.html' with errors=profile_form.light_mode.errors %}
+                                    {% else %}
+                                        <p id="id_light_mode" class="form-control-static form-control">{{ user.profile.light_mode }}</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </fieldset>
                           {% csrf_token %}
                           <button type="submit" class="btn btn-primary">Save</button>
                         </form>
@@ -130,13 +143,13 @@
 				<div class="modal-content">
 					<form id="password_form" method="POST" data-ajaxform action="{% url 'user:change_password' %}">
 					 	<div class="modal-header">
-					    	<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 							<h4 id="changePasswordLabel" class="modal-title">{% trans "Change password" %}</h4>
+					    	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
 					  	</div>
 					  	<div class="modal-body">
 							<div>
 								{% csrf_token %}
-								<div class="form-group row">
+								<div class="form-group row mb-3">
 									<div class="col-sm-4">
 										<label for="id_old_password">{{ password_form.old_password.label }}</label>
 									</div>
@@ -149,7 +162,7 @@
 										</span>
 									</div>
                                 </div>
-                                <div class="form-group row">
+                                <div class="form-group row mb-3">
 									<div class="col-sm-4">
 										<label for="id_new_password1">{{ password_form.new_password1.label }}</label>
 									</div>
@@ -162,7 +175,7 @@
 										</span>
 									</div>
                                 </div>
-                                <div class="form-group row">
+                                <div class="form-group row mb-3">
                                     <div class="col-sm-4">
 										<label for="id_new_password2">{{ password_form.new_password2.label }}</label>
 									</div>
@@ -179,7 +192,7 @@
 					  	</div>
 
 						<div class="modal-footer">
-							<button class="btn btn-default" data-dismiss="modal" aria-hidden="true">{%  trans "Cancel" %}</button>
+							<button type="button" class="btn btn-default" data-bs-dismiss="modal" aria-hidden="true">{%  trans "Cancel" %}</button>
 							<button type="submit" class="btn btn-primary">{%  trans "Change password" %}</button>
 					  	</div>
 					</form>
@@ -191,12 +204,12 @@
         window.onload = function(){
             $('#password_form').on('fir.form.success', function (event) {
                 $('#changePassword').modal('hide');
-                $('#passwordChangedAlert').removeClass('hidden');
+                $('#passwordChangedAlert').removeClass('visually-hidden');
                 event.stopPropagation();
             });
             $('#password_form').on('fir.form.error', function (event) {
                 $('#changePassword').modal('hide');
-                $('#passwordNotChangedAlert').removeClass('hidden');
+                $('#passwordNotChangedAlert').removeClass('visually-hidden');
                 event.stopPropagation();
             });
         };

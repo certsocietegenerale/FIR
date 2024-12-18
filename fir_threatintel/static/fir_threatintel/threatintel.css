@@ -135,12 +135,6 @@ div.send {
   opacity: 1;
   padding-right: 6px;
 }
-.tagsinput .tagsinput-remove-link:before {
-  content: "\e014";
-  font-family: 'Glyphicons Halflings';
-  font-size: 10px;
-  margin-top:1px;
-}
 .tagsinput .tagsinput-add-container {
   display: inline-block;
   vertical-align: middle;

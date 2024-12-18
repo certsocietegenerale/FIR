@@ -5,8 +5,8 @@
         <div class="modal-content">
             <form id="subscribe_notifications_form" method="POST" action="{{ request.path }}">
                 <div class="modal-header">
-                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                     <h4 id="subscribe_notifications_label" class="modal-title">{% trans "Notification subscription" %}</h4>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
                 </div>
                 <div class="modal-body">
                     <div>
@@ -17,7 +17,7 @@
                         {% endfor %}
 
                         {% for field in form.visible_fields %}
-                        <div class="form-group row">
+                        <div class="form-group row mb-3">
                             <div class="col-sm-4">
                                 {{ field.label_tag }}
                             </div>
@@ -38,7 +38,7 @@
                 </div>
 
                 <div class="modal-footer">
-                    <button class="btn btn-default" data-dismiss="modal" aria-hidden="true">{%  trans "Cancel" %}</button>
+                    <button type="button" class="btn btn-default" data-bs-dismiss="modal" aria-hidden="true">{%  trans "Cancel" %}</button>
                     <button type="submit" class="btn btn-primary">{%  trans "Save" %}</button>
                 </div>
             </form>

@@ -2,7 +2,7 @@ $(function () {
 
   // Contextmenu on ROW
   // Trigger action when the contextual menu is about to be shown
-  $(".artifacts-table a").bind("contextmenu", function (e) {
+  $(document).ready(function() { $(".artifacts-table a").bind("contextmenu", function (e) {
 
     artifact_id = $(this).data('id')
     abuse_link = $("#send_abuse_link").data('urltemplate')
@@ -11,11 +11,11 @@ $(function () {
     url = "/abuse/task/" + artifact_id + "/";
 
     state = {
-      SUCCESS: '"glyphicon glyphicon-ok" style="color:#00FF00;"',
-      FAILURE: '"glyphicon glyphicon-remove" style="color:#FF0000;"',
-      PENDING: '"glyphicon glyphicon-time"',
-      UNKNOWN: '"glyphicon glyphicon-question-sign"',
-      ERROR: '"glyphicon glyphicon-warning-sign" style="color:#FF0000"'
+      SUCCESS: '"bi bi-check-circle" style="color:#00FF00;"',
+      FAILURE: '"bi bi-x-circle" style="color:#FF0000;"',
+      PENDING: '"bi bi-clock"',
+      UNKNOWN: '"bi bi-question-circle"',
+      ERROR: '"bi bi-exclamation-triangle" style="color:#FF0000"'
     }
 
     if ($(".custom-menu #visualIndicator")) {
@@ -47,7 +47,7 @@ $(function () {
         top: e.pageY + "px",
         left: e.pageX + "px"
       });
-  });
+  });});
 
   // Discard contextual menu if click happen else where
   $(document).bind("mousedown", function (e) {

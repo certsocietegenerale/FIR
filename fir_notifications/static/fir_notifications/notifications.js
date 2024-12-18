@@ -35,7 +35,7 @@ function modal_action(data, target_id) {
 	target.html(data);
 	$(target_id+" .modal").modal('show');
 	target.off('click', 'button[type=submit]');
-	target.find("select").select2({ dropdownAutoWidth: true, width: '100%' });
+	target.find("select").select2({ dropdownAutoWidth: true, width: '100%', theme: "bootstrap-5" });
 
 	target.first().focus();
 	target.on('click', 'button[type=submit]', function(e) {
@@ -59,7 +59,7 @@ function modal_action(data, target_id) {
 				else if (msg.status == 'error') {
 					var html = $.parseHTML(msg.data);
 					$(target_id+" .modal .modal-body").html($(html).find('.modal-body'));
-					target.find("select").select2({ dropdownAutoWidth: true, width: '100%' });
+					target.find("select").select2({ dropdownAutoWidth: true, width: '100%', theme: "bootstrap-5" });
 				}
 			}
 		});

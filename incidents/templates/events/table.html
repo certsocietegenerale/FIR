@@ -46,17 +46,17 @@
 						<td>
 							{% if can_handle_incident %}<a href="{% url 'ajax:toggle_star' incident.id %}" class='star'>{%endif%}
 									{% if incident.is_starred %}
-										<i class='glyphicon glyphicon-star star'></i>
+										<i class='bi bi-star-fill star'></i>
 									{% else %}
-										<i class='glyphicon glyphicon-star-empty star'></i>
+										<i class='bi bi-star star'></i>
 									{% endif %}
 							{% if can_handle_incident %}</a>{%endif%}
 						</td>
 						<td>{{ incident.category }}</td>
 						{% if incident.is_incident %}
-							<td><a href="{% url 'incidents:details' incident.id %}">{{ incident.subject }}</a></td>
+							<td class="text-break"><a href="{% url 'incidents:details' incident.id %}">{{ incident.subject }}</a></td>
 						{% else %}
-							<td><a href="{% url 'events:details' incident.id %}">{{ incident.subject }}</a></td>
+							<td class="text-break"><a href="{% url 'events:details' incident.id %}">{{ incident.subject }}</a></td>
 						{% endif %}
 						<td>{{ incident.get_business_lines_names }}</td>
 						<td><span class='badge' style='background-color:{{ incident.severity.color }}!important;'>{{ incident.severity }}</span></td>
@@ -82,7 +82,7 @@
 						<td>{{ incident.opened_by }}</td>
 						<td>
                             {% if can_handle_incident %}
-							<a href="{% url 'incidents:edit' incident.id %}"><span class='glyphicon glyphicon-pencil'></span></a>
+							<a href="{% url 'incidents:edit' incident.id %}"><span class='bi bi-pencil'></span></a>
                             {% endif %}
 						</td>
 					</tr>
@@ -95,7 +95,7 @@
 			    <span class="step-links">
 			        {% if incident_list.has_previous %}
 			        	<a href='#' class='paginate' data-page='{{ incident_list.previous_page_number }}'>
-							<i class='glyphicon glyphicon-backward'></i> {% trans "previous" %}
+							<i class='bi bi-rewind'></i> {% trans "previous" %}
 			        	</a>
 			        {% endif %}
 
@@ -105,7 +105,7 @@
 
 			        {% if incident_list.has_next %}
 			        	<a href='#' class='paginate' data-page='{{ incident_list.next_page_number }}'>
-							{% trans "next" %} <i class='glyphicon glyphicon-forward'></i>
+							{% trans "next" %} <i class='bi bi-fast-forward'></i>
 			        	</a>
 			        {% endif %}
 			    </span>
