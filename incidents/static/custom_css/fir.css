@@ -645,7 +645,7 @@ body
     .select2-results__option.select2-results__message {
     color: #6c757d;
 }
-body
+[data-bs-theme=dark] body
     .select2-container--bootstrap-5
     .select2-dropdown
     .select2-results__options
