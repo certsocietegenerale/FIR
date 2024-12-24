@@ -8,15 +8,16 @@ from incidents.models import (
     Incident,
     Artifact,
     Label,
+    LabelGroup,
     File,
     IncidentCategory,
     BusinessLine,
     Comments,
     Attribute,
     ValidAttribute,
-    SeverityChoice,
     STATUS_CHOICES,
     CONFIDENTIALITY_LEVEL,
+    PrettyJSONEncoder,
 )
 
 if apps.is_installed("fir_todos"):
@@ -113,11 +114,16 @@ class AttributeSerializer(serializers.ModelSerializer):
 
 
 class LabelSerializer(serializers.ModelSerializer):
-    group = serializers.SlugRelatedField(many=False, read_only=True, slug_field="name")
+    group = serializers.SlugRelatedField(
+        many=False,
+        queryset=LabelGroup.objects.all(),
+        slug_field="name",
+    )
+    dynamic_config = serializers.JSONField(encoder=PrettyJSONEncoder, initial={})
 
     class Meta:
         model = Label
-        fields = ("id", "name", "group")
+        fields = ("id", "name", "group", "dynamic_config")
         read_only_fields = ("id",)
 
 
@@ -216,7 +222,7 @@ class IncidentSerializer(serializers.ModelSerializer):
     )
     severity = serializers.SlugRelatedField(
         slug_field="name",
-        queryset=SeverityChoice.objects.all(),
+        queryset=Label.objects.filter(group__name="severity"),
         required=True,
     )
     category = serializers.SlugRelatedField(

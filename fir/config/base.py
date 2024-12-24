@@ -213,3 +213,5 @@ REST_FRAMEWORK = {
     # HTTP_X_API == "X-Api" in HTTP headers.
     'TOKEN_AUTHENTICATION_META': 'HTTP_X_API',
 }
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'

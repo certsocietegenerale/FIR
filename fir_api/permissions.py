@@ -1,4 +1,4 @@
-from rest_framework.permissions import BasePermission
+from rest_framework.permissions import BasePermission, IsAdminUser, SAFE_METHODS
 from incidents.models import Incident, AccessControlEntry
 
 
@@ -33,3 +33,11 @@ class IsIncidentHandler(BasePermission):
             return True
         except:
             return False
+
+
+class IsAdminUserOrReadOnly(IsAdminUser):
+    def has_permission(self, request, view):
+        is_admin = super().has_permission(request, view)
+        is_read = bool(request.method in SAFE_METHODS)
+
+        return request.user.is_authenticated and is_read or is_admin
