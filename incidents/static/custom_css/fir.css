@@ -594,6 +594,10 @@ div#concerned_business_lines {
 	clear:both;
 }
 
+legend.border-bottom {
+	padding-bottom: 7px;
+}
+
 /* Adapt select2 to be compatible with bootstrap light themes -------------------------------------*/
 
 .select2-search-choice {
