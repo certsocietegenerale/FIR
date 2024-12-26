@@ -80,12 +80,4 @@ $(function () {
 
 		event.preventDefault();
 	});
-
-	// Enable datetimepickers
-	$('.datetime').datetimepicker({
-		format: 'yyyy-mm-dd hh:ii',
-    	autoclose: true,
-    	todayBtn: true,
-    	keyboardNavigation: false,
-	});
 });

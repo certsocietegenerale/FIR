@@ -12,7 +12,6 @@
 {% endblock %}
 
 {% block custom_js %}
-<script src="{% static "js/bootstrap-datetimepicker.min.js" %}"></script>
 <script src="{% static "js/excellentexport.js" %}"></script>
 <script src="{% static "select/select2.min.js" %}"></script>
 <script src="{% static "custom_js/export.js" %}"></script>
@@ -181,22 +180,6 @@ $(document).ready(function() {
   $('#id_confidentiality').select2({minimumResultsForSearch: -1, theme: "bootstrap-5", width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',});
   $('#bars').select2({minimumResultsForSearch: -1, theme: "bootstrap-5", width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',});
 
-  $('#from_date').datetimepicker({
-    format: 'yyyy-mm-dd hh:ii',
-    minView: 1,
-    autoclose: true,
-    todayBtn: true,
-    weekStart: 1
-  });
-
-  $('#to_date').datetimepicker({
-    format: 'yyyy-mm-dd hh:ii',
-    minView: 1,
-    autoclose: true,
-    todayBtn: true,
-    weekStart: 1
-  });
-
   $('#refresh').click(function (event) {
   	refresh_stats();
   	event.preventDefault();
@@ -225,7 +208,6 @@ $(document).ready(function() {
 {% block custom_css %}
 <link href="{% static "select/select2.css" %}" rel="stylesheet"/>
 <link href="{% static "select/select2-bootstrap.css" %}" rel="stylesheet"/>
-<link href="{% static "css/bootstrap-datetimepicker.min.css" %}" rel="stylesheet"/>
 <link href="{% static "css/nv.d3.min.css" %}" rel="stylesheet" />
 
 <style>
@@ -290,10 +272,6 @@ div.categories {
   width:20px;
 }
 
-#sandbox input.date {
-  width:90px;
-}
-
 .btn-mini {
   margin-top:0px;
 }
@@ -306,11 +284,6 @@ div.categories {
 h4 .smaller {
   font-size: 10px;
   font-weight: normal;
-}
-
-input.date {
-	width: 120px;
-	font-size: 11px;
 }
 
 @media print {
@@ -331,17 +304,17 @@ input.date {
 
   <fieldset class='fields'>
 
-  <div style='margin-top:0;float:left' class='form-group'>
+  <div style="margin-top:0" class="form-group">
     <label for="from_date" class="control-label">{% trans "From" %}</label>
     <div class='controls'>
-      <input class='date form-control' id="from_date" name="from_date" type="text" value="{{ start }}"/>
+      <input class="form-control" id="from_date" name="from_date" type="date" value="{{ start }}"/>
     </div>
   </div>
 
   <div style='margin-top:0' class='form-group'>
     <label for="to_date" class="control-label">{% trans "To" %}</label>
     <div class='controls'>
-      <input class='date form-control' id="to_date" name="to_date" type="text" value="{{end}}" />
+      <input class="form-control" id="to_date" name="to_date" type="date" value="{{end}}" />
     </div>
   </div>
 

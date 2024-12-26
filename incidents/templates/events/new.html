@@ -8,7 +8,6 @@
 {% block custom_css %}
 <link href="{% static "select/select2.css" %}" rel="stylesheet"/>
 <link href="{% static "select/select2-bootstrap.css" %}" rel="stylesheet"/>
-<link href="{% static "css/bootstrap-datetimepicker.min.css" %}" rel="stylesheet"/>
 
 
 {% endblock %}
@@ -28,8 +27,6 @@ $(document).ready(function() {
 	$('select#id_confidentiality').select2({minimumResultsForSearch: -1, theme: "bootstrap-5", width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style'});
 });
 </script>
-
-<script src="{% static "js/bootstrap-datetimepicker.min.js" %}"></script>
 
 {% endblock %}
 

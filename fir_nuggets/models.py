@@ -6,6 +6,7 @@ from django import forms
 from django.contrib.auth.models import User
 
 from incidents.models import Incident
+from incidents.fields import DateTimeLocalField
 
 
 class Nugget(models.Model):
@@ -25,6 +26,9 @@ class Nugget(models.Model):
 
 
 class NuggetForm(forms.ModelForm):
+    date = DateTimeLocalField()
+    start_timestamp = DateTimeLocalField()
+    end_timestamp = DateTimeLocalField()
 
     class Meta:
         model = Nugget

@@ -217,7 +217,7 @@
 										<label for="id_action">{%  trans "Date" %}</label>
 									</div>
 									<div class="col-sm-3">
-										<input type="text" id="id_date" name="date" class="datetime" required />
+										<input type="datetime-local" id="id_date" name="date" class="datetime" required />
 										<span class='help-block'>
 											{% for error in comment_form.date.errors %}
 												{{error}}
