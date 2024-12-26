@@ -24,7 +24,7 @@
                         {% if relation.can_edit %}
                             <form id='delete_relation_{{relation.relation.id}}' name='delete' action="{% url 'relations:remove' relation.relation.id %}" method='POST' data-ajaxform data-action='remove' data-target='#relation_id_{{relation.relation.id}}'>
                                 {% csrf_token %}
-                                <button type='submit' class='btn btn-xs btn-link icon' title="{% trans 'Remove relation' %}"><i class='glyphicon glyphicon-remove'></i></button>
+                                <button type='submit' class='btn btn-sm btn-link icon' title="{% trans 'Remove relation' %}"><i class='bi bi-x-circle'></i></button>
                             </form>
                         {% endif %}
                     </td>

@@ -16,11 +16,13 @@ $(function () {
 
 				$("#fir_todos #id_business_line").select2({
 					width: '45%',
-					height: '15px'
+					theme: "bootstrap-5",
+					selectionCssClass: 'select2--small mt-2',
+					dropdownCssClass: 'select2--small',
 				});
 
 				if ($('.fir_todo_item').length > 0) {
-					$('#fir_todos').removeClass('hidden');
+					$('#fir_todos').removeClass('visually-hidden');
 				}
 			});
 		}
@@ -38,7 +40,7 @@ $(function () {
 
 		// Click on 'Add' so that form appears
 		$('#fir_todos_add').click(function (event) {
-			$('#fir_todos_new').removeClass('hidden');
+			$('#fir_todos_new').removeClass('visually-hidden');
 			$('#fir_todos_new input:text:first').focus();
 
 			event.preventDefault();
@@ -46,7 +48,7 @@ $(function () {
 
 		// Click in the action bar to make form appear
 		$('#details-add-todo').click(function (event) {
-			$('#fir_todos').removeClass('hidden');
+			$('#fir_todos').removeClass('visually-hidden');
 			$('#fir_todos_add').click();
 
 			event.preventDefault();
@@ -54,7 +56,7 @@ $(function () {
 
 		// Custom behavior when comment is added
 		$('#fir_todos_list').on('fir.form.success', '#fir_todos_new', function (event) {
-			$('form#fir_todos_new .select2-container').select2('data', null);
+			$("#fir_todos #id_business_line").val("").trigger("change") 
 			event.stopPropagation();
 		});
 	}

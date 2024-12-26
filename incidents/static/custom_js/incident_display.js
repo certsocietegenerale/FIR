@@ -44,8 +44,8 @@ $(function () {
 	function toggle_star(link) {
 		return function(data) {
 			var i = link.find('i.star');
-    		i.toggleClass('glyphicon-star');
-    		i.toggleClass('glyphicon-star-empty');
+    		i.toggleClass('bi-star-fill');
+    		i.toggleClass('bi-star');
 
     		var starred_incidents = $('#starred_incidents');
 			if (starred_incidents.length > 0) {

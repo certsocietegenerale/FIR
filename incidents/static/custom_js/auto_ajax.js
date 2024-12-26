@@ -4,7 +4,7 @@ function hide_element(self, selector) {
 		element = $(selector);
 	}
 
-	element.addClass('hidden');
+	element.addClass('visually-hidden');
 }
 
 // Submit forms over ajax
@@ -30,7 +30,7 @@ function submit_form(form) {
 			hideifnone = form.data('hideifnone');
 			if (hideifnone != undefined) {
 				if ($(form.data('hideifnone-selector')).length == 0) {
-					$(hideifnone).addClass('hidden');
+					$(hideifnone).addClass('visually-hidden');
 				}
 			}
 		}
@@ -54,11 +54,11 @@ function submit_form(form) {
 		if (show != undefined) {
 			if (show.constructor == Array) {
 				show.forEach(function (el, i, a) {
-					$(el).removeClass('hidden');
+					$(el).removeClass('visually-hidden');
 				});
 			}
 			else {
-				$(show).removeClass('hidden');
+				$(show).removeClass('visually-hidden');
 			}
 		}
 	}).fail(function (data) {
@@ -79,13 +79,5 @@ $(function () {
 		$(this).parents('form:first').submit();
 
 		event.preventDefault();
-	});
-
-	// Enable datetimepickers
-	$('.datetime').datetimepicker({
-		format: 'yyyy-mm-dd hh:ii',
-    	autoclose: true,
-    	todayBtn: true,
-    	keyboardNavigation: false,
 	});
 });

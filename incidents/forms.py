@@ -1,6 +1,7 @@
 from django.forms import ModelForm
 from django import forms
 from incidents.models import IncidentCategory, Incident, Comments, BusinessLine
+from incidents.fields import DateTimeLocalField
 from django.contrib.auth.forms import AuthenticationForm
 
 
@@ -26,6 +27,8 @@ class CustomAuthenticationTokenForm(ModelForm):
             
 
 class IncidentForm(ModelForm):
+    date = DateTimeLocalField()
+
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('for_user', None)
         permissions = kwargs.pop('permissions', None)

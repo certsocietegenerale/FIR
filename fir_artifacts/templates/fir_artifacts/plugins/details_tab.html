@@ -1,9 +1,9 @@
 {% load i18n %}
 
 {% if artifacts_count > 0 %}
-	<li>
-		<a href='#tab_artifacts' data-toggle='tab'>
+	<li class="nav-item">
+		<button class="nav-link" data-bs-target='#tab_artifacts' data-bs-toggle='tab'>
 			{% trans "Artifacts" %} ({{ artifacts_count }})
-		</a>
+		</button>
 	</li>
 {% endif %}

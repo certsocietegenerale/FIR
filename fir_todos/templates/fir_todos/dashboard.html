@@ -23,7 +23,7 @@
 		    <span class="step-links">
 				{% if todos.has_previous %}
 			        <a href='#' class='paginate' data-page='{{ todos.previous_page_number }}'>
-                        <i class='glyphicon glyphicon-backward'></i> {%  trans "previous" %}
+                        <i class='bi bi-rewind'></i> {%  trans "previous" %}
 			        </a>
 				{% endif %}
 
@@ -33,7 +33,7 @@
 
 			    {% if todos.has_next %}
 					<a href='#' class='paginate' data-page='{{ todos.next_page_number }}'>
-                        {%  trans "next" %} <i class='glyphicon glyphicon-forward'></i>
+                        {%  trans "next" %} <i class='bi bi-fast-forward'></i>
 			        </a>
 			    {% endif %}
 			</span>

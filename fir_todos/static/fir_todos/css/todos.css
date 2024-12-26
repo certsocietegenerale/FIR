@@ -21,7 +21,7 @@
 }
 
 #fir_todos_list_table tr {
-	border-bottom: 1px solid #DDD;
+	border-bottom: 1px solid var(--bs-border-color);
 }
 
 #fir_todos_list_table a {

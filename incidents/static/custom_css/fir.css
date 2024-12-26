@@ -161,7 +161,8 @@ form.icon {
 
 button.icon {
 	margin: 0;
-	color: black;
+	/*color: black;*/
+	color: var(--bs-dark-text-emphasis);
 	padding: 0;
 	margin-top: -1px;
 }
@@ -206,32 +207,6 @@ div.upload span {
 }
 
 /* Navbar  --------------------------------------*/
-
-.navbar-sm .navbar { min-height:40px; height: 40px; background-color: #101010; }
-.navbar-sm .navbar .navbar-brand { height: 40px; padding: 0px 12px; font-size: 16px; line-height: 40px; }
-.navbar-sm .navbar .navbar-nav > li > a {  padding-top: 0px; padding-bottom: 0px; line-height: 40px; }
-.navbar-sm .navbar .navbar-btn { margin-top: 4px; margin-bottom: 4px; }
-.navbar-sm .navbar .navbar-btn button { font-size: 12px; }
-.navbar-sm .navbar .navbar-form { margin-top: 7px; margin-bottom: 7px; }
-.navbar-sm .navbar .form-group input { padding-top: 2px; padding-bottom: 2px; height: 32px; }
-.navbar-sm .navbar .form-group .input-group { margin-top: 4px; }
-.navbar-sm .navbar-header { min-height: 40px; height: 40px; }
-
-.navbar-inverse input, .navbar-inverse .input-group-addon {
-  background: black;
-  border-color: #555;
-  color: #ddd;
-}
-
-.navbar-inverse .glyphicon {
-  color: white;
-}
-
-
-.navbar-collapse {
-	background-color: #101010;
-	max-height: none !important;
-}
 
 #header-collapse {
 	padding: 4px 5px;
@@ -320,15 +295,36 @@ a .glyphicon {
 	color: black;
 }
 
+a, 
+button.nav-link, 
+.btn-link,
+button.bi {
+	color: var(--bs-info-text-emphasis);
+	text-decoration-line: none;
+}
+
+a:hover, 
+button.nav-link:hover, 
+.btn-link:hover {
+	text-decoration-line: underline;
+}
+
+.btn-default {
+	border-color: var(--bs-info-text-emphasis);
+}
+
+.btn-default:hover {
+	background-color: var(--bs-info-text-emphasis);
+	text-decoration-line: none;
+	color: var(--bs-light);
+}
+
+
 /* Detail -------------------------------------*/
 
 #addComment label {
 	padding-top: 3px;
 	display: block;
-}
-
-#addComment select {
-	height: 25px;
 }
 
 #sendEmail .form-horizontal .control-group {
@@ -385,8 +381,9 @@ h1.float {
 }
 
 #incident-properties {
-	background-color: #DDD;
 	margin-top: -20px;
+	margin-left: calc(var(--bs-gutter-x) * -0.5);
+	margin-right: calc(var(--bs-gutter-x) * -0.5)
 }
 
 #incident-properties .minitable {
@@ -405,7 +402,7 @@ h1.float {
 }
 
 .minitable .delim {
-	border-right: 1px solid #CCC;
+	border-right: 1px solid; 
 	padding-right: 15px;
 }
 
@@ -558,6 +555,10 @@ tr.C {
 	font-weight:bold;
 }
 
+#all_incidents tr.B td a {
+	color: rgb(31, 105, 121)!important;
+}
+
 td.incident_date_column {
 	width: 75px;
 }
@@ -593,8 +594,193 @@ div#concerned_business_lines {
 	clear:both;
 }
 
+legend.border-bottom {
+	padding-bottom: 7px;
+}
+
+/* Adapt select2 to be compatible with bootstrap light themes -------------------------------------*/
+
 .select2-search-choice {
 	background-image: linear-gradient(to bottom, #DEE7F8, #DEE7F8) !important;
+}
+
+body .select2-container--bootstrap-5 .select2-selection {
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
+    border: var(--bs-border-width) solid var(--bs-border-color);
+}
+
+body
+    .select2-container--bootstrap-5.select2-container--focus
+    .select2-selection,
+body
+    .select2-container--bootstrap-5.select2-container--open
+    .select2-selection {
+    border-color: var(--bs-link-hover-color);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+body .select2-container--bootstrap-5 .select2-dropdown {
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
+    border-color: var(--bs-link-hover-color);
+}
+body
+    .select2-container--bootstrap-5
+    .select2-dropdown
+    .select2-search
+    .select2-search__field {
+    color: var(--bs-body-color);
+    background-color: var(--bs-body-bg);
+    background-clip: padding-box;
+    border: var(--bs-border-width) solid var(--bs-border-color);
+}
+body
+    .select2-container--bootstrap-5
+    .select2-dropdown
+    .select2-search
+    .select2-search__field:focus {
+    border-color: var(--bs-link-hover-color);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+body
+    .select2-container--bootstrap-5
+    .select2-dropdown
+    .select2-results__options
+    .select2-results__option.select2-results__message {
+    color: #6c757d;
+}
+[data-bs-theme=dark] body
+    .select2-container--bootstrap-5
+    .select2-dropdown
+    .select2-results__options
+    .select2-results__option.select2-results__option--highlighted {
+    color: var(--bs-body-color);
+    background-color: var(--bs-light-bg-subtle) !important;
+}
+body
+    .select2-container--bootstrap-5
+    .select2-dropdown
+    .select2-results__options
+    .select2-results__option.select2-results__option--selected,
+body
+    .select2-container--bootstrap-5
+    .select2-dropdown
+    .select2-results__options
+    .select2-results__option[aria-selected="true"]:not(
+        .select2-results__option--highlighted
+    ) {
+    color: var(--bs-body-color);
+    background-color: var(--bs-dark-bg-subtle);
+}
+body
+    .select2-container--bootstrap-5
+    .select2-dropdown
+    .select2-results__options
+    .select2-results__option.select2-results__option--disabled,
+body
+    .select2-container--bootstrap-5
+    .select2-dropdown
+    .select2-results__options
+    .select2-results__option[aria-disabled="true"] {
+    color: #6c757d;
+}
+body
+    .select2-container--bootstrap-5
+    .select2-dropdown
+    .select2-results__options
+    .select2-results__option[role="group"]
+    .select2-results__group {
+    color: #6c757d;
+}
+body
+    .select2-container--bootstrap-5
+    .select2-selection--single
+    .select2-selection__rendered {
+    color: var(--bs-body-color);
+}
+body
+    .select2-container--bootstrap-5
+    .select2-selection--single
+    .select2-selection__rendered
+    .select2-selection__placeholder {
+    color: #6c757d;
+}
+body
+    .select2-container--bootstrap-5
+    .select2-selection--multiple
+    .select2-selection__rendered
+    .select2-selection__choice {
+    color: var(--bs-body-color);
+    border: var(--bs-border-width) solid var(--bs-border-color);
+}
+
+body
+    .select2-container--bootstrap-5.select2-container--disabled
+    .select2-selection,
+body
+    .select2-container--bootstrap-5.select2-container--disabled.select2-container--focus
+    .select2-selection {
+    color: #6c757d;
+    background-color: var(--bs-light-bg-subtle);
+    border-color: var(--bs-dark-bg-subtle);
+}
+.is-valid + body .select2-container--bootstrap-5 .select2-selection,
+.was-validated
+    select:valid
+    + body
+    .select2-container--bootstrap-5
+    .select2-selection {
+    border-color: #198754;
+}
+.is-valid
+    + body
+    .select2-container--bootstrap-5.select2-container--focus
+    .select2-selection,
+.is-valid
+    + body
+    .select2-container--bootstrap-5.select2-container--open
+    .select2-selection,
+.was-validated
+    select:valid
+    + body
+    .select2-container--bootstrap-5.select2-container--focus
+    .select2-selection,
+.was-validated
+    select:valid
+    + body
+    .select2-container--bootstrap-5.select2-container--open
+    .select2-selection {
+    border-color: #198754;
+    box-shadow: 0 0 0 0.25rem rgba(25, 135, 84, 0.25);
+}
+.is-invalid + body .select2-container--bootstrap-5 .select2-selection,
+.was-validated
+    select:invalid
+    + body
+    .select2-container--bootstrap-5
+    .select2-selection {
+    border-color: #dc3545;
+}
+.is-invalid
+    + body
+    .select2-container--bootstrap-5.select2-container--focus
+    .select2-selection,
+.is-invalid
+    + body
+    .select2-container--bootstrap-5.select2-container--open
+    .select2-selection,
+.was-validated
+    select:invalid
+    + body
+    .select2-container--bootstrap-5.select2-container--focus
+    .select2-selection,
+.was-validated
+    select:invalid
+    + body
+    .select2-container--bootstrap-5.select2-container--open
+    .select2-selection {
+    border-color: #dc3545;
+    box-shadow: 0 0 0 0.25rem rgba(220, 53, 69, 0.25);
 }
 
 /* Dashboard -------------------------------------*/
@@ -617,4 +803,91 @@ div#concerned_business_lines {
 .modal-body {
     max-height: calc(100vh - 210px);
     overflow-y: auto;
+}
+
+
+
+/* Custom CSS to make EasyMDE play nice with Bootstrap colors */
+
+.EasyMDEContainer .CodeMirror {
+    color: var(--bs-body-color);
+    border-color: var(--bs-border-color)!important;
+    background-color: var(--bs-body-bg);
+}
+.EasyMDEContainer .cm-s-easymde .CodeMirror-cursor {
+    border-color: var(--bs-body-color)!important;
+}
+
+.CodeMirror-cursor {
+    border-left:1px solid var(--bs-body-color)!important;
+    border-right:none;width:0;
+}
+
+.EasyMDEContainer .editor-toolbar > * {
+    border-color: var(--bs-body-bg)!important;
+}
+
+.editor-toolbar {
+    border-top: 1px solid var(--bs-border-color)!important;
+    border-left: 1px solid var(--bs-border-color)!important;
+    border-right: 1px solid var(--bs-border-color)!important;
+}
+
+.editor-toolbar i.separator {
+    border-left: 1px solid var(--bs-border-color)!important;
+    border-right: 1px solid var(--bs-border-color)!important;
+}
+
+.EasyMDEContainer .editor-toolbar > .active, .editor-toolbar > button:hover, .editor-preview pre, .cm-s-easymde .cm-comment {
+    background-color: var(--bs-body-bg)!important;
+}
+
+.EasyMDEContainer .CodeMirror-fullscreen {
+    background: var(--bs-body-bg);
+}
+.editor-toolbar.fullscreen {
+    background: var(--bs-body-bg);
+}
+
+.editor-preview {
+    background: var(--bs-body-bg)!important;
+}
+
+.editor-preview-side {
+    border-color: var(--bs-border-color)!important;
+}
+
+.CodeMirror-selected {
+    background: var(--bs-secondary-bg)!important;
+}
+
+.CodeMirror-focused .CodeMirror-selected {
+    background: var(--bs-secondary-bg)!important;
+}
+
+.CodeMirror-line::selection,.CodeMirror-line>span::selection,.CodeMirror-line>span>span::selection {
+    background:var(--bs-secondary-bg)!important
+}
+
+.CodeMirror-line::-moz-selection,.CodeMirror-line>span::-moz-selection,.CodeMirror-line>span>span::-moz-selection {
+    background:var(--bs-secondary-bg)!important
+}
+
+.EasyMDEContainer .CodeMirror-focused .CodeMirror-selected {
+    background: var(--bs-secondary-bg)!important
+}
+
+/* Tooltip -------------------------------------*/
+
+.tooltip {
+  --bs-tooltip-color: var(--bs-body-color)!important;
+  --bs-tooltip-bg: var(--bs-secondary-bg)!important;
+}
+
+.tooltip-inner {
+	color: var(--bs-body-color)!important;
+}
+
+.tooltip ul {
+	padding-left: 0px;
 }

@@ -4,44 +4,44 @@
 	<div class="modal-dialog modal-lg">
 		<div class="modal-content">
 			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
 				<h4 id="sendEmailLabel" class="modal-title">{% trans "Send email" %}</h4>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
 			</div>
 
 			<form id="email_form" action="{% url 'alerting:send_email' %}" method="POST" class='form-horizontal'>
 				<div class="modal-body">
 					{% csrf_token %}
-					<div class='form-group nomargin'>
+					<div class='form-group nomargin mb-3 row'>
 						<label for="id_behalf" class="col-sm-1 text-right">{% trans "From:" %}</label>
 						<div class='col-sm-11'>
 							{{ form.behalf }}
 						</div>
 					</div>
-					<div class='form-group nomargin'>
+					<div class='form-group nomargin mb-3 row'>
 						<label for="id_to" class="col-sm-1 text-right">{% trans "To:" %}</label>
 						<div class='col-sm-11'>
 							{{ form.to }}
 						</div>
 					</div>
-					<div class='form-group nomargin'>
+					<div class='form-group nomargin mb-3 row'>
 						<label for="id_cc" class="col-sm-1 text-right">{% trans "CC:" %}</label>
 						<div class='col-sm-11'>
 							{{ form.cc }}
 						</div>
 					</div>
-					<div class='form-group nomargin'>
+					<div class='form-group nomargin mb-3 row'>
 						<label for="id_bcc" class="col-sm-1 text-right">{% trans "BCC:" %}</label>
 						<div class='col-sm-11'>
 							{{ form.bcc }}
 						</div>
 					</div>
-					<div class='form-group'>
+					<div class='form-group mb-3 row'>
 						<label for="id_subject" class="col-sm-1 text-right">{% trans "Subject" %}</label>
 						<div class='col-sm-11'>
 							{{ form.subject|safe }}
 						</div>
 					</div>
-					<div class='form-group'>
+					<div class='form-group mb-3 row'>
 						<label for="id_body" class="col-sm-1 text-right">{% trans "Body" %}</label>
 						<div class='col-sm-11'>
 							{% rich_edit form.body %}
@@ -51,7 +51,7 @@
 			</form>
 
 			<div class="modal-footer">
-				<button class="btn btn-default" data-dismiss="modal" aria-hidden="true">{% trans "Close" %}</button>
+				<button class="btn btn-default" data-bs-dismiss="modal" aria-hidden="true">{% trans "Close" %}</button>
 				<button data-sent-text="Message sent" data-loading-text="Sending..." id='send_email' class="btn btn-primary">{% trans "Send email" %}</button>
 			</div>
 		</div>
