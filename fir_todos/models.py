@@ -3,8 +3,6 @@ from django.db import models
 from django import forms
 
 from incidents.models import Incident, IncidentCategory, BusinessLine, Label
-from incidents.fields import DateTimeLocalField
-
 
 class TodoItem(models.Model):
     description = models.CharField(max_length=140)
@@ -20,8 +18,6 @@ class TodoItem(models.Model):
 
 
 class TodoItemForm(forms.ModelForm):
-    done_time = DateTimeLocalField()
-
     def __init__(self, *args, **kwargs):
         self.user = kwargs.pop('for_user', None)
         super(TodoItemForm, self).__init__(*args, **kwargs)
