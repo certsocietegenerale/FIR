@@ -1,10 +1,3 @@
-function Z(i) {
-	if (i < 10) {
-		i = "0" + i;
-	}
-	return i;
-}
-
 $(function () {
 	$('#details-actions-add-link').click(function (event) {
 		$('.details-actions-supmenu').hide();
@@ -86,7 +79,7 @@ $(function () {
 
 		$("#id_action").val('');
 		var date = new Date();
-		date = date.getFullYear() + "-" + Z((date.getMonth()+1)) +"-" + Z(date.getDate()) + " " + Z(date.getHours()) + ":" + Z(date.getMinutes())
+		date = new Date(date.getTime() - new Date().getTimezoneOffset() * 60 * 1000).toISOString().slice(0, 16)
 		$("#id_date").val(date);
 	});
 
@@ -100,8 +93,7 @@ $(function () {
 			var text = comment.fields.comment;
 			var action = comment.fields.action;
 			var date = new Date(comment.fields.date);
-			// date format 1899-12-06 07:15
-			date = date.getUTCFullYear() + "-" + (Z(date.getUTCMonth()+1)) +"-" + Z(date.getUTCDate()) + " " + Z(date.getUTCHours()) + ":" + Z(date.getUTCMinutes())
+			date = new Date(date.getTime() - new Date().getTimezoneOffset() * 60 * 1000).toISOString().slice(0, 16)
 
 			$("#addComment").modal('toggle');
 
