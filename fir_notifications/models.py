@@ -89,7 +89,7 @@ class MethodConfiguration(models.Model):
         verbose_name = _('method configuration')
         verbose_name_plural = _('method configurations')
         unique_together = (("user", "key"),)
-        index_together = ["user", "key"]
+        indexes = [models.Index(fields=["user", "key"])]
 
 
 class NotificationTemplate(models.Model):
@@ -120,5 +120,5 @@ class NotificationPreference(models.Model):
         verbose_name = _('notification preference')
         verbose_name_plural = _('notification preferences')
         unique_together = (("user", "event", "method"),)
-        index_together = ["user", "event", "method"]
+        indexes = [models.Index(fields=["user", "event", "method"])]
         ordering = ['user', 'event', 'method']

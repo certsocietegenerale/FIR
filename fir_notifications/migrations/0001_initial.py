@@ -44,12 +44,4 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'notification templates',
             },
         ),
-        migrations.AlterUniqueTogether(
-            name='methodconfiguration',
-            unique_together=set([('user', 'key')]),
-        ),
-        migrations.AlterIndexTogether(
-            name='methodconfiguration',
-            index_together=set([('user', 'key')]),
-        ),
     ]

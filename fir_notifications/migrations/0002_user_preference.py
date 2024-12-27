@@ -29,12 +29,4 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'notification preferences',
             },
         ),
-        migrations.AlterUniqueTogether(
-            name='notificationpreference',
-            unique_together=set([('user', 'event', 'method')]),
-        ),
-        migrations.AlterIndexTogether(
-            name='notificationpreference',
-            index_together=set([('user', 'event', 'method')]),
-        ),
     ]
