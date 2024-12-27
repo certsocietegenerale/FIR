@@ -18,7 +18,7 @@
                         {% for form in forms %}
                         <div class="col-sm-3">
                             <div class="form-group mb-3">
-                           <label id="id_business_lines">{{ form.get_notification_display }}</label>
+                           <label for="id_business_lines">{{ form.get_notification_display }}</label>
                                 {{ form.business_lines|add_css_class:"form-control" }}
                                 {% for hidden in form.hidden_fields %}
                                     {{ hidden }}

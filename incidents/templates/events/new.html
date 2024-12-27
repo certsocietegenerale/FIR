@@ -66,41 +66,41 @@ $(document).ready(function() {
 								{% include 'events/_form_errors.html' with errors=form.subject.errors %}
 							</div>
 							<div class="col-sm-6 form-group mb-3{% if form.concerned_business_lines.errors%} has-error{%endif%}">
-								<label id="id_concerned_business_lines">{% trans "Business Lines" %}</label>
+								<label for="id_concerned_business_lines">{% trans "Business Lines" %}</label>
 								{{ form.concerned_business_lines|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.concerned_business_lines.errors %}
 							</div>
 						</div>
 						<div class="row">
 							<div class="col-sm-6 form-group mb-3{% if form.category.errors%} has-error{%endif%}">
-								<label id="id_category">{% trans "Category" %}</label>
+								<label for="id_category">{% trans "Category" %}</label>
 								{{ form.category|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.category.errors %}
 							</div>
 							<div class="col-sm-2 form-group mb-3{% if form.status.errors%} has-error{%endif%}">
-								<label id="id_status">{% trans "Status" %}</label>
+								<label for="id_status">{% trans "Status" %}</label>
 								{{ form.status|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.status.errors %}
 							</div>
 							<div class="col-sm-2 form-group mb-3{% if form.detection.errors%} has-error{%endif%}">
-								<label id="id_detection">{% trans "Detection" %}</label>
+								<label for="id_detection">{% trans "Detection" %}</label>
 								{{ form.detection|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.detection.errors %}
 							</div>
 							<div class="col-sm-2 form-group mb-3{% if form.severity.errors%} has-error{%endif%}">
-								<label id="id_severity">{% trans "Severity" %}</label>
+								<label for="id_severity">{% trans "Severity" %}</label>
 								{{ form.severity|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.severity.errors %}
 							</div>
 						</div>
 						<div class="row">
 							<div class="col-sm-6 form-group mb-3{% if form.date.errors%} has-error{%endif%}">
-								<label id="id_date">{% trans "Date / Time" %}</label>
+								<label for="id_date">{% trans "Date / Time" %}</label>
 								{{ form.date|add_css_class:"form-control datetime" }}
 								{% include 'events/_form_errors.html' with errors=form.date.errors %}
 							</div>
 							<div class="col-sm-2 form-group mb-3{% if form.confidentiality.errors%} has-error{%endif%}">
-								<label id="id_confidentiality">{% trans "Confidentiality" %}</label>
+								<label for="id_confidentiality">{% trans "Confidentiality" %}</label>
 								{{ form.confidentiality|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.confidentiality.errors %}
 							</div>
@@ -123,12 +123,12 @@ $(document).ready(function() {
 
 						<div class="row">
 							<div class="col-sm-2 form-group mb-3{% if form.actor.errors%} has-error{%endif%}">
-								<label id="id_actor">{% trans "Actor" %}</label>
+								<label for="id_actor">{% trans "Actor" %}</label>
 								{{ form.actor|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.actor.errors %}
 							</div>
 							<div class="col-sm-2 form-group mb-3{% if form.plan.errors%} has-error{%endif%}">
-								<label id="id_plan">{% trans "Plan" %}</label>
+								<label for="id_plan">{% trans "Plan" %}</label>
 								{{ form.plan|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.plan.errors %}
 							</div>
