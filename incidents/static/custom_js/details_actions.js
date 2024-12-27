@@ -93,7 +93,7 @@ $(function () {
 			var text = comment.fields.comment;
 			var action = comment.fields.action;
 			var date = new Date(comment.fields.date);
-			date = new Date(date.getTime() - new Date().getTimezoneOffset() * 60 * 1000).toISOString().slice(0, 16)
+			date = new Date(date.getTime() - date.getTimezoneOffset() * 60 * 1000).toISOString().slice(0, 16)
 
 			$("#addComment").modal('toggle');
 
