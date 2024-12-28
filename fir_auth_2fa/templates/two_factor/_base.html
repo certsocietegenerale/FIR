@@ -1,30 +1,14 @@
+{% extends "base.html" %}
 {% load i18n %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <title>{% trans "Sign in &middot; FIR" %}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="">
 
-    <link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet">
-    <link href="{% static "custom_css/fir.css" %}" rel="stylesheet">
-    <link href="{% static "custom_css/login.css" %}" rel="stylesheet">
-    {% block extra_media %}{% endblock %}
+{% block content_wrapper %}
+  <div class="container">
+    <div class="row justify-content-md-center">
+	    <div class="col-sm-8 col-sm-offset-4 col-xs-12 col-xs-offset-0">
+      {% block content %}{% endblock %}
+	    </div>
+    </div>
+  </div>
+{% endblock %}
 
-    <!-- Fav and touch icons -->
-    <link rel="shortcut icon" href="{% static "img/favicon.png" %}">
-  </head>
-
-  <body>
-    {% block content_wrapper %}
-      <div class="container">
-        {% block content %}{% endblock %}
-       </div>
-      {% endblock %}
-    <script src="{% static "js/jquery.min.js" %}"></script>
-    <script src="{% static "js/bootstrap.min.js" %}"></script>
-  </body>
-</html>

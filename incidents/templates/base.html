@@ -110,7 +110,9 @@
 
     <div class="container-fluid mt-2 pt-2">
       {% block header %}{% endblock %}
-      {% block content %}{% endblock %}
+      {% block content_wrapper %}
+        {% block content %}{% endblock %}
+      {% endblock%}
     </div>
 
     <!-- Le javascript
