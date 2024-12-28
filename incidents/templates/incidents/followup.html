@@ -16,10 +16,10 @@
 
 		<div class='header'>
 			<img src="{% static "img/logo.jpg" %}" />
-			<br style='clear:both' />
+			<br class="separator" />
 			<div class='title'>
 				<h1 class='float'>{% if incident.is_incident %}{% trans "Incident followup" %}{%else%}{% trans "Event followup" %}{%endif%} [C{{incident.confidentiality}}] [{{incident.category}}] - {{incident.subject}}</h1>
-				<br style='clear:both' />
+				<br class="separator" />
                 {% trans "someone" as someone %}
 				<p>{% blocktrans with date=incident.date opened_by=incident.opened_by|default:someone %}Opened on {{ date }} by {{ opened_by }}{% endblocktrans %}</p>
 			</div>
@@ -43,7 +43,7 @@
 		</table>
 
 
-		<br style='clear:both' />
+		<br class="separator" />
 
 
 		<div class='description'>
@@ -51,7 +51,7 @@
 			<p class='artifacts'>{{ incident.description|markdown }}</p>
 		</div>
 
-		<br style='clear:both' />
+		<br class="separator" />
 
 		<h2>{%  trans "Incident timeline" %} ({{ incident.comments_set.count }})</h2>
 
@@ -80,7 +80,7 @@
 		<div class='files'>
 
 			<h2>{% trans "Related files" %}</h2>
-			<br style='clear:both'/>
+			<br class="separator" />
 			{%if incident.file_set.count > 0 %}
 				<table class='table table-condensed files' style='width:auto'>
 					{% for file in incident.file_set.all %}

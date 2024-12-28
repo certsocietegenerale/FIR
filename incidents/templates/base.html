@@ -39,9 +39,9 @@
               {% if request.session.can_report_event %}
               <li class="nav-item">
                 <div class="btn-group navbar-btn">
-                  <button class="btn btn-outline-danger" onclick="javascript:location.href='{% url 'events:new' %}'">
+                  <a class="btn btn-outline-danger" href="{% url 'events:new' %}">
                     {% trans "New event" %} <span class="bi bi-fire"></span>
-                  </button>
+                  </a>
                   {% if request.session.has_incident_templates %}
                   <button type="button" class="btn btn-outline-danger dropdown-toggle" data-bs-toggle="dropdown">
                     <span class="caret"></span>
