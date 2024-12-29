@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-26 06:46+0100\n"
+"POT-Creation-Date: 2024-12-29 05:48-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,7 +28,8 @@ msgstr "Certificat de chiffrement au format PEM."
 
 #: forms.py:35
 msgid "Improperly configured S/MIME: Email backend is incompatible"
-msgstr "Mauvaise configuration de S/MIME : le moteur de messagerie est incompatible"
+msgstr ""
+"Mauvaise configuration de S/MIME : le moteur de messagerie est incompatible"
 
 #: forms.py:41
 msgid "Improperly configured S/MIME: missing dependencies"
@@ -42,7 +43,7 @@ msgstr "Certificat invalide : format inconnu"
 msgid "Set S/MIME certificate"
 msgstr "Définir le certificat S/MIME"
 
-#: templates/fir_email/smime_profile_action.html:13
+#: templates/fir_email/smime_profile_action.html:12
 msgid "Set certificate"
 msgstr "Définir le certificat"
 

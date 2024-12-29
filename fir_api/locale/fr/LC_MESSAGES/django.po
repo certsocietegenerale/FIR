@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-11-23 11:39+0100\n"
+"POT-Creation-Date: 2024-12-29 06:34-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,14 +18,32 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: templates/fir_api/plugins/user_profile.html:6
+#: templates/fir_api/plugins/user_profile.html:7
 msgid "API Access"
 msgstr "Accès à l'API"
 
 #: templates/fir_api/plugins/user_profile.html:9
+msgid ""
+"You need to be authenticated in order to use the API. It will accept session "
+"or token based authentication."
+msgstr "Vous devez être authentifié pour utiliser l'API, à l'aide d'un jeton "
+"ou d'une session."
+
+#: templates/fir_api/plugins/user_profile.html:10
+msgid ""
+"Tokens can be managed in the administration interface and should be "
+"specified as a <strong>request header</strong>.</p>"
+msgstr "Les jetons peuvent être gérés dans l'interface d'administration et doivent être "
+"spécifiés dans les <strong>en-têtes des requêtes</strong>.</p>"
+
+#: templates/fir_api/plugins/user_profile.html:11
+msgid "Example:"
+msgstr "Exemple :"
+
+#: templates/fir_api/plugins/user_profile.html:15
 msgid "Token"
 msgstr "Jeton"
 
-#: templates/fir_api/plugins/user_profile.html:13
+#: templates/fir_api/plugins/user_profile.html:16
 msgid "Created"
 msgstr "Création"

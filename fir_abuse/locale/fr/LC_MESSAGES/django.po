@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FIR master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-01-04 13:56+0100\n"
+"POT-Creation-Date: 2024-12-29 05:46-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: CERT SG <cert.sg@socgen.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: templates/fir_abuse/emailform.html:7
+#: templates/fir_abuse/emailform.html:6
 msgid "Send abuse email"
 msgstr "Envoyer un email d'abus"
 
@@ -41,6 +41,10 @@ msgstr "Objet"
 msgid "Body"
 msgstr "Corps"
 
+#: templates/fir_abuse/emailform.html:41
+msgid "Enrichment"
+msgstr "Enrichissement"
+
 #: templates/fir_abuse/emailform.html:47
 msgid "Name(s)"
 msgstr "Nom(s)"
@@ -61,10 +65,6 @@ msgstr "Fermer"
 msgid "Send email"
 msgstr "Envoyer"
 
-#: templates/fir_abuse/plugins/details_context_menu.html:7
 #: templates/fir_abuse/plugins/details_tab_content.html:7
 msgid "Send Abuse"
 msgstr "Signaler"
-
-msgid "Enrichment"
-msgstr "Enrichissement"
