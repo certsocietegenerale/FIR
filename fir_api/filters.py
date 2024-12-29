@@ -69,6 +69,9 @@ class IncidentFilter(FilterSet):
     created_after = DateTimeFilter(field_name="date", lookup_expr="gte")
     subject = CharFilter(field_name="subject", lookup_expr="icontains")
     status = ValueChoiceFilter(field_name="status", choices=STATUS_CHOICES)
+    status__not = ValueChoiceFilter(
+        field_name="status", choices=STATUS_CHOICES, exclude=True
+    )
     confidentiality = ValueChoiceFilter(
         field_name="confidentiality", choices=CONFIDENTIALITY_LEVEL
     )

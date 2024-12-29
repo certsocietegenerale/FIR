@@ -8,7 +8,7 @@ from django.dispatch import receiver
 from django.shortcuts import get_object_or_404
 from django.core.files import File as FileWrapper
 from django.contrib.auth.models import User
-from django.db.models import Q
+from django.db.models import Q, Max
 
 from rest_framework.renderers import JSONRenderer
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
@@ -94,16 +94,29 @@ class IncidentViewSet(
     API endpoints for viewing, creating and editing incidents
     """
 
-    queryset = Incident.objects.all()
+    queryset = (
+        Incident.objects.all()
+    )  # Will be overriden by get_queryset(). We still need to define this property as DRF use it to get the basename
     serializer_class = IncidentSerializer
     permission_classes = (IsAuthenticated, IsIncidentHandler)
     filter_backends = [DjangoFilterBackend, OrderingFilter]
-    ordering_fields = ["id", "date", "status", "subject", "concerned_business_lines"]
+    ordering_fields = [
+        "id",
+        "date",
+        "status",
+        "subject",
+        "concerned_business_lines",
+        "last_comment_date",
+    ]
     filterset_class = IncidentFilter
 
     def get_queryset(self):
-        queryset = Incident.authorization.for_user(
-            self.request.user, "incidents.view_incidents"
+        queryset = (
+            Incident.authorization.for_user(
+                self.request.user, "incidents.view_incidents"
+            )
+            .annotate(last_comment_date=Max("comments__date"))
+            .order_by("-id")
         )
         return queryset
 

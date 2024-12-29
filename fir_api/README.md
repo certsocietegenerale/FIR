@@ -28,7 +28,6 @@ Python:
 ```
 import requests
 requests.post("http(s)://YOURFIRINSTALL/api/comments", headers={"X-API": "Token 9944b09199c62bcf9418ad846dd0e4bbdfc6ee4b"}, json={"comment": "This is a comment made via API", "incident": 1, "action": "Info"}).json()
-
 ```
 
 curl:
