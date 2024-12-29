@@ -6,9 +6,9 @@
     <div class="card mb-3">
       <h5 class="card-header bg-primary-subtle text-primary-emphasis">FIR API - {% trans "API Access" %}</h3>
       <div class="card-body">
-          <p>You need to be authenticated in order to use the API. It will accept session or token based authentication.
-          Tokens can be managed in the administration interface and should be specified as a <strong>request header</strong>.</p>
-          Example:<br/>
+          <p>{% trans 'You need to be authenticated in order to use the API. It will accept session or token based authentication.' %}
+	  {% trans 'Tokens can be managed in the administration interface and should be specified as a <strong>request header</strong>.</p>' %}
+	  {% trans 'Example:' %}<br/>
           <pre>X-Api: Token {{ user.auth_token.key }}</pre>
       </div>
       <table class="table">
