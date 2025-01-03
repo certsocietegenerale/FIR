@@ -7,13 +7,13 @@
 {%endblock%}
 
 {% block custom_js_top %}
-<script src="{% static "js/d3.v3.min.js" %}"></script>
-<script src="{% static "js/nv.d3.min.js" %}"></script>
+<script src="{% static "vendor/nvd3/d3.v3.min.js" %}"></script>
+<script src="{% static "vendor/nvd3/nv.d3.min.js" %}"></script>
 {% endblock %}
 
 {% block custom_js %}
-<script src="{% static "js/excellentexport.js" %}"></script>
-<script src="{% static "select/select2.min.js" %}"></script>
+<script src="{% static "vendor/excellentexport/excellentexport.js" %}"></script>
+<script src="{% static "vendor/select/select2.min.js" %}"></script>
 <script src="{% static "custom_js/export.js" %}"></script>
 
 <script>
@@ -206,9 +206,9 @@ $(document).ready(function() {
 {% endblock %}
 
 {% block custom_css %}
-<link href="{% static "select/select2.css" %}" rel="stylesheet"/>
-<link href="{% static "select/select2-bootstrap.css" %}" rel="stylesheet"/>
-<link href="{% static "css/nv.d3.min.css" %}" rel="stylesheet" />
+<link href="{% static "vendor/select/select2.css" %}" rel="stylesheet"/>
+<link href="{% static "vendor/select/select2-bootstrap.css" %}" rel="stylesheet"/>
+<link href="{% static "vendor/nvd3/nv.d3.min.css" %}" rel="stylesheet" />
 
 <style>
 

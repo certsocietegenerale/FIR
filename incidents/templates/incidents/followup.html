@@ -5,8 +5,8 @@
 
 <html lang="{{ LANGUAGE_CODE }}">
 <head>
-	<link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet">
-	<link href="{% static "css/bootstrap-icons.min.css" %}" rel="stylesheet">
+	<link href="{% static "vendor/bootstrap/bootstrap.min.css" %}" rel="stylesheet">
+	<link href="{% static "vendor/bootstrap-icons/bootstrap-icons.min.css" %}" rel="stylesheet">
     <link href="{% static "custom_css/fir_followup.css" %}" rel="stylesheet">
     {% plugin_point 'followup_static' %}
     <title>{% if incident.is_incident %}{%  trans "Incident" %}{%else%}{%  trans "Event" %}{%endif%} followup [C{{incident.confidentiality}}] [{{incident.category}}] - {{incident.subject}}</title>

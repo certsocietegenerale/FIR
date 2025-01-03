@@ -6,14 +6,14 @@
 {% load markdown %}
 
 {% block custom_css %}
-<link href="{% static "select/select2.css" %}" rel="stylesheet"/>
-<link href="{% static "select/select2-bootstrap.css" %}" rel="stylesheet"/>
+<link href="{% static "vendor/select/select2.css" %}" rel="stylesheet"/>
+<link href="{% static "vendor/select/select2-bootstrap.css" %}" rel="stylesheet"/>
 
 
 {% endblock %}
 
 {% block custom_js %}
-<script src="{% static "select/select2.min.js" %}"></script>
+<script src="{% static "vendor/select/select2.min.js" %}"></script>
 <script src="{% static "custom_js/new.js" %}"></script>
 {% rich_edit_static %}
 <script>
