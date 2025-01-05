@@ -1,6 +1,10 @@
 import importlib
 from django.apps import apps
+from rest_framework.exceptions import ParseError
 from django.utils.translation import gettext_lazy as _
+from django.conf import settings
+from django.db.models import Q
+from django.apps import apps
 from django_filters.rest_framework import (
     FilterSet,
     DateTimeFilter,
@@ -22,6 +26,7 @@ from incidents.models import (
     CONFIDENTIALITY_LEVEL,
 )
 from fir_artifacts.models import File, Artifact
+from fir_api.lexer import SearchParser
 from fir.config.base import INSTALLED_APPS
 
 
@@ -108,6 +113,63 @@ class IncidentFilter(FilterSet):
         lookup_expr="gte",
         label=_("Last comment date is greater than or equal to"),
     )
+    query = CharFilter(
+        method="search_query", label=_("Custom search query (DSL syntax)")
+    )
+
+    search_filters = []
+    keyword_filters = {}
+
+    def search_query(self, queryset, name, search_query):
+        # Build possible fields list
+        possible_fields = {}
+        for field in queryset.model._meta.fields:
+            if str(field.get_internal_type()) in [
+                "CharField",
+                "TextField",
+            ]:
+                possible_fields[field.name.lower()] = field.name.lower() + "__icontains"
+
+        # Define custom mapping for specific fields
+        possible_fields.update(
+            {
+                "bl": "concerned_business_lines__in",
+                "plan": "plan__name",
+                "id": lambda x: Q(
+                    id=(
+                        x.removesuffix(settings.INCIDENT_ID_PREFIX)
+                        if settings.INCIDENT_SHOW_ID
+                        else x
+                    )
+                ),
+                "starred": lambda x: Q(
+                    is_starred=True if x.lower() in ["true", 1, "yes", "y"] else False
+                ),
+                "opened_by": "opened_by__username",
+                "category": "category__name__icontains",
+                "status": "status",
+                "severity": "severity__name",
+            }
+        )
+        # Custom fields added by plugins
+        possible_fields.update(self.keyword_filters)
+
+        # Text entered without "field:"
+        # Searching in subject description and comments by default
+        default_fields = [
+            lambda x: Q(subject__icontains=x)
+            | Q(description__icontains=x)
+            | Q(comments__comment__icontains=x)
+        ]
+        # default field added by plugins
+        default_fields.extend(self.search_filters)
+
+        try:
+            lexer = SearchParser(possible_fields, default_fields, search_query)
+            q = lexer.get_q()
+        except Exception as e:
+            raise ParseError(_(f"Query DSL is not valid: %s" % e))
+        return queryset.filter(q)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -120,10 +182,19 @@ class IncidentFilter(FilterSet):
                 except ImportError:
                     continue
 
-                for field in h.hooks.get("incident_fields", []):
-                    if isinstance(field[3], dict):
-                        for k, v in field[3].items():
-                            self.filters.update({k: v})
+                fields = h.hooks.get("incident_fields", [])
+                if isinstance(fields, list):
+                    for field in fields:
+                        if isinstance(field[3], dict):
+                            for k, v in field[3].items():
+                                self.filters.update({k: v})
+                fields = h.hooks.get("search_filter", [])
+                if isinstance(fields, list):
+                    self.search_filters.extend(fields)
+
+                fields = h.hooks.get("keyword_filter", {})
+                if isinstance(fields, dict):
+                    self.keyword_filters.update(fields)
 
     class Meta:
         model = Incident
@@ -136,6 +207,7 @@ class IncidentFilter(FilterSet):
             "severity",
             "category",
             "detection",
+            "query",
         ]
 
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-01-07 21:46+0100\n"
+"POT-Creation-Date: 2025-01-08 17:55+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,17 +18,25 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: filters.py:77
+#: filters.py:82
 msgid "Status is not"
 msgstr "Status n'est pas"
 
-#: filters.py:101
+#: filters.py:106
 msgid "Last comment date is less than or equal to"
 msgstr "Date du dernier commentaire est inférieure ou égale à"
 
-#: filters.py:106
+#: filters.py:111
 msgid "Last comment date is greater than or equal to"
 msgstr "Date du dernier commentaire est supérieure ou égale à"
+
+#: filters.py:114
+msgid "Custom search query (DSL syntax)"
+msgstr "Recherche textuelle (syntaxe LD)"
+
+#: lexer.py:79
+msgid "Field '%s' does not exist. Valid fields are: %s."
+msgstr "Le champ '%s' n'est pas valide. Les champs valides sont : "
 
 #: templates/fir_api/plugins/user_profile.html:7
 msgid "API Access"
