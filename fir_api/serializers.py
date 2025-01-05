@@ -244,6 +244,7 @@ class IncidentSerializer(serializers.ModelSerializer):
     description = serializers.CharField(
         style={"base_template": "textarea.html"}, required=False
     )
+    last_comment_date = serializers.DateTimeField(read_only=True)
 
     if apps.is_installed("fir_todos"):
         todoitem_set = TodoSerializer(many=True, read_only=True)

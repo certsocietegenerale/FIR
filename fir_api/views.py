@@ -25,16 +25,7 @@ from rest_framework.decorators import action
 from rest_framework import renderers
 from rest_framework.response import Response
 from rest_framework.filters import OrderingFilter
-from django_filters.rest_framework import (
-    DjangoFilterBackend,
-    FilterSet,
-    DateTimeFilter,
-    CharFilter,
-    NumberFilter,
-    MultipleChoiceFilter,
-    AllValuesFilter,
-    BooleanFilter,
-)
+from django_filters.rest_framework import DjangoFilterBackend
 
 from fir_api.serializers import (
     UserSerializer,
@@ -94,8 +85,8 @@ class IncidentViewSet(
     API endpoints for viewing, creating and editing incidents
     """
 
-    queryset = (
-        Incident.objects.all()
+    queryset = (Incident.objects.all()).annotate(
+        last_comment_date=Max("comments__date")
     )  # Will be overriden by get_queryset(). We still need to define this property as DRF use it to get the basename
     serializer_class = IncidentSerializer
     permission_classes = (IsAuthenticated, IsIncidentHandler)

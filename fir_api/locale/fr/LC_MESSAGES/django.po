@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-29 06:34-0500\n"
+"POT-Creation-Date: 2025-01-07 21:46+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,6 +18,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
+#: filters.py:77
+msgid "Status is not"
+msgstr "Status n'est pas"
+
+#: filters.py:101
+msgid "Last comment date is less than or equal to"
+msgstr "Date du dernier commentaire est inférieure ou égale à"
+
+#: filters.py:106
+msgid "Last comment date is greater than or equal to"
+msgstr "Date du dernier commentaire est supérieure ou égale à"
+
 #: templates/fir_api/plugins/user_profile.html:7
 msgid "API Access"
 msgstr "Accès à l'API"
@@ -26,15 +38,17 @@ msgstr "Accès à l'API"
 msgid ""
 "You need to be authenticated in order to use the API. It will accept session "
 "or token based authentication."
-msgstr "Vous devez être authentifié pour utiliser l'API, à l'aide d'un jeton "
-"ou d'une session."
+msgstr ""
+"Vous devez être authentifié pour utiliser l'API, à l'aide d'un jeton ou "
+"d'une session."
 
 #: templates/fir_api/plugins/user_profile.html:10
 msgid ""
 "Tokens can be managed in the administration interface and should be "
 "specified as a <strong>request header</strong>.</p>"
-msgstr "Les jetons peuvent être gérés dans l'interface d'administration et doivent être "
-"spécifiés dans les <strong>en-têtes des requêtes</strong>.</p>"
+msgstr ""
+"Les jetons peuvent être gérés dans l'interface d'administration et doivent "
+"être spécifiés dans les <strong>en-têtes des requêtes</strong>.</p>"
 
 #: templates/fir_api/plugins/user_profile.html:11
 msgid "Example:"

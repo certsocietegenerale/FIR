@@ -1,4 +1,5 @@
 from django.apps import apps
+from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import (
     FilterSet,
     DateTimeFilter,
@@ -70,7 +71,10 @@ class IncidentFilter(FilterSet):
     subject = CharFilter(field_name="subject", lookup_expr="icontains")
     status = ValueChoiceFilter(field_name="status", choices=STATUS_CHOICES)
     status__not = ValueChoiceFilter(
-        field_name="status", choices=STATUS_CHOICES, exclude=True
+        field_name="status",
+        choices=STATUS_CHOICES,
+        exclude=True,
+        label=_("Status is not"),
     )
     confidentiality = ValueChoiceFilter(
         field_name="confidentiality", choices=CONFIDENTIALITY_LEVEL
@@ -91,12 +95,21 @@ class IncidentFilter(FilterSet):
     )
     is_incident = BooleanFilter(field_name="is_incident")
     is_major = BooleanFilter(field_name="is_major")
+    last_comment_date_before = DateTimeFilter(
+        field_name="last_comment_date",
+        lookup_expr="lte",
+        label=_("Last comment date is less than or equal to"),
+    )
+    last_comment_date_after = DateTimeFilter(
+        field_name="last_comment_date",
+        lookup_expr="gte",
+        label=_("Last comment date is greater than or equal to"),
+    )
 
     class Meta:
         model = Incident
         fields = [
             "id",
-            "date",
             "subject",
             "status",
             "concerned_business_lines",
