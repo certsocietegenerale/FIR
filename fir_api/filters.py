@@ -1,3 +1,4 @@
+import importlib
 from django.apps import apps
 from django.utils.translation import gettext_lazy as _
 from django_filters.rest_framework import (
@@ -21,6 +22,7 @@ from incidents.models import (
     CONFIDENTIALITY_LEVEL,
 )
 from fir_artifacts.models import File, Artifact
+from fir.config.base import INSTALLED_APPS
 
 
 class AllValuesMultipleFilterAllAllowed(MultipleChoiceFilter):
@@ -105,6 +107,22 @@ class IncidentFilter(FilterSet):
         lookup_expr="gte",
         label=_("Last comment date is greater than or equal to"),
     )
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Load Additional incident filters defined in plugins via a hook
+        for app in INSTALLED_APPS:
+            if app.startswith("fir_"):
+                try:
+                    h = importlib.import_module(f"{app}.hooks")
+                except ImportError:
+                    continue
+
+                for field in h.hooks.get("incident_fields", []):
+                    if isinstance(field[3], dict):
+                        for k, v in field[3].items():
+                            self.filters.update({k: v})
 
     class Meta:
         model = Incident
@@ -244,48 +262,3 @@ class CommentFilter(FilterSet):
     class Meta:
         model = Comments
         fields = ["id", "date", "incident", "opened_by", "action"]
-
-
-if apps.is_installed("fir_todos"):
-
-    class TodoFilter(FilterSet):
-        """
-        A custom filter class for Todo items
-        """
-
-        id = NumberFilter(field_name="id")
-        incident = NumberFilter(field_name="incident__id")
-        category = CharFilter(field_name="category__name")
-        business_line = CharFilter(field_name="business_line__name")
-        deadline = DateTimeFilter(field_name="deadline")
-        done_time_before = DateTimeFilter(field_name="done_time", lookup_expr="lte")
-        done_time_after = DateTimeFilter(field_name="done_time", lookup_expr="gte")
-        done = BooleanFilter(field_name="done")
-
-
-if apps.is_installed("fir_nuggets"):
-
-    class NuggetFilter(FilterSet):
-        """
-        A custom filter class for nuggets items
-        """
-
-        id = NumberFilter(field_name="id")
-        start_timestamp_before = DateTimeFilter(
-            field_name="start_timestamp", lookup_expr="lte"
-        )
-        start_timestamp_after = DateTimeFilter(
-            field_name="start_timestamp", lookup_expr="gte"
-        )
-        end_timestamp_before = DateTimeFilter(
-            field_name="end_timestamp", lookup_expr="lte"
-        )
-        end_timestamp_after = DateTimeFilter(
-            field_name="end_timestamp", lookup_expr="lte"
-        )
-        incident = NumberFilter(field_name="incident__id")
-        interpretation = CharFilter(
-            field_name="interpretation", lookup_expr="icontains"
-        )
-        source = CharFilter(field_name="source", lookup_expr="icontains")
-        raw_data = CharFilter(field_name="raw_data", lookup_expr="icontains")
