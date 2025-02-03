@@ -304,7 +304,7 @@ class Comments(models.Model):
                 continue
 
             new = data[key]
-            old = getattr(incident, key)
+            old = getattr(incident, key, None)
 
             if new != old:
                 label = key
