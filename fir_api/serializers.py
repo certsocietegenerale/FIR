@@ -199,12 +199,18 @@ class IncidentSerializer(serializers.ModelSerializer):
     )
     last_comment_date = serializers.DateTimeField(read_only=True)
 
+    _additional_fields = {}
+
     class Meta:
         model = Incident
         exclude = ["main_business_lines"]
         read_only_fields = ("id", "opened_by")
 
-    def __init__(self, *args, **kwargs):
+    def __new__(cls, *args, **kwargs):
+        instance = super().__new__(cls, *args, **kwargs)
+
+        if type(instance).__name__ != "IncidentSerializer":
+            return instance
 
         # Load Additional incident fields defined in plugins via a hook
         for app in INSTALLED_APPS:
@@ -219,19 +225,15 @@ class IncidentSerializer(serializers.ModelSerializer):
                         not field[0].endswith("_set")
                         or kwargs["context"]["view"].action == "retrieve"
                     ):
-                        self._declared_fields.update({field[0]: field[2]})
-                    else:
-                        try:
-                            del self.fields[field[0]]
-                        except KeyError:
-                            pass
+                        instance._declared_fields.update({field[0]: field[2]})
+                        instance._additional_fields.update({field[0]: field[2]})
 
         if kwargs["context"]["view"].action != "retrieve":
-            del self.fields["artifacts"]
-            del self.fields["comments_set"]
-            del self.fields["file_set"]
+            del instance.fields["artifacts"]
+            del instance.fields["comments_set"]
+            del instance.fields["file_set"]
 
-        return super().__init__(*args, **kwargs)
+        return instance
 
     def validate_owner(self, owner):
         try:
@@ -240,6 +242,39 @@ class IncidentSerializer(serializers.ModelSerializer):
         except ObjectDoesNotExist:
             raise serializers.ValidationError(f"User with name {owner} does not exist")
         return owner
+
+    def create(self, validated_data):
+        field_to_create = {}
+        for f in self._additional_fields:
+            field_data = validated_data.pop(f, {})
+            if f.endswith("_set"):
+                # OneToMany creation is not supported
+                continue
+            field_serializer = deepcopy(self._additional_fields[f])
+            field_to_create[field_serializer] = field_data
+
+        instance = super().create(validated_data)
+
+        for field_serializer in field_to_create:
+            data = field_to_create[field_serializer]
+            setattr(field_serializer, "initial_data", data)
+            if field_serializer.is_valid(raise_exception=True):
+                field_serializer.save(incident=instance)
+        return instance
+
+    def update(self, instance, validated_data):
+        for f in self._additional_fields:
+            field_data = validated_data.pop(f, {})
+            if f.endswith("_set"):
+                # OneToMany update is not supported
+                continue
+            field_serializer = deepcopy(self._additional_fields[f])
+            setattr(field_serializer, "initial_data", field_data)
+            if field_serializer.is_valid(raise_exception=True):
+                field_serializer.instance = getattr(instance, f, None)
+                field_serializer.save(incident=instance)
+
+        return super().update(instance, validated_data)
 
 
 class ValidAttributeSerializer(serializers.ModelSerializer):
