@@ -98,6 +98,7 @@
 					</td>
 					<td class='ps-3 pe-3 head border-secondary-subtle bg-secondary-subtle border-bottom-0'>{%  trans "Detection" %}</td><td class='ps-3 pe-3 delim border-end border-secondary-subtle bg-secondary-subtle border-bottom-0'>{{ event.detection }}</td>
 					<td class='ps-3 pe-3 head border-secondary-subtle bg-secondary-subtle border-bottom-0'>{%  trans "B/L" %}</td><td class="ps-3 pe-3 border-secondary-subtle bg-secondary-subtle border-bottom-0">{{ event.get_business_lines_names }}</td>
+					{% plugin_point "details_properties" %}
 				</tr>
 			</table>
 		</div>

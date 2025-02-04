@@ -1,6 +1,7 @@
 {% extends "base.html" %}
 {% load add_css_class %}
 {% load i18n %}
+{% load fir_plugins %}
 {% load static %}
 {% load authorization %}
 {% load markdown %}
@@ -105,18 +106,19 @@ $(document).ready(function() {
 								{{ form.confidentiality|add_css_class:"form-control" }}
 								{% include 'events/_form_errors.html' with errors=form.confidentiality.errors %}
 							</div>
-                            {%  has_perm 'incidents.handle_incidents' model=form as can_handle_incident %}
-                            {% if can_handle_incident %}
-							<div class="col-sm-3 col-sm-offset-2 checkbox aligned-with-stack{% if form.is_incident.errors%} has-error{%endif%}">
+							{%  has_perm 'incidents.handle_incidents' model=form as can_handle_incident %}
+							{% if can_handle_incident %}
+							<div class="col-sm-2 col-sm-offset-2 checkbox aligned-with-stack{% if form.is_incident.errors%} has-error{%endif%}">
 								<label data-bs-toggle='collapse' data-bs-target='#incident_fields'>{{ form.is_incident }} {% trans "Is an incident" %}</label>
 								{% include 'events/_form_errors.html' with errors=form.is_incident.errors %}
 							</div>
-                            {% endif %}
-
+							{% endif %}
+							{% plugin_point "new_event_additional_fields_row1" %}
 						</div>
 					</fieldset>
 				</div>
 				<div class="col-sm-6">
+			    		{% plugin_point "new_event_additional_fields_row2_top" %}
 					{% if can_handle_incident %}
 
 					<fieldset id="incident_fields" class='details collapse {% if form.is_incident.value %}show{%endif%}'>
@@ -140,6 +142,7 @@ $(document).ready(function() {
 						</div>
 					</fieldset>
 					{% endif %}
+			    		{% plugin_point "new_event_additional_fields_row2_bottom" %}
 				</div>
 			</div>
 			<div class="row">
