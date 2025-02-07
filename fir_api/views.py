@@ -109,6 +109,16 @@ class IncidentViewSet(
             .annotate(last_comment_date=Max("comments__date"))
             .order_by("-id")
         )
+
+        # Hide listing of closed incidents if the user checked the corresponding config
+        if (
+            self.action == "list"
+            and hasattr(self.request.user, "profile")
+            and hasattr(self.request.user.profile, "hide_closed")
+            and self.request.user.profile.hide_closed
+        ):
+            queryset = queryset.filter(~Q(status="C"))
+
         return queryset
 
     def get_businesslines(self, businesslines):
