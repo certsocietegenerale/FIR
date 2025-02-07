@@ -195,7 +195,7 @@ INCIDENT_SHOW_ID = False
 INCIDENT_ID_PREFIX = 'FIR-'
 
 REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'fir_api.pagination.PageNumberPagination',
+    'DEFAULT_PAGINATION_CLASS': 'fir_api.pagination.CustomPageNumberPagination',
     'PAGE_SIZE': 25,
 
     # Any access to the API requires the user to be authenticated.
