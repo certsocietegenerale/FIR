@@ -13,6 +13,7 @@ from django_filters.rest_framework import (
     MultipleChoiceFilter,
     BooleanFilter,
     ModelChoiceFilter,
+    ModelMultipleChoiceFilter,
     ChoiceFilter,
 )
 
@@ -20,6 +21,7 @@ from incidents.models import (
     Incident,
     Label,
     IncidentCategory,
+    ValidAttribute,
     Comments,
     File,
     STATUS_CHOICES,
@@ -116,7 +118,12 @@ class IncidentFilter(FilterSet):
     query = CharFilter(
         method="search_query", label=_("Custom search query (DSL syntax)")
     )
-
+    attribute = ModelMultipleChoiceFilter(
+        to_field_name="name",
+        field_name="attribute__name",
+        queryset=ValidAttribute.objects.all(),
+        label=_("Has attribute"),
+    )
     search_filters = []
     keyword_filters = {}
 
@@ -208,6 +215,7 @@ class IncidentFilter(FilterSet):
             "category",
             "detection",
             "query",
+            "attribute",
         ]
 
 

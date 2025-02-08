@@ -191,7 +191,7 @@ class IncidentSerializer(serializers.ModelSerializer):
     )
 
     artifacts = ArtifactSerializer(many=True, read_only=True)
-    attributes = AttributeSerializer(many=True, read_only=True)
+    attribute_set = AttributeSerializer(many=True, read_only=True)
     file_set = FileSerializer(many=True, read_only=True)
     comments_set = CommentsSerializer(many=True, read_only=True)
     description = serializers.CharField(
@@ -232,6 +232,7 @@ class IncidentSerializer(serializers.ModelSerializer):
             del instance.fields["artifacts"]
             del instance.fields["comments_set"]
             del instance.fields["file_set"]
+            del instance.fields["attribute_set"]
 
         return instance
 

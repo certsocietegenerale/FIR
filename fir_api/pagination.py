@@ -54,7 +54,7 @@ class CustomPageNumberPagination(PageNumberPagination):
                     # And 'query' argument is present
                     raise ParseError(
                         _(
-                            "'query' and 'last_comment_date' parameters are mutally exclusive"
+                            "'query' and 'last_comment_date' parameters are mutually exclusive"
                         )
                     )
             else:
@@ -62,7 +62,7 @@ class CustomPageNumberPagination(PageNumberPagination):
                 backup_paginator = self.django_paginator_class
                 self.django_paginator_class = FasterDjangoPaginator
 
-            ret = super().paginate_queryset(queryset, request, view)
+        ret = super().paginate_queryset(queryset, request, view)
 
         # Restore altered properties/attributes
         if backup_paginator:
