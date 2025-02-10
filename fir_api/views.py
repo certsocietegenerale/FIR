@@ -20,9 +20,9 @@ from rest_framework.mixins import (
     CreateModelMixin,
     UpdateModelMixin,
 )
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, renderers
 from rest_framework.decorators import action
-from rest_framework import renderers
+from rest_framework.renderers import JSONRenderer, AdminRenderer
 from rest_framework.response import Response
 from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend
@@ -72,6 +72,7 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all().order_by("-date_joined")
     serializer_class = UserSerializer
     permission_classes = (IsAuthenticated, IsAdminUser)
+    renderer_classes = [JSONRenderer, AdminRenderer]
 
 
 class IncidentViewSet(
@@ -85,9 +86,6 @@ class IncidentViewSet(
     API endpoints for viewing, creating and editing incidents
     """
 
-    queryset = (Incident.objects.all()).annotate(
-        last_comment_date=Max("comments__date")
-    )  # Will be overriden by get_queryset(). We still need to define this property as DRF use it to get the basename
     serializer_class = IncidentSerializer
     permission_classes = (IsAuthenticated, IsIncidentHandler)
     filter_backends = [DjangoFilterBackend, OrderingFilter]
@@ -215,7 +213,6 @@ class ArtifactViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSe
     You can view all incidents having an artifact by accessing /artifacts/<id>
     """
 
-    queryset = Artifact.objects.all()
     serializer_class = ArtifactSerializer
     permission_classes = (IsAuthenticated, IsIncidentHandler)
     filter_backends = [DjangoFilterBackend, OrderingFilter]
@@ -226,7 +223,11 @@ class ArtifactViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSe
         incidents_allowed = Incident.authorization.for_user(
             self.request.user, "incidents.view_incidents"
         )
-        queryset = Artifact.objects.filter(incidents__in=incidents_allowed).distinct()
+        queryset = (
+            Artifact.objects.filter(incidents__in=incidents_allowed)
+            .distinct()
+            .order_by("id")
+        )
         return queryset
 
     def retrieve(self, request, *args, **kwargs):
@@ -243,7 +244,6 @@ class CommentViewSet(viewsets.ModelViewSet):
     API endpoint that allows creation of, viewing, and closing of comments
     """
 
-    queryset = Comments.objects.all()
     serializer_class = CommentsSerializer
     permission_classes = (IsAuthenticated, IsIncidentHandler)
     filter_backends = [DjangoFilterBackend, OrderingFilter]
@@ -254,7 +254,9 @@ class CommentViewSet(viewsets.ModelViewSet):
         incidents_allowed = Incident.authorization.for_user(
             self.request.user, "incidents.view_incidents"
         )
-        queryset = Comments.objects.filter(incident__in=incidents_allowed)
+        queryset = Comments.objects.filter(incident__in=incidents_allowed).order_by(
+            "id", "date"
+        )
         return queryset
 
     def perform_create(self, serializer):
@@ -282,14 +284,13 @@ class LabelViewSet(ListModelMixin, viewsets.GenericViewSet):
     API endpoint for viewing labels
     """
 
-    queryset = Label.objects.all()
     serializer_class = LabelSerializer
     permission_classes = (IsAuthenticated,)
     filter_backends = [DjangoFilterBackend]
     filterset_class = LabelFilter
 
     def get_queryset(self):
-        return super().get_queryset()
+        return Label.objects.all().order_by("id")
 
 
 class FileViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
@@ -298,7 +299,6 @@ class FileViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
     Files can be uploaded and downloaded via endpoints /files/<incidentID>/upload and /files/<incidentID>/download
     """
 
-    queryset = File.objects.all()
     serializer_class = FileSerializer
     permission_classes = (IsAuthenticated, IsIncidentHandler)
     filter_backends = [DjangoFilterBackend, OrderingFilter]
@@ -309,7 +309,9 @@ class FileViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
         incidents_allowed = Incident.authorization.for_user(
             self.request.user, "incidents.view_incidents"
         )
-        queryset = File.objects.filter(incident__in=incidents_allowed)
+        queryset = File.objects.filter(incident__in=incidents_allowed).order_by(
+            "id", "date"
+        )
         return queryset
 
     @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
@@ -361,7 +363,6 @@ class AttributeViewSet(viewsets.ModelViewSet):
     Before adding an attribute to an incident, you have to register the said attribute in ValidAttributes (see endpoints /validattributes)
     """
 
-    queryset = Attribute.objects.all()
     serializer_class = AttributeSerializer
     permission_classes = (IsAuthenticated, IsIncidentHandler)
     filter_backends = [DjangoFilterBackend, OrderingFilter]
@@ -372,7 +373,9 @@ class AttributeViewSet(viewsets.ModelViewSet):
         incidents_allowed = Incident.authorization.for_user(
             self.request.user, "incidents.view_incidents"
         )
-        queryset = Attribute.objects.filter(incident__in=incidents_allowed)
+        queryset = Attribute.objects.filter(incident__in=incidents_allowed).order_by(
+            "incident", "id"
+        )
         return queryset
 
     def perform_create(self, serializer):
@@ -412,7 +415,7 @@ class ValidAttributeViewSet(viewsets.ModelViewSet):
     API endpoints for listing, creating or editing valid (possible) attributes.
     """
 
-    queryset = ValidAttribute.objects.all()
+    queryset = ValidAttribute.objects.all().order_by("id")
     serializer_class = ValidAttributeSerializer
     permission_classes = (IsAuthenticated, IsIncidentHandler)
     filter_backends = [DjangoFilterBackend, OrderingFilter]
@@ -425,7 +428,6 @@ class BusinessLinesViewSet(viewsets.ReadOnlyModelViewSet):
     API endpoint for listing Business Lines.
     """
 
-    queryset = BusinessLine.objects.all()
     serializer_class = BusinessLineSerializer
     permission_classes = (IsAuthenticated,)
     filter_backends = [DjangoFilterBackend, OrderingFilter]
@@ -435,7 +437,7 @@ class BusinessLinesViewSet(viewsets.ReadOnlyModelViewSet):
     def get_queryset(self):
         queryset = BusinessLine.authorization.for_user(
             self.request.user, ["incidents.handle_incidents", "incidents.report_events"]
-        )
+        ).order_by("id")
         return queryset
 
 
@@ -444,7 +446,7 @@ class IncidentCategoriesViewSet(viewsets.ReadOnlyModelViewSet):
     API endpoint for listing Incident Categories.
     """
 
-    queryset = IncidentCategory.objects.all()
+    queryset = IncidentCategory.objects.all().order_by("id")
     serializer_class = IncidentCategoriesSerializer
     permission_classes = (IsAuthenticated, IsIncidentHandler)
     filterset_class = IncidentCategoriesFilter

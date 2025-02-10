@@ -1,6 +1,6 @@
 import importlib
 from django.apps import apps
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 from django.core.exceptions import ObjectDoesNotExist
 from collections import OrderedDict
@@ -24,11 +24,15 @@ from fir.config.base import INSTALLED_APPS
 
 
 class UserSerializer(serializers.ModelSerializer):
+    url = serializers.HyperlinkedIdentityField(view_name="api:users-detail")
+    groups = serializers.SlugRelatedField(
+        many=True, read_only=False, queryset=Group.objects.all(), slug_field="name"
+    )
+
     class Meta:
         model = User
         fields = ("id", "url", "username", "email", "groups")
         read_only_fields = ("id",)
-        extra_kwargs = {"url": {"view_name": "api:user-detail"}}
 
 
 class ArtifactSerializer(serializers.ModelSerializer):
@@ -47,14 +51,14 @@ class ArtifactSerializer(serializers.ModelSerializer):
 
 class FileSerializer(serializers.ModelSerializer):
     incident = serializers.HyperlinkedRelatedField(
-        read_only=True, view_name="api:incident-detail"
+        read_only=True, view_name="api:incidents-detail"
     )
+    url = serializers.HyperlinkedIdentityField(view_name="api:files-detail")
 
     class Meta:
         model = File
         fields = ("id", "description", "url", "incident")
         read_only_fields = ("id",)
-        extra_kwargs = {"url": {"view_name": "api:file-detail"}}
 
 
 class AttributeSerializer(serializers.ModelSerializer):

@@ -15,16 +15,22 @@ app_name = "fir_api"
 router = routers.DefaultRouter(trailing_slash=False)
 router.get_api_root_view().cls.__doc__ = _("FIR API endpoints")
 
-router.register(r"users", views.UserViewSet)
-router.register(r"incidents", views.IncidentViewSet)
-router.register(r"artifacts", views.ArtifactViewSet)
-router.register(r"files", views.FileViewSet)
-router.register(r"comments", views.CommentViewSet)
-router.register(r"labels", views.LabelViewSet)
-router.register(r"attributes", views.AttributeViewSet)
-router.register(r"validattributes", views.ValidAttributeViewSet)
-router.register(r"businesslines", views.BusinessLinesViewSet)
-router.register(r"incident_categories", views.IncidentCategoriesViewSet)
+router.register(r"users", views.UserViewSet, basename="users")
+router.register(r"incidents", views.IncidentViewSet, basename="incidents")
+router.register(r"artifacts", views.ArtifactViewSet, basename="artifacts")
+router.register(r"files", views.FileViewSet, basename="files")
+router.register(r"comments", views.CommentViewSet, basename="comments")
+router.register(r"labels", views.LabelViewSet, basename="labels")
+router.register(r"attributes", views.AttributeViewSet, basename="attributes")
+router.register(
+    r"validattributes", views.ValidAttributeViewSet, basename="validattributes"
+)
+router.register(r"businesslines", views.BusinessLinesViewSet, basename="businesslines")
+router.register(
+    r"incident_categories",
+    views.IncidentCategoriesViewSet,
+    basename="incident_categories",
+)
 
 # Load plugin API URLs
 for app in INSTALLED_APPS:
@@ -36,7 +42,7 @@ for app in INSTALLED_APPS:
         else:
             if hasattr(plugin_api, "api_urls"):
                 for route in plugin_api.api_urls:
-                    router.register(route[0], route[1])
+                    router.register(route[0], route[1], basename=route[0])
 
 # urls for core FIR components
 urlpatterns = [
