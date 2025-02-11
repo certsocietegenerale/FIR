@@ -344,3 +344,43 @@ class CommentFilter(FilterSet):
     class Meta:
         model = Comments
         fields = ["id", "date", "incident", "opened_by", "action"]
+
+
+class StatsFilter(IncidentFilter):
+    last_comment_date_before = None
+    last_comment_date_after = None
+
+    aggregation = CharFilter(
+        method="aggregate_by", label=_("Aggregate by"), required=True
+    )
+
+    def aggregate_by(self, queryset, name, aggregate_by):
+        valid_aggregations = [
+            "category",
+            "severity",
+            "entity",
+            "detection",
+            "actor",
+            "date",
+        ]
+
+        for elem in aggregate_by.split(","):
+            if elem not in valid_aggregations:
+                raise ParseError(_(f"'{elem}' is not part of {valid_aggregations}"))
+
+        return queryset
+
+    class Meta:
+        model = Incident
+        fields = [
+            "id",
+            "subject",
+            "description",
+            "status",
+            "concerned_business_lines",
+            "severity",
+            "category",
+            "detection",
+            "query",
+            "aggregation",
+        ]
