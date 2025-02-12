@@ -794,6 +794,7 @@ body
 
 .CodeMirror {
     height: 300px !important;
+	padding-bottom: 27em !important;
 }
 
 .editor-toolbar .table {
