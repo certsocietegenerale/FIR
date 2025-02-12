@@ -142,7 +142,7 @@ div.send {
 .tagsinput input {
   background: transparent;
   border: none;
-  color: #333333;
+  color: var(--bs-dark-text-emphasis) !important;
   margin: 0;
   outline: medium none !important;
   padding: 0 0 0 5px;
