@@ -88,10 +88,10 @@
 					<td class='ps-3 pe-3 head border-secondary-subtle bg-secondary-subtle border-bottom-0'>{%  trans "Severity" %}</td><td class='ps-3 pe-3 delim border-end border-secondary-subtle bg-secondary-subtle border-bottom-0'><span class='badge' style='background-color:{{ event.severity.color }}!important;'>{{ event.severity }}</span></td>
 					<td class='ps-3 pe-3 head border-secondary-subtle bg-secondary-subtle border-bottom-0'>{%  trans "Category" %}</td><td class='ps-3 pe-3 delim border-end border-secondary-subtle bg-secondary-subtle border-bottom-0'>{{ event.category }}</td>
 					<td class='ps-3 pe-3 head border-secondary-subtle bg-secondary-subtle border-bottom-0'>{%  trans "Status" %}</td><td class='ps-3 pe-3 delim border-end border-secondary-subtle bg-secondary-subtle border-bottom-0'>
-						<span id='event-status' class='label
-							{% if event.status == "O" %}label-info
-							{% elif event.status == "B" %}label-danger
-							{% elif event.status == "C"%}label-success{% endif %}
+						<span id='event-status' class='badge
+							{% if event.status == "O" %}badge-info
+							{% elif event.status == "B" %}badge-danger
+							{% elif event.status == "C"%}badge-success{% endif %}
 						'>
 							{{ event.get_status_display}}
 						</span>
