@@ -32,7 +32,7 @@ No intelligence available for this incident. Please check your configuration set
 				{{#if known}}
 				<tr><th class="narrow"></th><th>Observable</th><th>Tags</th><th>YETI Context</th></tr>
 				{{#each known}}
-				<tr><td><a href="{{url}}" target="_blank"><span class="bi bi-box-arrow-up-right" aria-hidden="true"></span></a></td><td><code>{{value}}</code></td><td>{{#each tags}}<span class="label label-primary">{{this}}</span>{{/each}}</td><td>{{join source ", "}}</td></tr>
+				<tr><td><a href="{{url}}" target="_blank"><span class="bi bi-box-arrow-up-right" aria-hidden="true"></span></a></td><td><code>{{value}}</code></td><td>{{#each tags}}<span class="badge badge-primary">{{this}}</span>{{/each}}</td><td>{{join source ", "}}</td></tr>
 				{{/each}}
 				{{/if}}
 			</tbody>

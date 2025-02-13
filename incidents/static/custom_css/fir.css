@@ -794,6 +794,7 @@ body
 
 .CodeMirror {
     height: 300px !important;
+	padding-bottom: 27em !important;
 }
 
 .editor-toolbar .table {
@@ -890,4 +891,38 @@ body
 
 .tooltip ul {
 	padding-left: 0px;
+}
+
+.btn-xs {
+	font-size: .875em;
+}
+
+.badge-success {
+	color: var(--bs-success-text-emphasis);
+	background-color: var(--bs-success-bg-subtle);
+	border-color: var(--bs-success-border-subtle);
+}
+
+.badge-danger {
+	color: var(--bs-danger-text-emphasis);
+	background-color: var(--bs-danger-bg-subtle);
+	border-color: var(--bs-danger-border-subtle);
+}
+
+.badge-warning {
+	color: var(--bs-warning-text-emphasis);
+	background-color: var(--bs-warning-bg-subtle);
+	border-color: var(--bs-warning-border-subtle);
+}
+
+.badge-info {
+	color: var(--bs-info-text-emphasis);
+	background-color: var(--bs-info-bg-subtle);
+	border-color: var(--bs-info-border-subtle);
+}
+
+.badge-primary {
+	color: var(--bs-primary-text-emphasis);
+	background-color: var(--bs-primary-bg-subtle);
+	border-color: var(--bs-primary-border-subtle);
 }

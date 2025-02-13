@@ -214,9 +214,8 @@ h1.float {
 }
 
 .minitable {
-	margin:40px 0 20px 0;
+	margin:7em 0 0 0;
 	padding:10px;
-	float:right;
 	width:auto;
 }
 
@@ -348,3 +347,32 @@ div.input-line > div
 	margin:0 5px 0 5px;
 }
 
+.label-success {
+	color: var(--bs-success-text-emphasis);
+	background-color: var(--bs-success-bg-subtle);
+	border-color: var(--bs-success-border-subtle);
+}
+
+.label-danger {
+	color: var(--bs-danger-text-emphasis);
+	background-color: var(--bs-danger-bg-subtle);
+	border-color: var(--bs-danger-border-subtle);
+}
+
+.label-warning {
+	color: var(--bs-warning-text-emphasis);
+	background-color: var(--bs-warning-bg-subtle);
+	border-color: var(--bs-warning-border-subtle);
+}
+
+.label-info {
+	color: var(--bs-info-text-emphasis);
+	background-color: var(--bs-info-bg-subtle);
+	border-color: var(--bs-info-border-subtle);
+}
+
+.label-primary {
+	color: var(--bs-primary-text-emphasis);
+	background-color: var(--bs-primary-bg-subtle);
+	border-color: var(--bs-primary-border-subtle);
+}
