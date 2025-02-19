@@ -24,6 +24,7 @@ from incidents.models import (
     ValidAttribute,
     Comments,
     File,
+    SeverityChoice,
     STATUS_CHOICES,
     CONFIDENTIALITY_LEVEL,
 )
@@ -74,7 +75,11 @@ class IncidentFilter(FilterSet):
     """
 
     id = NumberFilter(field_name="id")
-    severity = NumberFilter(field_name="severity")
+    severity = ModelMultipleChoiceFilter(
+        to_field_name="name",
+        field_name="severity__name",
+        queryset=SeverityChoice.objects.all(),
+    )
     created_before = DateTimeFilter(field_name="date", lookup_expr="lte")
     created_after = DateTimeFilter(field_name="date", lookup_expr="gte")
     subject = CharFilter(field_name="subject", lookup_expr="icontains")
@@ -93,7 +98,7 @@ class IncidentFilter(FilterSet):
     concerned_business_lines = AllValuesMultipleFilterAllAllowed(
         field_name="concerned_business_lines__name", lookup_expr="icontains"
     )
-    category = ModelChoiceFilter(
+    category = ModelMultipleChoiceFilter(
         to_field_name="name",
         field_name="category__name",
         queryset=IncidentCategory.objects.all(),
