@@ -316,33 +316,3 @@ class SeveritySerializer(serializers.ModelSerializer):
     class Meta:
         model = SeverityChoice
         fields = ["name", "color"]
-
-
-class StatsSerializer(serializers.ModelSerializer):
-    year = serializers.DateTimeField(required=False, format="%Y")
-    month = serializers.DateTimeField(required=False, format="%Y-%m")
-    day = serializers.DateTimeField(required=False, format="%Y-%m-%d")
-    hour = serializers.DateTimeField(required=False, format="%Y-%m-%d %H:%M")
-    count = serializers.IntegerField(required=False)
-    category = serializers.CharField(required=False, source="category__name")
-    severity = serializers.CharField(required=False, source="severity__name")
-    actor = serializers.CharField(required=False, source="actor__name")
-    detection = serializers.CharField(required=False, source="detection__name")
-    entity = serializers.CharField(
-        required=False, source="concerned_business_lines__name"
-    )
-
-    class Meta:
-        model = Incident
-        fields = [
-            "year",
-            "month",
-            "day",
-            "hour",
-            "category",
-            "severity",
-            "actor",
-            "detection",
-            "entity",
-            "count",
-        ]
