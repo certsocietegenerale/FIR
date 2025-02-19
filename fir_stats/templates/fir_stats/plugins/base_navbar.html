@@ -1,0 +1,19 @@
+{% load authorization %}
+{% load i18n %}
+{% load fir_plugins %}
+
+{% has_perm "incidents.view_statistics" model="incidents.Incident" as can_view_statistics %}
+{% if can_view_statistics %}
+<li class="nav-item dropdown" id="stats-nav">
+  <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">{% trans "Stats" %}</a>
+  <ul class='dropdown-menu'>
+    <li><a class="dropdown-item" href="{% url "stats:yearly" %}">{% trans "Yearly" %}</a></li>
+    <li><a class="dropdown-item" href="{% url "stats:quarterly" %}">{% trans "Quarterly" %}</a></li>
+    <li><a class="dropdown-item" href="{% url "stats:compare" %}">{% trans "Compare with previous year" %}</a></li>
+    <li><a class="dropdown-item" href="{% url "stats:major" %}">{% trans "Major incidents" %}</a></li>
+    <li><a class="dropdown-item" href="{% url "stats:sandbox" %}">{% trans "Sandbox" %}</a></li>
+    <li><a class="dropdown-item" href="{% url "stats:attributes" %}">{% trans "Attributes" %}</a></li>
+    {% plugin_point "stats_element" %}
+  </ul>
+</li>
+{% endif %}
