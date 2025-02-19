@@ -1,0 +1,23 @@
+/* D3 line graphs : remove X axis line */
+.x.axis path {
+  display: none;
+}
+
+/* Quarterly stats: div for total incidents should be have width */
+#quarterly-total-incidents {
+  width: 500px;
+}
+
+/* Sandbox, Attributes: fieldset divs */
+.stats-fieldset-left {
+  width: 300px;
+  flex: initial;
+}
+.stats-fieldset-center {
+  width: 380px;
+  flex: initial;
+}
+.stats-category-checkbox {
+  min-width: 113px;
+  float: left;
+}
