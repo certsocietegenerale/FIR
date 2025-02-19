@@ -81,18 +81,12 @@ msgstr "Liste des incidents incluant %(artifact_display)s %(artifact_value)s"
 #: templates/events/detail-all.html:217 templates/events/table.html:8
 #: templates/incidents/followup.html:61
 #: templates/incidents/plugins/correlation_list.html:13
-#: templates/stats/attributes.html:141 templates/stats/major.html:84
-#: templates/stats/quarterly.html:212 templates/stats/quarterly.html:261
-#: templates/stats/sandbox.html:389
 msgid "Date"
 msgstr ""
 
 #: templates/artifacts/incidents_index.html:14 templates/events/new.html:65
 #: templates/events/table.html:10
 #: templates/incidents/plugins/correlation_list.html:14
-#: templates/stats/attributes.html:143 templates/stats/major.html:85
-#: templates/stats/quarterly.html:214 templates/stats/quarterly.html:263
-#: templates/stats/sandbox.html:391
 msgid "Subject"
 msgstr "Objet"
 
@@ -100,9 +94,6 @@ msgstr "Objet"
 #: templates/events/detail-all.html:89 templates/events/new.html:77
 #: templates/events/table.html:9 templates/incidents/followup.html:37
 #: templates/incidents/plugins/correlation_list.html:15
-#: templates/stats/attributes.html:142 templates/stats/major.html:86
-#: templates/stats/quarterly.html:215 templates/stats/quarterly.html:264
-#: templates/stats/sandbox.html:392
 msgid "Category"
 msgstr "Catégorie"
 
@@ -116,8 +107,6 @@ msgstr "Parties prenantes"
 #: templates/events/detail-all.html:90 templates/events/new.html:82
 #: templates/events/table.html:12 templates/incidents/followup.html:38
 #: templates/incidents/plugins/correlation_list.html:17
-#: templates/stats/major.html:90 templates/stats/quarterly.html:219
-#: templates/stats/quarterly.html:268 templates/stats/sandbox.html:396
 msgid "Status"
 msgstr "Statut"
 
@@ -125,8 +114,6 @@ msgstr "Statut"
 #: templates/events/detail-all.html:99 templates/events/new.html:87
 #: templates/events/table.html:13 templates/incidents/followup.html:40
 #: templates/incidents/plugins/correlation_list.html:18
-#: templates/stats/attributes.html:322 templates/stats/major.html:91
-#: templates/stats/sandbox.html:233
 msgid "Detection"
 msgstr "Détection"
 
@@ -139,8 +126,6 @@ msgstr "Acteur"
 #: templates/events/detail-all.html:86 templates/events/new.html:132
 #: templates/events/table.html:16 templates/incidents/followup.html:34
 #: templates/incidents/plugins/correlation_list.html:20
-#: templates/stats/major.html:95 templates/stats/quarterly.html:224
-#: templates/stats/quarterly.html:273 templates/stats/sandbox.html:401
 msgid "Plan"
 msgstr ""
 
@@ -172,7 +157,6 @@ msgid "Dashboard"
 msgstr "Tableau de bord"
 
 #: templates/base.html:65 templates/incidents/plugins/correlation_list.html:6
-#: templates/stats/attributes.html:381
 msgid "Incidents"
 msgstr ""
 
@@ -180,32 +164,7 @@ msgstr ""
 msgid "Events"
 msgstr "Évènements"
 
-#: templates/base.html:71
-msgid "Stats"
-msgstr ""
-
-#: templates/base.html:73
-msgid "Yearly"
-msgstr "Par an"
-
-#: templates/base.html:74
-msgid "Quarterly"
-msgstr "Par trimestre"
-
-#: templates/base.html:75
-msgid "Compare with previous year"
-msgstr "Comparer avec l'année précédente"
-
-#: templates/base.html:76
-msgid "Major incidents"
-msgstr "Incidents majeurs"
-
-#: templates/base.html:77 templates/stats/sandbox.html:7
-msgid "Sandbox"
-msgstr "Bac à sable"
-
-#: templates/base.html:78 templates/events/detail-all.html:123
-#: templates/stats/attributes.html:6 templates/stats/attributes.html:411
+#: templates/events/detail-all.html:123
 msgid "Attributes"
 msgstr "Attributs"
 
@@ -270,15 +229,11 @@ msgid "Incident followup"
 msgstr "Suivi de l'incident"
 
 #: templates/events/detail-all.html:85 templates/incidents/followup.html:33
-#: templates/stats/major.html:92 templates/stats/quarterly.html:221
-#: templates/stats/quarterly.html:270 templates/stats/sandbox.html:398
 msgid "Incident Leader"
 msgstr "Responsable de l'incident"
 
 #: templates/events/detail-all.html:88 templates/events/new.html:92
 #: templates/events/table.html:11 templates/incidents/followup.html:36
-#: templates/stats/attributes.html:329 templates/stats/major.html:88
-#: templates/stats/sandbox.html:240
 msgid "Severity"
 msgstr "Sévérité"
 
@@ -383,19 +338,15 @@ msgstr "Résultats de recherche pour :"
 msgid "Leader"
 msgstr "Responsable"
 
-#: templates/events/table.html:15 templates/stats/major.html:93
-#: templates/stats/quarterly.html:222 templates/stats/quarterly.html:271
+#: templates/events/table.html:15
 msgid "Last Action"
 msgstr "Dernière Action"
 
-#: templates/events/table.html:17 templates/stats/major.html:87
-#: templates/stats/quarterly.html:216 templates/stats/quarterly.html:265
-#: templates/stats/sandbox.html:393
+#: templates/events/table.html:17
 msgid "Lvl"
 msgstr "Niv."
 
-#: templates/events/table.html:18 templates/stats/quarterly.html:223
-#: templates/stats/quarterly.html:272 templates/stats/sandbox.html:400
+#: templates/events/table.html:18
 msgid "IH"
 msgstr "RI"
 
@@ -471,285 +422,6 @@ msgstr "Mauvais couple utilisateur / mot de passe"
 #: templates/incidents/login.html:51
 msgid "I can break the rules, too."
 msgstr ""
-
-#: templates/stats/attributes.html:59
-msgid "Incidents count:"
-msgstr "Nombre d'incidents :"
-
-#: templates/stats/attributes.html:59
-msgid "With attribute set:"
-msgstr "Avec un jeu d'attributs :"
-
-#: templates/stats/attributes.html:144
-msgid "Business&nbsp;Lines"
-msgstr "Parties&nbsp;prenantes"
-
-#: templates/stats/attributes.html:308 templates/stats/sandbox.html:217
-msgid "From"
-msgstr "De"
-
-#: templates/stats/attributes.html:315 templates/stats/sandbox.html:224
-msgid "To"
-msgstr "À"
-
-#: templates/stats/attributes.html:345 templates/stats/sandbox.html:256
-msgid "Categories"
-msgstr "Catégories"
-
-#: templates/stats/attributes.html:358 templates/stats/sandbox.html:269
-msgid "Business lines"
-msgstr "Parties prenantes"
-
-#: templates/stats/attributes.html:366 templates/stats/sandbox.html:277
-msgid "Incidents only"
-msgstr "Incidents seulement"
-
-#: templates/stats/attributes.html:370 templates/stats/sandbox.html:281
-msgid "Major incidents only"
-msgstr "Incidents majeurs seulement"
-
-#: templates/stats/attributes.html:378
-msgid "Bars"
-msgstr "Barres"
-
-#: templates/stats/attributes.html:392
-msgid "Only incidents with attribute set"
-msgstr "Incidents avec un jeu d'attributs seulement"
-
-#: templates/stats/attributes.html:396
-msgid "Total"
-msgstr ""
-
-#: templates/stats/attributes.html:400
-msgid "Average"
-msgstr "Moyenne"
-
-#: templates/stats/attributes.html:404
-msgid "Standard Deviation"
-msgstr "Écart-type"
-
-#: templates/stats/attributes.html:425 templates/stats/sandbox.html:289
-msgid "Go"
-msgstr ""
-
-#: templates/stats/attributes.html:434
-msgid "Over time"
-msgstr "En fonction du temps"
-
-#: templates/stats/attributes.html:440 templates/stats/sandbox.html:384
-msgid "Matching incidents"
-msgstr "Incidents correspondants"
-
-#: templates/stats/major.html:6
-msgid "Major incidents in last quarter"
-msgstr "Incidents majeurs du dernier trimestre"
-
-#: templates/stats/major.html:17
-msgid "Basel categories"
-msgstr "Catégories Bâloises"
-
-#: templates/stats/major.html:37
-msgid "CERT categories"
-msgstr "Catégories CERT"
-
-#: templates/stats/major.html:58
-msgid "Business Line ventilation"
-msgstr "Répartition par partie prenante"
-
-#: templates/stats/major.html:78
-msgid "Major Incidents"
-msgstr "Incidents majeurs"
-
-#: templates/stats/major.html:89
-msgid "Business Line"
-msgstr "Partie prenante"
-
-#: templates/stats/major.html:94
-msgid "Opened by"
-msgstr "Ouvert par"
-
-#: templates/stats/quarterly.html:7 templates/stats/quarterly.html:18
-msgid "Quarterly statistics"
-msgstr "Statistiques trimestrielles"
-
-#: templates/stats/quarterly.html:28
-#, python-format
-msgid "Incidents quarterly statistics for <br /> %(bl_name)s"
-msgstr "Statistiques d'incidents trimestrielles pour <br /> %(bl_name)s"
-
-#: templates/stats/quarterly.html:121
-msgid "Close old incidents for all BLs"
-msgstr "Fermer les incidents anciens de toutes les P/P"
-
-#: templates/stats/quarterly.html:129
-msgid "Monthly forecast"
-msgstr "Prévision mensuelle"
-
-#: templates/stats/quarterly.html:132
-msgid "Total incidents on your Business Line"
-msgstr "Total des incidents de votre Partie prenante"
-
-#: templates/stats/quarterly.html:144
-msgid "Incident breakdown by severity"
-msgstr "Décomposition des incidents par sévérité"
-
-#: templates/stats/quarterly.html:155
-msgid "Incident breakdown by entity"
-msgstr "Décomposition des incidents par entité"
-
-#: templates/stats/quarterly.html:165
-msgid "Incident breakdown by category"
-msgstr "Décomposition des incidents par catégorie"
-
-#: templates/stats/quarterly.html:175
-msgid "Incident Management"
-msgstr "Gestion d'incident"
-
-#: templates/stats/quarterly.html:178
-msgid "Incident Management by incident leader (Business Line or CERT)"
-msgstr ""
-"Gestion d'incident par responsable d'incident (Partie prenante ou CERT)"
-
-#: templates/stats/quarterly.html:189 templates/stats/sandbox.html:361
-msgid "Monitored domains"
-msgstr "Domaines surveillés"
-
-#: templates/stats/quarterly.html:194 templates/stats/sandbox.html:369
-msgid "Open incidents"
-msgstr "Incidents ouverts"
-
-#: templates/stats/quarterly.html:199 templates/stats/sandbox.html:377
-msgid "Blocked incidents"
-msgstr "Incidents bloqués"
-
-#: templates/stats/quarterly.html:207
-msgid "Incident follow-up"
-msgstr "Suivi de l'incident"
-
-#: templates/stats/quarterly.html:213 templates/stats/quarterly.html:262
-#: templates/stats/sandbox.html:390
-msgid "FID"
-msgstr ""
-
-#: templates/stats/quarterly.html:217 templates/stats/quarterly.html:266
-#: templates/stats/sandbox.html:394
-msgid "Svrt"
-msgstr ""
-
-#: templates/stats/quarterly.html:218 templates/stats/quarterly.html:267
-#: templates/stats/sandbox.html:395
-msgid "Business&nbsp;Line"
-msgstr "Partie&nbsp;prenante"
-
-#: templates/stats/quarterly.html:220 templates/stats/quarterly.html:269
-#: templates/stats/sandbox.html:397
-msgid "Det."
-msgstr "Dét."
-
-#: templates/stats/quarterly.html:256
-msgid "Unclosed incidents older than three months"
-msgstr "Incidents ouverts ou bloqués de plus de trois mois"
-
-#: templates/stats/sandbox.html:296
-msgid "Overlapping years"
-msgstr "Années superposées"
-
-#: templates/stats/sandbox.html:304
-msgid "By category <span class='smaller'>comparison</span>"
-msgstr "Par catégorie <span class='smaller'>comparaison</span>"
-
-#: templates/stats/sandbox.html:312
-msgid "By category"
-msgstr "Par catégorie"
-
-#: templates/stats/sandbox.html:322
-msgid "By month"
-msgstr "par mois"
-
-#: templates/stats/sandbox.html:330
-msgid "By subentity"
-msgstr "Par sous-entité"
-
-#: templates/stats/sandbox.html:341
-msgid "By severity"
-msgstr "Par sévérité"
-
-#: templates/stats/sandbox.html:351
-msgid "By Incident Leader"
-msgstr "Par responsable d'incident"
-
-#: templates/stats/sandbox.html:399
-msgid "Last action"
-msgstr "Dernière action"
-
-#: templates/stats/yearly.html:6
-msgid "Yearly stats"
-msgstr "Statistiques annuelles"
-
-#: templates/stats/yearly.html:78 templates/stats/yearly_compare.html:104
-msgid "Yearly incidents"
-msgstr "Incidents de l'année"
-
-#: templates/stats/yearly.html:87
-#, fuzzy
-#| msgid "Incident breakdown by category"
-msgid "Entire Group - by category"
-msgstr "Décomposition des incidents par catégorie"
-
-#: templates/stats/yearly.html:93
-#, fuzzy
-#| msgid "Incident breakdown by severity"
-msgid "Entire Group - by severity"
-msgstr "Décomposition des incidents par sévérité"
-
-#: templates/stats/yearly.html:102
-msgid "Business Line by detection"
-msgstr "Partie prenante par détection"
-
-#: templates/stats/yearly.html:108 templates/stats/yearly_compare.html:121
-msgid "Incidents by business line"
-msgstr "Incidents par partie prenante"
-
-#: templates/stats/yearly.html:116
-msgid "Business Line by incident severity"
-msgstr "Partie prenante par sévérité d'incident"
-
-#: templates/stats/yearly.html:123
-msgid "Business Line incident category"
-msgstr "Partie prenante par catégorie d'incident"
-
-#: templates/stats/yearly_compare.html:6
-#, python-format
-msgid "Comparison for %(current_year)s - %(previous_year)s"
-msgstr "Comparaison entre %(current_year)s et %(previous_year)s"
-
-#: templates/stats/yearly_compare.html:80
-msgid "Global activity volume (incidents+events)"
-msgstr "Volume d'activité globale (incidents + évènements)"
-
-#: templates/stats/yearly_compare.html:88
-msgid "Category incident+events evolution"
-msgstr "Évolution des catégories des incidents + évènements"
-
-#: templates/stats/yearly_compare.html:95
-msgid "Incidents+events by category"
-msgstr "incidents + évènements par catégorie"
-
-#: templates/stats/yearly_compare.html:114
-msgid "Business Line incident evolution"
-msgstr "Évolution des parties prenantes des incidents"
-
-#: templates/stats/yearly_compare.html:131
-msgid "Yearly events"
-msgstr "Évènements de l'année"
-
-#: templates/stats/yearly_compare.html:139
-msgid "Business Line event evolution"
-msgstr "Évolution des parties prenantes des évènements"
-
-#: templates/stats/yearly_compare.html:146
-msgid "Events by business line"
-msgstr "Évènements par partie prenante"
 
 #: templates/user/profile.html:21 templates/user/profile.html:146
 #: templates/user/profile.html:196

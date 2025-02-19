@@ -1,0 +1,161 @@
+{% extends 'base.html' %}
+{% load i18n %}
+{% load authorization %}
+{% load static %}
+
+{% block header %}
+{% has_perm "incidents.view_statistics" as is_global_statistics_viewer %}
+  {% if not is_global_statistics_viewer %}
+  <div class="alert alert-primary text-center" role="alert">
+    {%trans "Warning: You are not authorized to display statistics on all perimeters. The below graphs may be incomplete (They are only based on data from the perimeters to which you have permission)" %}
+  </div>
+{% endif %}
+<h1>{%  trans "Attributes" %}</h1>
+{%endblock%}
+
+{% block custom_js_top %}
+<script src="{% static "vendor/d3/d3.min.js" %}"></script>
+<script src="{% static "vendor/excellentexport/excellentexport.js" %}"></script>
+<script src="{% static "custom_js/incident_display.js" %}"></script>
+<script src="{% static "fir_stats/stats.js" %}"></script>
+{% endblock %}
+
+{% block custom_js %}
+<script src="{% static "vendor/select/select2.min.js" %}"></script>
+
+<script>
+$(document).ready(function() {
+  $("#id_concerned_business_lines").select2({ dropdownAutoWidth: true, theme: "bootstrap-5", width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',});
+  $('#severity_comparator').select2({minimumResultsForSearch: -1, theme: "bootstrap-5", width: "20%"});
+  $('#id_status').select2({minimumResultsForSearch: -1, theme: "bootstrap-5", width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',});
+  $('#id_detection').select2({minimumResultsForSearch: -1, theme: "bootstrap-5", width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',});
+  $('#id_severity').select2({minimumResultsForSearch: -1, theme: "bootstrap-5", width: "80%"});
+  $('#id_actor').select2({minimumResultsForSearch: -1, theme: "bootstrap-5", width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',});
+  $('#id_plan').select2({minimumResultsForSearch: -1, theme: "bootstrap-5", width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',});
+  $('#id_confidentiality').select2({minimumResultsForSearch: -1, theme: "bootstrap-5", width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',});
+  $('#unit').select2({minimumResultsForSearch: -1, theme: "bootstrap-5", width: $( this ).data( 'width' ) ? $( this ).data( 'width' ) : $( this ).hasClass( 'w-100' ) ? '100%' : 'style',});
+});
+</script>
+{% endblock %}
+
+{% block custom_css %}
+<link href="{% static "vendor/select/select2.css" %}" rel="stylesheet"/>
+<link href="{% static "vendor/select/select2-bootstrap.css" %}" rel="stylesheet"/>
+<link href="{% static "fir_stats/stats.css" %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<form id="stats-form">
+  <div class="row">
+    <fieldset class="col stats-fieldset-left">
+      <div class="mb-2">
+        <label>{% trans "From" %}</label>
+        <input class="form-control" id="from-date" type="date" />
+      </div>
+      <div class="mb-2">
+        <label>{% trans "To" %}</label>
+        <input class="form-control" id="to-date" type="date" />
+      </div>
+      <div class="mb-2">
+        <label>{% trans "Detection" %}</label>
+        {{ form.detection }}
+      </div>
+      <div class="mb-2">
+        <label>{% trans "Severity" %}</label>
+        <div class="d-flex">
+	  {% if display_severity_op %}
+            <select name="severity_comparator" id="severity_comparator">
+              <option value="et">=</option>
+              <option value="lt">&lt;</option>
+              <option value="lte">&lt;=</option>
+              <option value="gt">&gt;</option>
+              <option value="gte">&gt;=</option>
+            </select>
+	  {% endif %}
+          {{ form.severity }}
+      </div>
+    </fieldset>
+
+    <fieldset class="col stats-fieldset-center">
+      <div>
+        <label class="mb-2">{% trans "Categories" %}</label>
+        <div>
+          {% for c in categories %}
+            <label class="mb-2 stats-category-checkbox">
+              <input type="checkbox" name="category_selection" value="{{c.name}}"> {{c.name}}
+            </label>
+          {% endfor %}
+        </div>
+      </div>
+    </fieldset>
+
+    <fieldset class="col-sm-3">
+      <div class="mb-2">
+        <label>{% trans "Business lines" %}</label>
+          {{ form.concerned_business_lines }}
+      </div>
+      <div class="mb-4">
+        <label class="me-3">
+          <input type="checkbox" name="is_incident" value="incident"> {% trans "Incidents only" %}
+        </label>
+        <label>
+          <input type="checkbox" name="is_major" value="major"> {% trans "Major incidents only" %}
+        </label>
+      </div>
+      <button class="btn btn-primary" type="button" id="refresh-stats-button">{% trans "Go" %}</button>
+    </fieldset>
+  </div>
+  <fieldset class="row">
+    <div class="stats-fieldset-left">
+      <label>{% trans "The graph's Y axis should be" %}</label>
+      <select id="unit" name="unit">
+        <option value="incident">{% trans "Incidents count" %}</option>
+        <option value="attribute">{% trans "Selected attributes count (in their unit)" %}</option>
+      </select>
+    </div>
+    <div class="col mt-3">
+      <label>{% trans "Attributes" %}</label>
+      <div>
+        {% for attribute in attributes %}
+          <label class="mb-2 me-2 stats-category-checkbox">
+            <input name="attribute_selection" type="checkbox" value="{{attribute.name}}" data-unit="{{attribute.unit}}"> {{attribute.name}}
+          </label>
+        {% endfor %}
+      </div>
+    </div>
+  </fieldset>
+</form>
+<div class="row">
+  <h4>
+    {% blocktrans %}
+    Incidents count: <span data-url="/api/stats?" id="inc_count">0</span> / With attribute set: <span data-url="/api/stats?" id="inc_with_attribute_count">0</span><br />
+    Total of selected attributes: <span data-url="/api/stats?" id="attributes_count">N/A</span>
+    {% endblocktrans %}
+  </h4>
+  <h2>{% trans "Over time" %}</h2>
+  <div class="d3-lines-chart" data-url="/api/stats?aggregation=date" data-width="1000" data-height="500"></div>
+</div>
+
+<div class="row mt-3">
+  <h2 >{% trans "Matching incidents" %}</h2>
+  <div class="container">
+    <a href="#" class="load_all_incidents d-none">{%trans "Load selected incidents (may take some time)" %}</a>
+  </div>
+
+  <div class="container d-none export_links">
+    {% blocktrans %}
+      Export to <a download="incidents.xslx" class="export-link" href="#" data-type="xslx">XSLX</a> or <a download="incidents.csv" class="export-link" href="#" data-type="csv">CSV</a>
+    {% endblocktrans %}
+  </div>
+</div>
+
+<table id="incident-list-template" class="table table-hover d-none">
+  {% include "events/table.html" %}
+</table>
+<div id="all_incidents" class="stats_incident_display" data-nopage="true" data-url="/api/incidents?">
+    <p class="loading d-none">{% trans "Loading ..." %}<span class="d-none loading_count"> {% trans "(${page} of ${total_pages})" %}</span></p>
+    <p class="nothing_to_show d-none">{% trans "No incident found." %}</p>
+</div>
+{% csrf_token %}
+
+{% endblock %}

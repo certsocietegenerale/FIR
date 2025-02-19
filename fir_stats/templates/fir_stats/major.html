@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+{% load authorization %}
+
+{% block header %}
+<h1>{% trans "Major incidents in last quarter" %}</h1>
+{%endblock%}
+
+{% block custom_js_top %}
+<script src="{% static "vendor/d3/d3.min.js" %}"></script>
+<script src="{% static "vendor/excellentexport/excellentexport.js" %}"></script>
+<script src="{% static "custom_js/incident_display.js" %}"></script>
+<script src="{% static "fir_stats/stats.js" %}"></script>
+{% endblock%}
+
+{% block content %}
+{% has_perm "incidents.view_statistics" as is_global_statistics_viewer %}
+{% if not is_global_statistics_viewer %}
+  <div class="alert alert-primary text-center" role="alert">
+    {%trans "Warning: You are not authorized to display statistics on all perimeters. The below graphs may be incomplete (They are only based on data from the perimeters to which you have permission)" %}
+  </div>
+{% endif %}
+
+<div class="row mt-4">
+  <h3>{% trans "Basel categories" %}</h3>
+  <table class="table table-condensed quarterly-table" data-url="/api/stats?is_major=true&aggregation=baselcategory,date&is_incident=true" data-title="{% trans "Basel category" %}" data-days="quarterly"></table>
+</div>
+
+<div class="row mt-5">
+  <h3>{% trans "Categories" %}</h3>
+  <table class="table table-condensed quarterly-table" data-url="/api/stats?is_major=true&aggregation=category,date&is_incident=true" data-title="{% trans "Category" %}" data-days="quarterly"></table>
+</div>
+
+<div class="row mt-4">
+  <h3>{% trans "Business line ventilation" %}</h3>
+  <table class="table table-condensed quarterly-table" data-url="/api/stats?is_major=true&aggregation=entity,date&is_incident=true" data-title="{% trans "Business line" %}" data-days="quarterly"></table>
+</div>
+<div class="row mt-3">
+  <h2 >{% trans "Major Incidents" %}</h2>
+  <div class="container">
+    <a href="#" class="load_all_incidents">{%trans "Load matching incidents (may take some time)" %}</a>
+  </div>
+
+  <div class="container d-none export_links">
+    {% blocktrans %}
+      Export to <a download="incidents.xslx" class="export-link" href="#" data-type="xslx">XSLX</a> or <a download="incidents.csv" class="export-link" href="#" data-type="csv">CSV</a>
+    {% endblocktrans %}
+  </div>
+</div>
+<table id="incident-list-template" class="table table-hover d-none">
+  {% include "events/table.html" %}
+</table>
+
+<div id="all_incidents" class="stats_incident_display" data-nopage="true" data-url="/api/incidents?is_major=true&is_incident=true" data-days="quarterly">
+    <p class="loading d-none">{% trans "Loading ..." %}<span class="d-none loading_count"> {% trans "(${page} of ${total_pages})" %}</span></p>
+    <p class="nothing_to_show d-none">{% trans "No incident found." %}</p>
+</div>
+{% csrf_token %}
+{% endblock %}
