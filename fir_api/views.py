@@ -16,7 +16,6 @@ from django.db.models import Q, Max, Count
 from django.db.models.functions import (
     TruncMonth,
     TruncYear,
-    TruncWeek,
     TruncDay,
     TruncHour,
 )
@@ -485,7 +484,6 @@ class StatsViewSet(ListModelMixin, viewsets.GenericViewSet):
     filter_backends = [DjangoFilterBackend]
     filterset_class = StatsFilter
     pagination_class = None
-    applied_aggregations = []
     renderer_classes = [FilterButtonBrowsableAPIRenderer, JSONRenderer]
 
     def split_by_date(self, queryset, filterset, values):
@@ -505,9 +503,6 @@ class StatsViewSet(ListModelMixin, viewsets.GenericViewSet):
         elif date_diff < timedelta(days=31):
             # Between 3 days and 1 month, use days
             split_by_kwargs = {"day": TruncDay("date")}
-        elif date_diff < timedelta(days=305):
-            # Between 1 month and 10 months, use weeks
-            split_by_kwargs = {"week": TruncWeek("date")}
         elif date_diff < timedelta(days=1825):
             # Between 10 months and 5 years, use months
             split_by_kwargs = {"month": TruncMonth("date")}
@@ -515,7 +510,8 @@ class StatsViewSet(ListModelMixin, viewsets.GenericViewSet):
             # Otherwise, use years
             split_by_kwargs = {"year": TruncYear("date")}
 
-        values.append(list(split_by_kwargs.keys())[0])
+        applied_aggregation = list(split_by_kwargs.keys())[0]
+        values.append(applied_aggregation)
 
         queryset = queryset.annotate(**split_by_kwargs).values(*values)
 
@@ -524,8 +520,7 @@ class StatsViewSet(ListModelMixin, viewsets.GenericViewSet):
             queryset = queryset.annotate(count=Count("pk")).values(*values)
 
         queryset = queryset.order_by(*[v for v in values if v != "count"])
-        self.applied_aggregations.append(list(split_by_kwargs.keys())[0])
-        return queryset, values
+        return queryset, values, applied_aggregation
 
     def split_by_foreignkey_name(self, fk, queryset, values):
         """
@@ -542,14 +537,14 @@ class StatsViewSet(ListModelMixin, viewsets.GenericViewSet):
         queryset = queryset.order_by(*[v for v in values if v != "count"])
         return queryset, values
 
-    def get_queryset(self):
+    def get_queryset(self, return_applied_aggregations=False):
         queryset = Incident.authorization.for_user(
             self.request.user, "incidents.view_statistics"
         )
 
         values = []
         aggregation = ""
-        self.applied_aggregations.clear()
+        applied_aggregations = []
 
         filterset = StatsFilter(
             data=self.request.query_params, queryset=queryset, request=self.request
@@ -557,22 +552,24 @@ class StatsViewSet(ListModelMixin, viewsets.GenericViewSet):
         _ = filterset.is_valid()  # Used to calculate cleaned_data.
 
         for agg in filterset.form.cleaned_data.get("aggregation", "").split(","):
-            agg = agg.lower().strip()
-
             # Split the querySet depending on the requested GET parameter. Store the applied aggregations
             if agg == "date":
-                queryset, values = self.split_by_date(
+                queryset, values, applied_agg = self.split_by_date(
                     queryset, filterset.form.cleaned_data, values
                 )
+                applied_aggregations.append(applied_agg)
             elif agg in ["category", "severity", "actor", "detection"]:
                 queryset, values = self.split_by_foreignkey_name(agg, queryset, values)
-                self.applied_aggregations.append(agg)
+                applied_aggregations.append(agg)
             elif agg == "entity":
                 queryset, values = self.split_by_foreignkey_name(
                     "concerned_business_lines", queryset, values
                 )
-                self.applied_aggregations.append(agg)
-        return queryset
+                applied_aggregations.append(agg)
+        if return_applied_aggregations:
+            return queryset, applied_aggregations
+        else:
+            return queryset
 
     @cached_property
     def bl_to_rootbl_dict(self):
@@ -640,11 +637,17 @@ class StatsViewSet(ListModelMixin, viewsets.GenericViewSet):
         return final_dict
 
     def list(self, request, *args, **kwargs):
-        queryset = self.filter_queryset(self.get_queryset())
+        queryset, applied_aggregations = self.get_queryset(
+            return_applied_aggregations=True
+        )
+        queryset = self.filter_queryset(queryset)
         serializer = self.get_serializer(queryset, many=True)
 
         # Convert the flatten list of entries to a nested dict
-        nested = self.nest_dict(serializer.data, self.applied_aggregations)
+        if applied_aggregations:
+            nested = self.nest_dict(serializer.data, applied_aggregations)
+        else:
+            nested = {"incidents": len(serializer.data)}
 
         return Response(ReturnDict(nested, serializer=serializer))
 

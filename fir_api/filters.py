@@ -350,9 +350,7 @@ class StatsFilter(IncidentFilter):
     last_comment_date_before = None
     last_comment_date_after = None
 
-    aggregation = CharFilter(
-        method="aggregate_by", label=_("Aggregate by"), required=True
-    )
+    aggregation = CharFilter(method="aggregate_by", label=_("Aggregate by"))
 
     def aggregate_by(self, queryset, name, aggregate_by):
         valid_aggregations = [

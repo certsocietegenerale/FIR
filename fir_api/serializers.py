@@ -303,10 +303,9 @@ class IncidentCategoriesSerializer(serializers.ModelSerializer):
 
 class StatsSerializer(serializers.ModelSerializer):
     year = serializers.DateTimeField(required=False, format="%Y")
-    month = serializers.DateTimeField(required=False, format="%b")
-    week = serializers.DateTimeField(required=False, format="%V")
-    day = serializers.DateTimeField(required=False, format="%m-%d")
-    hour = serializers.DateTimeField(required=False, format="%m-%d %H:%M")
+    month = serializers.DateTimeField(required=False, format="%Y-%m")
+    day = serializers.DateTimeField(required=False, format="%Y-%m-%d")
+    hour = serializers.DateTimeField(required=False, format="%Y-%m-%d %H:%M")
     count = serializers.IntegerField(required=False)
     category = serializers.CharField(required=False, source="category__name")
     severity = serializers.CharField(required=False, source="severity__name")
@@ -321,7 +320,6 @@ class StatsSerializer(serializers.ModelSerializer):
         fields = [
             "year",
             "month",
-            "week",
             "day",
             "hour",
             "category",
