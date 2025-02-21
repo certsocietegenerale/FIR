@@ -202,6 +202,7 @@ class IncidentSerializer(serializers.ModelSerializer):
         style={"base_template": "textarea.html"}, required=False
     )
     last_comment_date = serializers.DateTimeField(read_only=True)
+    can_edit = serializers.SerializerMethodField()
 
     _additional_fields = {}
 
@@ -280,6 +281,15 @@ class IncidentSerializer(serializers.ModelSerializer):
                 field_serializer.save(incident=instance)
 
         return super().update(instance, validated_data)
+
+    def get_can_edit(self, obj):
+        try:
+            has_permission = Incident.authorization.for_user(
+                self._context["request"].user, "incidents.handle_incidents"
+            ).get(pk=obj.id)
+            return True
+        except Incident.DoesNotExist:
+            return False
 
 
 class ValidAttributeSerializer(serializers.ModelSerializer):
