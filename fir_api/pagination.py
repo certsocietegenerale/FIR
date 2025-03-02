@@ -3,6 +3,7 @@ from django.core.paginator import Paginator
 from copy import deepcopy
 from functools import cached_property
 from rest_framework.exceptions import ParseError
+from rest_framework.response import Response
 from django.utils.translation import gettext_lazy as _
 
 
@@ -79,3 +80,15 @@ class CustomPageNumberPagination(PageNumberPagination):
         ):
             self.page_size = request.user.profile.incident_number
         return super().get_page_size(request)
+
+    # Add "total_pages"
+    def get_paginated_response(self, data):
+        return Response(
+            {
+                "count": self.page.paginator.count,
+                "total_pages": self.page.paginator.num_pages,
+                "next": self.get_next_link(),
+                "previous": self.get_previous_link(),
+                "results": data,
+            }
+        )
