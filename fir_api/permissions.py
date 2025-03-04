@@ -35,13 +35,3 @@ class IsIncidentHandler(BasePermission):
             return False
 
 
-class CanViewStatistics(BasePermission):
-    def has_permission(self, request, view):
-        if request.user.has_perm("incidents.view_statistics"):
-            return True
-
-        if AccessControlEntry.objects.filter(
-            user=request.user, role__permissions__codename="view_statistics"
-        ):
-            return True
-        return False

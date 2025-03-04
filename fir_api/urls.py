@@ -31,7 +31,6 @@ router.register(
     views.IncidentCategoriesViewSet,
     basename="incident_categories",
 )
-router.register(r"stats", views.StatsViewSet, basename="stats")
 
 # Load plugin API URLs
 for app in INSTALLED_APPS:

@@ -1,0 +1,9 @@
+## Install
+
+Follow the generic plugin installation instructions in [the FIR wiki](https://github.com/certsocietegenerale/FIR/wiki/Plugins).
+
+## Usage
+
+The `fir_stats` plugin allows you to view statistics on incidents.
+
+The plugin adds a "stats" menu on the top left of FIR, which contains graphs and other utilities to have a comprehensive view on past events recorded in FIR.
