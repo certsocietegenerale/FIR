@@ -47,8 +47,9 @@ from fir_api.serializers import (
     LabelSerializer,
     AttributeSerializer,
     BusinessLineSerializer,
-    IncidentCategoriesSerializer,
+    CategorySerializer,
     ValidAttributeSerializer,
+    SeveritySerializer,
     StatsSerializer,
 )
 from fir_api.filters import (
@@ -58,12 +59,17 @@ from fir_api.filters import (
     AttributeFilter,
     BLFilter,
     CommentFilter,
-    IncidentCategoriesFilter,
+    CategoryFilter,
     ValidAttributeFilter,
     FileFilter,
+    SeverityFilter,
     StatsFilter,
 )
-from fir_api.permissions import IsIncidentHandler, CanViewStatistics
+from fir_api.permissions import (
+    IsIncidentHandler,
+    CanViewStatistics,
+    IsAdminUserOrReadOnly,
+)
 from fir_artifacts.files import handle_uploaded_file, do_download
 from fir_artifacts.models import Artifact, File
 from incidents.models import (
@@ -74,6 +80,7 @@ from incidents.models import (
     BusinessLine,
     IncidentCategory,
     ValidAttribute,
+    SeverityChoice,
 )
 
 
@@ -84,7 +91,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
     queryset = User.objects.all().order_by("-date_joined")
     serializer_class = UserSerializer
-    permission_classes = (IsAuthenticated, IsAdminUser)
+    permission_classes = [IsAuthenticated, IsAdminUser]
     renderer_classes = [JSONRenderer, AdminRenderer]
 
 
@@ -100,7 +107,7 @@ class IncidentViewSet(
     """
 
     serializer_class = IncidentSerializer
-    permission_classes = (IsAuthenticated, IsIncidentHandler)
+    permission_classes = [IsAuthenticated, IsIncidentHandler]
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = [
         "id",
@@ -227,7 +234,7 @@ class ArtifactViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSe
     """
 
     serializer_class = ArtifactSerializer
-    permission_classes = (IsAuthenticated, IsIncidentHandler)
+    permission_classes = [IsAuthenticated, IsIncidentHandler]
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = ["id", "type", "value"]
     filterset_class = ArtifactFilter
@@ -258,7 +265,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     """
 
     serializer_class = CommentsSerializer
-    permission_classes = (IsAuthenticated, IsIncidentHandler)
+    permission_classes = [IsAuthenticated, IsIncidentHandler]
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = ["id", "date"]
     filterset_class = CommentFilter
@@ -298,7 +305,7 @@ class LabelViewSet(ListModelMixin, viewsets.GenericViewSet):
     """
 
     serializer_class = LabelSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [IsAuthenticated, IsAdminUserOrReadOnly]
     filter_backends = [DjangoFilterBackend]
     filterset_class = LabelFilter
 
@@ -313,7 +320,7 @@ class FileViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
     """
 
     serializer_class = FileSerializer
-    permission_classes = (IsAuthenticated, IsIncidentHandler)
+    permission_classes = [IsAuthenticated, IsIncidentHandler]
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = ["id", "date", "incident"]
     filterset_class = FileFilter
@@ -377,7 +384,7 @@ class AttributeViewSet(viewsets.ModelViewSet):
     """
 
     serializer_class = AttributeSerializer
-    permission_classes = (IsAuthenticated, IsIncidentHandler)
+    permission_classes = [IsAuthenticated, IsIncidentHandler]
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = ["id", "name", "value", "incident"]
     filterset_class = AttributeFilter
@@ -430,7 +437,7 @@ class ValidAttributeViewSet(viewsets.ModelViewSet):
 
     queryset = ValidAttribute.objects.all().order_by("id")
     serializer_class = ValidAttributeSerializer
-    permission_classes = (IsAuthenticated, IsIncidentHandler)
+    permission_classes = [IsAuthenticated, IsIncidentHandler]
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = ["id", "name", "unit", "description", "categories"]
     filterset_class = ValidAttributeFilter
@@ -442,7 +449,7 @@ class BusinessLinesViewSet(viewsets.ReadOnlyModelViewSet):
     """
 
     serializer_class = BusinessLineSerializer
-    permission_classes = (IsAuthenticated,)
+    permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = ["id", "name"]
     filterset_class = BLFilter
@@ -454,15 +461,27 @@ class BusinessLinesViewSet(viewsets.ReadOnlyModelViewSet):
         return queryset
 
 
-class IncidentCategoriesViewSet(viewsets.ReadOnlyModelViewSet):
+class CategoryViewSet(viewsets.ModelViewSet):
     """
     API endpoint for listing Incident Categories.
     """
 
     queryset = IncidentCategory.objects.all().order_by("id")
-    serializer_class = IncidentCategoriesSerializer
-    permission_classes = (IsAuthenticated, IsIncidentHandler)
-    filterset_class = IncidentCategoriesFilter
+    serializer_class = CategorySerializer
+    permission_classes = [IsAuthenticated, IsAdminUserOrReadOnly]
+    filterset_class = CategoryFilter
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+
+
+class SeverityViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint for listing Incident Severities.
+    """
+
+    queryset = SeverityChoice.objects.all().order_by("name")
+    serializer_class = SeveritySerializer
+    permission_classes = [IsAuthenticated, IsAdminUserOrReadOnly]
+    filterset_class = SeverityFilter
     filter_backends = [DjangoFilterBackend, OrderingFilter]
 
 

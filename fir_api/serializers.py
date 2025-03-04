@@ -293,7 +293,6 @@ class IncidentSerializer(serializers.ModelSerializer):
 
 
 class ValidAttributeSerializer(serializers.ModelSerializer):
-
     categories = serializers.SlugRelatedField(
         many=True, queryset=IncidentCategory.objects.all(), slug_field="name"
     )
@@ -304,11 +303,17 @@ class ValidAttributeSerializer(serializers.ModelSerializer):
         read_only_fields = ["id"]
 
 
-class IncidentCategoriesSerializer(serializers.ModelSerializer):
+class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = IncidentCategory
-        fields = ("id", "name", "is_major")
-        read_only_fields = ("id", "name", "is_major")
+        fields = ["id", "name", "is_major"]
+        read_only_fields = ["id"]
+
+
+class SeveritySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SeverityChoice
+        fields = ["name", "color"]
 
 
 class StatsSerializer(serializers.ModelSerializer):

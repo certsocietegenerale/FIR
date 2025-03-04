@@ -264,7 +264,7 @@ class ValidAttributeFilter(FilterSet):
     )
 
 
-class IncidentCategoriesFilter(FilterSet):
+class CategoryFilter(FilterSet):
     """
     Custom filtering for incidents categories
     """
@@ -272,6 +272,15 @@ class IncidentCategoriesFilter(FilterSet):
     id = NumberFilter(field_name="id")
     name = CharFilter(field_name="name")
     is_major = BooleanFilter(field_name="is_major")
+
+
+class SeverityFilter(FilterSet):
+    """
+    Custom filtering for incidents severities
+    """
+
+    name = CharFilter(field_name="name")
+    color = CharFilter(field_name="color")
 
 
 class AttributeFilter(FilterSet):
