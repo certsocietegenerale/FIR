@@ -26,11 +26,8 @@ router.register(
     r"validattributes", views.ValidAttributeViewSet, basename="validattributes"
 )
 router.register(r"businesslines", views.BusinessLinesViewSet, basename="businesslines")
-router.register(
-    r"incident_categories",
-    views.IncidentCategoriesViewSet,
-    basename="incident_categories",
-)
+router.register(r"severities", views.SeverityViewSet, basename="severities")
+router.register(r"categories", views.CategoryViewSet, basename="categories")
 router.register(r"stats", views.StatsViewSet, basename="stats")
 
 # Load plugin API URLs
