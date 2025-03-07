@@ -185,6 +185,8 @@ class IncidentFilter(FilterSet):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Reset search_filter to accommodate object reuse
+        self.search_filters = []
 
         # Load Additional incident filters defined in plugins via a hook
         for app in INSTALLED_APPS:
