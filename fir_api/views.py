@@ -116,6 +116,10 @@ class IncidentViewSet(
         "subject",
         "concerned_business_lines",
         "last_comment_date",
+        "category",
+        "severity",
+        "confidentiality",
+        "actor",
     ]
     filterset_class = IncidentFilter
 
