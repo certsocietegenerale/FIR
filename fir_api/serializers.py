@@ -202,6 +202,8 @@ class IncidentSerializer(serializers.ModelSerializer):
         style={"base_template": "textarea.html"}, required=False
     )
     last_comment_date = serializers.DateTimeField(read_only=True)
+    last_comment_action = serializers.CharField(read_only=True)
+
     can_edit = serializers.SerializerMethodField()
 
     _additional_fields = {}

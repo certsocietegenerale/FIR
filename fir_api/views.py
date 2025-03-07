@@ -12,7 +12,7 @@ from django.dispatch import receiver
 from django.shortcuts import get_object_or_404
 from django.core.files import File as FileWrapper
 from django.contrib.auth.models import User
-from django.db.models import Q, Max, Count
+from django.db.models import Q, Count, OuterRef, Subquery
 from django.db.models.functions import (
     TruncMonth,
     TruncYear,
@@ -124,11 +124,28 @@ class IncidentViewSet(
     filterset_class = IncidentFilter
 
     def get_queryset(self):
+        last_comment_action = Subquery(
+                Comments.objects.filter(
+                    incident_id=OuterRef("id"),
+                )
+                .order_by("-date")
+                .values("action__name")[:1]
+        )
+
+        last_comment_date = Subquery(
+            Comments.objects.filter(
+                incident_id=OuterRef("id"),
+            )
+            .order_by("-date")
+            .values("date")[:1]
+        )
+
         queryset = (
             Incident.authorization.for_user(
                 self.request.user, "incidents.view_incidents"
             )
-            .annotate(last_comment_date=Max("comments__date"))
+            .annotate(last_comment_date=last_comment_date)
+            .annotate(last_comment_action=last_comment_action)
             .order_by("-id")
         )
 
