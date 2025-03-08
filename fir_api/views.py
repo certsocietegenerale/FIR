@@ -12,7 +12,7 @@ from django.dispatch import receiver
 from django.shortcuts import get_object_or_404
 from django.core.files import File as FileWrapper
 from django.contrib.auth.models import User
-from django.db.models import Q, Count, OuterRef, Subquery
+from django.db.models import Q, Count, OuterRef, Subquery, Func, F
 from django.db.models.functions import (
     TruncMonth,
     TruncYear,
@@ -516,7 +516,7 @@ class FilterButtonBrowsableAPIRenderer(BrowsableAPIRenderer):
 
 class StatsViewSet(ListModelMixin, viewsets.GenericViewSet):
     """
-    API endpoint displaying incidents count based on aggregations.
+    API endpoint displaying counts based on aggregations.
     """
 
     serializer_class = StatsSerializer
@@ -529,7 +529,7 @@ class StatsViewSet(ListModelMixin, viewsets.GenericViewSet):
     def split_by_date(self, queryset, filterset, values):
         """
         Aggregate a queryset by time
-        Eg: qs = qs.annotate(year=TruncYear("date")).annotate(count=Count("pk")).values("year", "count")
+        Eg: qs = qs.annotate(year=TruncYear("date")).values("year", "count")
         """
 
         date_from = filterset.get("created_after", False) or datetime.min
@@ -553,28 +553,22 @@ class StatsViewSet(ListModelMixin, viewsets.GenericViewSet):
         applied_aggregation = list(split_by_kwargs.keys())[0]
         values.append(applied_aggregation)
 
-        queryset = queryset.annotate(**split_by_kwargs).values(*values)
-
-        if not "count" in values:
-            values.append("count")
-            queryset = queryset.annotate(count=Count("pk")).values(*values)
-
-        queryset = queryset.order_by(*[v for v in values if v != "count"])
+        queryset = (
+            queryset.annotate(**split_by_kwargs)
+            .values(*values)
+            .order_by(*[v for v in values if v != "count"])
+        )
         return queryset, values, applied_aggregation
 
     def split_by_foreignkey_name(self, fk, queryset, values):
         """
         Aggregate a queryset by foreign_key
-        Eg: qs = qs.values("category__name").annotate(count=Count("pk")).values("category__name", "count")
+        Eg: qs = qs.values("category__name").values("category__name", "count")
         """
         values.append(f"{fk}__name")
-        queryset = queryset.values(*values)
-
-        if not "count" in values:
-            values.append("count")
-            queryset = queryset.annotate(count=Count("pk")).values(*values)
-
-        queryset = queryset.order_by(*[v for v in values if v != "count"])
+        queryset = queryset.values(*values).order_by(
+            *[v for v in values if v != "count"]
+        )
         return queryset, values
 
     def get_queryset(self, return_applied_aggregations=False):
@@ -582,7 +576,7 @@ class StatsViewSet(ListModelMixin, viewsets.GenericViewSet):
             self.request.user, "incidents.view_statistics"
         )
 
-        values = []
+        values = ["count"]
         aggregation = ""
         applied_aggregations = []
 
@@ -590,6 +584,24 @@ class StatsViewSet(ListModelMixin, viewsets.GenericViewSet):
             data=self.request.query_params, queryset=queryset, request=self.request
         )
         _ = filterset.is_valid()  # Used to calculate cleaned_data.
+
+        if filterset.form.cleaned_data.get(
+            "unit", ""
+        ) == "attribute" and filterset.form.cleaned_data.get("attribute", []):
+            # If unit=attribute is set: count selected attributes
+            attr_names = [n.name for n in filterset.form.cleaned_data.get("attribute")]
+            attr_subquery = Subquery(
+                Attribute.objects.filter(incident=OuterRef("id"))
+                .filter(name__in=attr_names)
+                .annotate(
+                    count=Func(F("value"), function="SUM")
+                )  # Perform per-incident sum of all selected attributes
+                .values("count")
+            )
+            queryset = queryset.annotate(count=attr_subquery).values(*values)
+        else:
+            # otherwise count incident
+            queryset = queryset.annotate(count=Count("pk")).values(*values)
 
         for agg in filterset.form.cleaned_data.get("aggregation", "").split(","):
             # Split the querySet depending on the requested GET parameter. Store the applied aggregations
@@ -668,11 +680,9 @@ class StatsViewSet(ListModelMixin, viewsets.GenericViewSet):
                     if agg == "entity":
                         # If we filtered by entity: group count by top BusinessLine
                         val = self.bl_to_rootbl_dict.get(val, "Undefined")
-                        if not isinstance(final_dict[val], int):
-                            final_dict[val] = 0
-                        final_dict[val] += entry["count"]
-                    else:
-                        final_dict[val] = entry["count"]
+                    if not isinstance(final_dict[val], int):
+                        final_dict[val] = 0
+                    final_dict[val] += entry["count"]
 
         return final_dict
 
@@ -687,7 +697,12 @@ class StatsViewSet(ListModelMixin, viewsets.GenericViewSet):
         if applied_aggregations:
             nested = self.nest_dict(serializer.data, applied_aggregations)
         else:
-            nested = {"incidents": len(serializer.data)}
+            if self.request.query_params.get(
+                "unit", ""
+            ) == "attribute" and self.request.query_params.getlist("attribute", []):
+                nested = {"attributes": sum(a["count"] for a in serializer.data)}
+            else:
+                nested = {"incidents": len(serializer.data)}
 
         return Response(ReturnDict(nested, serializer=serializer))
 

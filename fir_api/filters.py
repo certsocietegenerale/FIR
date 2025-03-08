@@ -363,10 +363,16 @@ class CommentFilter(FilterSet):
 
 
 class StatsFilter(IncidentFilter):
-    last_comment_date_before = None
-    last_comment_date_after = None
-
     aggregation = CharFilter(method="aggregate_by", label=_("Aggregate by"))
+    unit = CharFilter(method="set_unit", label=_("Perform stats on"))
+
+    def set_unit(self, queryset, name, unit):
+        valid_unit = ["attribute", "incident"]
+
+        if unit not in valid_unit:
+            raise ParseError(_(f"'{unit}' is not part of {valid_unit}"))
+
+        return queryset
 
     def aggregate_by(self, queryset, name, aggregate_by):
         valid_aggregations = [
@@ -396,5 +402,6 @@ class StatsFilter(IncidentFilter):
             "category",
             "detection",
             "query",
+            "unit",
             "aggregation",
         ]
