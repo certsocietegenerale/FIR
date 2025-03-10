@@ -1,10 +1,9 @@
-## Install
-
-Follow the generic plugin installation instructions in [the FIR wiki](https://github.com/certsocietegenerale/FIR/wiki/Plugins).
-
 ## Usage
 
 The `fir_api` plugin allows you to interact with FIR programmatically.
+
+This plugin is mandatory and therefore is enabled by default.
+
 The API is pretty much self documented in the dedicated web interface available at `http(s)://YOURFIRINSTALL/api/`.
 
 ### Authentication
