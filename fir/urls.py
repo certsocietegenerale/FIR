@@ -12,7 +12,7 @@ urlpatterns = [
     re_path(
         r"^incidents/", include(("incidents.urls", "incidents"), namespace="incidents")
     ),
-    re_path(r"^search/$", views.search, name="search"),
+    re_path(r"^search/$", views.incident_display, {"is_search": True}, name="search"),
     re_path(
         r"^events/",
         include(("incidents.custom_urls.events", "url_events"), namespace="events"),

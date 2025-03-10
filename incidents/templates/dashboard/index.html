@@ -10,12 +10,17 @@
 {% endblock %}
 
 {% block content %}
+<table id="incident-list-template" class="table table-hover d-none">
+  {% include "events/table.html" %}
+</table>
+
 <div class="card mb-3">
 	<div class="card-body">
 		<h4><i class="bi bi-stars"></i>{%  trans "Starred Incidents" %}</h4>
 
-		<div id='starred_incidents' class='incident_display' data-url="{% url 'dashboard:starred' %}">
-		{%  trans "Loading ..." %}
+		<div id="starred_incidents" class="incident_display" data-url="/api/incidents?status__not=Closed&is_starred=true&ordering=-date">
+		    {%  trans "Loading ..." %}
+		    <div class="nothing_to_show d-none">{% trans "No incidents to show." %}</div>
 		</div>
 	</div>
 
@@ -23,40 +28,43 @@
 
 
 <div class="card mt-3">
-	<div class='tabbable'>
+	<div class="tabbable">
 		<div class="card-header">
- 
-				<ul class='nav nav-tabs card-header-tabs'>
+				<ul class="nav nav-tabs card-header-tabs">
 					<li class="nav-item">
-						<button class="nav-link active" data-bs-target='#tab_open' data-bs-toggle='tab'>{%  trans "Open" %}</button>
+						<button class="nav-link active" data-bs-target="#tab_open" data-bs-toggle="tab">{%  trans "Open" %}</button>
 					</li>
 					<li class="nav-item">
-						<button class="nav-link"  data-bs-target='#tab_blocked' data-bs-toggle='tab'>{%  trans "Blocked" %}</button>
+						<button class="nav-link"  data-bs-target="#tab_blocked" data-bs-toggle="tab">{%  trans "Blocked" %}</button>
 					</li>
 					<li class="nav-item">
-						<button class="nav-link"  data-bs-target='#tab_old' data-bs-toggle='tab'>{%  trans "Old" %}</button>
+						<button class="nav-link"  data-bs-target="#tab_old" data-bs-toggle="tab">{%  trans "Old" %}</button>
 					</li>
 					{% plugin_point 'dashboard_tab' %}
 				</ul>
 			</div>
 		</div>
 		<div class="card-body">
- 
-			<div class='tab-content tabs'>
-				<div class='tab-pane active incident_display table-responsive' id='tab_open' data-url="{% url 'dashboard:open' %}">
+			<div class="tab-content tabs">
+				<div class="tab-pane active incident_display table-responsive" id="tab_open" data-url="/api/incidents?status=Open&ordering=-date&page_size=20">
 					{%  trans "Loading ..." %}
+					<div class="nothing_to_show d-none">{% trans "No incidents to show." %}</div>
 				</div>
  
-				<div class='tab-pane incident_display table-responsive' id='tab_blocked' data-url="{% url 'dashboard:blocked' %}">
+				<div class="tab-pane incident_display table-responsive" id="tab_blocked" data-url="/api/incidents?status=Blocked&ordering=-date&page_size=20">
 					{%  trans "Loading ..." %}
+					<div class="nothing_to_show d-none">{% trans "No incidents to show." %}</div>
 				</div>
  
-				<div class='tab-pane incident_display table-responsive' id='tab_old' data-url="{% url 'dashboard:old' %}">
+				<div class="tab-pane incident_display table-responsive" id="tab_old" data-url="/api/incidents?status=Open&ordering=last_comment_date&page_size=20">
 					{%  trans "Loading ..." %}
+					<div class="nothing_to_show d-none">{% trans "No incidents to show." %}</div>
 				</div>
 				{% plugin_point 'dashboard_tab_content' %}
 			</div>
 		</div>
 	</div>
 </div>
+
+{% csrf_token %}
 {% endblock %}

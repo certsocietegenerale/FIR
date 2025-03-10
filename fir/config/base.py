@@ -102,6 +102,7 @@ INSTALLED_APPS = (
     "treebeard",
     "fir_email",
     "colorfield",
+    "fir_api",
 )
 
 apps_file = os.path.join(BASE_DIR, "fir", "config", "installed_apps.txt")

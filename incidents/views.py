@@ -191,24 +191,20 @@ def followup(request, incident_id, authorization_target=None):
         {'incident': i, 'comments': comments, 'incident_show_id': settings.INCIDENT_SHOW_ID}
     )
 
-
 @fir_auth_required
 @user_passes_test(is_incident_viewer)
-def index(request, is_incident=False):
-    return render(request, 'events/index-all.html', {'incident_view': is_incident})
+def incident_display(request, is_incident=False, is_search=False):
+    query_string = request.GET.get("q", "").strip()
 
-
-@fir_auth_required
-@user_passes_test(is_incident_viewer)
-def incidents_all(request):
-    return incident_display(request, Q(is_incident=True))
-
-
-@fir_auth_required
-@user_passes_test(is_incident_viewer)
-def events_all(request):
-    return incident_display(request, Q(is_incident=False), False)
-
+    if is_search and not query_string:
+        return redirect("incidents:index")
+    params = {
+        "incident_view": is_incident,
+        "query_string": query_string,
+        "incident_show_id": getattr(settings, "INCIDENT_SHOW_ID", False),
+        "incident_id_prefix": getattr(settings, "INCIDENT_ID_PREFIX", ""),
+    }
+    return render(request, "events/index-all.html", params)
 
 @fir_auth_required
 @authorization_required('incidents.view_incidents', Incident, view_arg='incident_id')
@@ -515,227 +511,7 @@ def event_index(request):
     return index(request, False)
 
 
-def normalize_query(query_string,
-                    findterms=re.compile(r'"([^"]+)"|(\S+)').findall,
-                    normspace=re.compile(r'\s{2,}').sub):
-    ''' Splits the query string in invidual keywords, getting rid of unecessary spaces
-        and grouping quoted words together.
-        Example:
-
-        >>> normalize_query('  some random  words "with   quotes  " and   spaces')
-        ['some', 'random', 'words', 'with quotes', 'and', 'spaces']
-
-    '''
-    return [normspace(' ', (t[0] or t[1]).strip()) for t in findterms(query_string)]
-
-
-def get_query(query_string, search_fields):
-    ''' Returns a query, that is a combination of Q objects. That combination
-        aims to search keywords within a model by testing the given search fields.
-
-    '''
-    query = None  # Query to search for every search term
-    terms = normalize_query(query_string)
-    for term in terms:
-        or_query = None  # Query to search for a given term in each field
-        for field_name in search_fields:
-            q = Q(**{"%s__icontains" % field_name: term})
-
-            if or_query is None:
-                or_query = q
-            else:
-                or_query = or_query | q
-        if query is None:
-            query = or_query
-        else:
-            query = query & or_query
-    return query
-
-
-@fir_auth_required
-@user_passes_test(is_incident_viewer)
-def search(request):
-    query_string = ''
-    if ('q' in request.GET) and request.GET['q'].strip():
-        query_string = request.GET['q']
-
-        if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-            asc = request.GET.get('asc', 'false')
-            q = Q()
-
-            plan = re.search("plan:(\S+)", query_string)
-            if plan:
-                q = q & Q(plan__name=plan.group(1))
-                query_string = query_string.replace("plan:" + plan.group(1), '')
-
-            try:
-                bl = re.search("bl:(\S+)", query_string).group(1)
-                bls = BusinessLine.authorization.for_user(request.user, 'incidents.view_incidents').filter(
-                    name__icontains=bl)
-                if bls:
-                    q = q & (Q(concerned_business_lines__in=bls) | Q(main_business_lines__in=bls))
-                    query_string = query_string.replace("bl:" + bl, '')
-            except Exception:
-                pass
-
-            fir_id = re.search("id:({})?(\d+)".format(settings.INCIDENT_ID_PREFIX), query_string)
-            if fir_id:
-                q = q & Q(id=fir_id.group(2))
-                query_string = query_string.replace('id:' + str(fir_id.group(1) or '') + fir_id.group(2), '')
-
-            fir_id = re.search("^({})?(\d+)$".format(settings.INCIDENT_ID_PREFIX), query_string)
-            if fir_id:
-                q = q & Q(id=fir_id.group(2))
-                query_string = query_string.replace(str(fir_id.group(1) or '') + fir_id.group(2), '')
-
-            opened_by = re.search("opened_by:(\S+)", query_string)
-            if opened_by:
-                q = q & Q(opened_by__username=opened_by.group(1))
-                query_string = query_string.replace('opened_by:' + opened_by.group(1), '')
-
-            category = re.search("category:(\S+)", query_string)
-            if category:
-                q = q & Q(category__name__icontains=category.group(1))
-                query_string = query_string.replace('category:' + category.group(1), '')
-
-            status = re.search("status:(\S+)", query_string)
-            if status:
-                q = q & Q(status=status.group(1)[0])
-                query_string = query_string.replace('status:' + status.group(1), '')
-
-            artifacts = re.search("art:(\S+)", query_string)
-            if artifacts:
-                artifacts = artifacts.group(1)
-                q = q & Q(id__in=[i.id for i in libartifacts.incs_for_art(artifacts)])
-                query_string = query_string.replace('art:' + artifacts, '')
-
-            if query_string.count('starred') > 0:
-                q = q & Q(is_starred=True)
-                query_string = query_string.replace('starred', '')
-
-            severity = re.search("severity(?P<eval>[:<>])(?P<value>\S+)", query_string)
-            if severity:
-                if severity.group('eval') == ':':
-                    if severity.group('value') == 'None':
-                        q = q & Q(severity=None)
-                    else:
-                        q = q & Q(severity__name=severity.group("value"))
-                elif severity.group('eval') == ">":
-                    q = q & Q(severity__name__gt=severity.group("value"))
-                elif severity.group('eval') == "<":
-                    q = q & Q(severity__name__lt=severity.group("value"))
-                query_string = query_string.replace('severity' + severity.group('eval') + severity.group("value"), '')
-
-            # app keyword_filters go here
-            for app_name, hooks in APP_HOOKS.items():
-                if "keyword_filter" in hooks:
-                    q, query_string = hooks['keyword_filter'](q, query_string)
-
-            pattern = re.compile('\s+')
-
-            query_string = query_string.strip()
-
-            other = pattern.split(query_string)
-            if query_string != ['']:
-                q_other = Q()
-                for i in other:
-                    q_other &= (
-                        Q(subject__icontains=i) | Q(description__icontains=i) | Q(comments__comment__icontains=i)
-                    )
-
-                    # app search_filters go here
-                    for app_name, hooks in APP_HOOKS.items():
-                        if "search_filter" in hooks:
-                            q_other, query_string = hooks['search_filter'](q_other, query_string)
-            q = (q & q_other)
-
-            # TODO a function that takes in incidents and returns them ordered
-
-            order_param = request.GET.get('order_by', 'date')
-
-            order_by = order_param
-
-            if order_by not in ['date', 'subject', 'category', 'bl', 'severity', 'status', 'opened_by', 'detection',
-                                'actor', 'confidentiality']:
-                order_by = 'date'
-
-            if order_by == "category":
-                order_by = 'category__name'
-            if order_by == 'detection':
-                order_by = 'detection__name'
-            if order_by == 'actor':
-                order_by = 'actor__name'
-
-            if asc == 'false':
-                order_by = "-" + order_by
-
-            found_entries = Incident.authorization.for_user(request.user, 'incidents.view_incidents').filter(q)
-
-            if order_param == 'last_action':
-                if asc:
-                    found_entries = found_entries.annotate(Max('comments__date')).order_by('comments__date__max')
-                else:
-                    found_entries = found_entries.annotate(Max('comments__date')).order_by('-comments__date__max')
-
-            else:
-                found_entries = found_entries.order_by(order_by).all()
-
-            # distinct
-            found_entries = found_entries.distinct()
-
-            # get hide_closed option from user profile
-            if request.user.profile.hide_closed:
-                found_entries = found_entries.filter(~Q(status='C'))
-
-            # get number of pages from user profile
-            page = request.GET.get('page')
-            incident_number = request.user.profile.incident_number
-
-            p = Paginator(found_entries, incident_number)
-
-            try:
-                found_entries = p.page(page)
-            except PageNotAnInteger:
-                found_entries = p.page(1)
-            except EmptyPage:
-                found_entries = p.page(1)
-
-            return render(request, 'events/table.html',
-                          {'incident_list': found_entries, 'order_param': order_param, 'asc': asc})
-        else:
-            return render(request, 'events/search.html', {'query_string': query_string})
-    else:
-        return redirect('incidents:index')
-
-    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
-        query_string = ''
-        found_entries = None
-        if ('q' in request.GET) and request.GET['q'].strip():
-            query_string = request.GET['q']
-        else:
-            return redirect('incidents:index')
-    else:
-        return render(request, 'events/search.html', {'query_string': q})
-
-
 # ajax ======================================================================
-
-@fir_auth_required
-@authorization_required('incidents.handle_incidents', Incident, view_arg='incident_id')
-def toggle_star(request, incident_id, authorization_target=None):
-    if authorization_target is None:
-        i = get_object_or_404(
-            Incident.authorization.for_user(request.user, 'incidents.handle_incidents'),
-            pk=incident_id)
-    else:
-        i = authorization_target
-
-    i.is_starred = not i.is_starred
-
-    i.save()
-
-    return HttpResponse(dumps({'starred': i.is_starred}), content_type='application/json')
-
 
 @fir_auth_required
 @authorization_required(comment_permissions, Incident, view_arg='incident_id')
@@ -2116,91 +1892,16 @@ def quarterly_major(request, start_date=None, num_months=3):
 
 # Dashboard =======================================================
 
-def incidents_order(request):
-    order_param = request.GET.get('order_by', 'date')
-    asc = request.GET.get('asc', 'false')
-    order_by = order_param
-
-    if order_param == 'last_action':
-        order_by = 'comments__date__max'
-
-    if asc == 'false':
-        order_by = "-%s" % order_by
-
-    return (order_by, order_param, asc)
-
-
-def incident_display(request, filter, incident_view=True, paginated=True):
-    (order_by, order_param, asc) = incidents_order(request)
-
-    permissions = 'incidents.view_incidents'
-
-    if order_param == 'last_action':
-        incident_list = Incident.authorization.for_user(request.user, permissions).filter(filter).annotate(
-            Max('comments__date')).order_by(order_by)
-    else:
-        pre_list = Incident.authorization.for_user(request.user, permissions)
-        incident_list = pre_list.filter(filter).order_by(order_by)
-
-    if paginated:
-        page = request.GET.get('page', 1)
-        incidents_per_page = request.user.profile.incident_number
-        p = Paginator(incident_list, incidents_per_page)
-
-        try:
-            incident_list = p.page(page)
-        except (PageNotAnInteger, EmptyPage):
-            incident_list = p.page(1)
-
-    return render(request, 'events/table.html', {
-        'incident_list': incident_list,
-        'incident_view': incident_view,
-        'order_param': order_param,
-        'asc': asc,
-        'incident_show_id': settings.INCIDENT_SHOW_ID
-    })
-
-
 @fir_auth_required
-#@fir_auth_required
 @user_passes_test(is_incident_viewer)
 def dashboard_main(request):
-    return render(request, 'dashboard/index.html')
+    params = {
+        "is_dashboard": True,
+        "incident_show_id": getattr(settings, "INCIDENT_SHOW_ID", False),
+        "incident_id_prefix": getattr(settings, "INCIDENT_ID_PREFIX", ""),
+    }
 
-
-@fir_auth_required
-@user_passes_test(is_incident_viewer)
-def dashboard_starred(request):
-    return incident_display(request, Q(is_starred=True) & ~Q(status='C'), True, False)
-
-
-@fir_auth_required
-@user_passes_test(is_incident_viewer)
-def dashboard_open(request):
-    return incident_display(request, Q(status='O'))
-
-
-@fir_auth_required
-@user_passes_test(is_incident_viewer)
-def dashboard_blocked(request):
-    return incident_display(request, Q(status='B'))
-
-
-@fir_auth_required
-@user_passes_test(is_incident_viewer)
-def dashboard_old(request):
-    permissions = ['incidents.view_incidents', 'incidents.handle_incidents']
-    incident_list = Incident.authorization.for_user(request.user, permissions).filter(status='O').annotate(
-        Max('comments__date')).order_by('comments__date__max')[
-                    :20]
-
-    return render(request, 'events/table.html', {
-        'incident_list': incident_list,
-        'incident_view': True,
-        'order_param': 'last_action',
-        'asc': 'true'
-    })
-
+    return render(request, "dashboard/index.html", params)
 
 # User profile ============================================================
 @fir_auth_required
