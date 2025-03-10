@@ -1,117 +1,48 @@
 {% load i18n %}
-{% load authorization %}
 {% load fir_plugins %}
-{% if incident_list %}
-	<div class='incident_table' data-order-param='{{ order_param }}' data-asc='{{ asc }}'>
-		<table class='table table-hover table-condensed'>
-			<thead>
-            {% trans "Date" as t_date %}
-            {% trans "Category" as t_category %}
-            {% trans "Subject" as t_subject %}
-            {% trans "Severity" as t_severity %}
-            {% trans "Status" as t_status %}
-            {% trans "Detection" as t_detection %}
-            {% trans "Leader" as t_leader %}
-            {% trans "Last Action" as t_lastaction %}
-            {% trans "Plan" as t_plan %}
-            {% trans "Lvl" as t_lvl %}
-            {% trans "IH" as t_ih %}
-            {% trans "None" as t_none %}
-				<tr>
-                    {% if incident_show_id %}<th>ID</th>{% endif %}
-					{% include 'events/column.html' with name=t_date field='date' %}
-					<th></th>
-					{% include 'events/column.html' with name=t_category field='category' %}
-					{% include 'events/column.html' with name=t_subject field='subject' %}
-					<th>{% trans "Business Lines" %}</th>
-					{% include 'events/column.html' with name=t_severity field='severity' %}
-					{% include 'events/column.html' with name=t_status field='status' %}
-					{% if incident_view %}
-						{% include 'events/column.html' with name=t_detection field='detection' %}
-						{% include 'events/column.html' with name=t_leader field='actor' %}
-						{% include 'events/column.html' with name=t_lastaction field='last_action' %}
-						{% include 'events/column.html' with name=t_plan field='plan' %}
-						{% include 'events/column.html' with name=t_lvl field='confidentiality' %}
-					{% endif %}
-					{% include 'events/column.html' with name=t_ih field='opened_by' %}
-					<th>{%  trans "Edit" %}</th>
-				</tr>
-			</thead>
-			<tbody>
-				{% for incident in incident_list %}
-					{%  has_perm 'incidents.handle_incidents' obj=incident as can_handle_incident %}
-					<tr class='{{ incident.status }}'>
-						{% if incident_show_id %}<td>{{ incident|object_id }}</td>{% endif %}
-						<td class='incident_date_column'>{{ incident.date|date:'Y-m-d' }}</td>
-						<td>
-							{% if can_handle_incident %}<a href="{% url 'ajax:toggle_star' incident.id %}" class='star'>{%endif%}
-									{% if incident.is_starred %}
-										<i class='bi bi-star-fill star'></i>
-									{% else %}
-										<i class='bi bi-star star'></i>
-									{% endif %}
-							{% if can_handle_incident %}</a>{%endif%}
-						</td>
-						<td>{{ incident.category }}</td>
-						{% if incident.is_incident %}
-							<td class="text-break"><a href="{% url 'incidents:details' incident.id %}">{{ incident.subject }}</a></td>
-						{% else %}
-							<td class="text-break"><a href="{% url 'events:details' incident.id %}">{{ incident.subject }}</a></td>
-						{% endif %}
-						<td>{{ incident.get_business_lines_names }}</td>
-						<td><span class='badge' style='background-color:{{ incident.severity.color }}!important;'>{{ incident.severity }}</span></td>
-						<td>{{ incident.get_status_display }}</td>
-
-						{% if incident_view %}
-							<td>{{ incident.detection }}</td>
-							<td>{{ incident.actor }}</td>
-							<td>
-								{% if incident.comments_set.count > 0%}
-									{{ incident.get_last_comment.action }}
-									<small class='relative-date'>
-										({{ incident.get_last_comment.date|date:'Y-m-d G:i' }})
-									</small>
-								{% else %}
-									{{ t_none }}
-								{%endif%}
-							</td>
-							<td>{{ incident.plan|default:t_none }}</td>
-							<td>{{ incident.get_confidentiality_display }}</td>
-						{% endif %}
-
-						<td>{{ incident.opened_by }}</td>
-						<td>
-                            {% if can_handle_incident %}
-							<a href="{% url 'incidents:edit' incident.id %}"><span class='bi bi-pencil'></span></a>
-                            {% endif %}
-						</td>
-					</tr>
-				{% endfor %}
-			</tbody>
-		</table>
-
-		{% if incident_list.paginator %}
-			<div>
-			    <span class="step-links">
-			        {% if incident_list.has_previous %}
-			        	<a href='#' class='paginate' data-page='{{ incident_list.previous_page_number }}'>
-							<i class='bi bi-rewind'></i> {% trans "previous" %}
-			        	</a>
-			        {% endif %}
-
-			        <span class="current">
-			            {% blocktrans with number=incident_list.number num_pages=incident_list.paginator.num_pages %}(page {{ number }} of {{ num_pages }}){% endblocktrans %}
-			        </span>
-
-			        {% if incident_list.has_next %}
-			        	<a href='#' class='paginate' data-page='{{ incident_list.next_page_number }}'>
-							{% trans "next" %} <i class='bi bi-fast-forward'></i>
-			        	</a>
-			        {% endif %}
-			    </span>
-			</div>
-		{% endif %}
-	</div>
-{% else %}
-	<div class='nothing_to_show'>{% trans "No incidents to show." %}</div>
-{% endif %}
+<thead>
+    <tr>
+      {% if incident_show_id %}
+      <th><a href="#" data-sort="id">ID</a></th>
+      {% endif %}
+      <th><a href="#" data-sort="date">{% trans "Date" %}</a></th>
+      <th></th>
+      <th><a href="#" data-sort="category">{% trans "Category" %}</a></th>
+      <th><a href="#" data-sort="subject">{% trans "Subject" %}</a></th>
+      <th>{% trans "Business Lines" %}</th>
+      <th><a href="#" data-sort="severity">{% trans "Severity" %}</a></th>
+      <th><a href="#" data-sort="status">{% trans "Status" %}</a></th>
+      {% if incident_view %}
+        <th><a href="#" data-sort="detection">{% trans "Detection" %}</a></th>
+        <th><a href="#" data-sort="actor">{% trans "Leader" %}</a></th>
+      {% endif %}
+      <th><a href="#" data-sort="last_comment_date">{% trans "Last Action" %}</a></th>
+      <th><a href="#" data-sort="confidentiality">{% trans "Lvl" %}</a></th>
+      <th><a href="#" data-sort="opened_by">{% trans "Ih" %}</a></th>
+      {% plugin_point "additional_fields_table_title" %}
+      <th>{% trans "Edit" %}</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr{% if is_dashboard != True %} class="dynamic-status-${status|lower}"{% endif %}>
+      {% if incident_show_id %}
+        <td>{{ incident_id_prefix }}${id}</td>
+      {% endif %}
+      <td>${date}</td>
+      <td><a href="#" data-id="${id}"><i class="hide-if-viewer bi bi-star${is_starred?-fill:} star"></i></a></td>
+      <td>${category}</td>
+      <td class="text-break"><a class="add-link">${subject}</a></td>
+      <td>${concerned_business_lines}</td>
+      <td class="incident-severity"><span class="badge dynamic-severity-${severity}">${severity}</span></td>
+      <td>${status}</td>
+      {% if incident_view %}
+        <td>${detection}</td>
+        <td>${actor}</td>
+      {% endif %}
+      <td>${last_comment_action} <small>${last_comment_date}</small></td>
+      <td>${confidentiality}</td>
+      <td>${opened_by}</td>
+      {% plugin_point "additional_fields_table_content" %}
+      <td><a class="hide-if-viewer edit-button"><span class="bi bi-pencil"></span></a></td>
+    </tr>
+  </tbody>
