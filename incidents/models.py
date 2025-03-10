@@ -360,49 +360,19 @@ class Comments(models.Model):
 
     @classmethod
     def create_diff_comment(cls, incident, data, user):
-        comments = ""
-        for key in data:
-            # skip the following fields from diff
-            if key in [
-                "description",
-                "concerned_business_lines",
-                "main_business_lines",
-            ]:
-                continue
+        new = data.get("status", None)
+        old = getattr(incident, "status", None)
 
-            new = data[key]
-            old = getattr(incident, key, None)
+        if new != old:
+            if new == "O":
+                new = "Open"
+            if new == "C":
+                new = "Closed"
+            if new == "B":
+                new = "Blocked"
 
-            if new != old:
-                label = key
-
-                if key == "is_major":
-                    label = "major"
-                if key == "concerned_business_lines":
-                    label = "business lines"
-                if key == "main_business_line":
-                    label = "main business line"
-                if key == "is_incident":
-                    label = "incident"
-
-                if old == "O":
-                    old = "Open"
-                if old == "C":
-                    old = "Closed"
-                if old == "B":
-                    old = "Blocked"
-                if new == "O":
-                    new = "Open"
-                if new == "C":
-                    new = "Closed"
-                if new == "B":
-                    new = "Blocked"
-
-                comments += 'Changed "%s" from "%s" to "%s"; ' % (label, old, new)
-
-        if comments:
             Comments.objects.create(
-                comment=comments,
+                comment="Status changed to '%s'" % new,
                 action=Label.objects.get(name="Info"),
                 incident=incident,
                 opened_by=user,
