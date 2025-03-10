@@ -290,54 +290,14 @@ def new_event(request):
     return render(request, 'events/new.html', {'form': form, 'mode': 'new'})
 
 
-def diff(incident, form):
-    comments = []
-    for i in form:
-        # skip the following fields from diff
-        if i in ['description', 'concerned_business_lines', 'main_business_lines']:
-            continue
-
-        new = form[i]
-        old = getattr(incident, i)
-
-        if new != old:
-
-            label = i
-
-            if i == 'is_major':
-                label = 'major'
-            if i == 'concerned_business_lines':
-                label = "business lines"
-            if i == 'main_business_line':
-                label = "main business line"
-            if i == 'is_incident':
-                label = 'incident'
-
-            if old == "O":
-                old = 'Open'
-            if old == "C":
-                old = 'Closed'
-            if old == "B":
-                old = 'Blocked'
-            if new == "O":
-                new = 'Open'
-            if new == "C":
-                new = 'Closed'
-            if new == "B":
-                new = 'Blocked'
-
-            comments.append(u'Changed "%s" from "%s" to "%s";' % (label, old, new))
-
-    return "\n".join(comments)
-
-
 @fir_auth_required
-@authorization_required('incidents.handle_incidents', Incident, view_arg='incident_id')
+@authorization_required("incidents.handle_incidents", Incident, view_arg="incident_id")
 def edit_incident(request, incident_id, authorization_target=None):
     if authorization_target is None:
         i = get_object_or_404(
-            Incident.authorization.for_user(request.user, 'incidents.handle_incidents'),
-            pk=incident_id)
+            Incident.authorization.for_user(request.user, "incidents.handle_incidents"),
+            pk=incident_id,
+        )
     else:
         i = authorization_target
     starred = i.is_starred
@@ -347,13 +307,14 @@ def edit_incident(request, incident_id, authorization_target=None):
         form = IncidentForm(request.POST, instance=i, for_user=request.user)
 
         if form.is_valid():
-            Comments.create_diff_comment(i, form.cleaned_data, request.user)
-            if previous_status == form.cleaned_data['status']:
+            if previous_status == form.cleaned_data["status"]:
                 previous_status = None
             # update main BL
             form.save()
             if previous_status is not None:
-                model_status_changed.send(sender=Incident, instance=i, previous_status=previous_status)
+                model_status_changed.send(
+                    sender=Incident, instance=i, previous_status=previous_status
+                )
             i.refresh_main_business_lines()
             i.is_starred = starred
             i.save()
@@ -366,7 +327,7 @@ def edit_incident(request, incident_id, authorization_target=None):
     else:
         form = IncidentForm(instance=i, for_user=request.user)
 
-    return render(request, 'events/new.html', {'i': i, 'form': form, 'mode': 'edit'})
+    return render(request, "events/new.html", {"i": i, "form": form, "mode": "edit"})
 
 
 @fir_auth_required
