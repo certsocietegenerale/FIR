@@ -120,6 +120,8 @@ class IncidentViewSet(
         "severity",
         "confidentiality",
         "actor",
+        "detection",
+        "opened_by",
     ]
     filterset_class = IncidentFilter
 
