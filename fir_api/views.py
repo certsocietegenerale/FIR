@@ -12,7 +12,7 @@ from django.dispatch import receiver
 from django.shortcuts import get_object_or_404
 from django.core.files import File as FileWrapper
 from django.contrib.auth.models import User
-from django.db.models import Q, Count, OuterRef, Subquery, Func, F
+from django.db.models import Q, Count, OuterRef, Subquery, Func
 from django.db.models.functions import (
     TruncMonth,
     TruncYear,
@@ -127,11 +127,11 @@ class IncidentViewSet(
 
     def get_queryset(self):
         last_comment_action = Subquery(
-                Comments.objects.filter(
-                    incident_id=OuterRef("id"),
-                )
-                .order_by("-date")
-                .values("action__name")[:1]
+            Comments.objects.filter(
+                incident_id=OuterRef("id"),
+            )
+            .order_by("-date")
+            .values("action__name")[:1]
         )
 
         last_comment_date = Subquery(
@@ -587,20 +587,25 @@ class StatsViewSet(ListModelMixin, viewsets.GenericViewSet):
         )
         _ = filterset.is_valid()  # Used to calculate cleaned_data.
 
-        if filterset.form.cleaned_data.get(
-            "unit", ""
-        ) == "attribute" and filterset.form.cleaned_data.get("attribute", []):
+        if filterset.form.cleaned_data.get("unit", "") == "attribute":
             # If unit=attribute is set: count selected attributes
-            attr_names = [n.name for n in filterset.form.cleaned_data.get("attribute")]
+            attr_names = [
+                n.name for n in filterset.form.cleaned_data.get("attribute", [])
+            ]
             attr_subquery = Subquery(
                 Attribute.objects.filter(incident=OuterRef("id"))
                 .filter(name__in=attr_names)
                 .annotate(
-                    count=Func(F("value"), function="SUM")
+                    count=Func("value", function="Sum")
                 )  # Perform per-incident sum of all selected attributes
                 .values("count")
             )
             queryset = queryset.annotate(count=attr_subquery).values(*values)
+
+            # Remove attribute filter as it was already applied
+            self.request.query_params._mutable = True
+            self.request.query_params.pop("attribute", None)
+            self.request.query_params._mutable = False
         else:
             # otherwise count incident
             queryset = queryset.annotate(count=Count("pk")).values(*values)
@@ -678,7 +683,7 @@ class StatsViewSet(ListModelMixin, viewsets.GenericViewSet):
                         final_dict[val] = self.deep_update(final_dict[val], nested)
                     else:
                         final_dict[val] = nested
-                else:
+                elif isinstance(entry["count"], int):
                     if agg == "entity":
                         # If we filtered by entity: group count by top BusinessLine
                         val = self.bl_to_rootbl_dict.get(val, "Undefined")
@@ -699,10 +704,14 @@ class StatsViewSet(ListModelMixin, viewsets.GenericViewSet):
         if applied_aggregations:
             nested = self.nest_dict(serializer.data, applied_aggregations)
         else:
-            if self.request.query_params.get(
-                "unit", ""
-            ) == "attribute" and self.request.query_params.getlist("attribute", []):
-                nested = {"attributes": sum(a["count"] for a in serializer.data)}
+            if self.request.query_params.get("unit", "") == "attribute":
+                nested = {
+                    "attributes": sum(
+                        a["count"]
+                        for a in serializer.data
+                        if isinstance(a["count"], int)
+                    )
+                }
             else:
                 nested = {"incidents": len(serializer.data)}
 

@@ -366,6 +366,16 @@ class StatsFilter(IncidentFilter):
     aggregation = CharFilter(method="aggregate_by", label=_("Aggregate by"))
     unit = CharFilter(method="set_unit", label=_("Perform stats on"))
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        for k in self.filters:
+            # Disable distinct count for MultipleChoiceFilter
+            if isinstance(
+                self.filters[k], (ModelMultipleChoiceFilter, MultipleChoiceFilter)
+            ):
+                self.filters[k].distinct = False
+
     def set_unit(self, queryset, name, unit):
         valid_unit = ["attribute", "incident"]
 
