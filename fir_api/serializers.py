@@ -228,18 +228,24 @@ class IncidentSerializer(serializers.ModelSerializer):
                     continue
 
                 for field in h.hooks.get("incident_fields", []):
-                    if field[2] is not None and (
-                        not field[0].endswith("_set")
-                        or kwargs["context"]["view"].action == "retrieve"
-                    ):
-                        instance._declared_fields.update({field[0]: field[2]})
-                        instance._additional_fields.update({field[0]: field[2]})
+                    try:
+                        if field[2] is not None and (
+                            not field[0].endswith("_set")
+                            or kwargs["context"]["view"].action == "retrieve"
+                        ):
+                            instance._declared_fields.update({field[0]: field[2]})
+                            instance._additional_fields.update({field[0]: field[2]})
+                    except KeyError as e:
+                        continue
 
-        if kwargs["context"]["view"].action != "retrieve":
-            del instance.fields["artifacts"]
-            del instance.fields["comments_set"]
-            del instance.fields["file_set"]
-            del instance.fields["attribute_set"]
+        try:
+            if kwargs["context"]["view"].action != "retrieve":
+                del instance.fields["artifacts"]
+                del instance.fields["comments_set"]
+                del instance.fields["file_set"]
+                del instance.fields["attribute_set"]
+        except KeyError as e:
+            pass
 
         return instance
 
@@ -283,7 +289,7 @@ class IncidentSerializer(serializers.ModelSerializer):
                 field_serializer.save(incident=instance)
 
         return super().update(instance, validated_data)
-
+    
     def get_can_edit(self, obj):
         try:
             has_permission = Incident.authorization.for_user(
