@@ -127,11 +127,11 @@ class IncidentViewSet(
 
     def get_queryset(self):
         last_comment_action = Subquery(
-                Comments.objects.filter(
-                    incident_id=OuterRef("id"),
-                )
-                .order_by("-date")
-                .values("action__name")[:1]
+            Comments.objects.filter(
+                incident_id=OuterRef("id"),
+            )
+            .order_by("-date")
+            .values("action__name")[:1]
         )
 
         last_comment_date = Subquery(

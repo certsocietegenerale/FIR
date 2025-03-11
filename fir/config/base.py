@@ -209,7 +209,11 @@ INCIDENT_ID_PREFIX = "FIR-"
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "fir_api.pagination.CustomPageNumberPagination",
     "PAGE_SIZE": 25,
-    "DATETIME_INPUT_FORMATS": ["%Y-%m-%dT%H:%M", "%Y-%m-%dT%H:%M:%S.%f", "%Y-%m-%dT%H:%M:%S"],
+    "DATETIME_INPUT_FORMATS": [
+        "%Y-%m-%dT%H:%M",
+        "%Y-%m-%dT%H:%M:%S.%f",
+        "%Y-%m-%dT%H:%M:%S",
+    ],
     "DATETIME_FORMAT": "%Y-%m-%dT%H:%M",
     # Any access to the API requires the user to be authenticated.
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
@@ -238,4 +242,3 @@ SPECTACULAR_SETTINGS = {
     "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
     "REDOC_DIST": "SIDECAR",
 }
-

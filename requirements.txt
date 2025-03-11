@@ -11,5 +11,3 @@ markdown2
 bleach
 django-querysetsequence
 django-colorfield
-drf-spectacular
-drf-spectacular[sidecar]

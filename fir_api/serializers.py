@@ -289,7 +289,7 @@ class IncidentSerializer(serializers.ModelSerializer):
                 field_serializer.save(incident=instance)
 
         return super().update(instance, validated_data)
-    
+
     def get_can_edit(self, obj):
         try:
             has_permission = Incident.authorization.for_user(
