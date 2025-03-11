@@ -229,13 +229,13 @@ REST_FRAMEWORK = {
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'FIR API',
-    'DESCRIPTION': 'Fast Incident Response OpenAPI specification',
-    'VERSION': '0.0.1',
-    'SERVE_INCLUDE_SCHEMA': True,
+    "TITLE": "FIR API",
+    "DESCRIPTION": "Fast Incident Response OpenAPI specification",
+    "VERSION": "0.0.1",
+    "SERVE_INCLUDE_SCHEMA": True,
     # OTHER SETTINGS
-    'SWAGGER_UI_DIST': 'SIDECAR',  # shorthand to use the sidecar instead
-    'SWAGGER_UI_FAVICON_HREF': 'SIDECAR',
-    'REDOC_DIST': 'SIDECAR',
+    "SWAGGER_UI_DIST": "SIDECAR",  # shorthand to use the sidecar instead
+    "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
+    "REDOC_DIST": "SIDECAR",
 }
 
