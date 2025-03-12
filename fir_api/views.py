@@ -531,7 +531,7 @@ class StatsViewSet(ListModelMixin, viewsets.GenericViewSet):
     def split_by_date(self, queryset, filterset, values):
         """
         Aggregate a queryset by time
-        Eg: qs = qs.annotate(year=TruncYear("date")).values("year", "count")
+        Eg: qs = qs.annotate(year=TruncYear("date")).annotate(count=Count("pk")).values("year", "count")
         """
 
         date_from = filterset.get("created_after", False) or datetime.min
@@ -555,22 +555,28 @@ class StatsViewSet(ListModelMixin, viewsets.GenericViewSet):
         applied_aggregation = list(split_by_kwargs.keys())[0]
         values.append(applied_aggregation)
 
-        queryset = (
-            queryset.annotate(**split_by_kwargs)
-            .values(*values)
-            .order_by(*[v for v in values if v != "count"])
-        )
+        queryset = queryset.annotate(**split_by_kwargs).values(*values)
+
+        if not "count" in values:
+            values.append("count")
+            queryset = queryset.annotate(count=Count("pk")).values(*values)
+
+        queryset = queryset.order_by(*[v for v in values if v != "count"])
         return queryset, values, applied_aggregation
 
     def split_by_foreignkey_name(self, fk, queryset, values):
         """
         Aggregate a queryset by foreign_key
-        Eg: qs = qs.values("category__name").values("category__name", "count")
+        Eg: qs = qs.values("category__name").annotate(count=Count("pk")).values("category__name", "count")
         """
         values.append(f"{fk}__name")
-        queryset = queryset.values(*values).order_by(
-            *[v for v in values if v != "count"]
-        )
+        queryset = queryset.values(*values)
+
+        if not "count" in values:
+            values.append("count")
+            queryset = queryset.annotate(count=Count("pk")).values(*values)
+
+        queryset = queryset.order_by(*[v for v in values if v != "count"])
         return queryset, values
 
     def get_queryset(self, return_applied_aggregations=False):
@@ -578,7 +584,7 @@ class StatsViewSet(ListModelMixin, viewsets.GenericViewSet):
             self.request.user, "incidents.view_statistics"
         )
 
-        values = ["count"]
+        values = []
         aggregation = ""
         applied_aggregations = []
 
@@ -592,23 +598,23 @@ class StatsViewSet(ListModelMixin, viewsets.GenericViewSet):
             attr_names = [
                 n.name for n in filterset.form.cleaned_data.get("attribute", [])
             ]
+            attr_subquery = Attribute.objects.filter(incident=OuterRef("id"))
+            if attr_names:
+                attr_subquery = attr_subquery.filter(name__in=attr_names)
             attr_subquery = Subquery(
-                Attribute.objects.filter(incident=OuterRef("id"))
-                .filter(name__in=attr_names)
+                attr_subquery
                 .annotate(
                     count=Func("value", function="Sum")
                 )  # Perform per-incident sum of all selected attributes
                 .values("count")
             )
-            queryset = queryset.annotate(count=attr_subquery).values(*values)
+            values.append("count")
+            queryset = queryset.annotate(count=attr_subquery).filter(count__isnull=False).values(*values)
 
             # Remove attribute filter as it was already applied
             self.request.query_params._mutable = True
             self.request.query_params.pop("attribute", None)
             self.request.query_params._mutable = False
-        else:
-            # otherwise count incident
-            queryset = queryset.annotate(count=Count("pk")).values(*values)
 
         for agg in filterset.form.cleaned_data.get("aggregation", "").split(","):
             # Split the querySet depending on the requested GET parameter. Store the applied aggregations
