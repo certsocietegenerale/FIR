@@ -392,6 +392,7 @@ class StatsFilter(IncidentFilter):
             "detection",
             "actor",
             "date",
+            "baselcategory",
         ]
 
         for elem in aggregate_by.split(","):

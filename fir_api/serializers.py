@@ -2,7 +2,7 @@ import importlib
 from django.apps import apps
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from collections import OrderedDict
 from copy import deepcopy
 
@@ -17,6 +17,7 @@ from incidents.models import (
     Attribute,
     ValidAttribute,
     SeverityChoice,
+    BaleCategory,
     STATUS_CHOICES,
     CONFIDENTIALITY_LEVEL,
 )
@@ -305,10 +306,43 @@ class ValidAttributeSerializer(serializers.ModelSerializer):
         read_only_fields = ["id"]
 
 
+class BaselCategoryField(serializers.SlugRelatedField):
+    def to_internal_value(self, data):
+        if "(" in data and ")" in data:
+            category = data.split("(")[1].split(")")[0]
+            name = data.split(")", 1)[1]
+            if ">" in category:
+                category = category.split(">").pop()
+            try:
+                return BaleCategory.objects.get(
+                    category_number=category.strip(), name=name.strip()
+                )
+            except (MultipleObjectsReturned, ObjectDoesNotExist):
+                print("Unable to create", flush=True)
+                print(category.strip(), flush=True)
+                pass
+        return super().to_internal_value(data)
+
+    def to_representation(self, instance):
+        if isinstance(instance, str):
+            try:
+                instance = BaleCategory.objects.get(name=instance)
+            except (MultipleObjectsReturned, ObjectDoesNotExist):
+                pass
+        return str(instance)
+
+
 class CategorySerializer(serializers.ModelSerializer):
+    bale_subcategory = BaselCategoryField(
+        many=False,
+        read_only=False,
+        slug_field="name",
+        queryset=BaleCategory.objects.all(),
+    )
+
     class Meta:
         model = IncidentCategory
-        fields = ["id", "name", "is_major"]
+        fields = ["id", "name", "is_major", "bale_subcategory"]
         read_only_fields = ["id"]
 
 
@@ -328,6 +362,12 @@ class StatsSerializer(serializers.ModelSerializer):
     severity = serializers.CharField(required=False, source="severity__name")
     actor = serializers.CharField(required=False, source="actor__name")
     detection = serializers.CharField(required=False, source="detection__name")
+    baselcategory = BaselCategoryField(
+        required=False,
+        source="category__bale_subcategory__name",
+        slug_field="name",
+        read_only=True,
+    )
     entity = serializers.CharField(
         required=False, source="concerned_business_lines__name"
     )
@@ -344,5 +384,6 @@ class StatsSerializer(serializers.ModelSerializer):
             "actor",
             "detection",
             "entity",
+            "baselcategory",
             "count",
         ]

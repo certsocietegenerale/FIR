@@ -609,7 +609,11 @@ class StatsViewSet(ListModelMixin, viewsets.GenericViewSet):
                 .values("count")
             )
             values.append("count")
-            queryset = queryset.annotate(count=attr_subquery).filter(count__isnull=False).values(*values)
+            queryset = (
+                queryset.annotate(count=attr_subquery)
+                .filter(count__isnull=False)
+                .values(*values)
+            )
 
             # Remove attribute filter as it was already applied
             self.request.query_params._mutable = True
@@ -631,6 +635,12 @@ class StatsViewSet(ListModelMixin, viewsets.GenericViewSet):
                     "concerned_business_lines", queryset, values
                 )
                 applied_aggregations.append(agg)
+            elif agg == "baselcategory":
+                queryset, values = self.split_by_foreignkey_name(
+                    "category__bale_subcategory", queryset, values
+                )
+                applied_aggregations.append(agg)
+
         if return_applied_aggregations:
             return queryset, applied_aggregations
         else:
