@@ -95,6 +95,8 @@ INSTALLED_APPS = (
     "django.contrib.admin",
     "rest_framework",
     "rest_framework.authtoken",
+    "drf_spectacular",
+    "drf_spectacular_sidecar",
     "django_filters",
     "fir_plugins",
     "incidents",
@@ -207,7 +209,11 @@ INCIDENT_ID_PREFIX = "FIR-"
 REST_FRAMEWORK = {
     "DEFAULT_PAGINATION_CLASS": "fir_api.pagination.CustomPageNumberPagination",
     "PAGE_SIZE": 25,
-    "DATETIME_INPUT_FORMATS": ["%Y-%m-%dT%H:%M", "%Y-%m-%dT%H:%M:%S.%f", "%Y-%m-%dT%H:%M:%S"],
+    "DATETIME_INPUT_FORMATS": [
+        "%Y-%m-%dT%H:%M",
+        "%Y-%m-%dT%H:%M:%S.%f",
+        "%Y-%m-%dT%H:%M:%S",
+    ],
     "DATETIME_FORMAT": "%Y-%m-%dT%H:%M",
     # Any access to the API requires the user to be authenticated.
     "DEFAULT_PERMISSION_CLASSES": ("rest_framework.permissions.IsAuthenticated",),
@@ -221,6 +227,18 @@ REST_FRAMEWORK = {
     "TOKEN_AUTHENTICATION_KEYWORD": "Token",
     # HTTP_X_API == "X-Api" in HTTP headers.
     "TOKEN_AUTHENTICATION_META": "HTTP_X_API",
+    "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "FIR API",
+    "DESCRIPTION": "Fast Incident Response OpenAPI specification",
+    "VERSION": "0.0.1",
+    "SERVE_INCLUDE_SCHEMA": True,
+    # OTHER SETTINGS
+    "SWAGGER_UI_DIST": "SIDECAR",  # shorthand to use the sidecar instead
+    "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
+    "REDOC_DIST": "SIDECAR",
+}

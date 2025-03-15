@@ -1,3 +1,5 @@
 djangorestframework
 django-filter
 pyparsing
+drf-spectacular
+drf-spectacular[sidecar]
