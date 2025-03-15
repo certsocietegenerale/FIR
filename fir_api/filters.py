@@ -21,6 +21,7 @@ from incidents.models import (
     Incident,
     Label,
     IncidentCategory,
+    BusinessLine,
     ValidAttribute,
     Comments,
     File,
@@ -33,22 +34,23 @@ from fir_api.lexer import SearchParser
 from fir.config.base import INSTALLED_APPS
 
 
-class AllValuesMultipleFilterAllAllowed(MultipleChoiceFilter):
+class BLChoiceFilter(ModelMultipleChoiceFilter):
+    def __init__(self, *args, **kwargs):
+        kwargs["method"] = self.filter_bl
+        super().__init__(*args, **kwargs)
 
-    @property
-    def field(self):
-        if "__" in self.field_name:
-            field_name, field_attribute = tuple(self.field_name.split("__"))
-            field_model = self.model._meta.get_field(field_name)
-            choices = field_model.related_model.objects.all().values_list(
-                field_attribute, flat=True
-            )
-            self.extra["choices"] = [(choice, choice) for choice in choices]
-        else:
-            self.extra["choices"] = self.model._meta.get_field(
-                self.field_name
-            ).get_choices()
-        return super().field
+    def filter_bl(self, queryset, name, value):
+        """
+        Custom handling to also retrieve children BLs
+        """
+        bls = []
+        for v in value:
+            bls.append(v)
+            bls.extend(v.get_descendants())
+        if bls:
+            filter_dict = {name + "__in": [b.name for b in bls]}
+            queryset = queryset.filter(**filter_dict)
+        return queryset
 
 
 class ValueChoiceFilter(ChoiceFilter):
@@ -95,8 +97,10 @@ class IncidentFilter(FilterSet):
         field_name="confidentiality", choices=CONFIDENTIALITY_LEVEL
     )
     is_starred = BooleanFilter(field_name="is_starred")
-    concerned_business_lines = AllValuesMultipleFilterAllAllowed(
-        field_name="concerned_business_lines__name", lookup_expr="icontains"
+    concerned_business_lines = BLChoiceFilter(
+        to_field_name="name",
+        field_name="concerned_business_lines__name",
+        queryset=BusinessLine.objects.all(),
     )
     category = ModelMultipleChoiceFilter(
         to_field_name="name",
@@ -132,6 +136,16 @@ class IncidentFilter(FilterSet):
     search_filters = []
     keyword_filters = {}
 
+    # BL search: search in selected BL and childrens
+    @staticmethod
+    def search_bl(x):
+        q = Q(concerned_business_lines__name__iexact=x)
+        for bl in BusinessLine.objects.filter(name__iexact=x):
+            bls = [bl]
+            bls.extend(bl.get_descendants())
+            q = q | Q(concerned_business_lines__in=bls)
+        return q
+
     def search_query(self, queryset, name, search_query):
         # Build possible fields list
         possible_fields = {}
@@ -145,8 +159,8 @@ class IncidentFilter(FilterSet):
         # Define custom mapping for specific fields
         possible_fields.update(
             {
-                "bl": "concerned_business_lines__in",
-                "plan": "plan__name",
+                "bl": self.search_bl,
+                "plan": "plan__name__iexact",
                 "id": lambda x: Q(
                     id=(
                         x.removesuffix(settings.INCIDENT_ID_PREFIX)
@@ -157,10 +171,10 @@ class IncidentFilter(FilterSet):
                 "starred": lambda x: Q(
                     is_starred=True if x.lower() in ["true", 1, "yes", "y"] else False
                 ),
-                "opened_by": "opened_by__username",
+                "opened_by": "opened_by__username__iexact",
                 "category": "category__name__icontains",
-                "status": "status",
-                "severity": "severity__name",
+                "status": "status__iexact",
+                "severity": "severity__name__iexact",
             }
         )
         # Custom fields added by plugins
@@ -310,35 +324,15 @@ class FileFilter(FilterSet):
 
 class BLFilter(FilterSet):
     """
-    Custom filtering so we can partially match on name
+    Custom filtering class for BL Filtering
     """
 
     id = NumberFilter(field_name="id")
-    name = CharFilter(field_name="name", lookup_expr="icontains", method="filter_name")
-
-    def filter_name(self, queryset, name, value):
-        """
-        And custom handling that we do return children
-        of the searched name
-        """
-        split_values = []
-        if " > " in value:
-            split_values = value.split(" > ")
-            lookup = {name + "__icontains": split_values[-1]}
-        else:
-            lookup = {name + "__icontains": value}
-        filtered_queryset = queryset.filter(**lookup)
-        if split_values:
-            for node in filtered_queryset:
-                ancestors = node.get_ancestors()
-                for value in split_values[:-1]:
-                    if not ancestors.filter(name=value):
-                        filtered_queryset = filtered_queryset.exclude(pk=node.pk)
-                        break
-        for node in filtered_queryset:
-            if node.numchild > 0:
-                filtered_queryset = filtered_queryset.union(node.get_descendants())
-        return filtered_queryset
+    name = BLChoiceFilter(
+        to_field_name="name",
+        field_name="name",
+        queryset=BusinessLine.objects.all(),
+    )
 
 
 class CommentFilter(FilterSet):
