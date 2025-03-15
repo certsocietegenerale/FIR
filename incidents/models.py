@@ -363,7 +363,7 @@ class Comments(models.Model):
         new = data.get("status", None)
         old = getattr(incident, "status", None)
 
-        if new != old:
+        if new is not None and new != old:
             if new == "O":
                 new = "Open"
             if new == "C":

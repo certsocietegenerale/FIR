@@ -81,7 +81,7 @@
 		width:200px!important;
 	}
 
-	.C, .C a {
+	.dynamic-status-closed, .dynamic-status-closed a {
 		opacity: 1.0!important;
 		color:#ddd!important;
 	}
@@ -545,17 +545,17 @@ tr .icon-star-empty {
 	border-top:0;
 }
 
-tr.C {
+tr.dynamic-status-closed {
 	opacity: 0.3
 }
 
-#all_incidents tr.B td  {
+.incident_display tr.dynamic-status-blocked td  {
 	color: #f00;
 	background-color:#fdd;
 	font-weight:bold;
 }
 
-#all_incidents tr.B td a {
+.incident_display tr.dynamic-status-blocked td a {
 	color: rgb(31, 105, 121)!important;
 }
 

@@ -11,8 +11,6 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-
-    <!-- Le styles -->
     <link href="{% static "vendor/jquery/jquery-ui.min.css" %}" rel="stylesheet">
     <link href="{% static "vendor/bootstrap/bootstrap.min.css" %}" rel="stylesheet">
     <link href="{% static "vendor/bootstrap-icons/bootstrap-icons.min.css" %}" rel="stylesheet">
@@ -20,7 +18,6 @@
     {% block custom_js_top %}{% endblock %}
     {% block custom_css %}{% endblock%}
 
-    <!-- Fav and touch icons -->
     <link rel="shortcut icon" href="{% static "img/favicon.png" %}">
   </head>
 
@@ -29,7 +26,7 @@
     <div>
       <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" data-bs-theme="dark">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{% url 'dashboard:main' %}">FIR</a>
+            <a class="navbar-brand" href="{% url "dashboard:main" %}">FIR</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar-collapse" aria-controls="navbar-collapse" aria-expanded="false" aria-label="Toggle navigation">
               <span class="navbar-toggler-icon"></span>
             </button>
@@ -39,7 +36,7 @@
               {% if request.session.can_report_event %}
               <li class="nav-item">
                 <div class="btn-group navbar-btn">
-                  <a class="btn btn-outline-danger" href="{% url 'events:new' %}">
+                  <a class="btn btn-outline-danger" href="{% url "events:new" %}">
                     {% trans "New event" %} <span class="bi bi-fire"></span>
                   </a>
                   {% if request.session.has_incident_templates %}
@@ -49,56 +46,56 @@
                   <ul class="dropdown-menu">
                     {% for template in request.session.incident_templates %}
                     <li class="dropdown-item" >
-                      <a href="{% url 'events:new' %}?template={{ template.name }}">
+                      <a href="{% url "events:new" %}?template={{ template.name }}">
                         {{ template.name }}
                       </a>
                     </li>
                     {% endfor %}
                     <li class="divider"></li>
-                    <li class="dropdown-item" ><a href="{% url 'events:new' %}">{% trans "Default" %}</a></li>
+                    <li class="dropdown-item" ><a href="{% url "events:new" %}">{% trans "Default" %}</a></li>
                   </ul>
                   {% endif %}
                 </div>
               </li>
               {% endif %}
-              <li class="nav-item" id='dashboard-nav'><a class="nav-link" href="{% url 'dashboard:main' %}">{% trans "Dashboard" %}</a></li>
-              <li class="nav-item" id='incidents-nav'><a class="nav-link" href="{% url 'incidents:index' %}">{% trans "Incidents"%}</a></li>
-              <li class="nav-item" id='events-nav'><a class="nav-link" href="{% url 'events:index' %}">{% trans "Events" %}</a></li>
-            {% plugin_point 'base_navbar' %}
-              {% has_perm 'incidents.view_statistics' model='incidents.Incident' as can_view_statistics %}
+              <li class="nav-item" id="dashboard-nav"><a class="nav-link" href="{% url "dashboard:main" %}">{% trans "Dashboard" %}</a></li>
+              <li class="nav-item" id="incidents-nav"><a class="nav-link" href="{% url "incidents:index" %}">{% trans "Incidents"%}</a></li>
+              <li class="nav-item" id="events-nav"><a class="nav-link" href="{% url "events:index" %}">{% trans "Events" %}</a></li>
+            {% plugin_point "base_navbar" %}
+              {% has_perm "incidents.view_statistics" model="incidents.Incident" as can_view_statistics %}
               {% if can_view_statistics %}
-              <li class="nav-item dropdown" id='stats-nav' >
-                <a class='nav-link dropdown-toggle' data-bs-toggle='dropdown' href="#">{% trans "Stats" %}</a>
-                <ul class='dropdown-menu'>
-                  <li><a class="dropdown-item" href="{% url 'stats:yearly' %}">{% trans "Yearly" %}</a></li>
-                  <li><a class="dropdown-item" href="{% url 'stats:quarterly_bl_stats_default' %}">{% trans "Quarterly" %}</a></li>
-                  <li><a class="dropdown-item" href="{% url 'stats:yearly_compare' %}">{% trans "Compare with previous year" %}</a></li>
-                  <li><a class="dropdown-item" href="{%url 'stats:quarterly_major' %}">{% trans "Major incidents" %}</a></li>
-                  <li><a class="dropdown-item" href="{%url 'stats:sandbox' %}">{% trans "Sandbox" %}</a></li>
-                  <li><a class="dropdown-item" href="{%url 'stats:attributes' %}">{% trans "Attributes" %}</a></li>
-                  {% plugin_point 'stats_element' %}
+              <li class="nav-item dropdown" id="stats-nav" >
+                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">{% trans "Stats" %}</a>
+                <ul class="dropdown-menu">
+                  <li><a class="dropdown-item" href="{% url "stats:yearly" %}">{% trans "Yearly" %}</a></li>
+                  <li><a class="dropdown-item" href="{% url "stats:quarterly_bl_stats_default" %}">{% trans "Quarterly" %}</a></li>
+                  <li><a class="dropdown-item" href="{% url "stats:yearly_compare" %}">{% trans "Compare with previous year" %}</a></li>
+                  <li><a class="dropdown-item" href="{%url "stats:quarterly_major" %}">{% trans "Major incidents" %}</a></li>
+                  <li><a class="dropdown-item" href="{%url "stats:sandbox" %}">{% trans "Sandbox" %}</a></li>
+                  <li><a class="dropdown-item" href="{%url "stats:attributes" %}">{% trans "Attributes" %}</a></li>
+                  {% plugin_point "stats_element" %}
                 </ul>
               </li>
               {% endif %}
             </ul>
             <ul class="nav navbar-nav order-last">
               <li class="nav-item">
-                <div class='usergreet'>
-                  {% trans "Currently logged in as" %} <a href="{% url 'user:profile' %}"><strong>{{ user }}</strong></a> [
-                    <a href="{% url 'logout' %}">{% trans "logout" %}</a>
+                <div class="usergreet">
+                  {% trans "Currently logged in as" %} <a href="{% url "user:profile" %}"><strong>{{ user }}</strong></a> [
+                    <a href="{% url "logout" %}">{% trans "logout" %}</a>
                   ]
                   {% if user.is_staff %}
-                    [ <a href="{% url 'admin:index' %}">{% trans "Admin" %}</a> ]
+                    [ <a href="{% url "admin:index" %}">{% trans "Admin" %}</a> ]
                   {% endif %}
                 </div>
               </li>
             </ul>
  
-              <div class="nav navbar-nav flex-grow-1" id="search-bar" class="form-group" style="display:inline;">
+              <div class="nav navbar-nav flex-grow-1 form-group d-inline" id="search-bar">
                 <div class="input-group">
                   <span class="input-group-text"><span class="bi bi-search"></span></span>
-                  <form class="flex-grow-1" method="GET" action="{% url 'search' %}">
-                    <input class="form-control" name="q" placeholder="{% trans 'search...' %}" autocomplete="off" type="text" {% if query_string %}value='{{query_string}}'{% endif %}>
+                  <form class="flex-grow-1" method="GET" action="/search">
+                    <input class="form-control" name="q" placeholder="{% trans "search..." %}" autocomplete="off" type="text" {% if query_string %}value="{{query_string}}"{% endif %}>
                   </form>
                 </div>
               </div>
@@ -115,9 +112,6 @@
       {% endblock%}
     </div>
 
-    <!-- Le javascript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
     <script src="{% static "vendor/jquery/jquery.min.js" %}"></script>
     <script src="{% static "vendor/jquery/jquery-ui.min.js" %}"></script>
     <script src="{% static "vendor/momentjs/moment.min.js" %}"></script>
@@ -129,7 +123,7 @@
 
     <footer class="hidden-xs bg-secondary-subtle">
       <div>
-        FIR - Fast Incident Response - <a href='https://cert.societegenerale.com/'>CERT Soci&eacute;t&eacute; G&eacute;n&eacute;rale {% now "Y"%}</a> &copy; bug reports go to <a href='https://github.com/certsocietegenerale/FIR' target='blank'>the GitHub repository</a>
+        FIR - Fast Incident Response - <a href="https://cert.societegenerale.com/">CERT Soci&eacute;t&eacute; G&eacute;n&eacute;rale {% now "Y"%}</a> &copy; bug reports go to <a href="https://github.com/certsocietegenerale/FIR" target="blank">the GitHub repository</a>
       </div>
     </footer>
   </body>

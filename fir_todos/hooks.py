@@ -1,9 +1,8 @@
-try:
-    from fir_todos.api import TodoSerializer
-except ModuleNotFoundError:
-    incident_fields = {}
-else:
-    incident_fields = [
+from fir_todos.api import TodoSerializer
+
+
+hooks = {
+    "incident_fields": [
         (
             "todoitem_set",  #  name of the new field
             None,
@@ -12,8 +11,5 @@ else:
             ),  # Serializer corresponding to the new field
             None,
         ),
-    ]
-
-hooks = {
-    "incident_fields": incident_fields,
+    ],
 }
