@@ -47,5 +47,4 @@ for app in INSTALLED_APPS:
 urlpatterns = [
     re_path(r"^", include(router.urls)),
     re_path(r"^token/", token_views.obtain_auth_token),
-    re_path(r"^schema/$", SpectacularAPIView.as_view(), name="schema"),
 ]

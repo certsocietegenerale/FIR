@@ -1,0 +1,2 @@
+drf-spectacular
+drf-spectacular[sidecar]
