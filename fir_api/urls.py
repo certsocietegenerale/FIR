@@ -7,11 +7,7 @@ from django.utils.translation import gettext_lazy as _
 
 from fir_api import views
 from fir.config.base import INSTALLED_APPS
-from drf_spectacular.views import (
-    SpectacularAPIView,
-    SpectacularRedocView,
-    SpectacularSwaggerView,
-)
+from drf_spectacular.views import SpectacularAPIView
 
 app_name = "fir_api"
 
@@ -35,7 +31,6 @@ router.register(r"severities", views.SeverityViewSet, basename="severities")
 router.register(r"categories", views.CategoryViewSet, basename="categories")
 router.register(r"stats", views.StatsViewSet, basename="stats")
 
-
 # Load plugin API URLs
 for app in INSTALLED_APPS:
     if app.startswith("fir_"):
@@ -53,14 +48,4 @@ urlpatterns = [
     re_path(r"^", include(router.urls)),
     re_path(r"^token/", token_views.obtain_auth_token),
     re_path(r"^schema/$", SpectacularAPIView.as_view(), name="schema"),
-    re_path(
-        r"^schema/swagger-ui/$",
-        SpectacularSwaggerView.as_view(url_name="fir_api:schema"),
-        name="swagger-ui",
-    ),
-    re_path(
-        r"^schema/redoc/$",
-        SpectacularRedocView.as_view(url_name="fir_api:schema"),
-        name="redoc",
-    ),
 ]
