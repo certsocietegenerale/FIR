@@ -3,6 +3,8 @@ from django.apps import apps
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
 from django.core.exceptions import ObjectDoesNotExist
+from drf_spectacular.utils import extend_schema_field
+from drf_spectacular.types import OpenApiTypes
 from collections import OrderedDict
 from copy import deepcopy
 
@@ -228,26 +230,34 @@ class IncidentSerializer(serializers.ModelSerializer):
                     continue
 
                 for field in h.hooks.get("incident_fields", []):
-                    try:
-                        if field[2] is not None and (
-                            not field[0].endswith("_set")
-                            or kwargs["context"]["view"].action == "retrieve"
-                        ):
-                            instance._declared_fields.update({field[0]: field[2]})
-                            instance._additional_fields.update({field[0]: field[2]})
-                    except KeyError as e:
-                        continue
-
-        try:
-            if kwargs["context"]["view"].action != "retrieve":
-                del instance.fields["artifacts"]
-                del instance.fields["comments_set"]
-                del instance.fields["file_set"]
-                del instance.fields["attribute_set"]
-        except KeyError as e:
-            pass
+                    if field[2] is not None and (not field[0].endswith("_set")):
+                        instance._declared_fields.update({field[0]: field[2]})
+                        instance._additional_fields.update({field[0]: field[2]})
 
         return instance
+
+    def is_retrieve(self):
+        if self._kwargs.get("context"):
+            context = self._kwargs.get("context")
+            if (
+                context.get("request")
+                and context["request"].method == "GET"
+                and context["request"].META["PATH_INFO"] == "/api/incidents/{id}"
+            ):
+                return True
+            if context.get("view") and context["view"].action == "retrieve":
+                return True
+        return False
+
+    def to_representation(self, value):
+        to_remove = ["artifacts", "comments_set", "file_set", "attribute_set"]
+        to_remove.extend(self._additional_fields.keys())
+
+        if not self.is_retrieve():
+            for elem in to_remove:
+                del self.fields[elem]
+
+        return super().to_representation(value)
 
     def validate_owner(self, owner):
         try:
@@ -290,6 +300,7 @@ class IncidentSerializer(serializers.ModelSerializer):
 
         return super().update(instance, validated_data)
 
+    @extend_schema_field(OpenApiTypes.BOOL)
     def get_can_edit(self, obj):
         try:
             has_permission = Incident.authorization.for_user(
