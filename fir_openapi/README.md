@@ -50,9 +50,9 @@ In your *$FIR_HOME*, launch:
 ## Usage
 
 You can access it through one of the following: 
-* https://<FIR_Instance_FQDN>/api/schema
-* https://<FIR_Instance_FQDN>/api/swagger (if configured)
-* https://<FIR_Instance_FQDN>/api/redoc (if configured)
+* https://<FIR_Instance_FQDN>/openapi/schema
+* https://<FIR_Instance_FQDN>/openapi/swagger (if configured)
+* https://<FIR_Instance_FQDN>/openapi/redoc (if configured)
 
 ## Configuration
 
