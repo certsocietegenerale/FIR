@@ -18,7 +18,7 @@
 	<div class="card-body">
 		<h4><i class="bi bi-stars"></i>{%  trans "Starred Incidents" %}</h4>
 
-		<div id="starred_incidents" class="incident_display" data-url="/api/incidents?status__not=Closed&is_starred=true&ordering=-date">
+		<div id="starred_incidents" class="incident_display" data-url="/api/incidents?status__not={% trans "Closed" %}&is_starred=true&ordering=-date">
 		    {%  trans "Loading ..." %}
 		    <div class="nothing_to_show d-none">{% trans "No incidents to show." %}</div>
 		</div>
@@ -32,13 +32,13 @@
 		<div class="card-header">
 				<ul class="nav nav-tabs card-header-tabs">
 					<li class="nav-item">
-						<button class="nav-link active" data-bs-target="#tab_open" data-bs-toggle="tab">{%  trans "Open" %}</button>
+						<button class="nav-link active" data-bs-target="#tab_open" data-bs-toggle="tab">{% trans "Open" %}</button>
 					</li>
 					<li class="nav-item">
-						<button class="nav-link"  data-bs-target="#tab_blocked" data-bs-toggle="tab">{%  trans "Blocked" %}</button>
+						<button class="nav-link"  data-bs-target="#tab_blocked" data-bs-toggle="tab">{% trans "Blocked" %}</button>
 					</li>
 					<li class="nav-item">
-						<button class="nav-link"  data-bs-target="#tab_old" data-bs-toggle="tab">{%  trans "Old" %}</button>
+						<button class="nav-link"  data-bs-target="#tab_old" data-bs-toggle="tab">{% trans "Old" %}</button>
 					</li>
 					{% plugin_point 'dashboard_tab' %}
 				</ul>
@@ -46,17 +46,17 @@
 		</div>
 		<div class="card-body">
 			<div class="tab-content tabs">
-				<div class="tab-pane active incident_display table-responsive" id="tab_open" data-url="/api/incidents?status=Open&ordering=-date&page_size=20">
+				<div class="tab-pane active incident_display table-responsive" id="tab_open" data-url="/api/incidents?status={% trans "Open" %}&ordering=-date&page_size=20">
 					{%  trans "Loading ..." %}
 					<div class="nothing_to_show d-none">{% trans "No incidents to show." %}</div>
 				</div>
  
-				<div class="tab-pane incident_display table-responsive" id="tab_blocked" data-url="/api/incidents?status=Blocked&ordering=-date&page_size=20">
+				<div class="tab-pane incident_display table-responsive" id="tab_blocked" data-url="/api/incidents?status={% trans "Blocked" %}&ordering=-date&page_size=20">
 					{%  trans "Loading ..." %}
 					<div class="nothing_to_show d-none">{% trans "No incidents to show." %}</div>
 				</div>
  
-				<div class="tab-pane incident_display table-responsive" id="tab_old" data-url="/api/incidents?status=Open&ordering=last_comment_date&page_size=20">
+				<div class="tab-pane incident_display table-responsive" id="tab_old" data-url="/api/incidents?status={% trans "Open" %}&ordering=last_comment_date&page_size=20">
 					{%  trans "Loading ..." %}
 					<div class="nothing_to_show d-none">{% trans "No incidents to show." %}</div>
 				</div>
