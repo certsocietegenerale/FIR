@@ -175,7 +175,7 @@ async function loadDynamicCSS() {
   let entries = [];
   while (url != null) {
     var response = await (
-      await fetch("/api/severities", {
+      await fetch(url, {
         headers: { Accept: "application/json" },
       })
     ).json();
