@@ -232,8 +232,13 @@ async function toggle_star(target) {
 
 async function refresh_display(div) {
   const loading = div.querySelector(".loading");
+  const error_p = div.querySelector(".error_message");
+
   if (loading) {
     loading.classList.remove("d-none");
+  }
+  if (error_p) {
+    error_p.textContent = "";
   }
   var url = div.dataset.url;
   var request = await fetch(url, {
@@ -242,6 +247,16 @@ async function refresh_display(div) {
   var response = await request.json();
   if (request.status != 200) {
     console.error(response);
+    if (loading) {
+      loading.classList.add("d-none");
+    }
+    if (error_p) {
+      if ("detail" in response) {
+        error_p.textContent = response["detail"];
+      } else {
+        error_p.textContent = response;
+      }
+    }
     return;
   }
 

@@ -44,12 +44,13 @@
 {% else %}
   <div id="all_incidents" class="incident_display" data-url="/api/incidents?is_incident=false">
 {% endif %}
-  {% trans "Loading ..." %}
+  <div class="loading">{% trans "Loading ..." %}</div>
   {% if incident_view %}
     <p class="nothing_to_show d-none">{% trans "No incident found." %}</p>
   {% else %}
     <p class="nothing_to_show d-none">{% trans "No event found." %}</p>
   {% endif %}
+  <p class="error_message"></p>
   </div>
 {% csrf_token %}
 {% endblock %}
