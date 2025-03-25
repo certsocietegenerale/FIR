@@ -3,7 +3,7 @@ from django.apps import apps
 from rest_framework.exceptions import ParseError
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
-from django.db.models import Q
+from django.db.models import Q, Subquery
 from django.apps import apps
 from django_filters.rest_framework import (
     FilterSet,
@@ -146,6 +146,18 @@ class IncidentFilter(FilterSet):
             q = q | Q(concerned_business_lines__in=bls)
         return q
 
+    # Comment search: use a subquery for performance
+    @staticmethod
+    def comment_contains(x):
+        comments = Subquery(
+            Comments.objects.filter(
+                comment__icontains=x,
+            )
+            .values("incident_id")
+            .distinct()
+        )
+        return Q(id__in=comments)
+
     def search_query(self, queryset, name, search_query):
         # Build possible fields list
         possible_fields = {}
@@ -183,9 +195,8 @@ class IncidentFilter(FilterSet):
         # Text entered without "field:"
         # Searching in subject description and comments by default
         default_fields = [
-            lambda x: Q(subject__icontains=x)
-            | Q(description__icontains=x)
-            | Q(comments__comment__icontains=x)
+            lambda x: Q(subject__icontains=x) | Q(description__icontains=x),
+            self.comment_contains,
         ]
         # default field added by plugins
         default_fields.extend(self.search_filters)
