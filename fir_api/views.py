@@ -602,11 +602,11 @@ class StatsViewSet(ListModelMixin, viewsets.GenericViewSet):
             if attr_names:
                 attr_subquery = attr_subquery.filter(name__in=attr_names)
             attr_subquery = Subquery(
-                attr_subquery
-                .annotate(
+                attr_subquery.annotate(
                     count=Func("value", function="Sum")
-                )  # Perform per-incident sum of all selected attributes
-                .values("count")
+                ).values(  # Perform per-incident sum of all selected attributes
+                    "count"
+                )
             )
             values.append("count")
             queryset = (
@@ -655,6 +655,8 @@ class StatsViewSet(ListModelMixin, viewsets.GenericViewSet):
         for root in BusinessLine.objects.filter(depth=1):
             for child in root.get_descendants():
                 bl_to_rootbl[child.name] = root.name
+            if root.is_leaf():
+                bl_to_rootbl[root.name] = root.name
         return bl_to_rootbl
 
     def deep_update(self, source, overrides):
