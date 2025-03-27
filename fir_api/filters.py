@@ -39,6 +39,22 @@ class BLChoiceFilter(ModelMultipleChoiceFilter):
         kwargs["method"] = self.filter_bl
         super().__init__(*args, **kwargs)
 
+    @staticmethod
+    def get_incidents_q(bls):
+        """
+        Function to filter incidents based on businessLine
+        Use a subquery for optimization
+        """
+        if not bls:
+            return Q()
+
+        ids = Subquery(
+            Incident.objects.filter(concerned_business_lines__in=bls)
+            .values("id")
+            .distinct()
+        )
+        return Q(id__in=ids)
+
     def filter_bl(self, queryset, name, value):
         """
         Custom handling to also retrieve children BLs
@@ -47,7 +63,9 @@ class BLChoiceFilter(ModelMultipleChoiceFilter):
         for v in value:
             bls.append(v)
             bls.extend(v.get_descendants())
-        if bls:
+        if self.model == Incident:
+            queryset = queryset.filter(self.get_incidents_q(bls))
+        elif bls:
             filter_dict = {name + "__in": [b.name for b in bls]}
             queryset = queryset.filter(**filter_dict)
         return queryset
@@ -139,12 +157,11 @@ class IncidentFilter(FilterSet):
     # BL search: search in selected BL and childrens
     @staticmethod
     def search_bl(x):
-        q = Q(concerned_business_lines__name__iexact=x)
+        bls = []
         for bl in BusinessLine.objects.filter(name__iexact=x):
-            bls = [bl]
+            bls.append(bl)
             bls.extend(bl.get_descendants())
-            q = q | Q(concerned_business_lines__in=bls)
-        return q
+        return BLChoiceFilter.get_incidents_q(bls)
 
     # Comment search: use a subquery for performance
     @staticmethod

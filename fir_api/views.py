@@ -655,8 +655,7 @@ class StatsViewSet(ListModelMixin, viewsets.GenericViewSet):
         for root in BusinessLine.objects.filter(depth=1):
             for child in root.get_descendants():
                 bl_to_rootbl[child.name] = root.name
-            if root.is_leaf():
-                bl_to_rootbl[root.name] = root.name
+            bl_to_rootbl[root.name] = root.name
         return bl_to_rootbl
 
     def deep_update(self, source, overrides):
