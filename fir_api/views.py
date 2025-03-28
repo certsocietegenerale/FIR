@@ -668,6 +668,10 @@ class StatsViewSet(ListModelMixin, viewsets.GenericViewSet):
             if isinstance(value, Mapping) and value:
                 returned = self.deep_update(source.get(key, {}), value)
                 source[key] = returned
+            elif isinstance(source.get(key, None), int) and isinstance(
+                overrides[key], int
+            ):
+                source[key] += overrides[key]
             else:
                 source[key] = overrides[key]
         return source
@@ -686,6 +690,7 @@ class StatsViewSet(ListModelMixin, viewsets.GenericViewSet):
         """
         final_dict = defaultdict(dict)
         agg = aggregations.pop(0)
+        entity_processed = []
 
         for entry in flatten_dict:
             val = entry[agg]
@@ -695,6 +700,12 @@ class StatsViewSet(ListModelMixin, viewsets.GenericViewSet):
                     new_path[agg] = entry[agg]
                     nested = self.nest_dict(flatten_dict, aggregations[:], new_path)
                     if agg == "entity":
+                        if val in entity_processed:
+                            # Avoid processing the same entity multiple time when multiple
+                            # aggregations are applied
+                            continue
+                        entity_processed.append(val)
+
                         # If we filtered by entity: get top BusinessLine from the aggregated BL
                         val = self.bl_to_rootbl_dict.get(val, "Undefined")
                         final_dict[val] = self.deep_update(final_dict[val], nested)
