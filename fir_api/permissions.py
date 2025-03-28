@@ -39,15 +39,3 @@ class IsAdminUserOrReadOnly(IsAdminUser):
     def has_permission(self, request, view):
         is_admin = super().has_permission(request, view)
         return request.method in SAFE_METHODS or is_admin
-
-
-class CanViewStatistics(BasePermission):
-    def has_permission(self, request, view):
-        if request.user.has_perm("incidents.view_statistics"):
-            return True
-
-        if AccessControlEntry.objects.filter(
-            user=request.user, role__permissions__codename="view_statistics"
-        ):
-            return True
-        return False

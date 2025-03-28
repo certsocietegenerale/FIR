@@ -61,22 +61,7 @@
               <li class="nav-item" id="dashboard-nav"><a class="nav-link" href="{% url "dashboard:main" %}">{% trans "Dashboard" %}</a></li>
               <li class="nav-item" id="incidents-nav"><a class="nav-link" href="{% url "incidents:index" %}">{% trans "Incidents"%}</a></li>
               <li class="nav-item" id="events-nav"><a class="nav-link" href="{% url "events:index" %}">{% trans "Events" %}</a></li>
-            {% plugin_point "base_navbar" %}
-              {% has_perm "incidents.view_statistics" model="incidents.Incident" as can_view_statistics %}
-              {% if can_view_statistics %}
-              <li class="nav-item dropdown" id="stats-nav" >
-                <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">{% trans "Stats" %}</a>
-                <ul class="dropdown-menu">
-                  <li><a class="dropdown-item" href="{% url "stats:yearly" %}">{% trans "Yearly" %}</a></li>
-                  <li><a class="dropdown-item" href="{% url "stats:quarterly_bl_stats_default" %}">{% trans "Quarterly" %}</a></li>
-                  <li><a class="dropdown-item" href="{% url "stats:yearly_compare" %}">{% trans "Compare with previous year" %}</a></li>
-                  <li><a class="dropdown-item" href="{%url "stats:quarterly_major" %}">{% trans "Major incidents" %}</a></li>
-                  <li><a class="dropdown-item" href="{%url "stats:sandbox" %}">{% trans "Sandbox" %}</a></li>
-                  <li><a class="dropdown-item" href="{%url "stats:attributes" %}">{% trans "Attributes" %}</a></li>
-                  {% plugin_point "stats_element" %}
-                </ul>
-              </li>
-              {% endif %}
+              {% plugin_point "base_navbar" %}
             </ul>
             <ul class="nav navbar-nav order-last">
               <li class="nav-item">

@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load authorization %}
+{% load static %}
+
+{% block header %}
+{% has_perm "incidents.view_statistics" as is_global_statistics_viewer %}
+  {% if not is_global_statistics_viewer %}
+  <div class="alert alert-primary text-center" role="alert">
+    {%trans "Warning: You are not authorized to display statistics on all perimeters. The below graphs may be incomplete (They are only based on data from the perimeters to which you have permission)" %}
+  </div>
+{% endif %}
+<h1>{% blocktrans with current_year=year previous_year=year|add:-1 %}Comparison for {{ current_year }} - {{previous_year}}{% endblocktrans %}</h1>
+{%endblock%}
+
+{% block custom_js_top %}
+<script src="{% static "vendor/d3/d3.min.js" %}"></script>
+<script src="{% static "fir_stats/stats.js" %}"></script>
+{%endblock%}
+
+{% block custom_css %}
+<link href="{% static "custom_css/fir.css" %}" rel="stylesheet">
+<link href="{% static "fir_stats/stats.css" %}" rel="stylesheet">
+{%endblock%}
+
+
+{% block content %}
+<div class="row mt-4">
+  <h3>{% trans "Global activity volume (incidents+events)" %}</h3>
+  <div class="d3-lines-chart" data-url="/api/stats?aggregation=date" data-compare="true" data-days="yearly" data-width="1000" data-height="300"></div>
+</div>
+<div class="row mt-3">
+  <div class="col-sm">
+    <h4>{% trans "Category incident+events evolution" %} ({{year|add:-1}} - {{year}})</h4>
+    <div class="d3-bars-chart" data-url="/api/stats?aggregation=category" data-compare="true" data-days="yearly" data-width="600" data-height="400"></div>
+  </div>
+  <div class="col-sm">
+    <h4>{% trans "Incidents+events by category" %} ({{year}})</h4>
+    <div class="d3-donut-chart" data-url="/api/stats?aggregation=category" data-compare="true" data-days="yearly" data-size="400" data-radius="180"></div>
+  </div>
+</div>
+
+<div class="row mt-4">
+  <h3>{% trans "Yearly incidents" %}</h3>
+  <div class="d3-lines-chart" data-url="/api/stats?aggregation=date&is_incident=true" data-compare="true" data-days="yearly" data-width="1000" data-height="300"></div>
+</div>
+<div class="row mt-3">
+  <div class="col-sm">
+    <h4>{% trans "Business Line incident evolution" %} ({{year|add:-1}} - {{year}})</h4>
+    <div class="d3-bars-chart" data-url="/api/stats?aggregation=entity&is_incident=true" data-compare="true" data-days="yearly" data-width="600" data-height="400"></div>
+  </div>
+  <div class="col-sm">
+    <h4>{% trans "Incidents by business line" %} ({{year}})</h4>
+    <div class="d3-donut-chart" data-url="/api/stats?aggregation=entity&is_incident=true" data-compare="true" data-days="yearly" data-size="400" data-radius="180"></div>
+  </div>
+</div>
+
+<div class="row mt-4">
+  <h3>{% trans "Yearly events" %}</h3>
+  <div class="d3-lines-chart" data-url="/api/stats?aggregation=date&is_incident=false" data-compare="true" data-days="yearly" data-width="1000" data-height="300"></div>
+</div>
+<div class="row mt-3">
+  <div class="col-sm">
+    <h4>{% trans "Business Line event evolution" %} ({{year|add:-1}} - {{year}})</h4>
+    <div class="d3-bars-chart" data-url="/api/stats?aggregation=entity&is_incident=false" data-compare="true" data-days="yearly" data-width="600" data-height="400"></div>
+  </div>
+  <div class="col-sm">
+    <h4>{% trans "Events by business line" %} ({{year}})</h4>
+    <div class="d3-donut-chart" data-url="/api/stats?aggregation=entity&is_incident=false" data-compare="true" data-days="yearly" data-size="400" data-radius="180"></div>
+  </div>
+</div>
+{% endblock %}
