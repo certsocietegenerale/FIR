@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 import datetime
+import logging
 
 from colorfield.fields import ColorField
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
 from django.dispatch import Signal, receiver
 from django.db import models
 from django.contrib.auth.models import User
@@ -20,14 +21,6 @@ STATUS_CHOICES = (
     ("O", _("Open")),
     ("C", _("Closed")),
     ("B", _("Blocked")),
-)
-
-LOG_ACTIONS = (
-    ("D", "Deleted"),
-    ("C", "Created"),
-    ("U", "Update"),
-    ("LI", "Logged in"),
-    ("LO", "Logged out"),
 )
 
 CONFIDENTIALITY_LEVEL = (
@@ -74,21 +67,32 @@ class Profile(models.Model):
 
 
 class Log(models.Model):
-    who = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    what = models.CharField(max_length=100, choices=STATUS_CHOICES)
+    who = models.ForeignKey(
+        User, on_delete=models.DO_NOTHING, null=True, blank=True, db_constraint=False
+    )
+    what = models.CharField(max_length=100)
     when = models.DateTimeField(auto_now_add=True)
     incident = models.ForeignKey(
-        "Incident", on_delete=models.CASCADE, null=True, blank=True
+        "Incident",
+        on_delete=models.DO_NOTHING,
+        null=True,
+        blank=True,
+        db_constraint=False,
     )
     comment = models.ForeignKey(
-        "Comments", on_delete=models.CASCADE, null=True, blank=True
+        "Comments",
+        on_delete=models.DO_NOTHING,
+        null=True,
+        blank=True,
+        db_constraint=False,
     )
+    inst_type = None
 
     def __str__(self):
-        if self.incident:
-            return "[%s] %s %s (%s)" % (self.when, self.what, self.incident, self.who)
-        elif self.comment:
-            return "[%s] %s comment on %s (%s)" % (
+        if self.inst_type == Incident:
+            return "[%s] %s: %s (%s)" % (self.when, self.what, self.incident, self.who)
+        elif self.inst_type == Comments:
+            return "[%s] %s on %s (%s)" % (
                 self.when,
                 self.what,
                 self.comment.incident,
@@ -96,6 +100,20 @@ class Log(models.Model):
             )
         else:
             return "[%s] %s (%s)" % (self.when, self.what, self.who)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        logging.getLogger("FIR").info(str(self).split("] ", 1)[1])
+
+    @staticmethod
+    def log(what, user, incident=None, comment=None, inst_type=None):
+        log = Log()
+        log.what = what
+        log.who = user
+        log.incident = incident
+        log.comment = comment
+        log.inst_type = inst_type
+        log.save()
 
 
 class LabelGroup(models.Model):
@@ -480,9 +498,51 @@ def comment_new_incident(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=Incident)
 def log_new_incident(sender, instance, created, **kwargs):
+    obj = "Event"
+    action = "edited"
+    if instance.is_incident:
+        obj = "Incident"
     if created:
-        what = "Created incident"
-    else:
-        what = "Edit incident"
+        action = "created"
+    Log.log(
+        f"{obj} {action}",
+        instance.opened_by,
+        incident=instance,
+        inst_type=type(instance),
+    )
 
-    Log.objects.create(who=instance.opened_by, what=what, incident=instance)
+
+@receiver(post_delete, sender=Incident)
+def log_delete_incident(sender, instance, *args, **kwargs):
+    obj = "event"
+    if instance.is_incident:
+        obj = "incident"
+    Log.log(
+        f"{obj} deleted",
+        instance.opened_by,
+        incident=instance,
+        inst_type=type(instance),
+    )
+
+
+@receiver(post_save, sender=Comments)
+def log_new_comment(sender, instance, created, **kwargs):
+    action = "edited"
+    if created:
+        action = "created"
+    Log.log(
+        f"Comment {action}",
+        instance.opened_by,
+        comment=instance,
+        inst_type=type(instance),
+    )
+
+
+@receiver(post_delete, sender=Comments)
+def log_delete_comment(sender, instance, *args, **kwargs):
+    Log.log(
+        f"Comment deleted",
+        instance.opened_by,
+        comment=instance,
+        inst_type=type(instance),
+    )

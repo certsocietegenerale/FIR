@@ -144,6 +144,7 @@ class ClaimMappingOIDCAuthenticationBackend(OIDCAuthenticationBackend):
         if user is None and self.get_settings("OIDC_CREATE_USER", True):
             user = self.UserModel.objects.create_user(username, email=email)
             user.save()
+            incidents.models.Log.log("User account created", user)
         elif user is None:
             return SuspiciousOperation("User does not exist.")
 

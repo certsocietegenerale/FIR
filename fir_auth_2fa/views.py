@@ -5,14 +5,34 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth import login, logout
 
 from two_factor import signals
-from two_factor.forms import AuthenticationTokenForm, BackupTokenForm
-from two_factor.views.core import LoginView
+from two_factor.forms import BackupTokenForm
+from two_factor.views.core import LoginView, BackupTokensView
 from otp_yubikey.models import ValidationService
 
 from fir_auth_2fa.forms import CustomAuthenticationTokenForm
 from incidents.models import Profile
 from incidents.forms import CustomAuthenticationForm
-from incidents.views import init_session, log
+from incidents.views import init_session
+
+from fir_auth_2fa.signals import backup_token_viewed, backup_token_generated
+
+
+class CustomBackupTokensView(BackupTokensView):
+    def get_device(self):
+        device = super().get_device()
+        if device.token_set.all():
+            backup_token_viewed.send(
+                sender=__name__,
+                user=self.request.user,
+            )
+        return device
+
+    def form_valid(self, form):
+        backup_token_generated.send(
+            sender=__name__,
+            user=self.request.user,
+        )
+        return super().form_valid(form)
 
 
 class CustomLoginView(LoginView):
@@ -85,6 +105,5 @@ class CustomLoginView(LoginView):
             profile.incident_number = 50
             profile.save()
         if user.is_active:
-            log("Login success", user)
             init_session(self.request)
         return redirect(redirect_to)

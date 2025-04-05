@@ -77,7 +77,7 @@ def user_login(request):
     if request.method == "POST":
         username = request.POST['username']
         password = request.POST['password']
-        user = authenticate(username=username, password=password)
+        user = authenticate(username=username, password=password, request=request)
         if user is not None:
             if not request.POST.get('remember', None):
                 request.session.set_expiry(0)
@@ -93,14 +93,11 @@ def user_login(request):
 
             if user.is_active:
                 login(request, user)
-                log("Login success", user)
                 init_session(request)
                 return redirect('dashboard:main')
             else:
-                log("Login attempted from locked account", user)
                 return HttpResponse('Account disabled')
         else:
-            log("Login failed for "+username, None)
             return render(request, 'incidents/login.html', {'error': 'error'})
     else:
         return render(request, 'incidents/login.html')
@@ -119,26 +116,6 @@ def init_session(request):
     request.session['has_incident_templates'] = len(request.session['incident_templates']) > 0
     request.session['can_report_event'] = request.user.has_perm('incidents.handle_incidents', obj=Incident) or \
                                           request.user.has_perm('incidents.report_events', obj=Incident)
-
-
-# audit trail =====================================================
-
-
-def log(what, user, incident=None, comment=None):
-    # dirty hack to not log when in debug mode
-    import sys
-    if getattr(settings, 'DEBUG', False):
-        print("DEBUG: Not logging")
-        return
-
-    log = Log()
-    log.what = what
-    log.who = user
-    log.incident = incident
-    log.comment = comment
-
-    log.save()
-
 
 # incidents =======================================================
 
@@ -406,8 +383,6 @@ def edit_comment(request, incident_id, comment_id):
                 name__in=['Closed', 'Opened', 'Blocked'])
         if form.is_valid():
             form.save()
-            log("Edited comment %s" % (form.cleaned_data['comment'][:10] + "..."), request.user,
-                incident=Incident.objects.get(id=incident_id))
             return redirect("incidents:details", incident_id=c.incident_id)
     else:
         form = CommentForm(instance=c)
@@ -425,9 +400,7 @@ def delete_comment(request, incident_id, comment_id):
     if not request.user.has_perm('incidents.handle_incidents', obj=i) and not c.opened_by == request.user:
         raise PermissionDenied()
     if request.method == "POST":
-        msg = "Comment '%s' deleted." % (c.comment[:20] + "...")
         c.delete()
-        log(msg, request.user, incident=Incident.objects.get(id=incident_id))
         return redirect('incidents:details', incident_id=c.incident_id)
     else:
         return redirect('incidents:details', incident_id=c.incident_id)
@@ -453,9 +426,6 @@ def update_comment(request, comment_id):
 
             c = comment_form.save()
 
-            log("Comment edited: %s" % (comment_form.cleaned_data['comment'][:20] + "..."), request.user,
-                incident=c.incident)
-
             if c.action.name in ['Closed', 'Opened', 'Blocked']:
                 if c.action.name[0] != c.incident.status:
                     previous_status = c.incident.status
@@ -469,7 +439,6 @@ def update_comment(request, comment_id):
         else:
             ret = {'status': 'error', 'errors': comment_form.errors}
             return HttpResponseServerError(dumps(ret), content_type="application/json")
-
 
 # events ====================================================================
 
@@ -501,7 +470,6 @@ def comment(request, incident_id, authorization_target=None):
             com.incident = i
             com.opened_by = request.user
             com.save()
-            log("Comment created: %s" % (com.comment[:20] + "..."), request.user, incident=com.incident)
             i.refresh_artifacts(com.comment)
 
             if com.action.name in ['Closed', 'Opened', 'Blocked'] and com.incident.status != com.action.name[0]:
@@ -604,6 +572,7 @@ def user_change_password(request):
         if form.is_valid():
             form.save()
             messages.success(request, "Success! Password updated.")
+            Log.log("Password updated", request.user)
             return HttpResponse(dumps({'status': 'success'}), content_type="application/json")
 
     ret = {'status': 'error', 'errors': form.errors}

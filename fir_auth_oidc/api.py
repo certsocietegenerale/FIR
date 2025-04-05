@@ -1,5 +1,5 @@
 from mozilla_django_oidc.contrib.drf import OIDCAuthentication
-from incidents.models import User
+from incidents.models import User, Log
 from django.core.exceptions import SuspiciousOperation
 from rest_framework import exceptions
 
@@ -27,13 +27,18 @@ class APIOIDCAuthentication(OIDCAuthentication):
             if not user:
                 if self.backend.get_settings("OIDC_CREATE_USER", True):
                     user = [self.backend.UserModel.objects.create_user(name)]
+                    Log.log("User account created", user[0])
                 else:
                     return SuspiciousOperation("User does not exist.")
 
             user = self.backend.set_roles(user[0], roles)
 
-            if callable(self.get_settings("AUTH_OIDC_CLAIM_MAP_FUNCTION", False)):
-                user = self.get_settings("AUTH_OIDC_CLAIM_MAP_FUNCTION")(user, claims)
+            if callable(
+                self.backend.get_settings("AUTH_OIDC_CLAIM_MAP_FUNCTION", False)
+            ):
+                user = self.backend.get_settings("AUTH_OIDC_CLAIM_MAP_FUNCTION")(
+                    user, claims
+                )
             user.save()
 
         except Exception as e:

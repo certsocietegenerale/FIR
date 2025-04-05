@@ -61,13 +61,14 @@ MIDDLEWARE = (
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.locale.LocaleMiddleware",
-    # Uncomment the next line for simple clickjacking protection:
-    # 'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    "axes.middleware.AxesMiddleware",
+    "django.middleware.clickjacking.XFrameOptionsMiddleware",
 )
 
 
 # Authentication and authorization backends
 AUTHENTICATION_BACKENDS = (
+    "axes.backends.AxesStandaloneBackend",
     "django.contrib.auth.backends.ModelBackend",  # default
     "incidents.authorization.ObjectPermissionBackend",
 )
@@ -103,6 +104,7 @@ INSTALLED_APPS = (
     "fir_email",
     "colorfield",
     "fir_api",
+    "axes",
 )
 
 apps_file = os.path.join(BASE_DIR, "fir", "config", "installed_apps.txt")
@@ -231,3 +233,13 @@ REST_FRAMEWORK = {
 }
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
+AXES_VERBOSE = False
+AXES_SENSITIVE_PARAMETERS = []
+AXES_FAILURE_LIMIT = 100
+AXES_RESET_ON_SUCCESS = True
+AXES_LOCKOUT_PARAMETERS = ["ip_address", "username"]
+AXES_IPWARE_META_PRECEDENCE_ORDER = [
+    "HTTP_X_FORWARDED_FOR",
+    "REMOTE_ADDR",
+]

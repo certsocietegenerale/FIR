@@ -1,5 +1,6 @@
 # for token Generation
 import io
+from axes.signals import user_locked_out
 
 from django.apps import apps
 from django.conf import settings
@@ -63,6 +64,7 @@ from incidents.models import (
     Incident,
     Comments,
     Label,
+    Log,
     Attribute,
     BusinessLine,
     IncidentCategory,
@@ -502,3 +504,8 @@ class SeverityViewSet(viewsets.ModelViewSet):
 def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
+
+
+@receiver(user_locked_out)
+def raise_permission_denied(*args, **kwargs):
+    raise PermissionDenied(_("Too many failed login attempts"))
