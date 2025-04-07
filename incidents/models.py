@@ -212,6 +212,10 @@ class IncidentCategory(models.Model):
 # Core models ================================================================
 
 
+def datetimenow():
+    return datetime.datetime.now().replace(second=0, microsecond=0)
+
+
 @tree_authorization(
     fields=[
         "concerned_business_lines",
@@ -223,9 +227,7 @@ class IncidentCategory(models.Model):
 @link_to(File)
 @link_to(Artifact)
 class Incident(FIRModel, models.Model):
-    date = models.DateTimeField(
-        default=datetime.datetime.now().replace(second=0, microsecond=0), blank=True
-    )
+    date = models.DateTimeField(default=datetimenow, blank=True)
     is_starred = models.BooleanField(default=False)
     subject = models.CharField(max_length=256)
     description = models.TextField()
