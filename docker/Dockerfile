@@ -1,4 +1,4 @@
-FROM python:3.8-alpine AS builder
+FROM python:3.13-alpine AS builder
 WORKDIR /app
 RUN apk add --update git \
     python3-dev \
@@ -24,7 +24,7 @@ RUN source venv/bin/activate && \
     deactivate
 
 
-FROM python:3.8-alpine AS fir
+FROM python:3.13-alpine AS fir
 COPY --from=builder /app /app
 RUN apk add libxml2 libxslt mariadb-connector-c libmagic openldap-dev gettext && \
     rm -rf /var/cache/apk/* && \

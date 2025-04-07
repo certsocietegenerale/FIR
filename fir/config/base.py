@@ -3,7 +3,6 @@ from __future__ import absolute_import, unicode_literals
 import os
 from pkgutil import find_loader
 from importlib import import_module
-from distutils.util import strtobool
 
 import bleach
 
@@ -156,7 +155,7 @@ CSRF_TRUSTED_ORIGINS = ["http://" + h for h in ALLOWED_HOSTS] + [
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-if bool(strtobool(os.getenv("HTTPS", "False"))):
+if os.getenv("HTTPS", "False").lower() in ("true", "1", "t"):
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
 
