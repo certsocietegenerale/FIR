@@ -29,12 +29,17 @@ COPY --from=builder /app /app
 RUN apk add libxml2 libxslt mariadb-connector-c libmagic openldap-dev gettext && \
     rm -rf /var/cache/apk/* && \
     wget -O /bin/wait-for https://raw.githubusercontent.com/eficode/wait-for/master/wait-for && \
-    chmod +x /bin/wait-for
+    chmod +x /bin/wait-for && \
+    adduser -DH fir && \
+    mkdir -p /var/www/static && \
+    chown -R fir:fir /app/ /var/www/static
 
 WORKDIR /app/
 ENV VIRTUAL_ENV /app/venv
 ENV PATH /app/venv/bin:$PATH
+ENV PYTHONPATH /app
 ENV HOME /app/
+USER fir
 EXPOSE 8000
 ENTRYPOINT ["/app/manage.py"]
 CMD ["runserver", "--settings", "fir.config.production", "0.0.0.0:8000"]

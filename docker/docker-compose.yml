@@ -22,8 +22,6 @@ services:
       - fir.env
     networks:
       backend.fir:
-#    ports:
-#      - 8000:8000
     expose:
       - 8000
     volumes:
@@ -93,7 +91,7 @@ services:
       - fir
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - static-content:/usr/share/nginx/html:ro
+      - static-content:/usr/share/nginx/static:ro
     ports:
       - 80:80
     networks:
