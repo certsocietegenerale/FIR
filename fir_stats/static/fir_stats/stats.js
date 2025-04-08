@@ -100,7 +100,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // CSV Exports
   for (let link of document.querySelectorAll(".export-link")) {
     link.addEventListener("click", (event) => {
-      if (link.dataset.type == "xslx") {
+      if (link.dataset.type == "xls") {
         return ExcellentExport.excel(link, "stats_incident_export", "FIR");
       } else if (link.dataset.type == "csv") {
         return ExcellentExport.csv(link, "stats_incident_export", ",");
