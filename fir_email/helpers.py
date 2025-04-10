@@ -8,7 +8,10 @@ from fir_plugins.links import registry
 def _combine_with_settings(values, setting):
     values = [value for value in values.split(';') if value.strip()]
     if hasattr(settings, setting):
-        values = list(set(values + getattr(settings, setting)))
+        attr = getattr(settings, setting)
+        if isinstance(attr, str):
+            attr = [a for a in attr.split(';') if a.strip()]
+        values = list(set(values + attr))
 
     return values
 
