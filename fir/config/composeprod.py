@@ -80,6 +80,9 @@ LOGGING = {
     "disable_existing_loggers": False,
     "formatters": {
         "verbose": {"format": "%(asctime)s: %(message)s"},
+        "verbose_celery": {
+            "format": "%(asctime)s: [%(levelname)s/%(processName)s] %(message)s"
+        },
     },
     "handlers": {
         "console": {
@@ -87,10 +90,21 @@ LOGGING = {
             "class": "logging.StreamHandler",
             "formatter": "verbose",
         },
+        "console_celery": {
+            "level": "DEBUG",
+            "class": "logging.StreamHandler",
+            "formatter": "verbose_celery",
+        },
     },
     "loggers": {
+        "celery": {
+            # Logs of the celery worker
+            "handlers": ["console_celery"],
+            "level": "INFO",
+            "propagate": True,
+        },
         "django.request": {
-            # Log related to python errors
+            # Logs related to python errors
             "handlers": ["console"],
             "level": "ERROR",
             "propagate": True,
