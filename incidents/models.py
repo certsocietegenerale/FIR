@@ -90,12 +90,27 @@ class Log(models.Model):
 
     def __str__(self):
         if self.inst_type == Incident:
-            return "[%s] %s: %s (%s)" % (self.when, self.what, self.incident, self.who)
+            incident_id = self.incident.id
+            if getattr(settings, "INCIDENT_SHOW_ID", False):
+                incident_id = getattr(settings, "INCIDENT_ID_PREFIX", "") + str(
+                    self.incident.id
+                )
+            return "[%s] %s: %s (%s)" % (self.when, self.what, incident_id, self.who)
         elif self.inst_type == Comments:
-            return "[%s] %s on %s (%s)" % (
+            incident_id = self.comment.incident.id
+            if getattr(settings, "INCIDENT_SHOW_ID", False):
+                incident_id = getattr(settings, "INCIDENT_ID_PREFIX", "") + str(
+                    self.comment.incident.id
+                )
+            inc_str = "event"
+            if self.comment.incident.is_incident:
+                inc_str = "incident"
+
+            return "[%s] %s on %s %s (%s)" % (
                 self.when,
                 self.what,
-                self.comment.incident,
+                inc_str,
+                incident_id,
                 self.who,
             )
         else:
@@ -533,7 +548,7 @@ def log_new_comment(sender, instance, created, **kwargs):
     if created:
         action = "created"
     Log.log(
-        f"Comment {action}",
+        f"Comment {instance.id} {action}",
         instance.opened_by,
         comment=instance,
         inst_type=type(instance),
@@ -543,7 +558,7 @@ def log_new_comment(sender, instance, created, **kwargs):
 @receiver(post_delete, sender=Comments)
 def log_delete_comment(sender, instance, *args, **kwargs):
     Log.log(
-        f"Comment deleted",
+        f"Comment {instance.id} deleted",
         instance.opened_by,
         comment=instance,
         inst_type=type(instance),
