@@ -63,19 +63,21 @@ LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
     "formatters": {
-        "verbose": {"format": "%(asctime)s: %(message)s"},
+        "verbose": {
+            "format": "%(asctime)s: %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
         "verbose_celery": {
-            "format": "%(asctime)s: [%(levelname)s/%(processName)s] %(message)s"
+            "format": "%(asctime)s: [%(levelname)s/%(processName)s] %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
         },
     },
     "handlers": {
         "console": {
-            "level": "DEBUG",
             "class": "logging.StreamHandler",
             "formatter": "verbose",
         },
         "console_celery": {
-            "level": "DEBUG",
             "class": "logging.StreamHandler",
             "formatter": "verbose_celery",
         },
@@ -95,6 +97,8 @@ LOGGING = {
         },
         "django.server": {
             # Logs related to HTTP requests
+            # when using python manage.py runserver
+            # (This setting is not used when using uwsgi)
             "handlers": ["console"],
             "level": "INFO",
             "propagate": True,
