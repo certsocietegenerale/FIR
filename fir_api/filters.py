@@ -161,7 +161,10 @@ class IncidentFilter(FilterSet):
         for bl in BusinessLine.objects.filter(name__iexact=x):
             bls.append(bl)
             bls.extend(bl.get_descendants())
-        return BLChoiceFilter.get_incidents_q(bls)
+        q = BLChoiceFilter.get_incidents_q(bls)
+        if not q:
+            q = Q(concerned_business_lines__name__iexact=x)
+        return q
 
     # Comment search: use a subquery for performance
     @staticmethod
@@ -192,9 +195,14 @@ class IncidentFilter(FilterSet):
                 "plan": "plan__name__iexact",
                 "id": lambda x: Q(
                     id=(
-                        x.removesuffix(settings.INCIDENT_ID_PREFIX)
-                        if settings.INCIDENT_SHOW_ID
-                        else x
+                        x.lower().removeprefix(settings.INCIDENT_ID_PREFIX.lower())
+                        if (
+                            settings.INCIDENT_SHOW_ID
+                            and x.lower()
+                            .removeprefix(settings.INCIDENT_ID_PREFIX.lower())
+                            .isnumeric()
+                        )
+                        else (x if x.isnumeric() else 0)
                     )
                 ),
                 "starred": lambda x: Q(
