@@ -32,6 +32,7 @@ def log_new_otp(sender, instance, **kwargs):
             "throttling_failure_timestamp",
             "throttling_failure_count",
             "sign_count",
+            "drift",
             "last_used_at",
             "created_at",
             "last_t",
