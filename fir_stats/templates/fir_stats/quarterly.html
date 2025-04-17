@@ -26,7 +26,7 @@
 
 {% block custom_js_top %}
 <script src="{% static "vendor/d3/d3.min.js" %}"></script>
-<script src="{% static "vendor/excellentexport/excellentexport.js" %}"></script>
+<script src="{% static "vendor/xlsx/xlsx.full.min.js" %}"></script>
 <script src="{% static "fir_stats/stats.js" %}"></script>
 <script src="{% static "custom_js/incident_display.js" %}"></script>
 {%endblock%}
@@ -126,7 +126,7 @@ $(document).ready(function() {
 
   <div class="container d-none export_links">
     {% blocktrans %}
-      Export to <a download="incidents.xls" class="export-link" href="#" data-type="xls">XLS</a> or <a download="incidents.csv" class="export-link" href="#" data-type="csv">CSV</a>
+      Export to <a data-filename="incidents.xlsx" class="export-link" href="#">XLSX</a> or <a data-filename="incidents.csv" class="export-link" href="#">CSV</a>
     {% endblocktrans %}
   </div>
 </div>

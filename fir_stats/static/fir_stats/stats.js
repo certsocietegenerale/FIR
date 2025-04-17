@@ -100,13 +100,17 @@ document.addEventListener("DOMContentLoaded", function () {
   // CSV Exports
   for (let link of document.querySelectorAll(".export-link")) {
     link.addEventListener("click", (event) => {
-      if (link.dataset.type == "xls") {
-        return ExcellentExport.excel(link, "stats_incident_export", "FIR");
-      } else if (link.dataset.type == "csv") {
-        return ExcellentExport.csv(link, "stats_incident_export", ",");
-      } else if (link.dataset.type == "tsv") {
-        return ExcellentExport.csv(link, "stats_incident_export", "\t");
+      const data_table = document.querySelector("#stats_incident_export");
+      const wb = XLSX.utils.table_to_book(data_table, { sheet: "FIR" });
+      const filename = link.dataset.filename;
+      const ext = filename.split(".").pop().toLowerCase();
+
+      if (ext == "tsv") {
+        XLSX.writeFile(wb, filename, { FS: "\t", bookType: "csv" });
+      } else {
+        XLSX.writeFile(wb, filename, { bookType: ext });
       }
+      return false;
     });
   }
 });
