@@ -108,6 +108,13 @@ function addTableEventListners(div) {
   }
 }
 
+function escapeHtml(html) {
+  var text = document.createTextNode(html);
+  var p = document.createElement("p");
+  p.appendChild(text);
+  return p.innerHTML;
+}
+
 // parse a templated string without allowing arbitrary code execution
 // Inspired from https://stackoverflow.com/a/59084440
 function parseStringTemplate(str, obj) {
@@ -125,7 +132,7 @@ function parseStringTemplate(str, obj) {
       return "";
     } else if (Array.isArray(obj[argument])) {
       // arrays: join values with ", "
-      return obj[argument].join(", ");
+      return escapeHtml(obj[argument].join(", "));
     } else if (
       typeof obj[argument] == "boolean" &&
       // booleans: allow to display specific texts depending on the boolean value.
@@ -133,7 +140,7 @@ function parseStringTemplate(str, obj) {
     ) {
       let iftrue = argument_with_params.split("?")[1].split(":")[0];
       let iffalse = argument_with_params.split(":")[1];
-      return obj[argument] ? iftrue : iffalse;
+      return escapeHtml(obj[argument] ? iftrue : iffalse);
     } else {
       // strings: allow custom-made text manipulation
       if (
@@ -142,12 +149,12 @@ function parseStringTemplate(str, obj) {
       ) {
         let op = argument_with_params.split("|")[1];
         if (op == "lower") {
-          return obj[argument].toLowerCase();
+          return escapeHtml(obj[argument].toLowerCase());
         } else if (op == "upper") {
-          return obj[argument].toUpperCase();
+          return escapeHtml(obj[argument].toUpperCase());
         }
       }
-      return obj[argument];
+      return escapeHtml(obj[argument]);
     }
   });
 
