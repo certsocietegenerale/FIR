@@ -349,4 +349,5 @@ class CategorySerializer(serializers.ModelSerializer):
 class SeveritySerializer(serializers.ModelSerializer):
     class Meta:
         model = SeverityChoice
-        fields = ["name", "color"]
+        fields = ["id", "name", "color"]
+        read_only_fields = ["id"]
