@@ -10,7 +10,7 @@
 {% block header %}
   {% if query_string %}
     <h4 class="search-results">
-      <i class="bi bi-search"></i> {% trans "Search results for:" %} <em>{{query_string}}</em>
+      <i class="bi bi-search"></i> {% trans "Search results for:" %} <em>{{ query_string }}</em>
     </h4>
   {% endif %}
 {% endblock %}
@@ -38,11 +38,11 @@
 
 
 {% if query_string %}
-  <div id="all_incidents" class="incident_display" data-url="/api/incidents?">
+  <div id="all_incidents" class="incident_display" data-url="/api/incidents?{% if request.user.profile.hide_closed %}status__not={% trans "Closed" %}{% endif %}">
 {% elif incident_view %}
-  <div id="all_incidents" class="incident_display" data-url="/api/incidents?is_incident=true">
+  <div id="all_incidents" class="incident_display" data-url="/api/incidents?is_incident=true{% if request.user.profile.hide_closed %}&status__not={% trans "Closed" %}{% endif %}">
 {% else %}
-  <div id="all_incidents" class="incident_display" data-url="/api/incidents?is_incident=false">
+  <div id="all_incidents" class="incident_display" data-url="/api/incidents?is_incident=false{% if request.user.profile.hide_closed %}&status__not={% trans "Closed" %}{% endif %}">
 {% endif %}
   <div class="loading">{% trans "Loading ..." %}</div>
   {% if incident_view %}
