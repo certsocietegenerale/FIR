@@ -26,7 +26,7 @@ from incidents.models import (
     Comments,
     File,
     SeverityChoice,
-    STATUS_CHOICES,
+    IncidentStatus,
     CONFIDENTIALITY_LEVEL,
 )
 from fir_artifacts.models import File, Artifact
@@ -104,10 +104,15 @@ class IncidentFilter(FilterSet):
     created_after = DateTimeFilter(field_name="date", lookup_expr="gte")
     subject = CharFilter(field_name="subject", lookup_expr="icontains")
     description = CharFilter(field_name="description", lookup_expr="icontains")
-    status = ValueChoiceFilter(field_name="status", choices=STATUS_CHOICES)
-    status__not = ValueChoiceFilter(
-        field_name="status",
-        choices=STATUS_CHOICES,
+    status = ModelChoiceFilter(
+        field_name="status__name",
+        to_field_name="name",
+        queryset=IncidentStatus.objects.all(),
+    )
+    status__not = ModelMultipleChoiceFilter(
+        field_name="status__name",
+        to_field_name="name",
+        queryset=IncidentStatus.objects.all(),
         exclude=True,
         label=_("Status is not"),
     )
@@ -178,6 +183,16 @@ class IncidentFilter(FilterSet):
         )
         return Q(id__in=comments)
 
+    # Status search: handle translations
+    @staticmethod
+    def status_iexact(x):
+        reverse_map = {
+            _(obj.name).lower(): obj.name.lower()
+            for obj in IncidentStatus.objects.all()
+        }
+        x = reverse_map.get(x.lower(), x)
+        return Q(status__name__iexact=x)
+
     def search_query(self, queryset, name, search_query):
         # Build possible fields list
         possible_fields = {}
@@ -210,7 +225,7 @@ class IncidentFilter(FilterSet):
                 ),
                 "opened_by": "opened_by__username__iexact",
                 "category": "category__name__icontains",
-                "status": "status__iexact",
+                "status": self.status_iexact,
                 "severity": "severity__name__iexact",
             }
         )
@@ -333,6 +348,16 @@ class SeverityFilter(FilterSet):
 
     name = CharFilter(field_name="name")
     color = CharFilter(field_name="color")
+
+
+class StatusFilter(FilterSet):
+    """
+    Custom filtering for incidents statuses
+    """
+
+    name = CharFilter(field_name="name", lookup_expr="iequals")
+    icon = CharFilter(field_name="icon", lookup_expr="iequals")
+    flag = CharFilter(field_name="flag", lookup_expr="iequals")
 
 
 class AttributeFilter(FilterSet):

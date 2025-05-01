@@ -14,6 +14,7 @@ from incidents.models import (
     IncidentCategory,
     SeverityChoice,
     ValidAttribute,
+    IncidentStatus,
 )
 from incidents.forms import IncidentForm
 
@@ -33,6 +34,7 @@ def quarterly_stats(request):
     bl_all = BusinessLine(name="All")
     bls.insert(0, bl_all)
     selected_bl = request.GET.get("bl", "All")
+    status = IncidentStatus.objects.all()
 
     for b in bls:
         if b.name == selected_bl:
@@ -48,6 +50,7 @@ def quarterly_stats(request):
         {
             "bl": selected_bl,
             "bls": bls,
+            "status": status,
         },
     )
 
@@ -80,6 +83,7 @@ def compare(request):
 @user_passes_test(can_view_statistics)
 def sandbox(request):
     categories = IncidentCategory.objects.all()
+    status = IncidentStatus.objects.all()
     display_severity_op = all(
         [a.name.isnumeric() for a in SeverityChoice.objects.all()]
     )
@@ -92,6 +96,7 @@ def sandbox(request):
             "form": form,
             "categories": categories,
             "display_severity_op": display_severity_op,
+            "status": status,
         },
     )
 

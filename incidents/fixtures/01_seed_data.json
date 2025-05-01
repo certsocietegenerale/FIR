@@ -120,7 +120,7 @@
     "model": "incidents.label",
     "fields": {
         "group": 3,
-        "name": "Opened"
+        "name": "Open"
     }
 },
 {
@@ -128,7 +128,7 @@
     "model": "incidents.label",
     "fields": {
         "group": 3,
-        "name": "Closed"
+        "name": "Close"
     }
 },
 {
@@ -200,7 +200,7 @@
     "model": "incidents.label",
     "fields": {
         "group": 3,
-        "name": "Blocked"
+        "name": "Block"
     }
 },
 {
@@ -710,6 +710,35 @@
     "fields": {
         "name": "4",
         "color": "#f81920"
+    }
+},
+{
+    "model": "incidents.incidentstatus",
+    "pk": 1,
+    "fields": {
+        "name": "Open",
+        "icon": "bi-fire",
+	"associated_action": 12,
+        "flag": "initial"
+    }
+},
+{
+    "model": "incidents.incidentstatus",
+    "pk": 2,
+    "fields": {
+        "name": "Blocked",
+	"associated_action": 22,
+        "icon": "bi-ban"
+    }
+},
+{
+    "model": "incidents.incidentstatus",
+    "pk": 3,
+    "fields": {
+        "name": "Closed",
+	"associated_action": 13,
+        "icon": "bi-check-circle",
+        "flag": "final"
     }
 }
 ]

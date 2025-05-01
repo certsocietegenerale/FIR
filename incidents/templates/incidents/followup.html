@@ -1,24 +1,24 @@
 {% load fir_plugins %}
 {% load i18n %}
 {% load static %}
-{%  load markdown %}
-
-<html lang="{{ LANGUAGE_CODE }}">
+{% load markdown %}
+<!DOCTYPE html>
+<html>
 <head>
 	<link href="{% static "vendor/bootstrap/bootstrap.min.css" %}" rel="stylesheet">
 	<link href="{% static "vendor/bootstrap-icons/bootstrap-icons.min.css" %}" rel="stylesheet">
     <link href="{% static "custom_css/fir_followup.css" %}" rel="stylesheet">
-    {% plugin_point 'followup_static' %}
-    <title>{% if incident.is_incident %}{%  trans "Incident" %}{%else%}{%  trans "Event" %}{%endif%} followup [C{{incident.confidentiality}}] [{{incident.category}}] - {{incident.subject}}</title>
+    {% plugin_point "followup_static" %}
+    <title>{% if incident.is_incident %}{% trans "Incident" %}{% else %}{% trans "Event" %}{% endif %} followup [{{ incident.confidentiality }}] [{{ incident.category }}] - {{ incident.subject }}</title>
 </head>
 <body>
-	<div class='frame'>
+	<div class="frame">
 
-		<div class='header'>
+		<div class="header">
 			<img src="{% static "img/logo.jpg" %}" />
 			<br class="separator" />
-			<div class='title'>
-				<h1 class='float'>{% if incident.is_incident %}{% trans "Incident followup" %}{%else%}{% trans "Event followup" %}{%endif%} [C{{incident.confidentiality}}] [{{incident.category}}] - {{incident.subject}}</h1>
+			<div class="title">
+				<h1 class="float">{% if incident.is_incident %}{% trans "Incident followup" %}{% else %}{% trans "Event followup" %}{% endif %} [{{incident.confidentiality}}] [{{incident.category}}] - {{incident.subject}}</h1>
 				<br class="separator" />
                 {% trans "someone" as someone %}
 				<p>{% blocktrans with date=incident.date opened_by=incident.opened_by|default:someone %}Opened on {{ date }} by {{ opened_by }}{% endblocktrans %}</p>
@@ -26,19 +26,37 @@
 		</div>
 
 
-		<table class='minitable table d-flex justify-content-end'>
-			<tr class='slim align-middle'>
-				{% if incident_show_id %}<td class='head'>ID</td><td class='delim'>{{ incident|object_id }}</td>{% endif %}
-				{%if incident.is_incident%}
-				<td class='head'>{%  trans "Incident Leader" %}</td><td class='delim'>{{ incident.actor }}</td>
-				<td class='head'>{%  trans "Plan" %}</td><td class='delim'>{{ incident.plan }}</td>
-				{%endif%}
-				<td class='head'>{%  trans "Severity" %}</td><td class='delim'><span class='badge' style='background-color:{{ incident.severity.color }}!important;'>{{ incident.severity }}</span></td>
-				<td class='head'>{%  trans "Category" %}</td><td class='delim'>{{ incident.category }}</td>
-				<td class='head'>{%  trans "Status" %}</td><td class='delim'><span class='mb-1 mt-1 label badge {% if incident.status == "O" %}label-info{% elif incident.status == "B" %}label-danger{% elif incident.status == "C"%}label-success{% endif %}'>{{ incident.get_status_display}}</span></td>
+		<table class="minitable table d-flex justify-content-end">
+			<tr class="slim align-middle">
+				{% if incident_show_id %}
+				<td class="head">ID</td>
+				<td class="delim">{{ incident|object_id }}</td>
+				{% endif %}
 
-				<td class='head'>{%  trans "Detection" %}</td><td class='delim'>{{ incident.detection }}</td>
-				<td class='head'>{%  trans "B/L" %}</td><td>{{ incident.get_business_lines_names }}</td>
+				{% if incident.is_incident %}
+				<td class="head">{% trans "Incident Leader" %}</td>
+				<td class="delim">{{ incident.actor }}</td>
+
+				<td class="head">{% trans "Plan" %}</td>
+				<td class="delim">{{ incident.plan }}</td>
+				{% endif %}
+				<td class="head">{% trans "Severity" %}</td>
+				<td class="delim">
+					<span class="badge" style="background-color:{{ incident.severity.color }}!important;">{{ incident.severity }}</span>
+				</td>
+
+				<td class="head">{% trans "Category" %}</td>
+				<td class="delim">{{ incident.category }}</td>
+				<td class="head">{% trans "Status" %}</td>
+				<td class="delim">
+					<span class="mb-1 mt-1 label badge label-{% if incident.status.flag == "initial" %}info{% elif incident.status.flag == "final" %}success{% else %}danger{% endif %}">{% trans incident.status.name %}</span>
+				</td>
+
+				<td class="head">{% trans "Detection" %}</td>
+				<td class="delim">{{ incident.detection }}</td>
+
+				<td class="head">{% trans "B/L" %}</td>
+				<td>{{ incident.get_business_lines_names }}</td>
 			</tr>
 		</table>
 
@@ -46,50 +64,50 @@
 		<br class="separator" />
 
 
-		<div class='description'>
+		<div class="description">
 			<h3>{% trans "Summary" %}</h3>
 			<p class='artifacts'>{{ incident.description|markdown }}</p>
 		</div>
 
 		<br class="separator" />
 
-		<h2>{%  trans "Incident timeline" %} ({{ incident.comments_set.count }})</h2>
+		<h2>{% trans "Incident timeline" %} ({{ incident.comments_set.count }})</h2>
 
 		<table class="table table-hover table-condensed">
 			<thead>
 				<tr>
-					<th style='width:20%'>{%  trans "Date" %}</th>
-					<th>{%  trans "Author" %}</th>
-					<th>{%  trans "Comment" context "noun" %}</th>
-					<th>{%  trans "Action" %}</th>
+					<th style="width:20%">{% trans "Date" %}</th>
+					<th>{% trans "Author" %}</th>
+					<th>{% trans "Comment" context "noun" %}</th>
+					<th>{% trans "Action" %}</th>
 				</tr>
 			</thead>
 		{% for comment in comments.all %}
 		  <tr id="comment_id_{{comment.id}}">
-		  	<td style='width:10%'>{{ comment.date|date:"Y-m-d G:i" }}</td>
+		  	<td style="width:10%">{{ comment.date|date:"Y-m-d G:i" }}</td>
 		  	<td>{{ comment.opened_by|default:"someone" }}</td>
-		  	<td class='artifacts'>{{ comment.comment|markdown }}</td>
+		  	<td class="artifacts">{{ comment.comment|markdown }}</td>
 		  	<td>{{ comment.action }}</td>
 		  </tr>
 		{% endfor %}
 
 		</table>
 
-		{% plugin_point 'followup_main' %}
+		{% plugin_point "followup_main" %}
 
-		<div class='files'>
+		<div class="files">
 
 			<h2>{% trans "Related files" %}</h2>
 			<br class="separator" />
-			{%if incident.file_set.count > 0 %}
-				<table class='table table-condensed files' style='width:auto'>
+			{% if incident.file_set.count > 0 %}
+				<table class="table table-condensed files" style="width:auto">
 					{% for file in incident.file_set.all %}
 						<tr>
-							<td >{{file.date|date:"d-m-Y"}}</td>
+							<td >{{ file.date|date:"d-m-Y" }}</td>
 							<td>{{ file.getfilename }}</td>
 							<td>{{ file.description }}</td>
 						</tr>
-					{%endfor%}
+					{% endfor %}
 				</table>
 			{% else %}
 				{% trans "No files for this incident." %}

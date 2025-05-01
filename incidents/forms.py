@@ -1,8 +1,15 @@
 import importlib
 from django.forms import ModelForm
 from django import forms
-from incidents.models import IncidentCategory, Incident, Comments, BusinessLine
-from incidents.fields import DateTimeLocalField
+from incidents.models import (
+    IncidentCategory,
+    Incident,
+    Comments,
+    BusinessLine,
+    IncidentStatus,
+    get_initial_status,
+)
+from incidents.fields import DateTimeLocalField, TranslatedModelChoiceField
 from django.contrib.auth.forms import AuthenticationForm
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
@@ -49,6 +56,7 @@ class CustomAuthenticationTokenForm(ModelForm):
 
 class IncidentForm(ModelForm):
     date = DateTimeLocalField()
+    status = TranslatedModelChoiceField(queryset=IncidentStatus.objects.all())
     _additional_forms = {}
 
     def __init__(self, *args, **kwargs):
@@ -81,6 +89,9 @@ class IncidentForm(ModelForm):
         self.fields["severity"].error_messages["required"] = field_required
         self.fields["is_major"].error_messages["required"] = field_required
         self.fields["is_major"].label = _("Major?")
+
+        self.fields["status"].initial = get_initial_status()
+        self.fields["status"].empty_label = None
 
         # Load Additional incident fields defined in plugins via a hook
         for app in INSTALLED_APPS:
@@ -154,3 +165,23 @@ class CommentForm(ModelForm):
 class UploadFileForm(forms.Form):
     title = forms.CharField()
     file = forms.FileField()
+
+
+class IncidentStatusAdminForm(forms.ModelForm):
+    class Meta:
+        model = IncidentStatus
+        fields = "__all__"
+
+    def clean(self):
+        cleaned_data = super().clean()
+        flag = cleaned_data.get("flag")
+
+        if flag == "initial":
+            if (
+                IncidentStatus.objects.exclude(pk=self.instance.pk)
+                .filter(flag="initial")
+                .exists()
+            ):
+                raise forms.ValidationError(_("There can only be one initial status."))
+
+        return cleaned_data

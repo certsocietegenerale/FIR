@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
 {% load fir_plugins %}
 {% load fir_artifacts %}
 {% load i18n %}
@@ -13,133 +13,125 @@
 {% block custom_js %}
 {% rich_edit_static %}
 <script type="text/javascript" src="{% static "custom_js/hotkeys.js" %}"></script>
-{% plugin_point 'details_static' %}
+{% plugin_point "details_static" %}
 
 <script src="{% static "custom_js/details_actions.js" %}"></script>
 {% endblock %}
 
 {% block content %}
-    {%  has_perm 'incidents.handle_incidents' obj=event as can_handle_incident %}
+    {% has_perm "incidents.handle_incidents" obj=event as can_handle_incident %}
     {% can_comment event as can_comment_incident %}
-	<div id='details-actions-all'>
+	<div id="details-actions-all">
 	<div class="details-actions-supmenu bg-info-subtle" id="details-actions-add">
 		<ul class="list-unstyled">
-			<li><a href="#" id="details-add-file"><i class="bi bi-file-earmark"></i> {%  trans "File" %}</a></li>
+			<li><a href="#" id="details-add-file"><i class="bi bi-file-earmark"></i> {% trans "File" %}</a></li>
 			{% if valid_attributes|length > 0 %}
-				<li><a href="#" id="details-add-attribute"><i class="bi bi-card-list"></i> {%  trans "Attribute" %}</a></li>
+				<li><a href="#" id="details-add-attribute"><i class="bi bi-card-list"></i> {% trans "Attribute" %}</a></li>
 			{% endif %}
-			{% plugin_point 'details_actions_add' %}
+			{% plugin_point "details_actions_add" %}
 		</ul>
 	</div>
 
-	{% plugin_point 'details_actions_menu' %}
+	{% plugin_point "details_actions_menu" %}
 
 	<div id="details-actions" class="bg-primary-subtle">
 		<ul class="list-unstyled">
             {% if can_handle_incident %}
-			<li><a href="#" id="details-actions-add-link"><i class="bi bi-plus-circle"></i> {%  trans "Add" %}</a></li>
+			<li><a href="#" id="details-actions-add-link"><i class="bi bi-plus-circle"></i> {% trans "Add" %}</a></li>
             {% endif %}
             {% if can_comment_incident %}
-			<li><a href="#" id='details-actions-comment' data-target='#addComment'>
+			<li><a href="#" id="details-actions-comment" data-target="#addComment">
 				<i class="bi bi-chat-left"></i> {%  trans "Comment" context "verb" %}
 			</a></li>
             {% endif %}
             {% if can_handle_incident %}
-			<li><a href="{% url 'incidents:edit' event.id %}"><i class="bi bi-pencil"></i> {%  trans "Edit" %}</a></li>
-			{% if event.status != 'O' %}
-				<li>
-					<form action="{% url 'incidents:change_status' event.id 'O' %}" method='POST' class='icon'>
-						{% csrf_token %}
-						<a href='#' class='submit'><i class="bi bi-fire"></i> {% trans "Open" %}</a>
-					</form>
-				</li>
-			{% endif %}
-			{% if event.status != 'B' %}
-				<li>
-					<form action="{% url 'incidents:change_status' event.id 'B' %}" method='POST' class='icon'>
-						{% csrf_token %}
-						<a href="#" class='submit'><i class="bi bi-ban"></i> {%  trans "Block" %}</a>
-					</form>
-				</li>
-			{% endif %}
-			{% if event.status != 'C' %}
-				<li>
-					<form action="{% url 'incidents:change_status' event.id 'C' %}" method='POST' class='icon'>
-						{% csrf_token %}
-						<a href='#' class='submit'><i class="bi bi-check-circle"></i> {% trans "Close" %}</a>
-					</form>
-				</li>
-			{% endif %}
+			<li><a href="{% url "incidents:edit" event.id %}"><i class="bi bi-pencil"></i> {% trans "Edit" %}</a></li>
+			{% for s in status %}
+			    {% if event.status.flag != s.flag %}
+                              <li>
+				      <a href="#" class="change-status-button" data-status="{% trans s.name %}" data-incid="{{ event.id }}"><i class="bi {{ s.icon }}"></i> {% trans s.associated_action.name context "action" %}</a>
+			      </li>
+			    {% endif %}
+			{% endfor %}
             {% endif %}
-			<li><a href="{% url 'incidents:followup' event.id %}"><i class="bi bi-repeat"></i> {%  trans "Incident followup" %}</a></li>
-			{% plugin_point 'details_actions' %}
+			<li><a href="{% url "incidents:followup" event.id %}"><i class="bi bi-repeat"></i> {% trans "Incident followup" %}</a></li>
+			{% plugin_point "details_actions" %}
 		</ul>
 	</div>
 	</div>
 
 	<div id="details-container" data-event-id="{{ event.id }}">
 		<div class="bg-secondary-subtle ms-n1 me-n1" id="incident-properties">
-			<table class='table table-responsive table-sm w-auto'>
-				<tr class='slim'>
+			<table class="table table-responsive table-sm w-auto">
+				<tr class="slim">
 					{% if event.is_incident %}
-						<td class='ps-3 pe-3 head border-secondary-subtle bg-secondary-subtle border-bottom-0'>{%  trans "Incident Leader" %}</td><td class='ps-3 pe-3 delim border-end border-secondary-subtle bg-secondary-subtle border-bottom-0'>{{ event.actor }}</td>
-						<td class='ps-3 pe-3 head border-secondary-subtle bg-secondary-subtle border-bottom-0'>{%  trans "Plan" %}</td><td class='ps-3 pe-3 delim border-end border-secondary-subtle bg-secondary-subtle border-bottom-0'>{{ event.plan }}</td>
+						<td class="ps-3 pe-3 head border-secondary-subtle bg-secondary-subtle border-bottom-0">{% trans "Incident Leader" %}</td>
+						<td class="ps-3 pe-3 delim border-end border-secondary-subtle bg-secondary-subtle border-bottom-0">{{ event.actor }}</td>
+
+						<td class="ps-3 pe-3 head border-secondary-subtle bg-secondary-subtle border-bottom-0">{% trans "Plan" %}</td>
+						<td class="ps-3 pe-3 delim border-end border-secondary-subtle bg-secondary-subtle border-bottom-0">{{ event.plan }}</td>
 					{% endif %}
-					<td class='ps-3 pe-3 head border-secondary-subtle bg-secondary-subtle border-bottom-0'>{%  trans "Severity" %}</td><td class='ps-3 pe-3 delim border-end border-secondary-subtle bg-secondary-subtle border-bottom-0'><span class='badge' style='background-color:{{ event.severity.color }}!important;'>{{ event.severity }}</span></td>
-					<td class='ps-3 pe-3 head border-secondary-subtle bg-secondary-subtle border-bottom-0'>{%  trans "Category" %}</td><td class='ps-3 pe-3 delim border-end border-secondary-subtle bg-secondary-subtle border-bottom-0'>{{ event.category }}</td>
-					<td class='ps-3 pe-3 head border-secondary-subtle bg-secondary-subtle border-bottom-0'>{%  trans "Status" %}</td><td class='ps-3 pe-3 delim border-end border-secondary-subtle bg-secondary-subtle border-bottom-0'>
-						<span id='event-status' class='badge
-							{% if event.status == "O" %}badge-info
-							{% elif event.status == "B" %}badge-danger
-							{% elif event.status == "C"%}badge-success{% endif %}
-						'>
-							{{ event.get_status_display}}
-						</span>
+					<td class="ps-3 pe-3 head border-secondary-subtle bg-secondary-subtle border-bottom-0">{% trans "Severity" %}</td>
+					<td class="ps-3 pe-3 delim border-end border-secondary-subtle bg-secondary-subtle border-bottom-0">
+						<span class="badge" style="background-color:{{ event.severity.color }}!important;">{{ event.severity }}</span>
 					</td>
-					<td class='ps-3 pe-3 head border-secondary-subtle bg-secondary-subtle border-bottom-0'>{%  trans "Detection" %}</td><td class='ps-3 pe-3 delim border-end border-secondary-subtle bg-secondary-subtle border-bottom-0'>{{ event.detection }}</td>
-					<td class='ps-3 pe-3 head border-secondary-subtle bg-secondary-subtle border-bottom-0'>{%  trans "B/L" %}</td><td class="ps-3 pe-3 border-secondary-subtle bg-secondary-subtle border-bottom-0">{{ event.get_business_lines_names }}</td>
+
+					<td class="ps-3 pe-3 head border-secondary-subtle bg-secondary-subtle border-bottom-0">{% trans "Category" %}</td>
+					<td class="ps-3 pe-3 delim border-end border-secondary-subtle bg-secondary-subtle border-bottom-0">{{ event.category }}</td>
+
+					<td class="ps-3 pe-3 head border-secondary-subtle bg-secondary-subtle border-bottom-0">{% trans "Status" %}</td>
+					<td class="ps-3 pe-3 delim border-end border-secondary-subtle bg-secondary-subtle border-bottom-0">
+						<span id="event-status" class="badge badge-{% if event.status.flag == "initial" %}info{% elif event.status.flag == "final" %}success{% else %}danger{% endif %}">{% trans event.status.name %}</span>
+					</td>
+
+					<td class="ps-3 pe-3 head border-secondary-subtle bg-secondary-subtle border-bottom-0">{% trans "Detection" %}</td>
+					<td class="ps-3 pe-3 delim border-end border-secondary-subtle bg-secondary-subtle border-bottom-0">{{ event.detection }}</td>
+
+					<td class="ps-3 pe-3 head border-secondary-subtle bg-secondary-subtle border-bottom-0">{% trans "B/L" %}</td>
+					<td class="ps-3 pe-3 border-secondary-subtle bg-secondary-subtle border-bottom-0">{{ event.get_business_lines_names }}</td>
+
 					{% plugin_point "details_properties" %}
 				</tr>
 			</table>
 		</div>
 
-		<h1 class="text-break">{% if event.is_incident %}{%  trans "Incident" %}{% else %}{%  trans "Event" %}{% endif %}{% if incident_show_id %} {{ event|object_id }}{% endif %} / {{event.category}} / {{event.subject}}</h1>
+		<h1 class="text-break">{% if event.is_incident %}{% trans "Incident" %}{% else %}{% trans "Event" %}{% endif %}{% if incident_show_id %} {{ event|object_id }}{% endif %} / {{ event.category }} / {{ event.subject }}</h1>
 		<div class="row">
 			<div class="col-sm-7 col-xs-12">
                 {% trans "someone" as someone %}
 				<p><i>{% blocktrans with date=event.date opened_by=event.opened_by|default:someone %}Opened on {{ date }} by {{ opened_by }}{% endblocktrans %}</i></p>
 
-				<div class='widget border border-primary-subtle text-break' id='description'>
-					<h4 class='widget text-primary-emphasis bg-primary-subtle border border-primary-subtle'>{%  trans "Description" %}</h4>
+				<div class="widget border border-primary-subtle text-break" id="description">
+					<h4 class="widget text-primary-emphasis bg-primary-subtle border border-primary-subtle">{% trans "Description" %}</h4>
 					<p>{{ event.description|markdown }}</p>
 				</div>
 
-				{% plugin_point 'details_main' %}
+				{% plugin_point "details_main" %}
 			</div>
 
 			<div class="col-sm-5 col-xs-12" id="incident-sidebar">
 
 				{% if valid_attributes|length > 0 %}
-					<div class='widget border border-info-subtle {% if attributes.count == 0 %}visually-hidden{% endif %}' id='attributes'>
-						<h4 class='widget text-info-emphasis bg-info-subtle border border-info-subtle '>{%  trans "Attributes" %}</h4>
+					<div class="widget border border-info-subtle {% if attributes.count == 0 %}visually-hidden{% endif %}" id="attributes">
+						<h4 class="widget text-info-emphasis bg-info-subtle border border-info-subtle">{% trans "Attributes" %}</h4>
 
-						<table class='table table-condensed'>
+						<table class="table table-condensed">
 							<thead>
 								<tr>
-									<th>{%  trans "Name" %}</th>
-									<th>{%  trans "Value" %}</th>
+									<th>{% trans "Name" %}</th>
+									<th>{% trans "Value" %}</th>
 									<th></th>
 								</tr>
 							</thead>
-							<tbody id='attribute_list'>
-								{% include 'events/_attributes.html' %}
+							<tbody id="attribute_list">
+								{% include "events/_attributes.html" %}
 							</tbody>
                             {% if can_handle_incident %}
-							<form id="add-attribute-form" action="{% url 'incidents:add_attribute' event.id %}" method="post" data-ajaxform data-action='html' data-target='#attribute_list' data-hide='#attribute_form' data-show='#show_attribute_form'>
+							<form id="add-attribute-form" action="{% url "incidents:add_attribute" event.id %}" method="post" data-ajaxform data-action="html" data-target="#attribute_list" data-hide="#attribute_form" data-show="#show_attribute_form">
 							<tr id="show_attribute_form">
-								<td colspan='3'><a href='#'>+ {%  trans "Add attribute" %}</a></td>
+								<td colspan="3"><a href="#">+ {% trans "Add attribute" %}</a></td>
 							</tr>
-							<tr id="attribute_form" class='visually-hidden'>
+							<tr id="attribute_form" class="visually-hidden">
 							<td class="head">{% csrf_token %}
 								<select name="name">
 									{% for valid_attribute in valid_attributes %}
@@ -155,46 +147,46 @@
 						</table>
 					</div>
 				{% endif %}
-				{% plugin_point 'details_sidebar' %}
+				{% plugin_point "details_sidebar" %}
 			</div>
 		</div>
 
-		<div id='main_tabs' class='tabbable'>
-			<ul class='nav nav-tabs'>
-				<li class='nav-item'>
-					<button class="nav-link active" data-bs-target='#tab_comments' data-bs-toggle='tab'>
-						{% trans "Comments" %} (<span id='comment-count'>{{ comments.count }}</span>)
+		<div id="main_tabs" class="tabbable">
+			<ul class="nav nav-tabs">
+				<li class="nav-item">
+					<button class="nav-link active" data-bs-target="#tab_comments" data-bs-toggle="tab">
+						{% trans "Comments" %} (<span id="comment-count">{{ comments.count }}</span>)
 					</button>
 				</li>
-				{% plugin_point 'details_tab' %}
+				{% plugin_point "details_tab" %}
 			</ul>
 		</div>
 
-		<div class='tab-content tabs table-responsive'>
-			<div class='tab-pane active' id='tab_comments'>
+		<div class="tab-content tabs table-responsive">
+			<div class="tab-pane active" id="tab_comments">
 				<table class="table table-hover table-condensed">
 					<thead>
 						<tr>
-							<th><i class='bi bi-calendar'></i></th>
-							<th><i class='bi bi-person-circle'></i></th>
-							<th>{%  trans "Comment" context "noun" %}</th>
-							<th>{%  trans "Action" %}</th>
+							<th><i class="bi bi-calendar"></i></th>
+							<th><i class="bi bi-person-circle"></i></th>
+							<th>{% trans "Comment" context "noun" %}</th>
+							<th>{% trans "Action" %}</th>
 							<th></th>
 							<th></th>
 						</tr>
 					</thead>
 					{% for comment in comments.all reversed %}
-						{% include 'events/_comment.html' with can_handle_incident=can_handle_incident %}
+						{% include "events/_comment.html" with can_handle_incident=can_handle_incident %}
 					{% endfor %}
 				</table>
 			</div>
-			{% plugin_point 'details_tab_content' %}
+			{% plugin_point "details_tab_content" %}
 		</div>
 		<!-- Modal for comments -->
 		<div id="addComment" class="modal" tabindex="-1" role="dialog" aria-labelledby="addCommentLabel" aria-hidden="true">
 			<div class="modal-dialog modal-lg">
 				<div class="modal-content">
-					<form id="comment_form" method="POST" data-ajaxform data-target='#tab_comments tbody' data-action='prepend' data-new-comment-url="{% url 'incidents:comment' event.id %}">
+					<form id="comment_form" method="POST" data-ajaxform data-target="#tab_comments tbody" data-action="prepend" data-new-comment-url="{% url "incidents:comment" event.id %}">
 					 	<div class="modal-header">
 							<h4 id="addCommentLabel" class="modal-title">{% trans "Add comment" %}</h4>
 					    	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
@@ -204,24 +196,24 @@
 								{% csrf_token %}
 								<div class="form-group row mb-3 lh-1">
 									<div class="col-sm-1">
-										<label for="id_action">{%  trans "Action" %}</label>
+										<label for="id_action">{% trans "Action" %}</label>
 									</div>
 									<div class="col-sm-4">
 										{{ comment_form.action|add_css_class:"lh-1"}}
-										<span class='help-block'>
+										<span class="help-block">
 											{% for error in comment_form.action.errors %}
 												{{error}}
 											{% endfor %}
 										</span>
 									</div>
 									<div class="col-sm-1">
-										<label for="id_action">{%  trans "Date" %}</label>
+										<label for="id_action">{% trans "Date" %}</label>
 									</div>
 									<div class="col-sm-3">
 										<input type="datetime-local" id="id_date" name="date" class="datetime" required />
-										<span class='help-block'>
+										<span class="help-block">
 											{% for error in comment_form.date.errors %}
-												{{error}}
+												{{ error }}
 											{% endfor %}
 										</span>
 									</div>
@@ -229,9 +221,9 @@
 
 								<div class="form-group mb-3" id="add-comment-area">
 									{% rich_edit comment_form.comment %}
-									<span class='help-block'>
+									<span class="help-block">
 										{% for error in comment_form.comment.errors %}
-											{{error}}
+											{{ error }}
 										{% endfor %}
 									</span>
 								</div>
@@ -239,14 +231,14 @@
 					  	</div>
 
 						<div class="modal-footer">
-							<button type="button" class="btn btn-default" data-bs-dismiss="modal" aria-hidden="true">{%  trans "Cancel" %}</button>
-							<button type="submit" class="btn btn-primary">{%  trans "Save changes" %}</button>
+							<button type="button" class="btn btn-default" data-bs-dismiss="modal" aria-hidden="true">{% trans "Cancel" %}</button>
+							<button type="submit" class="btn btn-primary">{% trans "Save changes" %}</button>
 					  	</div>
 					</form>
 				</div>
 			</div>
 		</div>
-    <div id='comment_edit_modals'>
+    <div id="comment_edit_modals">
     </div>
 	</div>
 {% endblock %}

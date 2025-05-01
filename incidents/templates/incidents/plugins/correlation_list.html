@@ -6,7 +6,6 @@
         <h3>{% trans "Incidents" %}</h3>
 	{% if incident_list %}
 	<table class="table table-hover">
-
 			<thead>
 				<tr>
                     {% if incident_show_id %}<th>ID</th>{% endif %}
@@ -23,22 +22,22 @@
 				</tr>
 			</thead>
 		{% for incident in incident_list %}
-        {%  has_perm 'incidents.view_incidents' obj=incident as can_view_incident %}
-        {%  has_perm 'incidents.handle_incidents' obj=incident as can_handle_incident %}
+        {%  has_perm "incidents.view_incidents" obj=incident as can_view_incident %}
+        {%  has_perm "incidents.handle_incidents" obj=incident as can_handle_incident %}
         {% if can_view_incident %}
 		<tr>
             {% if incident_show_id %}<td>{{ incident|object_id }}</td>{% endif %}
 			<td>{{ incident.date|date:"SHORT_DATE_FORMAT" }}</td>
-			<td><a href="{% url 'incidents:details' incident.id %}">{{ incident.subject }}</a></td>
+			<td><a href="{% url "incidents:details" incident.id %}">{{ incident.subject }}</a></td>
 			<td>{{ incident.category }}</td>
 			<td>{{ incident.get_business_lines_names }}</td>
-			<td>{{ incident.get_status_display }}</td>
+			<td>{% trans incident.status.name %}</td>
 			<td>{{ incident.detection }}</td>
 			<td>{{ incident.actor }}</td>
 			<td>{{ incident.plan }}</td>
 			<td>
                 {% if can_handle_incident %}
-                <a href="{% url 'incidents:edit' incident.id %}"><span class='bi bi-pencil'></span></a>
+                <a href="{% url "incidents:edit" incident.id %}"><span class="bi bi-pencil"></span></a>
                 {% endif %}
             </td>
 		</tr>

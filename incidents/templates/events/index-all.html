@@ -38,11 +38,11 @@
 
 
 {% if query_string %}
-  <div id="all_incidents" class="incident_display" data-url="/api/incidents?{% if request.user.profile.hide_closed %}status__not={% trans "Closed" %}{% endif %}">
+  <div id="all_incidents" class="incident_display" data-url="/api/incidents?{% if request.user.profile.hide_closed %}{% for s in final_status %}&status__not={{ s.name }}{% endfor %}{% endif %}">
 {% elif incident_view %}
-  <div id="all_incidents" class="incident_display" data-url="/api/incidents?is_incident=true{% if request.user.profile.hide_closed %}&status__not={% trans "Closed" %}{% endif %}">
+  <div id="all_incidents" class="incident_display" data-url="/api/incidents?is_incident=true{% if request.user.profile.hide_closed %}{% for s in final_status %}&status__not={{ s.name }}{% endfor %}{% endif %}">
 {% else %}
-  <div id="all_incidents" class="incident_display" data-url="/api/incidents?is_incident=false{% if request.user.profile.hide_closed %}&status__not={% trans "Closed" %}{% endif %}">
+  <div id="all_incidents" class="incident_display" data-url="/api/incidents?is_incident=false{% if request.user.profile.hide_closed %}{% for s in final_status %}&status__not={{ s.name }}{% endfor %}{% endif %}">
 {% endif %}
   <div class="loading">{% trans "Loading ..." %}</div>
   {% if incident_view %}

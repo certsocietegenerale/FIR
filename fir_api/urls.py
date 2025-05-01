@@ -28,6 +28,7 @@ router.register(
 router.register(r"businesslines", views.BusinessLinesViewSet, basename="businesslines")
 router.register(r"severities", views.SeverityViewSet, basename="severities")
 router.register(r"categories", views.CategoryViewSet, basename="categories")
+router.register(r"statuses", views.StatusViewSet, basename="statuses")
 
 # Load plugin API URLs
 for app in INSTALLED_APPS:

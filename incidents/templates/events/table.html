@@ -24,7 +24,7 @@
     </tr>
   </thead>
   <tbody>
-    <tr{% if is_dashboard != True %} class="dynamic-status-${status|lower}"{% endif %}>
+    <tr{% if is_dashboard != True %} class="dynamic-status${status|flag}"{% endif %}>
       {% if incident_show_id %}
         <td>{{ incident_id_prefix }}${id}</td>
       {% endif %}

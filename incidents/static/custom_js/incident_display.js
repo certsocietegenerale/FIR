@@ -115,9 +115,37 @@ function escapeHtml(html) {
   return p.innerHTML;
 }
 
+let statusMap = null;
+
+async function getStatusMap() {
+  if (!statusMap) {
+    let url = "/api/statuses";
+    let entries = [];
+    while (url != null) {
+      var response = await (
+        await fetch(url, {
+          headers: { Accept: "application/json" },
+        })
+      ).json();
+      entries = entries.concat(response["results"]);
+      url = response["next"];
+    }
+
+    // Convert array to map for fast lookup
+    statusMap = {};
+    for (const item of entries) {
+      console.log(item.flag);
+      statusMap[item.name] = (item.flag || "")
+        .replace(/[^a-zA-Z0-9_-]+/g, "")
+        .replace(/(.+)/g, "-$1");
+    }
+  }
+  return statusMap;
+}
+
 // parse a templated string without allowing arbitrary code execution
 // Inspired from https://stackoverflow.com/a/59084440
-function parseStringTemplate(str, obj) {
+async function parseStringTemplate(str, obj) {
   if (!str) {
     return str;
   }
@@ -125,38 +153,43 @@ function parseStringTemplate(str, obj) {
   let args = str.match(/[^{\}]+(?=})/g) || []; // parts to replace
 
   // perform replacement
-  let parameters = args.map((argument_with_params) => {
-    argument = argument_with_params.split("?")[0].split("|")[0]; // allow custom-made strings manipulation: lower, upper, etc
+  let parameters = await Promise.all(
+    args.map(async (argument_with_params) => {
+      argument = argument_with_params.split("?")[0].split("|")[0]; // allow custom-made strings manipulation: lower, upper, etc
 
-    if (obj[argument] === undefined) {
-      return "";
-    } else if (Array.isArray(obj[argument])) {
-      // arrays: join values with ", "
-      return escapeHtml(obj[argument].join(", "));
-    } else if (
-      typeof obj[argument] == "boolean" &&
-      // booleans: allow to display specific texts depending on the boolean value.
-      argument_with_params.split("?").length == 2
-    ) {
-      let iftrue = argument_with_params.split("?")[1].split(":")[0];
-      let iffalse = argument_with_params.split(":")[1];
-      return escapeHtml(obj[argument] ? iftrue : iffalse);
-    } else {
-      // strings: allow custom-made text manipulation
-      if (
-        typeof obj[argument] == "string" &&
-        argument_with_params.split("|").length == 2
+      if (obj[argument] === undefined) {
+        return "";
+      } else if (Array.isArray(obj[argument])) {
+        // arrays: join values with ", "
+        return escapeHtml(obj[argument].join(", "));
+      } else if (
+        typeof obj[argument] == "boolean" &&
+        // booleans: allow to display specific texts depending on the boolean value.
+        argument_with_params.split("?").length == 2
       ) {
-        let op = argument_with_params.split("|")[1];
-        if (op == "lower") {
-          return escapeHtml(obj[argument].toLowerCase());
-        } else if (op == "upper") {
-          return escapeHtml(obj[argument].toUpperCase());
+        let iftrue = argument_with_params.split("?")[1].split(":")[0];
+        let iffalse = argument_with_params.split(":")[1];
+        return escapeHtml(obj[argument] ? iftrue : iffalse);
+      } else {
+        // strings: allow custom-made text manipulation
+        if (
+          typeof obj[argument] == "string" &&
+          argument_with_params.split("|").length == 2
+        ) {
+          let op = argument_with_params.split("|")[1];
+          if (op == "lower") {
+            return escapeHtml(obj[argument].toLowerCase());
+          } else if (op == "upper") {
+            return escapeHtml(obj[argument].toUpperCase());
+          } else if (op == "flag") {
+            const map = await getStatusMap();
+            return escapeHtml(map[obj[argument]] || "");
+          }
         }
+        return escapeHtml(obj[argument]);
       }
-      return escapeHtml(obj[argument]);
-    }
-  });
+    }),
+  );
 
   // reassemble strings
   return String.raw({ raw: parts }, ...parameters);
@@ -326,14 +359,14 @@ async function refresh_display(div) {
       if (tr.getAttribute("class")) {
         tr.setAttribute(
           "class",
-          parseStringTemplate(tr.getAttribute("class"), entry),
+          await parseStringTemplate(tr.getAttribute("class"), entry),
         );
       }
 
       for (let td_template of tbody_template.children) {
         const td = createElementFromTemplate("td", td_template);
         // parse string template
-        td.innerHTML = parseStringTemplate(td_template.innerHTML, entry);
+        td.innerHTML = await parseStringTemplate(td_template.innerHTML, entry);
 
         // hide elements if user is viewer
         if (td.querySelector(".hide-if-viewer") && !entry["can_edit"]) {
@@ -368,7 +401,7 @@ async function refresh_display(div) {
       // Loading indicator
       if (loading_count && url != null) {
         let curr_page = new URL(url).searchParams.get("page") || "1";
-        loading_count.textContent = parseStringTemplate(
+        loading_count.textContent = await parseStringTemplate(
           loading_count.dataset.template,
           { page: curr_page, total_pages: response["total_pages"] },
         );
@@ -418,7 +451,7 @@ async function refresh_display(div) {
         "page",
       ) || "1";
     const pagination = document.createElement("div");
-    pagination.innerHTML += parseStringTemplate(
+    pagination.innerHTML += await parseStringTemplate(
       pagination_template.innerHTML,
       response,
     );

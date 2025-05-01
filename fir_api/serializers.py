@@ -2,7 +2,12 @@ import importlib
 from django.apps import apps
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from django.core.exceptions import (
+    ObjectDoesNotExist,
+    MultipleObjectsReturned,
+    ValidationError,
+)
+from django.utils.translation import gettext_lazy as _
 from collections import OrderedDict
 from copy import deepcopy
 
@@ -18,7 +23,8 @@ from incidents.models import (
     ValidAttribute,
     SeverityChoice,
     BaleCategory,
-    STATUS_CHOICES,
+    IncidentStatus,
+    get_initial_status,
     CONFIDENTIALITY_LEVEL,
 )
 from fir.config.base import INSTALLED_APPS
@@ -96,6 +102,23 @@ class CommentsSerializer(serializers.ModelSerializer):
         model = Comments
         fields = ("id", "comment", "incident", "opened_by", "date", "action")
         read_only_fields = ("id", "opened_by")
+
+
+class StatusSlugField(serializers.SlugRelatedField):
+    def to_representation(self, instance):
+        return _(super().to_representation(instance))
+
+    def to_internal_value(self, data):
+        queryset = self.get_queryset()
+        reverse_map = {
+            _(getattr(obj, self.slug_field)): getattr(obj, self.slug_field)
+            for obj in queryset
+        }
+        original_value = reverse_map.get(data, data)
+        try:
+            return queryset.get(**{self.slug_field: original_value})
+        except ObjectDoesNotExist:
+            raise serializers.ValidationError(f"Status '{data}' does not exist")
 
 
 class BusinessLineSlugField(serializers.SlugRelatedField):
@@ -183,7 +206,12 @@ class IncidentSerializer(serializers.ModelSerializer):
         queryset=IncidentCategory.objects.all(),
         required=True,
     )
-    status = ValueChoiceField(choices=STATUS_CHOICES, default="O")
+    status = StatusSlugField(
+        many=False,
+        slug_field="name",
+        queryset=IncidentStatus.objects.all(),
+        default=get_initial_status,
+    )
     concerned_business_lines = BusinessLineSlugField(
         many=True,
         slug_field="name",
@@ -350,4 +378,33 @@ class SeveritySerializer(serializers.ModelSerializer):
     class Meta:
         model = SeverityChoice
         fields = ["id", "name", "color"]
+        read_only_fields = ["id"]
+
+
+class StatusSerializer(serializers.ModelSerializer):
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation["name"] = _(instance.name)
+        return representation
+
+    def to_internal_value(self, data):
+        if "name" in data:
+            reverse_map = {
+                _(obj.name): obj.name for obj in IncidentStatus.objects.all()
+            }
+            _mutable = data._mutable
+            data._mutable = True
+            data["name"] = reverse_map.get(data["name"], data["name"])
+            data._mutable = _mutable
+        return super().to_internal_value(data)
+
+    def save(self, *args, **kwargs):
+        try:
+            super().save(*args, **kwargs)
+        except ValidationError as e:
+            raise serializers.ValidationError("; ".join(e.messages))
+
+    class Meta:
+        model = IncidentStatus
+        fields = ["id", "name", "icon", "flag"]
         read_only_fields = ["id"]

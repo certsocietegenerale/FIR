@@ -40,6 +40,7 @@ from fir_api.serializers import (
     CategorySerializer,
     ValidAttributeSerializer,
     SeveritySerializer,
+    StatusSerializer,
 )
 from fir_api.filters import (
     IncidentFilter,
@@ -52,6 +53,7 @@ from fir_api.filters import (
     ValidAttributeFilter,
     FileFilter,
     SeverityFilter,
+    StatusFilter,
 )
 from fir_api.permissions import (
     IsIncidentHandler,
@@ -70,6 +72,7 @@ from incidents.models import (
     IncidentCategory,
     ValidAttribute,
     SeverityChoice,
+    IncidentStatus,
 )
 
 
@@ -485,6 +488,18 @@ class SeverityViewSet(viewsets.ModelViewSet):
     serializer_class = SeveritySerializer
     permission_classes = [IsAuthenticated, IsAdminUserOrReadOnly]
     filterset_class = SeverityFilter
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+
+
+class StatusViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint for listing Incident Statuses.
+    """
+
+    queryset = IncidentStatus.objects.all().order_by("name")
+    serializer_class = StatusSerializer
+    permission_classes = [IsAuthenticated, IsAdminUserOrReadOnly]
+    filterset_class = StatusFilter
     filter_backends = [DjangoFilterBackend, OrderingFilter]
 
 

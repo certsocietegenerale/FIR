@@ -4,7 +4,7 @@
 {% load authorization %}
 
 {% block title %}
-{%  trans "Quarterly statistics" %} - {{bl.name}} - {% now "Y-m" %}
+{% trans "Quarterly statistics" %} - {{ bl.name }} - {% now "Y-m" %}
 {% endblock %}
 
 {% block header %}
@@ -14,22 +14,22 @@
     {%trans "Warning: You are not authorized to display statistics on all perimeters. The below graphs may be incomplete (They are only based on data from the perimeters to which you have permission)" %}
   </div>
 {% endif %}
-<h1>{% blocktrans with bl_name=bl.name %}Incidents quarterly statistics for<br />{{bl_name}}{% endblocktrans %}</h1>
+<h1>{% blocktrans with bl_name=bl.name %}Incidents quarterly statistics for<br />{{ bl_name }}{% endblocktrans %}</h1>
 <div>
   <select id="bl-select">
     {% for b in bls %}
-      <option value="{{ b.name }}" {%if b.name == bl.name%} selected="selected"{%endif%}>{{ b }}</option>
-    {%endfor%}
+      <option value="{{ b.name }}" {% if b.name == bl.name %} selected="selected"{% endif %}>{{ b }}</option>
+    {% endfor %}
   </select>
 </div>
-{%endblock%}
+{% endblock %}
 
 {% block custom_js_top %}
 <script src="{% static "vendor/d3/d3.min.js" %}"></script>
 <script src="{% static "vendor/xlsx/xlsx.full.min.js" %}"></script>
 <script src="{% static "fir_stats/stats.js" %}"></script>
 <script src="{% static "custom_js/incident_display.js" %}"></script>
-{%endblock%}
+{% endblock %}
 
 {% block custom_js %}
 <script src="{% static "vendor/select/select2.min.js" %}"></script>
@@ -49,7 +49,7 @@ $(document).ready(function() {
 {% endblock %}
 
 {% block content %}
-{%  has_perm "incidents.handle_incidents" as can_handle_incident %}
+{% has_perm "incidents.handle_incidents" as can_handle_incident %}
 {% if can_handle_incident %}
 <a href="{% url "stats:close_old" %}">{% trans "Close old incidents for all BLs" %}</a>
 {% endif %}
@@ -108,14 +108,16 @@ $(document).ready(function() {
 </div>
 
 <div class="row mt-4">
-  <div class="col-sm">
-    <h4>{% trans "Open incidents" %}</h4>
-    <div class="d3-bars-chart" data-url="/api/stats?status=Open&aggregation=date&is_incident=true" data-days="quarterly" data-width="300" data-height="200"></div>
-  </div>
-  <div class="col-sm">
-    <h4>{% trans "Blocked incidents" %}</h4>
-    <div class="d3-bars-chart" data-url="/api/stats?status=Blocked&aggregation=date&is_incident=true" data-days="quarterly" data-width="300" data-height="200"></div>
-  </div>
+  {% for s in status %}
+    {% if s.flag != "final" %}
+      <div class="col-sm">
+	{% with status_title=s.name|add:" incidents" %}
+        <h4>{% trans status_title %}</h4>
+	{% endwith %}
+	<div class="d3-bars-chart" data-url="/api/stats?status={{ s.name }}&aggregation=date&is_incident=true" data-days="quarterly" data-width="300" data-height="200"></div>
+      </div>
+    {% endif %}
+  {% endfor %}
 </div>
 
 <div class="row mt-3">

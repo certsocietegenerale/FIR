@@ -4,6 +4,8 @@ import logging
 
 from colorfield.fields import ColorField
 from django.db.models.signals import post_save, post_delete
+from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
 from django.dispatch import Signal, receiver
 from django.db import models
 from django.contrib.auth.models import User
@@ -17,11 +19,6 @@ from fir_artifacts.models import Artifact, File
 from fir_plugins.models import link_to
 from incidents.authorization import tree_authorization, AuthorizationModelMixin
 
-STATUS_CHOICES = (
-    ("O", _("Open")),
-    ("C", _("Closed")),
-    ("B", _("Blocked")),
-)
 
 CONFIDENTIALITY_LEVEL = (
     (0, "C0"),
@@ -231,6 +228,54 @@ def datetimenow():
     return datetime.datetime.now().replace(second=0, microsecond=0)
 
 
+class IncidentStatus(models.Model):
+    name = models.CharField(
+        max_length=50,
+        validators=[RegexValidator('"', inverse_match=True)],
+    )
+    icon = models.CharField(
+        max_length=50,
+        validators=[RegexValidator("^[-_A-Za-z0-9]*$")],
+    )
+    associated_action = models.ForeignKey(
+        Label,
+        on_delete=models.SET_NULL,
+        limit_choices_to={"group__name": "action"},
+        related_name="status_action_label",
+        blank=True,
+        null=True,
+    )
+    flag = models.CharField(
+        max_length=50,
+        choices=(
+            ("initial", "Initial status"),
+            ("final", "Final status"),
+        ),
+        null=True,
+        blank=True,
+    )
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if self.flag == "initial":
+            if (
+                IncidentStatus.objects.exclude(pk=self.pk)
+                .filter(flag="initial")
+                .exists()
+            ):
+                raise ValidationError(_("There can only be one initial status."))
+        super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name_plural = _("Incident statuses")
+
+
+def get_initial_status():
+    return IncidentStatus.objects.get(flag="initial")
+
+
 @tree_authorization(
     fields=[
         "concerned_business_lines",
@@ -278,19 +323,22 @@ class Incident(FIRModel, models.Model):
         blank=True,
         null=True,
     )
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=_("Open"))
+    status = models.ForeignKey(
+        "IncidentStatus",
+        on_delete=models.CASCADE,
+        default=get_initial_status,
+        null=False,
+        blank=False,
+    )
     opened_by = models.ForeignKey(User, on_delete=models.CASCADE)
     confidentiality = models.IntegerField(choices=CONFIDENTIALITY_LEVEL, default="1")
 
     def __str__(self):
         return self.subject
 
-    def is_open(self):
-        return self.get_last_action != "Closed"
-
     def close_timeout(self, username="cert"):
         previous_status = self.status
-        self.status = "C"
+        self.status = IncidentStatus.objects.filter(flag="final").first()
         self.save()
         model_status_changed.send(
             sender=Incident, instance=self, previous_status=previous_status
@@ -299,28 +347,10 @@ class Incident(FIRModel, models.Model):
         c = Comments()
         c.comment = "Incident closed (timeout)"
         c.date = datetime.datetime.now()
-        c.action = Label.objects.get(name="Closed", group__name="action")
+        c.action = IncidentStatus.objects.filter(flag="final").first().associated_action
         c.incident = self
         c.opened_by = User.objects.get(username=username)
         c.save()
-
-    def get_last_comment(self):
-        return self.comments_set.order_by("-date")[0]
-
-    def get_last_action(self):
-        c = self.comments_set.order_by("-date")[0]
-
-        action = "%s (%s)" % (c.action, c.date.strftime("%Y %d %b %H:%M:%S"))
-
-        return action
-
-    def concerns_business_line(self, bl_string):
-        for bl in self.concerned_business_lines.all():
-            if bl.name == bl_string:
-                return bl.name
-            if bl.get_ancestors().filter(name=bl_string).count():
-                return bl.name
-        return False
 
     def get_business_lines_names(self):
         return ", ".join([b.name for b in self.concerned_business_lines.all()])
@@ -399,13 +429,6 @@ class Comments(models.Model):
         old = getattr(incident, "status", None)
 
         if new is not None and new != old:
-            if new == "O":
-                new = "Open"
-            if new == "C":
-                new = "Closed"
-            if new == "B":
-                new = "Blocked"
-
             Comments.objects.create(
                 comment="Status changed to '%s'" % new,
                 action=Label.objects.get(name="Info"),
@@ -434,7 +457,10 @@ class ValidAttribute(models.Model):
 
 
 class SeverityChoice(models.Model):
-    name = models.CharField(max_length=50)
+    name = models.CharField(
+        max_length=50,
+        validators=[RegexValidator("[a-zA-Z0-9]+")],
+    )
     color = ColorField(default="#777")
 
     def __str__(self):
@@ -501,9 +527,11 @@ def refresh_incident(sender, instance, **kwargs):
 @receiver(post_save, sender=Incident)
 def comment_new_incident(sender, instance, created, **kwargs):
     if created:
+        status = IncidentStatus.objects.get(flag="initial")
+
         Comments.objects.create(
             comment="Incident opened",
-            action=Label.objects.get(name="Opened"),
+            action=status.associated_action,
             incident=instance,
             opened_by=instance.opened_by,
             date=instance.date,

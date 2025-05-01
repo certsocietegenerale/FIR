@@ -112,7 +112,7 @@ $(document).ready(function() {
 </div>
 
 <div class="row">
-  <h4>{%  blocktrans %}By category{% endblocktrans %}</h4>
+  <h4>{% blocktrans %}By category{% endblocktrans %}</h4>
   <div class="d3-lines-chart" data-url="/api/stats?aggregation=date,category" data-width="1000" data-height="400"></div>
 </div>
 
@@ -163,20 +163,20 @@ $(document).ready(function() {
 </div>
 
 <div class="row mt-4">
-  <div class="col-sm">
-    <h4>{% trans "Open tickets" %}</h4>
-    <div class="d3-bars-chart" data-url="/api/stats?status=Open&aggregation=date" data-width="500" data-height="500"></div>
-  </div>
-  <div class="col-sm">
-    <h4>{% trans "Blocked tickets" %}</h4>
-    <div class="d3-bars-chart" data-url="/api/stats?status=Blocked&aggregation=date" data-width="500" data-height="500"></div>
-  </div>
+  {% for s in status %}
+    {% if s.flag != "final" %}
+      <div class="col-sm">
+        <h4>{% trans s.name|add:" tickets" %}</h4>
+	<div class="d3-bars-chart" data-url="/api/stats?status={{ s.name }}&aggregation=date" data-width="500" data-height="500"></div>
+      </div>
+    {% endif %}
+  {% endfor %}
 </div>
 
 <div class="row mt-3">
   <h2 >{% trans "Matching incidents" %}</h2>
   <div class="container">
-    <a href="#" class="load_all_incidents d-none">{%trans "Load selected incidents (may take some time)" %}</a>
+    <a href="#" class="load_all_incidents d-none">{% trans "Load selected incidents (may take some time)" %}</a>
   </div>
 
   <div class="container d-none export_links">

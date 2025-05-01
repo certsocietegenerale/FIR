@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-08 16:30+0000\n"
+"POT-Creation-Date: 2025-04-23 23:32+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,27 +18,27 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: filters.py:87
+#: filters.py:117
 msgid "Status is not"
 msgstr "Status n'est pas"
 
-#: filters.py:111
+#: filters.py:143
 msgid "Last comment date is less than or equal to"
 msgstr "Date du dernier commentaire est inférieure ou égale à"
 
-#: filters.py:116
+#: filters.py:148
 msgid "Last comment date is greater than or equal to"
 msgstr "Date du dernier commentaire est supérieure ou égale à"
 
-#: filters.py:119
+#: filters.py:151
 msgid "Custom search query (DSL syntax)"
 msgstr "Recherche textuelle (syntaxe LD)"
 
-#: filters.py:125
+#: filters.py:157
 msgid "Has attribute"
 msgstr "Possède l'attribut"
 
-#: filters.py:178
+#: filters.py:248
 #, python-format
 msgid "Query DSL is not valid: %s"
 msgstr "La requête LD n'est pas valide : %s"
@@ -48,10 +48,6 @@ msgstr "La requête LD n'est pas valide : %s"
 #| msgid "Field '%s' does not exist. Valid fields are: %s."
 msgid "Field '%s' does not exist. Valid fields are: %s."
 msgstr "Le champ '%s' n'est pas valide. Les champs valides sont : "
-
-#: pagination.py:57
-msgid "'query' and 'last_comment_date' parameters are mutually exclusive"
-msgstr "Les paramètres 'query' et 'last_comment_date'sont mutuellement exclusifs"
 
 #: templates/fir_api/plugins/user_profile.html:7
 msgid "API Access"
@@ -88,3 +84,7 @@ msgstr "Création"
 #: urls.py:16
 msgid "FIR API endpoints"
 msgstr "Points de terminaison de l'API FIR"
+
+#: views.py:517
+msgid "Too many failed login attempts"
+msgstr "Trop de tentatives de connexion échouées"
