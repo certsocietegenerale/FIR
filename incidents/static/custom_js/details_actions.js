@@ -148,6 +148,7 @@ $(function () {
 document.addEventListener("DOMContentLoaded", function () {
   for (let link of document.getElementsByClassName("change-status-button")) {
     link.addEventListener("click", function (event) {
+      event.preventDefault();
       change_status(event.target);
     });
   }
