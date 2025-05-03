@@ -31,7 +31,7 @@ RUN apk add libxml2 libxslt mariadb-connector-c libmagic openldap-dev gettext &&
     wget -O /bin/wait-for https://raw.githubusercontent.com/eficode/wait-for/master/wait-for && \
     chmod +x /bin/wait-for && \
     adduser -DH fir && \
-    mkdir -p /var/www/static && \
+    mkdir -p /var/www/static /app/uploads && \
     chown -R fir:fir /app/ /var/www/static
 
 WORKDIR /app/

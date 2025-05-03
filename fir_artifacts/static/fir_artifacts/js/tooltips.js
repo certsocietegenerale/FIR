@@ -1,82 +1,97 @@
 function centralops_tooltip(ip) {
-	d = $('<div />')
-	ul = $('<ul />')
+  const d = document.createElement("div");
+  const ul = document.createElement("ul");
+  const li = document.createElement("li");
+  const a = document.createElement("a");
 
-	li = $('<li />')
-	li.text("Centralops on ")
-	a = $('<a></a>')
-	a.attr("href","http://centralops.net/co/DomainDossier.aspx?addr="+ip+"&dom_whois=1&net_whois=1&dom_dns=1")
-	a.attr('target','_blank')
-	a.text(ip)
-	li.append(a)
+  li.textContent = "Centralops on ";
+  a.href =
+    "http://centralops.net/co/DomainDossier.aspx?addr=" +
+    encodeURIComponent(ip) +
+    "&dom_whois=1&net_whois=1&dom_dns=1";
+  a.target = "_blank";
+  a.textContent = ip;
 
-	ul.append(li)
-
-	d.append(ul)
-
-	return d.html()
+  li.appendChild(a);
+  ul.appendChild(li);
+  d.appendChild(ul);
+  return d.outerHTML;
 }
 
 function virustotal_tooltip(hash) {
-	// https://www.virustotal.com/en/search/?query=
+  const d = document.createElement("div");
+  const ul = document.createElement("ul");
+  const li = document.createElement("li");
+  const a = document.createElement("a");
 
-	d = $('<div />')
-	ul = $('<ul />')
+  li.textContent = "Virustotal on ";
+  a.href = "https://www.virustotal.com/gui/search/" + encodeURIComponent(hash);
+  a.target = "_blank";
+  a.textContent = hash;
 
-	li = $('<li />')
-	li.text("Virustotal on ")
-	a = $('<a></a>')
-	a.attr("href","https://www.virustotal.com/gui/search/"+hash)
-	a.attr('target','_blank')
-	a.text(hash)
-	li.append(a)
-
-	ul.append(li)
-
-	d.append(ul)
-
-	return d.html()
-
+  li.appendChild(a);
+  ul.appendChild(li);
+  d.appendChild(ul);
+  return d.outerHTML;
 }
 
-function find_hostnames(node) {
-	$(node).each(function(){
-		pattern = /((([\w\-]+\.)+)([a-zA-Z]{2,6}))(?!([^<]+)?>)/ig
-		$(this).html($(this).html().replace(pattern,'<span data-bs-toggle="tooltip" data-bs-html="true" data-bs-delay="500" title class="hostname">\$1</span>'))
-	})
+function find_hostnames(nodes) {
+  for (n of document.querySelectorAll(nodes)) {
+    const pattern = /((([\w\-]+\.)+)([a-zA-Z]{2,6}))(?!([^<]+)?>)/gi;
+    const replace =
+      '<span data-bs-toggle="tooltip" data-bs-html="true" data-bs-delay="500" title class="hostname">\$1</span>';
+    n.innerHTML = n.innerHTML.replace(pattern, replace);
+  }
 
-	$('span.hostname').each(function(){
-		$(this).attr('data-bs-original-title', centralops_tooltip($(this).text()))
-	})
+  for (const span of document.querySelectorAll("span.hostname")) {
+    span.setAttribute(
+      "data-bs-original-title",
+      centralops_tooltip(span.textContent),
+    );
+  }
 }
 
-function find_ips(node) {
-	$(node).each(function(){
-		pattern = /((((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))|(((([0-9a-fA-F]){1,4}):){1,4}:(((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])))|(::(ffff(:0{1,4}){0,1}:){0,1}(((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])))|(fe80:(:(([0-9a-fA-F]){1,4})){0,4}%[0-9a-zA-Z]{1,})|(:((:(([0-9a-fA-F]){1,4})){1,7}|:))|((([0-9a-fA-F]){1,4}):((:(([0-9a-fA-F]){1,4})){1,6}))|(((([0-9a-fA-F]){1,4}):){1,2}(:(([0-9a-fA-F]){1,4})){1,5})|(((([0-9a-fA-F]){1,4}):){1,3}(:(([0-9a-fA-F]){1,4})){1,4})|(((([0-9a-fA-F]){1,4}):){1,4}(:(([0-9a-fA-F]){1,4})){1,3})|(((([0-9a-fA-F]){1,4}):){1,5}(:(([0-9a-fA-F]){1,4})){1,2})|(((([0-9a-fA-F]){1,4}):){1,6}:(([0-9a-fA-F]){1,4}))|(((([0-9a-fA-F]){1,4}):){1,7}:)|(((([0-9a-fA-F]){1,4}):){7,7}(([0-9a-fA-F]){1,4})))(?!([^<]+)?>)/ig
-		$(this).html($(this).html().replace(pattern,'<span data-bs-toggle="tooltip" data-bs-html="true" data-bs-delay="500" title class="ip-addr">\$1</span>'))
-	})
+function find_ips(nodes) {
+  for (n of document.querySelectorAll(nodes)) {
+    const pattern =
+      /((((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))|(((([0-9a-fA-F]){1,4}):){1,4}:(((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])))|(::(ffff(:0{1,4}){0,1}:){0,1}(((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])))|(fe80:(:(([0-9a-fA-F]){1,4})){0,4}%[0-9a-zA-Z]{1,})|(:((:(([0-9a-fA-F]){1,4})){1,7}|:))|((([0-9a-fA-F]){1,4}):((:(([0-9a-fA-F]){1,4})){1,6}))|(((([0-9a-fA-F]){1,4}):){1,2}(:(([0-9a-fA-F]){1,4})){1,5})|(((([0-9a-fA-F]){1,4}):){1,3}(:(([0-9a-fA-F]){1,4})){1,4})|(((([0-9a-fA-F]){1,4}):){1,4}(:(([0-9a-fA-F]){1,4})){1,3})|(((([0-9a-fA-F]){1,4}):){1,5}(:(([0-9a-fA-F]){1,4})){1,2})|(((([0-9a-fA-F]){1,4}):){1,6}:(([0-9a-fA-F]){1,4}))|(((([0-9a-fA-F]){1,4}):){1,7}:)|(((([0-9a-fA-F]){1,4}):){7,7}(([0-9a-fA-F]){1,4})))(?!([^<]+)?>)/gi;
+    const replace =
+      '<span data-bs-toggle="tooltip" data-bs-html="true" data-bs-delay="500" title class="ip-addr">\$1</span>';
+    n.innerHTML = n.innerHTML.replace(pattern, replace);
+  }
 
-	$('span.ip-addr').each(function(){
-		$(this).attr('data-bs-original-title', centralops_tooltip($(this).text()))
-	})
+  for (const span of document.querySelectorAll("span.ip-addr")) {
+    span.setAttribute(
+      "data-bs-original-title",
+      centralops_tooltip(span.textContent),
+    );
+  }
 }
 
-function find_hashes(node) {
-	$(node).each(function(){
-		pattern = /([a-fA-F0-9]{32,64})(?!([^<]+)?>)/ig
-		$(this).html($(this).html().replace(pattern,'<span data-bs-toggle="tooltip" data-bs-html="true" data-bs-delay="500"title class="hash">\$1</span>'))
-	})
-
-	$('span.hash').each(function(){
-		$(this).attr('data-bs-original-title', virustotal_tooltip($(this).text()))
-	})
+function find_hashes(nodes) {
+  for (n of document.querySelectorAll(nodes)) {
+    const pattern = /([a-fA-F0-9]{32,64})(?!([^<]+)?>)/gi;
+    const replace =
+      '<span data-bs-toggle="tooltip" data-bs-html="true" data-bs-delay="500"title class="hash">\$1</span>';
+    n.innerHTML = n.innerHTML.replace(pattern, replace);
+  }
+  for (const span of document.querySelectorAll("span.hash")) {
+    span.setAttribute(
+      "data-bs-original-title",
+      virustotal_tooltip(span.textContent),
+    );
+  }
 }
 
-$(function () {
-	find_hostnames('.artifacts')
-	find_ips('.artifacts')
-	find_hashes('.artifacts')
+document.addEventListener("DOMContentLoaded", function () {
+  find_hostnames(".artifacts");
+  find_ips(".artifacts");
+  find_hashes(".artifacts");
 
-	const tooltipTriggerList = document.querySelectorAll('span.hostname, span.ip-addr, span.hash')
-	const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+  const tooltipTriggerList = document.querySelectorAll(
+    "span.hostname, span.ip-addr, span.hash",
+  );
+  const tooltipList = [...tooltipTriggerList].map(
+    (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl),
+  );
 });

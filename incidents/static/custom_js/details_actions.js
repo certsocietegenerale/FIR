@@ -9,39 +9,6 @@ $(function () {
     $(".details-actions-supmenu").hide();
   });
 
-  //
-  // File Uploads
-  //
-  $("#details-add-file").click(function (event) {
-    $("#details-files").removeClass("visually-hidden");
-    $("#id_file").click();
-    event.preventDefault();
-  });
-
-  $("#id_file").change(function () {
-    $("div.upload").hide();
-    var files = $(this)[0].files;
-
-    $("#filetable").empty();
-    $("#filetable").append(
-      "<thead><tr><th>Filename</th><th>Description</th></tr></thead>",
-    );
-    for (var i = 0; i < files.length; i++) {
-      var input =
-        "<input type='text' name='description' class='input-medium' />";
-      $("#filetable").append(
-        "<tr><td>" +
-          files[i].name.replace(/</g, "&lt;").replace(/>/g, "&gt;") +
-          "</td><td>" +
-          input +
-          "</td></tr>",
-      );
-    }
-  });
-
-  $("#details-container").on("dragenter", function (e) {
-    $("div.upload").show();
-  });
 
   //
   // Attributes

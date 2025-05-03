@@ -19,6 +19,7 @@ from rest_framework.mixins import (
     RetrieveModelMixin,
     CreateModelMixin,
     UpdateModelMixin,
+    DestroyModelMixin,
 )
 from rest_framework import viewsets, status, renderers
 from rest_framework.decorators import action
@@ -60,7 +61,7 @@ from fir_api.permissions import (
     IsAdminUserOrReadOnly,
 )
 from fir_api.permissions import IsIncidentHandler
-from fir_artifacts.files import handle_uploaded_file, do_download
+from fir_artifacts.files import handle_uploaded_file, do_download, do_download_archive
 from fir_artifacts.models import Artifact, File
 from incidents.models import (
     Incident,
@@ -319,10 +320,12 @@ class LabelViewSet(ListModelMixin, viewsets.GenericViewSet):
         return Label.objects.all().order_by("id")
 
 
-class FileViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
+class FileViewSet(
+    DestroyModelMixin, ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet
+):
     """
     API endpoint for listing files.
-    Files can be uploaded and downloaded via endpoints /files/<incidentID>/upload and /files/<incidentID>/download
+    Files can be uploaded and downloaded via endpoints /files/<incidentID>/upload , /files/<fileID>/download and /files/<incidentID>/download-all
     """
 
     serializer_class = FileSerializer
@@ -340,11 +343,22 @@ class FileViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
         )
         return queryset
 
-    @action(detail=True, renderer_classes=[renderers.StaticHTMLRenderer])
+    @action(detail=True)
     def download(self, request, pk):
-        file_object = File.objects.get(pk=pk)
+        file_object = get_object_or_404(File, pk=pk)
         self.check_object_permissions(self.request, file_object.incident)
         return do_download(request, pk)
+
+    @action(detail=True, url_path="download-all")
+    def download_all(self, request, pk):
+        inc = get_object_or_404(Incident, pk=pk)
+        self.check_object_permissions(self.request, Incident.objects.get(pk=pk))
+        if inc.file_set.count() == 0:
+            return Response(
+                data={"Error": "Incident does not have any file."},
+                status=status.HTTP_404_NOT_FOUND,
+            )
+        return do_download_archive(request, pk)
 
     @action(detail=True, methods=["POST"])
     def upload(self, request, pk):

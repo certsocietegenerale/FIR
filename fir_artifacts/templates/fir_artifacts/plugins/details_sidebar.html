@@ -2,36 +2,35 @@
 {% load fir_plugins %}
 {% load fir_artifacts %}
 {% load authorization %}
-{%  has_perm 'incidents.handle_incidents' obj=event as can_handle_incident %}
-<div class='widget border border-info-subtle {% if event.file_set.count == 0 %}visually-hidden{% endif%}' id='details-files'>
-<h4 class='widget text-info-emphasis bg-info-subtle border border-info-subtle'>{%  trans "Related files" %}</h4>
+{% has_perm "incidents.handle_incidents" obj=event as can_handle_incident %}
+<div class="widget border border-info-subtle {% if event.file_set.count == 0 %}visually-hidden{% endif %}" id="details-files">
+<h4 class="widget text-info-emphasis bg-info-subtle border border-info-subtle">{% trans "Related files" %}</h4>
     {% if event.file_set.count > 0 %}
-        <table class='table table-condensed files fixed'>
+        <table class="table table-condensed files fixed">
             <thead>
                 <tr>
-                    <th class="date-column">{%  trans "Date" %}</th>
-                    <th>{%  trans "File" %}</th>
-                    <th>{%  trans "Description" %}</th>
+                    <th class="date-column">{% trans "Date" %}</th>
+                    <th>{% trans "File" %}</th>
+                    <th>{% trans "Description" %}</th>
                     <th class="icon-column"></th>
                 </tr>
             </thead>
             {% for file in event.file_set.all %}
                 <tr>
-                    <td>{{file.date}}</td>
+                    <td>{{ file.date }}</td>
                     <td>
-                        <a href="{% url 'artifacts:download_file' file.id %}">
+                        <a href="/api/files/{{ file.id }}/download">
                             {{ file.getfilename }}
                         </a>
                     </td>
                     <td>{{ file.description }}</td>
                     <td class="icon-column">
                         {% if can_handle_incident %}
-                        <form id='details-file-delete' action="{% url 'artifacts:remove_file' file.id %}" method='POST'>
-                            {% csrf_token %}
+			<span class="details-file-delete" data-id="{{ file.id }}">
                             <button type="submit" class="btn btn-link btn-sm icon">
                                 <i class="bi bi-trash"></i>
                             </button>
-                        </form>
+                        </span>
                         {% endif %}
                     </td>
                 </tr>
@@ -39,24 +38,23 @@
         </table>
     {% endif %}
     {% if can_handle_incident %}
-    <form id='upload_form' enctype="multipart/form-data" action="{% url 'artifacts:upload_file' event|content_type event.id %}" method='POST'>
-        {% csrf_token %}
-        <div class='upload'>
-            <span>{%  trans "Dropzone" %}</span>
+    <div id="upload_form" data-id="{{ event.id }}">
+        <div class="upload">
+            <span>{% trans "Dropzone" %}</span>
             <input type="file" name="file" id="id_file" multiple />
         </div>
-        <table id='filetable' class='table table-condensed'></table>
+        <table id="filetable" class="table table-condensed"></table>
     </form>
-    <a class="btn btn-sm btn-default" href="#" onclick='javascript:$("#id_file").click();'>
-        <i class="bi bi-file-earmark"></i> {%  trans "Browse..." %}
+    <a class="btn btn-sm btn-default" href="#" id="btn-browse">
+        <i class="bi bi-file-earmark"></i> {% trans "Browse..." %}
     </a>
-    <a class="btn btn-sm btn-default" href="#" onclick='javascript:$("#upload_form").submit();'>
-        <i class="bi bi-upload"></i> {%  trans "Upload files" %}
+    <a class="btn btn-sm btn-default" href="#" id="btn-upload">
+        <i class="bi bi-upload"></i> {% trans "Upload files" %}
     </a>
     {% endif %}
     {% if event.file_set.count > 0 %}
-        <a class="btn btn-sm btn-default" href="{% url 'artifacts:download_archive' event|content_type event.id %}">
-            <i class="bi bi-download"></i> {%  trans "Download archive" %}
+        <a class="btn btn-sm btn-default" href="/api/files/{{ event.id }}/download-all">
+            <i class="bi bi-download"></i> {% trans "Download archive" %}
         </a>
     {% endif %}
 </div>
@@ -64,14 +62,14 @@
 
 {% if correlated_count > 0 %}
 	<div class="widget border border-info-subtle">
-		<h4 class='widget text-info-emphasis bg-info-subtle border border-info-subtle'>{%  trans "Correlated Artifacts" %}</h4>
+		<h4 class="widget text-info-emphasis bg-info-subtle border border-info-subtle">{% trans "Correlated Artifacts" %}</h4>
 
-		<div class='' id='sidebar_artifacts'>
-			<table class='table table-condensed artifacts-table artifacts fixed'>
+		<div id="sidebar_artifacts">
+			<table class="table table-condensed artifacts-table artifacts fixed">
     <thead>
         <tr>
-            <th class='head'>{%  trans "Type" %}</th>
-            <th>{%  trans "Values" %}</th>
+            <th class="head">{% trans "Type" %}</th>
+            <th>{% trans "Values" %}</th>
         </tr>
     </thead>
     {% for artifact_type in artifacts %}
@@ -81,3 +79,4 @@
 		</div>
 	</div>
 {% endif %}
+{% csrf_token %}
