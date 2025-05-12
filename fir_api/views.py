@@ -4,12 +4,17 @@ from axes.signals import user_locked_out
 
 from django.apps import apps
 from django.conf import settings
+from django.db.models import Q, OuterRef, Subquery
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.shortcuts import get_object_or_404
+from django.core.exceptions import ValidationError
+from django.contrib.auth import update_session_auth_hash
 from django.contrib.auth.models import User
-from django.db.models import Q, OuterRef, Subquery
+from django.contrib.auth.password_validation import validate_password
+from django.utils.translation import gettext_lazy as _
 
+from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.authtoken.models import Token
@@ -20,7 +25,7 @@ from rest_framework.mixins import (
     UpdateModelMixin,
     DestroyModelMixin,
 )
-from rest_framework import viewsets
+from rest_framework import viewsets, status
 from rest_framework.renderers import JSONRenderer, AdminRenderer
 from rest_framework.response import Response
 from rest_framework.filters import OrderingFilter
@@ -72,12 +77,49 @@ from incidents.models import (
 class UserViewSet(viewsets.ModelViewSet):
     """
     API endpoints that allow users to be viewed or edited.
+    Unless disabled by admins, users can change their own password by making
+    POST requests to /api/users/change_password
     """
 
     queryset = User.objects.all().order_by("-date_joined")
     serializer_class = UserSerializer
     permission_classes = [IsAuthenticated, IsAdminUser]
     renderer_classes = [JSONRenderer, AdminRenderer]
+
+    @action(detail=False, permission_classes=[IsAuthenticated], methods=["POST"])
+    def change_password(self, request):
+        if not settings.USER_SELF_SERVICE.get("CHANGE_PASSWORD", True):
+            return Response(
+                data={"Error": "Password change is disabled."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        password = request.data.get("old_password", "")
+        new_password = request.data.get("new_password1", "")
+        new_password2 = request.data.get("new_password2", "")
+
+        if not request.user.check_password(raw_password=password):
+            return Response(
+                data={"Error": _("Current password is invalid.")},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        if new_password != new_password2:
+            return Response(
+                data={"Error": _("New password does not match its confirmation.")},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        try:
+            validate_password(new_password, request.user)
+        except ValidationError:
+            return Response(
+                data={"Error": _("New password is too weak.")},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
+        request.user.set_password(new_password)
+        request.user.save()
+        Log.log("Password updated", request.user)
+        update_session_auth_hash(request, request.user)
+        return Response({"status": _("Password changed.")})
 
 
 class IncidentViewSet(

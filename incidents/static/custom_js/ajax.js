@@ -8,14 +8,6 @@ function execute_module_async_request () {
   });
 }
 
-function execute_module_async_request_selector (selector, callback) {
-  var url = $(selector).data('fetch-url');
-  var el = $(selector);
-  $.get(url, function(data) {
-    el.html(data)
-  })
-}
-
 $(function() {execute_module_async_request()});
 
 function getCookie(name) {
@@ -32,21 +24,4 @@ function getCookie(name) {
         }
     }
     return cookieValue;
-}
-
-function toggle() {
-  $.getJSON("/user/toggleclosed", function(msg) {
-    document.location.reload(true);
-  });
-}
-
-function bind_button_checkbox(button, checkbox) {
-
-  if (checkbox.prop('checked')) {
-    button.addClass('active')
-  }
-
-  button.click(function() {
-    checkbox.prop('checked', !checkbox.prop('checked'));
-  });
 }

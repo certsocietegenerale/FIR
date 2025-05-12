@@ -522,16 +522,6 @@ def comment(request, incident_id, authorization_target=None):
     return redirect("incidents:details", incident_id=incident_id)
 
 
-# User ==========================================================================
-
-
-@fir_auth_required
-def toggle_closed(request):
-    request.user.profile.hide_closed = not request.user.profile.hide_closed
-    request.user.profile.save()
-    response = {"status": "ok", "hide_closed": request.user.profile.hide_closed}
-    return HttpResponse(dumps(response), content_type="application/json")
-
 
 # Dashboard =======================================================
 
@@ -553,7 +543,7 @@ def dashboard_main(request):
 
 # User profile ============================================================
 @fir_auth_required
-def user_self_service(request):
+def user_profile(request):
     user_fields = []
     if settings.USER_SELF_SERVICE.get("CHANGE_EMAIL", True):
         user_fields.append("email")
@@ -611,33 +601,3 @@ def user_self_service(request):
         },
     )
 
-
-@fir_auth_required
-@require_POST
-def user_change_password(request):
-    if not settings.USER_SELF_SERVICE.get("CHANGE_PASSWORD", True):
-        messages.error(request, "Error: Password change administratively disabled.")
-        return HttpResponseServerError(
-            dumps(
-                {
-                    "status": "error",
-                    "errors": [
-                        "password change disabled.",
-                    ],
-                }
-            ),
-            content_type="application/json",
-        )
-    if request.method == "POST":
-        form = PasswordChangeForm(user=request.user, data=request.POST)
-        if form.is_valid():
-            form.save()
-            messages.success(request, "Success! Password updated.")
-            Log.log("Password updated", request.user)
-            return HttpResponse(
-                dumps({"status": "success"}), content_type="application/json"
-            )
-
-    ret = {"status": "error", "errors": form.errors}
-    messages.error(request, form.errors)
-    return HttpResponseServerError(dumps(ret), content_type="application/json")

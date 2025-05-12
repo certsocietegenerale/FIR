@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-29 05:49-0500\n"
+"POT-Creation-Date: 2025-05-12 11:13+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,7 +23,7 @@ msgctxt "business lines"
 msgid "All"
 msgstr "Toutes"
 
-#: admin.py:20 forms.py:68 templates/fir_notifications/subscriptions.html:15
+#: admin.py:20 forms.py:68 templates/fir_notifications/subscriptions.html:14
 msgid "Business lines"
 msgstr ""
 
@@ -41,11 +41,11 @@ msgid "Notification preference must be linked to a user."
 msgstr "La préférence de notification doit être reliée à un utilisateur."
 
 #: forms.py:66 models.py:13 models.py:21 models.py:29 models.py:39
-#: templates/fir_notifications/subscriptions.html:13
+#: templates/fir_notifications/subscriptions.html:12
 msgid "Event"
 msgstr "Événement"
 
-#: forms.py:67 templates/fir_notifications/subscriptions.html:14
+#: forms.py:67 templates/fir_notifications/subscriptions.html:13
 msgid "Method"
 msgstr "Méthode"
 
@@ -173,15 +173,15 @@ msgstr "Préférences de notification"
 msgid "Notification subscription"
 msgstr "Abonnement à une notification"
 
-#: templates/fir_notifications/subscriptions.html:7
+#: templates/fir_notifications/subscriptions.html:6
 msgid "Notification subscriptions"
 msgstr "Abonnements aux notifications"
 
-#: templates/fir_notifications/subscriptions.html:12
+#: templates/fir_notifications/subscriptions.html:11
 msgid "Section"
 msgstr ""
 
-#: templates/fir_notifications/subscriptions.html:27
+#: templates/fir_notifications/subscriptions.html:26
 msgid "Edit"
 msgstr "Éditer"
 
@@ -189,7 +189,7 @@ msgstr "Éditer"
 msgid "Unsubscribe"
 msgstr "Se désabonner"
 
-#: templates/fir_notifications/subscriptions.html:37
+#: templates/fir_notifications/subscriptions.html:38
 msgid "Subscribe"
 msgstr "S'abonner"
 

@@ -22,6 +22,8 @@ function submit_form(form) {
 
 		// Send events for custom behavior
 		form.trigger('fir.form.success');
+		const evt = new CustomEvent("fir.form.success", { detail: data, bubbles: true });
+		form[0].dispatchEvent(evt);
 
 		// Trigger page action with results
 		if (action == 'remove') {
@@ -63,6 +65,8 @@ function submit_form(form) {
 		}
 	}).fail(function (data) {
 		form.trigger('fir.form.error');
+		const evt = new CustomEvent("fir.form.error", { detail: data, bubbles: true });
+		form[0].dispatchEvent(evt);
 	});
 }
 

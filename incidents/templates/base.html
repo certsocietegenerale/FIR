@@ -3,10 +3,10 @@
 {% load static %}
 {% load authorization %}
 <!DOCTYPE html>
-<html lang="{{ LANGUAGE_CODE }}" data-bs-theme="{{user.profile.light_mode}}">
+<html lang="{{ LANGUAGE_CODE }}" data-bs-theme="{{ user.profile.light_mode }}">
   <head>
     <meta charset="utf-8">
-    <title>{%block title%}FIR{%endblock%}</title>
+    <title>{% block title %}FIR{% endblock %}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
     <meta name="description" content="">
     <meta name="author" content="">
@@ -80,7 +80,7 @@
                 <div class="input-group">
                   <span class="input-group-text"><span class="bi bi-search"></span></span>
                   <form class="flex-grow-1" method="GET" action="/search">
-                    <input class="form-control" name="q" placeholder="{% trans "search..." %}" autocomplete="off" type="text" {% if query_string %}value="{{query_string}}"{% endif %}>
+                    <input class="form-control" name="q" placeholder="{% trans "search..." %}" autocomplete="off" type="text" {% if query_string %}value="{{ query_string }}"{% endif %}>
                   </form>
                 </div>
               </div>
@@ -94,7 +94,7 @@
       {% block header %}{% endblock %}
       {% block content_wrapper %}
         {% block content %}{% endblock %}
-      {% endblock%}
+      {% endblock %}
     </div>
 
     <script src="{% static "vendor/jquery/jquery.min.js" %}"></script>
@@ -102,7 +102,7 @@
     <script src="{% static "vendor/momentjs/moment.min.js" %}"></script>
     <script src="{% static "vendor/bootstrap/bootstrap.min.js" %}"></script>
     <script src="{% static "custom_js/ajax.js" %}"></script>
-    <script src="{% static "custom_js/auto_ajax.js" %}"></script>
+    <script src="{% static "custom_js/modals.js" %}"></script>
 
     {% block custom_js %}{% endblock %}
 

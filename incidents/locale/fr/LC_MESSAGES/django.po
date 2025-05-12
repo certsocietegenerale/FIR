@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FIR master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-05-01 10:52+0200\n"
+"POT-Creation-Date: 2025-05-12 11:13+0200\n"
 "PO-Revision-Date: 2015-03-15 20:24+0100\n"
 "Last-Translator: Gaetan Crahay <gaetan@crahay.eu>\n"
 "Language-Team: fr <LL@li.org>\n"
@@ -17,15 +17,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: forms.py:81 forms.py:150 forms.py:151
+#: forms.py:82 forms.py:154 forms.py:155
 msgid "This field is required."
 msgstr "Ce champ est obligatoire."
 
-#: forms.py:90
+#: forms.py:91
 msgid "Major?"
 msgstr "Majeur ?"
 
-#: forms.py:122
+#: forms.py:126
 msgid ""
 "Incidents without business line can only be created by global incident "
 "handlers."
@@ -33,7 +33,7 @@ msgstr ""
 "Les incidents sans partie prenantes ne peuvent être créés que par des "
 "incident handlers globaux."
 
-#: forms.py:177 models.py:264
+#: forms.py:185 models.py:268
 msgid "There can only be one initial status."
 msgstr "Il ne peut y avoir qu'un seul statut initial."
 
@@ -61,7 +61,7 @@ msgstr "entrée de contrôle d'accès"
 msgid "access control entries"
 msgstr "entrées de contrôle d'accès"
 
-#: models.py:268
+#: models.py:272
 msgid "Incident statuses"
 msgstr "Status d'un incident"
 
@@ -93,7 +93,7 @@ msgstr "Défaut"
 msgid "Dashboard"
 msgstr "Tableau de bord"
 
-#: templates/base.html:62 templates/incidents/plugins/correlation_list.html:6
+#: templates/base.html:62
 msgid "Incidents"
 msgstr ""
 
@@ -135,137 +135,131 @@ msgstr "Aucun incident."
 msgid "Old"
 msgstr "Ancien"
 
-#: templates/events/detail-all.html:27
+#: templates/events/detail-all.html:26
 msgid "File"
 msgstr "Fichier"
 
-#: templates/events/detail-all.html:29
+#: templates/events/detail-all.html:28
 msgid "Attribute"
 msgstr "Attribut"
 
-#: templates/events/detail-all.html:40 templates/events/detail-all.html:143
+#: templates/events/detail-all.html:39 templates/events/detail-all.html:142
 msgid "Add"
 msgstr "Ajouter"
 
-#: templates/events/detail-all.html:44
+#: templates/events/detail-all.html:43
 msgctxt "verb"
 msgid "Comment"
 msgstr "Commenter"
 
-#: templates/events/detail-all.html:48 templates/events/table.html:23
-#: templates/incidents/plugins/correlation_list.html:20
+#: templates/events/detail-all.html:47 templates/events/table.html:23
 msgid "Edit"
 msgstr "Éditer"
 
-#: templates/events/detail-all.html:57 templates/incidents/followup.html:21
+#: templates/events/detail-all.html:56 templates/incidents/followup.html:21
 msgid "Incident followup"
 msgstr "Suivi de l'incident"
 
-#: templates/events/detail-all.html:68 templates/incidents/followup.html:37
+#: templates/events/detail-all.html:67 templates/incidents/followup.html:37
 msgid "Incident Leader"
 msgstr "Responsable de l'incident"
 
-#: templates/events/detail-all.html:71 templates/events/new.html:135
+#: templates/events/detail-all.html:70 templates/events/new.html:135
 #: templates/incidents/followup.html:40
-#: templates/incidents/plugins/correlation_list.html:19
 msgid "Plan"
 msgstr ""
 
-#: templates/events/detail-all.html:74 templates/events/new.html:94
+#: templates/events/detail-all.html:73 templates/events/new.html:94
 #: templates/events/table.html:13 templates/incidents/followup.html:43
 msgid "Severity"
 msgstr "Sévérité"
 
-#: templates/events/detail-all.html:79 templates/events/new.html:79
+#: templates/events/detail-all.html:78 templates/events/new.html:79
 #: templates/events/table.html:10 templates/incidents/followup.html:48
-#: templates/incidents/plugins/correlation_list.html:14
 msgid "Category"
 msgstr "Catégorie"
 
-#: templates/events/detail-all.html:82 templates/events/new.html:84
+#: templates/events/detail-all.html:81 templates/events/new.html:84
 #: templates/events/table.html:14 templates/incidents/followup.html:50
-#: templates/incidents/plugins/correlation_list.html:16
 msgid "Status"
 msgstr "Statut"
 
-#: templates/events/detail-all.html:87 templates/events/new.html:89
+#: templates/events/detail-all.html:86 templates/events/new.html:89
 #: templates/events/table.html:16 templates/incidents/followup.html:55
-#: templates/incidents/plugins/correlation_list.html:17
 msgid "Detection"
 msgstr "Détection"
 
-#: templates/events/detail-all.html:90 templates/incidents/followup.html:58
+#: templates/events/detail-all.html:89 templates/incidents/followup.html:58
 msgid "B/L"
 msgstr "P/P"
 
-#: templates/events/detail-all.html:98 templates/events/new.html:50
+#: templates/events/detail-all.html:97 templates/events/new.html:50
 #: templates/incidents/followup.html:12
 msgid "Incident"
 msgstr "Incident"
 
-#: templates/events/detail-all.html:98 templates/events/new.html:50
+#: templates/events/detail-all.html:97 templates/events/new.html:50
 #: templates/incidents/followup.html:12
 msgid "Event"
 msgstr "Évènement"
 
-#: templates/events/detail-all.html:101 templates/incidents/followup.html:23
+#: templates/events/detail-all.html:100 templates/incidents/followup.html:23
 msgid "someone"
 msgstr "quelqu'un"
 
-#: templates/events/detail-all.html:102 templates/incidents/followup.html:24
+#: templates/events/detail-all.html:101 templates/incidents/followup.html:24
 #, python-format
 msgid "Opened on %(date)s by %(opened_by)s"
 msgstr "Ouvert le %(date)s par %(opened_by)s"
 
-#: templates/events/detail-all.html:105 templates/events/new.html:151
+#: templates/events/detail-all.html:104 templates/events/new.html:151
 msgid "Description"
 msgstr "Description"
 
-#: templates/events/detail-all.html:116
+#: templates/events/detail-all.html:115
 msgid "Attributes"
 msgstr "Attributs"
 
-#: templates/events/detail-all.html:121
+#: templates/events/detail-all.html:120
 msgid "Name"
 msgstr "Nom"
 
-#: templates/events/detail-all.html:122
+#: templates/events/detail-all.html:121
 msgid "Value"
 msgstr "Valeur"
 
-#: templates/events/detail-all.html:132
+#: templates/events/detail-all.html:131
 msgid "Add attribute"
 msgstr "Ajouter un attribut"
 
-#: templates/events/detail-all.html:158
+#: templates/events/detail-all.html:157
 msgid "Comments"
 msgstr "Commentaires"
 
-#: templates/events/detail-all.html:172 templates/incidents/followup.html:81
+#: templates/events/detail-all.html:171 templates/incidents/followup.html:81
 msgctxt "noun"
 msgid "Comment"
 msgstr "Commentaire"
 
-#: templates/events/detail-all.html:173 templates/events/detail-all.html:199
+#: templates/events/detail-all.html:172 templates/events/detail-all.html:198
 #: templates/incidents/followup.html:82
 msgid "Action"
 msgstr "Action"
 
-#: templates/events/detail-all.html:191
+#: templates/events/detail-all.html:190
 msgid "Add comment"
 msgstr "Commenter"
 
-#: templates/events/detail-all.html:210 templates/events/table.html:8
+#: templates/events/detail-all.html:209 templates/events/table.html:8
 #: templates/incidents/followup.html:79
-#: templates/incidents/plugins/correlation_list.html:12
 msgid "Date"
 msgstr ""
 
-#: templates/events/detail-all.html:234 templates/user/profile.html:196
+#: templates/events/detail-all.html:233 templates/user/profile.html:198
 msgid "Cancel"
 msgstr "Annuler"
 
-#: templates/events/detail-all.html:235
+#: templates/events/detail-all.html:234
 msgid "Save changes"
 msgstr "Enregistrer les changements"
 
@@ -299,12 +293,10 @@ msgid "Summary"
 msgstr "Résumé"
 
 #: templates/events/new.html:67 templates/events/table.html:11
-#: templates/incidents/plugins/correlation_list.html:13
 msgid "Subject"
 msgstr "Objet"
 
 #: templates/events/new.html:72 templates/events/table.html:12
-#: templates/incidents/plugins/correlation_list.html:15
 msgid "Business Lines"
 msgstr "Parties prenantes"
 
@@ -325,7 +317,6 @@ msgid "Incident details"
 msgstr "Détails de l'incident"
 
 #: templates/events/new.html:130
-#: templates/incidents/plugins/correlation_list.html:18
 msgid "Actor"
 msgstr "Acteur"
 
@@ -381,7 +372,7 @@ msgstr "Se connecter à &middot; FIR"
 msgid "Sign in to FIR"
 msgstr "Se connecter à FIR"
 
-#: templates/incidents/login.html:35 templates/user/profile.html:62
+#: templates/incidents/login.html:35 templates/user/profile.html:64
 msgid "Username"
 msgstr "Utilisateur"
 
@@ -405,53 +396,49 @@ msgstr "Mauvais couple utilisateur / mot de passe"
 msgid "I can break the rules, too."
 msgstr ""
 
-#: templates/incidents/plugins/correlation_list.html:49
-msgid "No incidents found. Lucky you!"
-msgstr "Aucun incident. Quelle chance !"
-
-#: templates/user/profile.html:22 templates/user/profile.html:147
-#: templates/user/profile.html:197
+#: templates/user/profile.html:23 templates/user/profile.html:149
+#: templates/user/profile.html:199
 msgid "Change password"
 msgstr "Modifier le mot de passe"
 
-#: templates/user/profile.html:35
+#: templates/user/profile.html:36
 msgid "Password changed!"
 msgstr "Mot de passe modifié !"
 
-#: templates/user/profile.html:36 templates/user/profile.html:40
+#: templates/user/profile.html:37 templates/user/profile.html:42
 msgid "Close"
 msgstr "Fermer"
 
-#: templates/user/profile.html:39
+#: templates/user/profile.html:40
 msgid "Error: password not changed."
 msgstr "Erreur: le mot de passe n'a pas été changé."
 
-#: templates/user/profile.html:54
+#: templates/user/profile.html:56
 #, python-format
 msgid "%(user_name)s's profile"
 msgstr "Profil de %(user_name)s"
 
-#: templates/user/profile.html:65
+#: templates/user/profile.html:67
 msgid "Email"
 msgstr ""
 
-#: templates/user/profile.html:77
+#: templates/user/profile.html:79
 msgid "First name"
 msgstr "Prénom"
 
-#: templates/user/profile.html:86
+#: templates/user/profile.html:88
 msgid "Last name"
 msgstr "Nom"
 
-#: templates/user/profile.html:99
+#: templates/user/profile.html:101
 msgid "Number of incidents per page"
 msgstr "Nombre d'incidents par page"
 
-#: templates/user/profile.html:109 templates/user/profile.html:112
+#: templates/user/profile.html:111 templates/user/profile.html:114
 msgid "Hide closed events?"
 msgstr "Masquer les incidents fermés ?"
 
-#: templates/user/profile.html:121
+#: templates/user/profile.html:123
 msgid "Preferred light mode"
 msgstr "Thème préféré"
 
