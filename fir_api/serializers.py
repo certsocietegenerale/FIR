@@ -270,7 +270,7 @@ class IncidentSerializer(serializers.ModelSerializer):
         field_to_create = {}
         for f in self._additional_fields:
             field_data = validated_data.pop(f, {})
-            if f.endswith("_set"):
+            if f.endswith("_set") or f == "artifacts":
                 # OneToMany creation is not supported
                 continue
             field_serializer = deepcopy(self._additional_fields[f])
@@ -288,7 +288,7 @@ class IncidentSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         for f in self._additional_fields:
             field_data = validated_data.pop(f, {})
-            if f.endswith("_set"):
+            if f.endswith("_set") or f == "artifacts":
                 # OneToMany update is not supported
                 continue
             field_serializer = deepcopy(self._additional_fields[f])
