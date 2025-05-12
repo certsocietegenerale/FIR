@@ -46,7 +46,7 @@ msgstr "La requête LD n'est pas valide : %s"
 #: lexer.py:79
 #, python-format
 msgid "Field '%s' does not exist. Valid fields are: %s."
-msgstr "Le champ '%s' n'est pas valide. Les champs valides sont : "
+msgstr "Le champ '%s' n'est pas valide. Les champs valides sont : %s."
 
 #: templates/fir_api/plugins/user_profile.html:6
 msgid "API Access"
@@ -62,8 +62,13 @@ msgid ""
 "\t    Example:\n"
 "\t  "
 msgstr ""
-"Les jetons peuvent être gérés dans l'interface d'administration et doivent "
-"être spécifiés dans les <strong>en-têtes des requêtes</strong>.</p>"
+"\n"
+"\t   Vous devez être authentifié pour utiliser l'API, à l'aide d'un jeton ou "
+"d'une session.\n"
+"\t   Les jetons peuvent être gérés dans l'interface d'administration et doivent "
+"être spécifiés dans les <strong>en-têtes des requêtes</strong>.</p>\n"
+"\t   Exemple :"
+"\t  "
 
 #: templates/fir_api/plugins/user_profile.html:18
 msgid "Token"
