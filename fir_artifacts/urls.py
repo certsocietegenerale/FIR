@@ -1,18 +1,12 @@
 from django.urls import re_path
 
-from fir_artifacts import views
+from fir_artifacts import api
 
 app_name = "fir_artifacts"
 
-urlpatterns = [
-    re_path(
-        r"^(?P<artifact_id>\d+)/detach/(?P<relation_name>\w+)/(?P<relation_id>\d+)/$",
-        views.detach_artifact,
-        name="detach",
-    ),
-    re_path(
-        r"^(?P<artifact_id>\d+)/correlations/$",
-        views.artifacts_correlations,
-        name="correlations",
-    ),
+urlpatterns = []
+
+api_urls = [
+    ("artifacts", api.ArtifactViewSet),
+    ("files", api.FileViewSet),
 ]

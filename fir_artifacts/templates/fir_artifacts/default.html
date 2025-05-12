@@ -1,27 +1,21 @@
 {% load fir_plugins %}
+{% load fir_artifacts %}
 {% load authorization %}
 {% if artifact_values|length > 0 %}
-	<tr>
-		<td class='head'>{{ artifact_name }}</td>
-		<td>
-			{% for a in artifact_values %}
-				<a
-					{% if a.correlation_count > 1 %} class='multiple' {% endif %}
-          href="{% url 'artifacts:correlations' a.id %}" data-id="{{ a.id }}"
-				>
-				{{ a.value }}
-				</a>
-				{% if a.correlation_count > 1 %} ({{ a.correlation_count }}) {% endif %}
-                {%  has_perm 'incidents.handle_incidents' obj=event as can_handle_incident %}
-                {% if can_handle_incident %}
-				<form class='icon' action="{% url 'artifacts:detach' a.id event|relation_name event.id %}" method='POST'>
-					{% csrf_token %}
-					<button type="submit" class='btn btn-sm btn-link icon'>
-						<i class='bi bi-x-circle'></i>
-					</button>
-				</form>
-                {% endif %}
-			{% endfor %}
-		</td>
-	</tr>
+  <tr>
+    <td class="head">{{ artifact_name }}</td>
+    <td>
+      {% for a in artifact_values %}
+        <a{% if a.correlation_count > 1 %} class="multiple"{% endif %} href="{{ a.value|correlations_url }}" target="_blank">{{ a.value }}</a>
+        {% if a.correlation_count > 1 %} ({{ a.correlation_count }}) {% endif %}
+        {% has_perm "incidents.handle_incidents" obj=event as can_handle_incident %}
+        {% if can_handle_incident %}
+	<button type="submit" class="btn btn-sm btn-link icon detach-artifact" data-artifact="{{ a.id }}" data-incident="{{ event.id }}">
+            <i class="bi bi-x-circle"></i>
+          </button>
+        {% endif %}
+      {% endfor %}
+    </td>
+  </tr>
 {% endif %}
+{% csrf_token %}

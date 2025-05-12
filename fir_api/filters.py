@@ -24,12 +24,10 @@ from incidents.models import (
     BusinessLine,
     ValidAttribute,
     Comments,
-    File,
     SeverityChoice,
     IncidentStatus,
     CONFIDENTIALITY_LEVEL,
 )
-from fir_artifacts.models import File, Artifact
 from fir_api.lexer import SearchParser
 from fir.config.base import INSTALLED_APPS
 
@@ -291,21 +289,6 @@ class IncidentFilter(FilterSet):
         ]
 
 
-class ArtifactFilter(FilterSet):
-    """
-    A custom filter class for artifacts filtering
-    """
-
-    id = NumberFilter(field_name="id")
-    type = CharFilter(field_name="type")
-    value = CharFilter(field_name="value", lookup_expr="icontains")
-    incidents = NumberFilter(field_name="incidents__id")
-
-    class Meta:
-        model = Artifact
-        fields = ["id", "type", "incidents", "value"]
-
-
 class LabelFilter(FilterSet):
     """
     A custom filter class for Label filtering
@@ -365,22 +348,6 @@ class AttributeFilter(FilterSet):
     name = CharFilter(field_name="name")
     value = CharFilter(field_name="value", lookup_expr="icontains")
     incident = NumberFilter(field_name="incident")
-
-
-class FileFilter(FilterSet):
-    """
-    Custom filtering so we can partially match on name
-    """
-
-    id = NumberFilter(field_name="id")
-    description = CharFilter(field_name="description", lookup_expr="icontains")
-    uploaded_before = DateTimeFilter(field_name="date", lookup_expr="lte")
-    uploaded_after = DateTimeFilter(field_name="date", lookup_expr="gte")
-    incident = NumberFilter(field_name="incident__id")
-
-    class Meta:
-        model = File
-        fields = ["id", "description", "incident"]
 
 
 class BLFilter(FilterSet):

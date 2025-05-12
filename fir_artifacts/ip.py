@@ -2,8 +2,8 @@ from fir_artifacts.artifacts import AbstractArtifact
 
 
 class IP(AbstractArtifact):
-    key = 'ip'
-    display_name = 'IPS'
+    key = "ip"
+    display_name = "IPS"
     # based on https://gist.github.com/dfee/6ed3a4b05cfe7a6faf40a2102408d5d8
     regex = (
         "(([^0-9a-fA-F])|^)(?P<search>(?:(?:(?:25[0-5]|(?:2[0-4]|1{0,1}[0-9]){0,1}"

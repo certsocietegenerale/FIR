@@ -7,7 +7,6 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.shortcuts import get_object_or_404
-from django.core.files import File as FileWrapper
 from django.contrib.auth.models import User
 from django.db.models import Q, OuterRef, Subquery
 
@@ -21,8 +20,7 @@ from rest_framework.mixins import (
     UpdateModelMixin,
     DestroyModelMixin,
 )
-from rest_framework import viewsets, status, renderers
-from rest_framework.decorators import action
+from rest_framework import viewsets
 from rest_framework.renderers import JSONRenderer, AdminRenderer
 from rest_framework.response import Response
 from rest_framework.filters import OrderingFilter
@@ -32,8 +30,6 @@ from django_filters.rest_framework import DjangoFilterBackend
 from fir_api.serializers import (
     UserSerializer,
     IncidentSerializer,
-    ArtifactSerializer,
-    FileSerializer,
     CommentsSerializer,
     LabelSerializer,
     AttributeSerializer,
@@ -45,14 +41,12 @@ from fir_api.serializers import (
 )
 from fir_api.filters import (
     IncidentFilter,
-    ArtifactFilter,
     LabelFilter,
     AttributeFilter,
     BLFilter,
     CommentFilter,
     CategoryFilter,
     ValidAttributeFilter,
-    FileFilter,
     SeverityFilter,
     StatusFilter,
 )
@@ -61,8 +55,6 @@ from fir_api.permissions import (
     IsAdminUserOrReadOnly,
 )
 from fir_api.permissions import IsIncidentHandler
-from fir_artifacts.files import handle_uploaded_file, do_download, do_download_archive
-from fir_artifacts.models import Artifact, File
 from incidents.models import (
     Incident,
     Comments,
@@ -233,39 +225,6 @@ class IncidentViewSet(
             instance.refresh_artifacts(serializer.validated_data["description"])
 
 
-class ArtifactViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
-    """
-    API endpoint to list artifacts.
-    Artifacts can't be created or edited via the API, they are automatically generated from incident descriptions and comments.
-    You can view all incidents having an artifact by accessing /artifacts/<id>
-    """
-
-    serializer_class = ArtifactSerializer
-    permission_classes = [IsAuthenticated, IsIncidentHandler]
-    filter_backends = [DjangoFilterBackend, OrderingFilter]
-    ordering_fields = ["id", "type", "value"]
-    filterset_class = ArtifactFilter
-
-    def get_queryset(self):
-        incidents_allowed = Incident.authorization.for_user(
-            self.request.user, "incidents.view_incidents"
-        )
-        queryset = (
-            Artifact.objects.filter(incidents__in=incidents_allowed)
-            .distinct()
-            .order_by("id")
-        )
-        return queryset
-
-    def retrieve(self, request, *args, **kwargs):
-        artifact = self.get_queryset().get(pk=self.kwargs.get("pk"))
-        correlations = artifact.relations_for_user(user=None).group()
-        if all([not link_type.objects.exists() for link_type in correlations.values()]):
-            raise PermissionError
-        serializer = self.get_serializer(artifact)
-        return Response(serializer.data)
-
-
 class CommentViewSet(viewsets.ModelViewSet):
     """
     API endpoint that allows creation of, viewing, and closing of comments
@@ -319,82 +278,6 @@ class LabelViewSet(ListModelMixin, viewsets.GenericViewSet):
     def get_queryset(self):
         return Label.objects.all().order_by("id")
 
-
-class FileViewSet(
-    DestroyModelMixin, ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet
-):
-    """
-    API endpoint for listing files.
-    Files can be uploaded and downloaded via endpoints /files/<incidentID>/upload , /files/<fileID>/download and /files/<incidentID>/download-all
-    """
-
-    serializer_class = FileSerializer
-    permission_classes = [IsAuthenticated, IsIncidentHandler]
-    filter_backends = [DjangoFilterBackend, OrderingFilter]
-    ordering_fields = ["id", "date", "incident"]
-    filterset_class = FileFilter
-
-    def get_queryset(self):
-        incidents_allowed = Incident.authorization.for_user(
-            self.request.user, "incidents.view_incidents"
-        )
-        queryset = File.objects.filter(incident__in=incidents_allowed).order_by(
-            "id", "date"
-        )
-        return queryset
-
-    @action(detail=True)
-    def download(self, request, pk):
-        file_object = get_object_or_404(File, pk=pk)
-        self.check_object_permissions(self.request, file_object.incident)
-        return do_download(request, pk)
-
-    @action(detail=True, url_path="download-all")
-    def download_all(self, request, pk):
-        inc = get_object_or_404(Incident, pk=pk)
-        self.check_object_permissions(self.request, Incident.objects.get(pk=pk))
-        if inc.file_set.count() == 0:
-            return Response(
-                data={"Error": "Incident does not have any file."},
-                status=status.HTTP_404_NOT_FOUND,
-            )
-        return do_download_archive(request, pk)
-
-    @action(detail=True, methods=["POST"])
-    def upload(self, request, pk):
-        incident = get_object_or_404(
-            Incident.authorization.for_user(
-                self.request.user, "incidents.handle_incidents"
-            ),
-            pk=pk,
-        )
-        files_added = []
-        if type(self.request.data).__name__ == "dict":
-            uploaded_files = request.FILES.get("file", [])
-        else:
-            uploaded_files = request.FILES.getlist("file", [])
-
-        if type(self.request.data).__name__ == "dict":
-            descriptions = request.data.get("description", [])
-        else:
-            descriptions = request.data.getlist("description", [])
-
-        if len(descriptions) != len(uploaded_files):
-            return Response(
-                data={"Error": "Missing 'description' or 'file'."},
-                status=status.HTTP_400_BAD_REQUEST,
-            )
-
-        for uploaded_file, description in zip(uploaded_files, descriptions):
-            file_wrapper = FileWrapper(uploaded_file.file)
-            file_wrapper.name = uploaded_file.name
-            file = handle_uploaded_file(file_wrapper, description, incident)
-            files_added.append(file)
-
-        resp_data = FileSerializer(
-            files_added, many=True, context={"request": request}
-        ).data
-        return Response(resp_data)
 
 
 class AttributeViewSet(viewsets.ModelViewSet):

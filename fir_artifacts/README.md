@@ -31,8 +31,8 @@ from fir_artifacts.artifacts import AbstractArtifact
 
 
 class AccountNumber(AbstractArtifact):
-	key = 'account'
-	display_name = 'Accounts'
+	key = "account"
+	display_name = "Accounts"
 	regex = r"(Account)[ \xa0]?:[ \xa0]?(?P<search>[\d]+)"
 ```
 

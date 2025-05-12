@@ -36,7 +36,7 @@ function virustotal_tooltip(hash) {
 }
 
 function find_hostnames(nodes) {
-  for (n of document.querySelectorAll(nodes)) {
+  for (const n of document.querySelectorAll(nodes)) {
     const pattern = /((([\w\-]+\.)+)([a-zA-Z]{2,6}))(?!([^<]+)?>)/gi;
     const replace =
       '<span data-bs-toggle="tooltip" data-bs-html="true" data-bs-delay="500" title class="hostname">\$1</span>';
@@ -52,7 +52,7 @@ function find_hostnames(nodes) {
 }
 
 function find_ips(nodes) {
-  for (n of document.querySelectorAll(nodes)) {
+  for (const n of document.querySelectorAll(nodes)) {
     const pattern =
       /((((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))|(((([0-9a-fA-F]){1,4}):){1,4}:(((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])))|(::(ffff(:0{1,4}){0,1}:){0,1}(((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])))|(fe80:(:(([0-9a-fA-F]){1,4})){0,4}%[0-9a-zA-Z]{1,})|(:((:(([0-9a-fA-F]){1,4})){1,7}|:))|((([0-9a-fA-F]){1,4}):((:(([0-9a-fA-F]){1,4})){1,6}))|(((([0-9a-fA-F]){1,4}):){1,2}(:(([0-9a-fA-F]){1,4})){1,5})|(((([0-9a-fA-F]){1,4}):){1,3}(:(([0-9a-fA-F]){1,4})){1,4})|(((([0-9a-fA-F]){1,4}):){1,4}(:(([0-9a-fA-F]){1,4})){1,3})|(((([0-9a-fA-F]){1,4}):){1,5}(:(([0-9a-fA-F]){1,4})){1,2})|(((([0-9a-fA-F]){1,4}):){1,6}:(([0-9a-fA-F]){1,4}))|(((([0-9a-fA-F]){1,4}):){1,7}:)|(((([0-9a-fA-F]){1,4}):){7,7}(([0-9a-fA-F]){1,4})))(?!([^<]+)?>)/gi;
     const replace =
@@ -69,7 +69,7 @@ function find_ips(nodes) {
 }
 
 function find_hashes(nodes) {
-  for (n of document.querySelectorAll(nodes)) {
+  for (const n of document.querySelectorAll(nodes)) {
     const pattern = /([a-fA-F0-9]{32,64})(?!([^<]+)?>)/gi;
     const replace =
       '<span data-bs-toggle="tooltip" data-bs-html="true" data-bs-delay="500"title class="hash">\$1</span>';
@@ -80,6 +80,26 @@ function find_hashes(nodes) {
       "data-bs-original-title",
       virustotal_tooltip(span.textContent),
     );
+  }
+}
+
+async function detach_artifact(target) {
+  const art_id = parseInt(target.dataset.artifact);
+  const inc_id = parseInt(target.dataset.incident);
+  const csrftoken = document.querySelector("[name=csrfmiddlewaretoken]");
+
+  var response = await fetch(`/api/artifacts/${art_id}/detach/${inc_id}`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "X-CSRFToken": csrftoken.value,
+    },
+  });
+
+  if (response.status != 200) {
+    console.error(await response.json());
+  } else {
+    document.location.reload();
   }
 }
 
@@ -94,4 +114,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const tooltipList = [...tooltipTriggerList].map(
     (tooltipTriggerEl) => new bootstrap.Tooltip(tooltipTriggerEl),
   );
+
+  for (const button of document.querySelectorAll(".detach-artifact")) {
+    button.addEventListener("click", function (event) {
+      detach_artifact(button);
+    });
+  }
 });

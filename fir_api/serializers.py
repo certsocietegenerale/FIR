@@ -13,9 +13,7 @@ from copy import deepcopy
 
 from incidents.models import (
     Incident,
-    Artifact,
     Label,
-    File,
     IncidentCategory,
     BusinessLine,
     Comments,
@@ -39,32 +37,6 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("id", "url", "username", "email", "groups")
-        read_only_fields = ("id",)
-
-
-class ArtifactSerializer(serializers.ModelSerializer):
-    incidents_count = serializers.IntegerField(source="incidents.count", read_only=True)
-
-    def __init__(self, *args, **kwargs):
-        if "context" in kwargs and kwargs["context"]["view"].action != "retrieve":
-            del self.fields["incidents"]
-        super().__init__(*args, **kwargs)
-
-    class Meta:
-        model = Artifact
-        fields = ("id", "type", "value", "incidents_count", "incidents")
-        read_only_fields = ("id", "type", "value", "incidents_count")
-
-
-class FileSerializer(serializers.ModelSerializer):
-    incident = serializers.HyperlinkedRelatedField(
-        read_only=True, view_name="api:incidents-detail"
-    )
-    url = serializers.HyperlinkedIdentityField(view_name="api:files-detail")
-
-    class Meta:
-        model = File
-        fields = ("id", "description", "url", "incident")
         read_only_fields = ("id",)
 
 
@@ -223,9 +195,7 @@ class IncidentSerializer(serializers.ModelSerializer):
         many=False, read_only=True, slug_field="username"
     )
 
-    artifacts = ArtifactSerializer(many=True, read_only=True)
     attribute_set = AttributeSerializer(many=True, read_only=True)
-    file_set = FileSerializer(many=True, read_only=True)
     comments_set = CommentsSerializer(many=True, read_only=True)
     description = serializers.CharField(
         style={"base_template": "textarea.html"}, required=False
@@ -257,20 +227,36 @@ class IncidentSerializer(serializers.ModelSerializer):
                     continue
 
                 for field in h.hooks.get("incident_fields", []):
-                    if field[2] is not None and (
-                        not field[0].endswith("_set")
-                        or kwargs["context"]["view"].action == "retrieve"
-                    ):
+                    if field[2] is not None:
                         instance._declared_fields.update({field[0]: field[2]})
                         instance._additional_fields.update({field[0]: field[2]})
 
-        if kwargs["context"]["view"].action != "retrieve":
-            del instance.fields["artifacts"]
-            del instance.fields["comments_set"]
-            del instance.fields["file_set"]
-            del instance.fields["attribute_set"]
-
         return instance
+
+    def is_retrieve(self):
+        if self._kwargs.get("context"):
+            context = self._kwargs.get("context")
+            if (
+                context.get("request")
+                and context["request"].method == "GET"
+                and context["request"].META["PATH_INFO"] == "/api/incidents/{id}"
+            ):
+                return True
+            if context.get("view") and context["view"].action == "retrieve":
+                return True
+        return False
+
+    def to_representation(self, value):
+        to_remove = [f for f in self.fields if f.endswith("_set")]
+        to_remove.extend(["artifacts"])
+
+        # Remove some fields unless we are getting details of a specific incident
+        if not self.is_retrieve():
+            for elem in to_remove:
+                if elem in self.fields:
+                    del self.fields[elem]
+
+        return super().to_representation(value)
 
     def validate_owner(self, owner):
         try:

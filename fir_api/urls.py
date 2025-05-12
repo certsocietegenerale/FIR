@@ -17,8 +17,6 @@ router.get_api_root_view().cls.__doc__ = _("FIR API endpoints")
 
 router.register(r"users", views.UserViewSet, basename="users")
 router.register(r"incidents", views.IncidentViewSet, basename="incidents")
-router.register(r"artifacts", views.ArtifactViewSet, basename="artifacts")
-router.register(r"files", views.FileViewSet, basename="files")
 router.register(r"comments", views.CommentViewSet, basename="comments")
 router.register(r"labels", views.LabelViewSet, basename="labels")
 router.register(r"attributes", views.AttributeViewSet, basename="attributes")
