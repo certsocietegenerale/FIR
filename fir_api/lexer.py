@@ -99,15 +99,15 @@ class SearchParser:
     def get_search_grammar(self):
         pp.ParserElement.enable_packrat()
 
-        COLON, LBRACK, RBRACK, LBRACE, RBRACE, TILDE = pp.Literal.using_each(":[]{}~")
+        COLON, LBRACK, RBRACK, LBRACE, RBRACE = pp.Literal.using_each(":[]{}")
         LPAR, RPAR = pp.Suppress.using_each("()")
         and_, or_, not_ = pp.CaselessKeyword.using_each("&& || !".split())
 
         expression = pp.Forward()
 
         valid_word = pp.Regex(
-            r'([a-zA-Z0-9_.-]|\\\\|\\([+\-!(){}\[\]^"~*?:]|\|\||&&))'
-            r'([a-zA-Z0-9*_+.-]|\\\\|\\([+\-!(){}\[\]^"~*?:]|\|\||&&)|\*|\?)*'
+            r'([\w_.-]|\\\\|\\([+\-!(){}\[\]^"~*?:]|\|\||&&))'
+            r'([\w*_+.-]|\\\\|\\([+\-!(){}\[\]^"~*?:]|\|\||&&)|\*|\?)*'
         ).setName("word")
         valid_word.set_parse_action(
             lambda t: t[0]
