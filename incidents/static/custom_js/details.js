@@ -81,11 +81,13 @@ document.addEventListener("DOMContentLoaded", function () {
       sub.classList.add("visually-hidden");
     }
     submenu_add.classList.remove("visually-hidden");
+    event.preventDefault();
   });
   main_container.addEventListener("click", function (event) {
     for (const sub of all_submenus) {
       sub.classList.add("visually-hidden");
     }
+    event.preventDefault();
   });
 
   // Status changes
