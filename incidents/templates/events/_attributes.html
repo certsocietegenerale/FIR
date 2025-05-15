@@ -1,16 +1,8 @@
 {% for attribute in attributes %}
-<tr id='attribute-{{attribute.id}}' data-name='{{attribute.name}}' data-value='{{attribute.value}}' class='attribute-item text-break'>
-	<td class='head'>{{attribute.name}}</td>
-	<td>
-		{{attribute.value}}
-	</td>
-	<td>
-		<form action="{% url 'incidents:delete_attribute' event.id attribute.id %}" method='POST' data-ajaxform data-action='remove' data-target='#attribute-{{attribute.id}}' data-hideifnone='#attributes' data-hideifnone-selector='.attribute-item'>
-			{% csrf_token %}
-			<button type="submit" class="btn btn-sm btn-link icon">
-				<i class="bi bi-x-circle"></i>
-			</button>
-		</form>
-	</td>
+<tr class="attribute-item text-break">
+  <td class="head">{{ attribute.name }}</td>
+  <td>{{ attribute.value }}</td>
+  <td><span class="delete-attribute" data-attribute="{{ attribute.id }}"><i class="bi bi-x-circle"></i></span></td>
+  {% csrf_token %}
 </tr>
 {% endfor %}

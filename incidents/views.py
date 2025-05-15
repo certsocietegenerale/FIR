@@ -5,7 +5,7 @@ from django.views.decorators.http import require_POST
 
 from incidents.models import Incident, Comments, model_status_changed
 from incidents.models import Label, Log, IncidentStatus
-from incidents.models import Attribute, ValidAttribute, IncidentTemplate, Profile
+from incidents.models import Attribute, IncidentTemplate, Profile
 from incidents.forms import IncidentForm, CommentForm
 
 from incidents.authorization.decorator import authorization_required
@@ -279,7 +279,9 @@ def edit_incident(request, incident_id, authorization_target=None):
             form.save()
             if previous_incident.status != form.cleaned_data["status"]:
                 model_status_changed.send(
-                    sender=Incident, instance=i, previous_status=previous_incident.status
+                    sender=Incident,
+                    instance=i,
+                    previous_status=previous_incident.status,
                 )
             i.refresh_main_business_lines()
             i.is_starred = starred
@@ -314,56 +316,6 @@ def delete_incident(request, incident_id, authorization_target=None):
         return HttpResponse(msg)
     else:
         return redirect("incidents:index")
-
-
-# attributes ================================================================
-
-
-@fir_auth_required
-@authorization_required("incidents.handle_incidents", Incident, view_arg="incident_id")
-def add_attribute(request, incident_id, authorization_target=None):
-    if authorization_target is None:
-        i = get_object_or_404(
-            Incident.authorization.for_user(request.user, "incidents.handle_incidents"),
-            pk=incident_id,
-        )
-    else:
-        i = authorization_target
-    if request.method == "POST":
-        # First, check if it is a valid attribute
-        valid_attribute = get_object_or_404(ValidAttribute, name=request.POST["name"])
-
-        # Create a new attribute
-        a = Attribute(name=valid_attribute.name, value=request.POST["value"])
-        # Except if valid attribute has an unit and this particular attribute already exists
-        # In this case, a single attribute should be keeped, with an updated value
-        if valid_attribute.unit is not None and valid_attribute.unit != "":
-            try:
-                a = i.attribute_set.get(name=valid_attribute.name)
-                a.value = str(int(a.value) + int(request.POST["value"]))
-            except:
-                pass
-
-        a.incident = i
-        a.save()
-
-        if request.headers.get("x-requested-with") == "XMLHttpRequest":
-            return render(
-                request,
-                "events/_attributes.html",
-                {"attributes": i.attribute_set.all(), "event": i},
-            )
-
-    return redirect("incidents:details", incident_id=incident_id)
-
-
-@fir_auth_required
-@authorization_required("incidents.handle_incidents", Incident, view_arg="incident_id")
-def delete_attribute(request, incident_id, attribute_id, authorization_target=None):
-    a = get_object_or_404(Attribute, pk=attribute_id)
-    if request.method == "POST":
-        a.delete()
-    return redirect("incidents:details", incident_id=incident_id)
 
 
 # comments ==================================================================
@@ -522,7 +474,6 @@ def comment(request, incident_id, authorization_target=None):
     return redirect("incidents:details", incident_id=incident_id)
 
 
-
 # Dashboard =======================================================
 
 
@@ -600,4 +551,3 @@ def user_profile(request):
             "oidc_enabled": oidc_enabled,
         },
     )
-

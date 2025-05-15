@@ -321,7 +321,6 @@ class LabelViewSet(ListModelMixin, viewsets.GenericViewSet):
         return Label.objects.all().order_by("id")
 
 
-
 class AttributeViewSet(viewsets.ModelViewSet):
     """
     API endpoints for listing, creating or editing incident attributes.
@@ -343,6 +342,13 @@ class AttributeViewSet(viewsets.ModelViewSet):
         )
         return queryset
 
+    def create(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        response_serializer = self.get_serializer(self.created_instance)
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)
+
     def perform_create(self, serializer):
         incident_object_id = self.request.data.get("incident")
         incident_object = Incident.objects.get(pk=incident_object_id)
@@ -363,8 +369,10 @@ class AttributeViewSet(viewsets.ModelViewSet):
             except ValueError:
                 existing_attribute.value = self.request.data.get("value")
             existing_attribute.save()
+            self.created_instance = existing_attribute
         except Attribute.DoesNotExist:
             serializer.save()
+            self.created_instance = serializer.instance
 
     def perform_update(self, serializer):
         self.check_object_permissions(self.request, serializer.instance.incident)

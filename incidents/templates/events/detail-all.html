@@ -14,14 +14,14 @@
 {% rich_edit_static %}
 {% plugin_point "details_static" %}
 
-<script src="{% static "custom_js/details_actions.js" %}"></script>
+<script src="{% static "custom_js/details.js" %}"></script>
 {% endblock %}
 
 {% block content %}
     {% has_perm "incidents.handle_incidents" obj=event as can_handle_incident %}
     {% can_comment event as can_comment_incident %}
 	<div id="details-actions-all">
-	<div class="details-actions-supmenu bg-info-subtle" id="details-actions-add">
+	<div class="details-actions-supmenu visually-hidden bg-info-subtle" id="details-actions-add">
 		<ul class="list-unstyled">
 			<li><a href="#" id="details-add-file"><i class="bi bi-file-earmark"></i> {% trans "File" %}</a></li>
 			{% if valid_attributes|length > 0 %}
@@ -40,7 +40,7 @@
             {% endif %}
             {% if can_comment_incident %}
 			<li><a href="#" id="details-actions-comment" data-target="#addComment">
-				<i class="bi bi-chat-left"></i> {%  trans "Comment" context "verb" %}
+				<i class="bi bi-chat-left"></i> {% trans "Comment" context "verb" %}
 			</a></li>
             {% endif %}
             {% if can_handle_incident %}
@@ -126,24 +126,24 @@
 								{% include "events/_attributes.html" %}
 							</tbody>
                             {% if can_handle_incident %}
-							<form id="add-attribute-form" action="{% url "incidents:add_attribute" event.id %}" method="post" data-ajaxform data-action="html" data-target="#attribute_list" data-hide="#attribute_form" data-show="#show_attribute_form">
 							<tr id="show_attribute_form">
 								<td colspan="3"><a href="#">+ {% trans "Add attribute" %}</a></td>
 							</tr>
 							<tr id="attribute_form" class="visually-hidden">
 							<td class="head">{% csrf_token %}
-								<select name="name">
+								<select name="name" form="add-attribute-form">
 									{% for valid_attribute in valid_attributes %}
-									<option value="{{valid_attribute.name}}" data-unit="{{valid_attribute.unit}}">{{valid_attribute.name}}</option>
+									<option value="{{ valid_attribute.name }}" data-unit="{{ valid_attribute.unit }}">{{ valid_attribute.name }}</option>
 									{% endfor %}
 								</select>
 							</td>
-							<td><input type="text" id="attribute-value" name="value" placeholder="value" /></td>
-							<td><button type="submit" class="btn btn-sm btn-link">{%  trans "Add" %}</button></td>
+							<td><input type="text" id="attribute-value" name="value" placeholder="value" form="add-attribute-form" /></td>
+							<input type="hidden" name="incident" value="{{ event.id }}" form="add-attribute-form" />
+							<td><button type="submit" class="btn btn-sm btn-link" form="add-attribute-form">{% trans "Add" %}</button></td>
 							</tr>
-							</form>
                             {% endif %}
 						</table>
+						<form id="add-attribute-form"></form>
 					</div>
 				{% endif %}
 				{% plugin_point "details_sidebar" %}
@@ -198,10 +198,10 @@
 										<label for="id_action">{% trans "Action" %}</label>
 									</div>
 									<div class="col-sm-4">
-										{{ comment_form.action|add_css_class:"lh-1"}}
+										{{ comment_form.action|add_css_class:"lh-1" }}
 										<span class="help-block">
 											{% for error in comment_form.action.errors %}
-												{{error}}
+												{{ error }}
 											{% endfor %}
 										</span>
 									</div>

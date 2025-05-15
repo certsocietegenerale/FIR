@@ -104,7 +104,7 @@ $(function () {
   // When you click on 'alert', display submenu or modal
   $('#details-actions-alert').click(function (event) {
     if ($(this).data('url') == undefined) {
-      $('.details-actions-supmenu').hide();
+      $(".details-actions-supmenu").addClass("visually-hidden");
       $('#details-actions-alert-bls').show();
       event.preventDefault();
     }
