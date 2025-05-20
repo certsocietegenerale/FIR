@@ -17,15 +17,17 @@ from django.contrib.auth.decorators import user_passes_test
 from fir.decorators import fir_auth_required
 from django.core import serializers
 
-from django.http import HttpResponse, HttpResponseServerError
-from django.shortcuts import get_object_or_404, render, redirect
+from django.http import HttpResponse, HttpResponseServerError, HttpResponseRedirect
+from django.shortcuts import get_object_or_404, render, redirect, resolve_url
 from django.template import RequestContext
 from json import dumps
 from django.template import Template
 
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.urls.exceptions import NoReverseMatch
 from django.forms.models import model_to_dict, modelform_factory
 from django.utils.translation import gettext_lazy as _
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.conf import settings
 from django.contrib import messages
 
@@ -78,6 +80,17 @@ def user_login(request):
     if request.method == "POST":
         username = request.POST["username"]
         password = request.POST["password"]
+        redirect_to = request.POST.get("next", request.GET.get("next", ""))
+
+        if not url_has_allowed_host_and_scheme(
+            url=redirect_to, allowed_hosts=request.get_host()
+        ):
+            redirect_to = resolve_url(settings.LOGIN_REDIRECT_URL)
+        try:
+            redirect_to = redirect(redirect_to)
+        except NoReverseMatch:
+            redirect_to = redirect(resolve_url(settings.LOGIN_REDIRECT_URL))
+
         user = authenticate(username=username, password=password, request=request)
         if user is not None:
             if not request.POST.get("remember", None):
@@ -95,7 +108,7 @@ def user_login(request):
             if user.is_active:
                 login(request, user)
                 init_session(request)
-                return redirect("dashboard:main")
+                return redirect_to
             else:
                 return HttpResponse("Account disabled")
         else:

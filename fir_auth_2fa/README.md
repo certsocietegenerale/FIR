@@ -15,7 +15,6 @@ Once installed, please set the following settings in `production.py`
 ENFORCE_2FA = True  # If False, 2FA will be enabled but not enforced
 
 LOGIN_URL = "two_factor:login"
-LOGIN_REDIRECT_URL = "two_factor:profile"
 LOGOUT_REDIRECT_URL = "two_factor:login"
 MIDDLEWARE += (
     "django_otp.middleware.OTPMiddleware",

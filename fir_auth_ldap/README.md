@@ -70,6 +70,7 @@ class UserAttributeGroupType(GroupOfNamesType):
 
 AUTH_LDAP_GROUP_TYPE = UserAttributeGroupType()
 
-# If you wish to view LDAPS queries made by FIR and replies from the server.
-# LOGGING["loggers"]["django_auth_ldap"] = {"handlers": ["console"], "level": "DEBUG"}
+# Trace user logins. Set the log level to DEBUG if you wish to view LDAPS queries made by FIR
+# and replies from the server.
+LOGGING["loggers"]["django_auth_ldap"] = {"handlers": ["console"], "level": "INFO"}
 ```
