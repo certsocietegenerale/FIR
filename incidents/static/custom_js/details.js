@@ -87,7 +87,6 @@ document.addEventListener("DOMContentLoaded", function () {
     for (const sub of all_submenus) {
       sub.classList.add("visually-hidden");
     }
-    event.preventDefault();
   });
 
   // Status changes
