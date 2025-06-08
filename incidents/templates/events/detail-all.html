@@ -102,7 +102,7 @@
 
 				<div class="widget border border-primary-subtle text-break" id="description">
 					<h4 class="widget text-primary-emphasis bg-primary-subtle border border-primary-subtle">{% trans "Description" %}</h4>
-					<p>{{ event.description|markdown }}</p>
+					{{ event.description|markdown }}
 				</div>
 
 				{% plugin_point "details_main" %}

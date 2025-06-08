@@ -29,20 +29,19 @@
 <div class="card mt-3">
 	<div class="tabbable">
 		<div class="card-header">
-				<ul class="nav nav-tabs card-header-tabs">
-					{% for s in status %}
-					{% if s.flag != "final" %}
-					<li class="nav-item">
-						<button class="nav-link{% if s.flag == "initial" %} active{% endif %}" data-bs-target="#tab_status_{{ s.id }}" data-bs-toggle="tab">{% trans s.name %}</button>
-					</li>
-					{% endif %}
-					{% endfor %}
-					<li class="nav-item">
-						<button class="nav-link" data-bs-target="#tab_status_old" data-bs-toggle="tab">{% trans "Old" %}</button>
-					</li>
-					{% plugin_point "dashboard_tab" %}
-				</ul>
-			</div>
+			<ul class="nav nav-tabs card-header-tabs">
+				{% for s in status %}
+				{% if s.flag != "final" %}
+				<li class="nav-item">
+					<button class="nav-link{% if s.flag == "initial" %} active{% endif %}" data-bs-target="#tab_status_{{ s.id }}" data-bs-toggle="tab">{% trans s.name %}</button>
+				</li>
+				{% endif %}
+				{% endfor %}
+				<li class="nav-item">
+					<button class="nav-link" data-bs-target="#tab_status_old" data-bs-toggle="tab">{% trans "Old" %}</button>
+				</li>
+				{% plugin_point "dashboard_tab" %}
+			</ul>
 		</div>
 		<div class="card-body">
 			<div class="tab-content tabs">
