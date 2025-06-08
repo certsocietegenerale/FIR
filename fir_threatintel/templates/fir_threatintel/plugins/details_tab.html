@@ -1,7 +1,10 @@
 {% load i18n %}
 
 <li class="nav-item">
-	<button class="nav-link"data-bs-target='#tab_threatintel' data-bs-toggle='tab' id='ti-tab'>
-		{% trans "Threat Intel" %}<span class="ti-count"></span>
-	</button>
+  <button class="nav-link" data-bs-target="#tab_threatintel" data-bs-toggle="tab" id="ti-tab">
+    {% trans "Threat Intel" %}<span id="ti-count"></span>
+    <span id="yeti-tab-data-template" class="d-none">
+      <span class="known">{% trans "Known: " %}${known|length}</span>
+    </span>
+  </button>
 </li>

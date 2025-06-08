@@ -1,91 +1,97 @@
 {% load static %}
 {% load i18n %}
 
-{% load fir_plugins %}
-{% load fir_threatintel %}
+<div class="tab-pane" id="tab_threatintel"></div>
 
-{% for artifact_type in artifacts %}
-	{% with artifact_type|artifact_json:request as art %}
-		{% for aval in art.artifact_values %}
-		<input type="hidden" name="artifacts" value="{{ aval.value }}" />
-		{% endfor %}
-	{% endwith %}
-{% endfor %}
-
-<div class='tab-pane' data-query-endpoint="" data-observable-post="" id='tab_threatintel'>
-No intelligence available for this incident. Please check your configuration settings.
+<div class="col-sm-12 widget order border-info-subtle yeti-matches d-none">
+  <h4 class="widget text-info-emphasis bg-info-subtle border border-info-subtle">{% trans "Observables" %}</h4>
+  <div class="yeti-read">
+    <table class="table table-condensed">
+      <tbody class="known">
+        <tr>
+          <th class="narrow"></th>
+          <th>{% trans "Observable" %}</th>
+          <th>{% trans "Tags" %}</th>
+          <th>{% trans "YETI Context" %}</th>
+        </tr>
+        <tr class="known-template">
+          <td><a href="${url}" target="_blank"><span class="bi bi-box-arrow-up-right" aria-hidden="true"></span></a></td>
+          <td><code>${value}</code></td><td><span class="badge badge-primary me-1">${tags}</span></td><td>${source}</td>
+        </tr>
+      </tbody>
+      <tbody class="unknown">
+        <tr>
+          <th></th>
+          <th>{% trans "Unknown observables" %}</th>
+          <th></th>
+          <th></th>
+        </tr>
+        <tr class="unknown-template">
+          <td></td>
+          <td><code>${item}</code></td>
+          <td>N/A</td>
+          <td>N/A</td>
+        </tr>
+      </tbody>
+    </table>
+    <a class="btn btn-default btn-sm mb-2 mt-2 toggle-send-to-yeti" href="#">{% trans "Send to Yeti..." %}</a>
+  </div>
+  <div class="yeti-form">
+    <table class="table table-condensed">
+      <tr>
+        <th></th>
+        <th>{% trans "Observable" %}</th>
+        <th>{% trans "Tags" %}</th>
+        <th>{% trans "YETI Context" %}</th>
+      </tr>
+      <tbody class="known">
+        <tr class="observable known-template">
+          <td><input type="checkbox" name="name" value=""></td>
+          <td class="value"><code>${value}</code></td>
+          <td class="tags">
+            <div class="tag-box"></div>
+            <input type="text" class="tagsinput">
+            <input type="hidden" name="tags" class="tags-hidden">
+          </td>
+          <td class="context">${source}</td>
+        </tr>
+      </tbody>
+      <tbody class="unknown">
+        <tr>
+          <th></th>
+          <th>{% trans "Unknown observables" %}</th>
+          <th></th>
+          <th></th>
+        </tr>
+        <tr class="observable unknown-template">
+          <td><input type="checkbox" name="name" value=""></td>
+          <td class="value"><code>${item}</code></td>
+          <td class="tags">
+            <div class="tag-box"></div>
+            <input type="text" class="tagsinput">
+            <input type="hidden" name="tags" class="tags-hidden">
+          </td>
+          <td class="context">N/A</td>
+        </tr>
+      </tbody>
+      <tbody>
+        <tr>
+          <td><input class="check-all" data-target="observable" type="checkbox" name="name" value=""></td>
+          <td><strong><label>{% trans "Select all / tags for all observables" %}</label></strong></td>
+          <td class="tags">
+            <div class="tag-box"></div>
+            <input type="text" class="tagsinput tags-all">
+            <input type="hidden" name="tags" class="tags-hidden">
+          </td>
+          <td></td>
+        </tr>
+      </tbody>
+    </table>
+    <button class="btn btn-outline-danger mt-2 me-2 send-to-yeti" href="#">{% trans "Send it!" %}<span class="bi bi-cloud-upload ms-1" aria-hidden="true"></span></button>
+    {% blocktrans %}
+      <strong>Note</strong>: Observables will be added with the following context:
+    {% endblocktrans %}
+    <code class="fid">{{ event.id }}</code>
+    <button class="d-block btn btn-default btn-sm mb-2 mt-3 toggle-yeti-cancel" href="#">{% trans "Cancel" %}</button>
+  </div>
 </div>
-
-{% verbatim %}
-<!-- Start Handlebar templates -->
-
-<script id="yeti-tab-data-template" type="text/x-handlebars-template">
-		<span class="known">Known: {{known.length}}</span>
-</script>
-
-<script id="yeti-observables-template" type="text/x-handlebars-template">
-<div class="col-sm-12 widget order border-info-subtle yeti-matches">
-	<h4 class='widget text-info-emphasis bg-info-subtle border border-info-subtle'>Observables</h4>
-	<div class="read">
-		<table class="table table-condensed yeti-read">
-			<tbody class="known">
-				{{#if known}}
-				<tr><th class="narrow"></th><th>Observable</th><th>Tags</th><th>YETI Context</th></tr>
-				{{#each known}}
-				<tr><td><a href="{{url}}" target="_blank"><span class="bi bi-box-arrow-up-right" aria-hidden="true"></span></a></td><td><code>{{value}}</code></td><td>{{#each tags}}<span class="badge badge-primary">{{this}}</span>{{/each}}</td><td>{{join source ", "}}</td></tr>
-				{{/each}}
-				{{/if}}
-			</tbody>
-			<tbody class="unknown">
-				{{#if unknown}}
-				<tr><th></th><th>Unknown observables</th><th></th><th></th></tr>
-				{{#each unknown}}
-				<tr><td></td><td><code>{{this}}</code></td><td>N/A</td><td>N/A</td></tr>
-				{{/each}}
-				{{/if}}
-			</tbody>
-
-		</table>
-	</div>
-
-	<div class="send">
-	<table class="table table-condensed yeti-send">
-		<tr><th></th><th>Observable</th><th>Tags</th><th>YETI Context</th></tr>
-		<tbody class="known">
-			{{#if known}}
-			{{#each known}}
-			<tr class="observable"><td><input type="checkbox" name="name" value=""></td><td class="value"><code>{{value}}</code></td><td class="tags"><input type="text" class="tagsinput tag-azure-yeti" value="{{#each tags}}{{this}},{{/each}}"></td><td class="context">{{join source ", "}}</td></tr>
-			{{/each}}
-			{{/if}}
-		</tbody>
-
-		<tbody class="unknown">
-			{{#if unknown}}
-			<tr><th></th><th>Unknown observables</th><th></th><th></th></tr>
-			{{#each unknown}}
-			<tr class="observable"><td><input type="checkbox" name="name" value=""></td><td class="value"><code>{{this}}</code></td><td class="tags"><input type="text" class="tagsinput tag-azure-yeti" value=""></td><td class="context">N/A</td></tr>
-			{{/each}}
-			{{/if}}
-		</tbody>
-		<tbody>
-			<tr>
-				<td><input id="check-all" data-target="observable" class="check-all" type="checkbox" name="name" value=""></td>
-				<td>&nbsp;<strong><label for="check-all">Select all / tags for all observables</label></strong></td>
-				<td class="tags"><input type="text" class="tagsinput tag-azure-yeti all-tags" value=""></td>
-				<td></td>
-			</tr>
-		</tbody>
-	</table>
-		<button class="btn btn-outline-danger mt-2 me-2" id="send-to-yeti" href="#" role="button">Send it! <span class="bi bi-cloud-upload" aria-hidden="true"></span></button>
-		{% endverbatim %}
-			<strong>Note</strong>: Observables added this way will have the following context: <code id="fid" data-fid="{{ event|object_id }}">{{ event|object_id }}</code>
-		{% verbatim %}
-	</div>
-
-	<a class="btn btn-default btn-sm mb-2 mt-2" id="toggle-send" href="#" role="button">Send to Yeti...</a>
-
-</div>
-</script>
-
-<!-- End Handlebar templates -->
-{% endverbatim %}

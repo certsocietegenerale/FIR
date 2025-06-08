@@ -20,7 +20,7 @@ from rest_framework.serializers import (
 )
 from rest_framework.exceptions import ParseError
 from rest_framework.permissions import BasePermission
-from rest_framework.renderers import JSONRenderer, BrowsableAPIRenderer
+from rest_framework.renderers import JSONRenderer
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.mixins import ListModelMixin
 from rest_framework.response import Response
@@ -36,6 +36,7 @@ from django_filters.rest_framework import (
 
 from incidents.models import Incident, BusinessLine, Attribute
 from fir_api.filters import IncidentFilter
+from fir_api.renderers import FilterButtonBrowsableAPIRenderer
 from fir_api.serializers import BaselCategoryField
 from fir_stats.permissions import can_view_statistics
 
@@ -135,13 +136,6 @@ class StatsSerializer(ModelSerializer):
             "count",
         ]
 
-
-class FilterButtonBrowsableAPIRenderer(BrowsableAPIRenderer):
-
-    def get_filter_form(self, data, view, request):
-        #  Pass an empty list to force the 'filter' HTML button
-        #  to be always displayed
-        return super().get_filter_form([], view, request)
 
 
 class StatsViewSet(ListModelMixin, GenericViewSet):
