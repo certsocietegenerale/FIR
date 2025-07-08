@@ -25,6 +25,7 @@ from incidents.models import (
     get_initial_status,
     CONFIDENTIALITY_LEVEL,
 )
+from fir_plugins.templatetags.markdown import render_markdown
 from fir.config.base import INSTALLED_APPS
 
 
@@ -62,6 +63,10 @@ class CommentsSerializer(serializers.ModelSerializer):
     action = serializers.SlugRelatedField(
         queryset=Label.objects.filter(group__name="action"), slug_field="name"
     )
+    parsed_comment = serializers.SerializerMethodField()
+
+    def get_parsed_comment(self, obj):
+        return render_markdown(obj.comment)
 
     def get_fields(self, *args, **kwargs):
         fields = super().get_fields(*args, **kwargs)
@@ -70,10 +75,39 @@ class CommentsSerializer(serializers.ModelSerializer):
         )
         return fields
 
+    def to_representation(self, value):
+        # Remove some fields unless we are viewing a specific comment
+        if not self.is_details():
+            if "parsed_comment" in self.fields:
+                del self.fields["parsed_comment"]
+
+        return super().to_representation(value)
+
+    def is_details(self):
+        if self._kwargs.get("context"):
+            context = self._kwargs.get("context")
+            if (
+                context.get("request")
+                and context["request"].method != "DELETE"
+                and context["request"].META["PATH_INFO"].endswith("{id}")
+            ):
+                return True
+            if context.get("view") and context["view"].action not in ["list", "delete"]:
+                return True
+        return False
+
     class Meta:
         model = Comments
-        fields = ("id", "comment", "incident", "opened_by", "date", "action")
-        read_only_fields = ("id", "opened_by")
+        fields = [
+            "id",
+            "comment",
+            "incident",
+            "opened_by",
+            "date",
+            "action",
+            "parsed_comment",
+        ]
+        read_only_fields = ["id", "opened_by"]
 
 
 class StatusSlugField(serializers.SlugRelatedField):
@@ -239,7 +273,7 @@ class IncidentSerializer(serializers.ModelSerializer):
             if (
                 context.get("request")
                 and context["request"].method == "GET"
-                and context["request"].META["PATH_INFO"] == "/api/incidents/{id}"
+                and context["request"].META["PATH_INFO"].endswith("{id}")
             ):
                 return True
             if context.get("view") and context["view"].action == "retrieve":
