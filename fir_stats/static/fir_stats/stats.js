@@ -1577,7 +1577,7 @@ function getOtherFiltersArg(force_unit = false, with_attribute_only = false) {
 
     let bls = document.getElementById("id_concerned_business_lines");
     if (form.get("concerned_business_lines") && bls) {
-      options = Array.from(bls.selectedOptions).map(({ text }) => text);
+      options = Array.from(bls.selectedOptions).map(({ text }) => text.split(" > ").at(-1));
       for (let o of options) {
         filters += `&concerned_business_lines=${encodeURIComponent(o)}`;
       }
