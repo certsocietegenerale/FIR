@@ -425,7 +425,10 @@ class Comments(models.Model):
 
     @classmethod
     def create_diff_comment(cls, incident, data, user):
-        new = data.get("status", None)
+        if isinstance(data, Incident):
+            new = getattr(data, "status", None)
+        else:
+            new = data.get("status", None)
         old = getattr(incident, "status", None)
 
         if new is not None and new != old:

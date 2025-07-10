@@ -1,6 +1,7 @@
 # for token Generation
 import io
 from axes.signals import user_locked_out
+from copy import deepcopy
 
 from django.apps import apps
 from django.conf import settings
@@ -296,6 +297,28 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.validated_data["incident"].refresh_artifacts(
             serializer.validated_data["comment"]
         )
+
+        bls = incident_object.concerned_business_lines.all()
+        if (
+            self.request.user.has_perm("incidents.handle_incidents")
+            or any(
+                self.request.user.has_perm("incidents.handle_incidents", bl)
+                for bl in bls
+            )
+            or self.request.user.has_perm("incidents.report_events")
+            or any(
+                self.request.user.has_perm("incidents.report_events", bl) for bl in bls
+            )
+        ):
+            for status in IncidentStatus.objects.all():
+                if serializer.validated_data["action"] == status.associated_action:
+                    incident_object_old = deepcopy(incident_object)
+                    incident_object.status = status
+                    incident_object.save()
+                    Comments.create_diff_comment(
+                        incident_object_old, incident_object, self.request.user
+                    )
+                    break
 
     def perform_update(self, serializer):
         self.check_object_permissions(self.request, serializer.instance.incident)
