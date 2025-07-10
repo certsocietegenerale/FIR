@@ -105,7 +105,7 @@ $(function () {
   $('#details-actions-alert').click(function (event) {
     if ($(this).data('url') == undefined) {
       $(".details-actions-supmenu").addClass("visually-hidden");
-      $('#details-actions-alert-bls').show();
+      $('#details-actions-alert-bls').removeClass("visually-hidden");
       event.preventDefault();
     }
     else {
