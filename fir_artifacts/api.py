@@ -19,7 +19,7 @@ from rest_framework.mixins import (
 )
 
 from incidents.models import Incident
-from fir_api.permissions import IsIncidentHandler
+from fir_api.permissions import CanViewIncident, CanWriteIncident
 from fir_artifacts.models import File, Artifact
 from fir_artifacts.files import handle_uploaded_file, do_download, do_download_archive
 
@@ -59,6 +59,7 @@ class ArtifactSerializer(serializers.ModelSerializer):
     """
     Serializer for /api/artifacts
     """
+
     class Meta:
         model = Artifact
         fields = ("id", "type", "value", "incidents")
@@ -69,6 +70,7 @@ class IncidentArtifactSerializer(serializers.ModelSerializer):
     """
     Serializer for /api/incident/<id>
     """
+
     incidents_count = serializers.IntegerField(source="incidents.count", read_only=True)
 
     class Meta:
@@ -98,7 +100,7 @@ class FileViewSet(
     """
 
     serializer_class = FileSerializer
-    permission_classes = [IsAuthenticated, IsIncidentHandler]
+    permission_classes = [IsAuthenticated, CanViewIncident | CanWriteIncident]
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = ["id", "date", "incident"]
     filterset_class = FileFilter
@@ -174,7 +176,7 @@ class ArtifactViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSe
     """
 
     serializer_class = ArtifactSerializer
-    permission_classes = [IsAuthenticated, IsIncidentHandler]
+    permission_classes = [IsAuthenticated, CanViewIncident | CanWriteIncident]
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = ["id", "type", "value"]
     filterset_class = ArtifactFilter

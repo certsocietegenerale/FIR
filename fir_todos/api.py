@@ -10,7 +10,7 @@ from django_filters.rest_framework import (
     BooleanFilter,
 )
 
-from fir_api.permissions import IsIncidentHandler
+from fir_api.permissions import CanViewIncident, CanWriteIncident
 from fir_todos.models import TodoItem
 from incidents.models import BusinessLine, Incident
 
@@ -66,7 +66,7 @@ class TodoViewSet(viewsets.ModelViewSet):
 
     queryset = TodoItem.objects.all()
     serializer_class = TodoSerializer
-    permission_classes = (IsAuthenticated, IsIncidentHandler)
+    permission_classes = [IsAuthenticated, CanViewIncident | CanWriteIncident]
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = ["id", "incident", "done_time"]
     filterset_class = TodoFilter
@@ -75,7 +75,9 @@ class TodoViewSet(viewsets.ModelViewSet):
         incidents_allowed = Incident.authorization.for_user(
             self.request.user, "incidents.view_incidents"
         )
-        queryset = TodoItem.objects.filter(incident__in=incidents_allowed).order_by("-id")
+        queryset = TodoItem.objects.filter(incident__in=incidents_allowed).order_by(
+            "-id"
+        )
         return queryset
 
     def perform_create(self, serializer):

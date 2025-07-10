@@ -56,10 +56,12 @@ from fir_api.filters import (
     StatusFilter,
 )
 from fir_api.permissions import (
-    IsIncidentHandler,
+    CanWriteIncident,
+    CanViewIncident,
+    CanWriteComment,
+    CanViewComment,
     IsAdminUserOrReadOnly,
 )
-from fir_api.permissions import IsIncidentHandler
 from incidents.models import (
     Incident,
     Comments,
@@ -134,7 +136,7 @@ class IncidentViewSet(
     """
 
     serializer_class = IncidentSerializer
-    permission_classes = [IsAuthenticated, IsIncidentHandler]
+    permission_classes = [IsAuthenticated, CanViewIncident | CanWriteIncident]
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = [
         "id",
@@ -273,7 +275,7 @@ class CommentViewSet(viewsets.ModelViewSet):
     """
 
     serializer_class = CommentsSerializer
-    permission_classes = [IsAuthenticated, IsIncidentHandler]
+    permission_classes = [IsAuthenticated, CanViewComment | CanWriteComment]
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = ["id", "date"]
     filterset_class = CommentFilter
@@ -328,7 +330,7 @@ class AttributeViewSet(viewsets.ModelViewSet):
     """
 
     serializer_class = AttributeSerializer
-    permission_classes = [IsAuthenticated, IsIncidentHandler]
+    permission_classes = [IsAuthenticated, CanViewIncident | CanWriteIncident]
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = ["id", "name", "value", "incident"]
     filterset_class = AttributeFilter
@@ -390,7 +392,7 @@ class ValidAttributeViewSet(viewsets.ModelViewSet):
 
     queryset = ValidAttribute.objects.all().order_by("id")
     serializer_class = ValidAttributeSerializer
-    permission_classes = [IsAuthenticated, IsIncidentHandler]
+    permission_classes = [IsAuthenticated, IsAdminUserOrReadOnly]
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = ["id", "name", "unit", "description", "categories"]
     filterset_class = ValidAttributeFilter
