@@ -1,73 +1,3 @@
-$(function () {
-  // Set up form for new comment
-  $("#details-actions-comment").click(function (event) {
-    $("#addComment").modal("toggle");
-
-    var form = $("#addComment form");
-    form.attr("action", form.data("new-comment-url"));
-    form.data("target", "#tab_comments tbody");
-    form.data("action", "prepend");
-
-    $("#id_action").val("");
-    var date = new Date();
-    date = new Date(date.getTime() - new Date().getTimezoneOffset() * 60 * 1000)
-      .toISOString()
-      .slice(0, 16);
-    $("#id_date").val(date);
-  });
-
-  // Set up form for update
-  $("#tab_comments").on("click", ".edit-comment", function (event) {
-    var form = $("#addComment form");
-    var comment_id = $(this).data("comment-id");
-
-    $.getJSON("/ajax/comment/" + comment_id, function (msg) {
-      var comment = jQuery.parseJSON(msg)[0];
-      var text = comment.fields.comment;
-      var action = comment.fields.action;
-      var date = new Date(comment.fields.date);
-      date = new Date(date.getTime() - date.getTimezoneOffset() * 60 * 1000)
-        .toISOString()
-        .slice(0, 16);
-
-      $("#addComment").modal("toggle");
-
-      editors["id_comment"].value(text);
-      $("#id_action").val(action);
-      $("#id_date").val(date);
-
-      form.attr("action", "/ajax/comment/" + comment_id);
-      form.data("target", "#comment_id_" + comment_id);
-      form.data("action", "replaceWith");
-    });
-  });
-
-  // Custom behavior when comment is added
-  $("#addComment").on("fir.form.success", function (event) {
-    // Dismiss modal
-    editors["id_comment"].value("");
-    $("#addComment").modal("hide");
-
-    // Hack not to trigger on update
-    if ($("#addComment form").data("action") != "replaceWith") {
-      // Update comment count
-      var count = parseInt($("#comment-count").text());
-      $("#comment-count").text(count + 1);
-    }
-
-    event.stopPropagation();
-  });
-
-  // Custom behavior when comment is removed
-  $("#tab_comments").on("fir.form.success", function (event) {
-    // Update comment count
-    var count = parseInt($("#comment-count").text());
-    $("#comment-count").text(count - 1);
-
-    event.stopPropagation();
-  });
-});
-
 document.addEventListener("DOMContentLoaded", function () {
   // show/hide the "Add" sub-menu
   const add_button = document.getElementById("details-actions-add-link");
@@ -120,6 +50,40 @@ document.addEventListener("DOMContentLoaded", function () {
     form.addEventListener("submit", function (event) {
       event.preventDefault();
       add_attribute(form);
+    });
+  }
+
+  // Show add comment modal
+  const add_comment_button = document.getElementById("details-actions-comment");
+  if (add_comment_button) {
+    add_comment_button.addEventListener("click", function (event) {
+      event.preventDefault();
+      display_comment_form();
+    });
+  }
+  // delete button comment
+  for (let delete_comment_button of document.querySelectorAll(
+    ".delete-comment",
+  )) {
+    delete_comment_button.addEventListener("click", function (event) {
+      event.preventDefault();
+      delete_comment(delete_comment_button.dataset.id);
+      delete_comment_button.parentElement.parentElement.remove();
+    });
+  }
+  // edit button comment
+  for (let edit_comment_button of document.querySelectorAll(".edit-comment")) {
+    edit_comment_button.addEventListener("click", function (event) {
+      event.preventDefault();
+      display_comment_form(edit_comment_button.dataset.id);
+    });
+  }
+  // Submit comment
+  const comment_form = document.getElementById("comment_form");
+  if (comment_form) {
+    comment_form.addEventListener("submit", function (event) {
+      submit_comment_form(comment_form);
+      event.preventDefault();
     });
   }
 });
@@ -282,4 +246,157 @@ function update_attribute_placeholder(target) {
   }
 
   document.getElementById("attribute-value").placeholder = placeholder;
+}
+
+async function display_comment_form(id) {
+  const main_div = document.getElementById("addComment");
+  const comment_form = main_div.querySelector("form");
+  const comment_modal = bootstrap.Modal.getOrCreateInstance("#addComment");
+
+  if (id != undefined) {
+    const query = await fetch(`/api/comments/${parseInt(id)}`);
+    const response = await query.json();
+    editors["id_comment"].value(response["comment"]);
+    document.getElementById("id_action").value = response["action"];
+
+    var date = new Date(response["date"]);
+    date = new Date(date.getTime() - new Date().getTimezoneOffset() * 60 * 1000)
+      .toISOString()
+      .slice(0, 16);
+    document.getElementById("id_date").value = date;
+    comment_form.dataset.id = parseInt(id);
+  } else {
+    editors["id_comment"].value("");
+    document.getElementById("id_action").value = "";
+    var date = new Date();
+    date = new Date(date.getTime() - new Date().getTimezoneOffset() * 60 * 1000)
+      .toISOString()
+      .slice(0, 16);
+    document.getElementById("id_date").value = date;
+    delete comment_form.dataset.id;
+  }
+
+  comment_modal.show();
+
+  comment_form.dataset.action = "prepend";
+  comment_form.setAttribute("action", "/api/comments");
+  editors["id_comment"].codemirror.refresh();
+}
+
+async function delete_comment(id) {
+  id = parseInt(id);
+  if (isNaN(id)) {
+    return;
+  }
+  const csrftoken = document.querySelector("[name=csrfmiddlewaretoken]");
+  const query = await fetch(`/api/comments/${id}`, {
+    method: "DELETE",
+    headers: {
+      "X-CSRFToken": csrftoken.value,
+    },
+  });
+
+  if (query.status != 204) {
+    console.error(await query.json());
+  } else {
+    const count = document.getElementById("comment-count");
+    count.textContent = parseInt(count.textContent) - 1;
+  }
+}
+
+async function submit_comment_form(form) {
+  const data = new FormData(form);
+  const csrftoken = document.querySelector("[name=csrfmiddlewaretoken]");
+  const existing_id = document.querySelector("#addComment form").dataset.id;
+
+  var url = "/api/comments";
+  var method = "POST";
+  if (existing_id) {
+    url = `/api/comments/${existing_id}`;
+    method = "PUT";
+  }
+
+  const query = await fetch(url, {
+    method: method,
+    headers: {
+      "X-CSRFToken": csrftoken.value,
+      Accept: "application/json",
+    },
+    body: data,
+  });
+  const response = await query.json();
+
+  if (existing_id) {
+    document.getElementById(`comment_id_${existing_id}`).remove();
+  } else {
+    const count = document.getElementById("comment-count");
+    count.textContent = parseInt(count.textContent) + 1;
+  }
+
+  add_comment_to_dom(response);
+  // hide modal
+  const main_div = document.getElementById("addComment");
+  const comment_modal = bootstrap.Modal.getOrCreateInstance("#addComment");
+  comment_modal.hide();
+}
+
+function add_comment_to_dom(response) {
+  // create the new comment and add it to DOM
+  const tr = document.createElement("tr");
+  tr.id = `comment_id_${parseInt(response["id"])}`;
+  const td_date = document.createElement("td");
+  td_date.classList.add("comment-date");
+  td_date.textContent = moment(response["date"]).format("YYYY-MM-DD HH:mm");
+  const td_user = document.createElement("td");
+  td_user.textContent = response["opened_by"];
+  const td_action = document.createElement("td");
+  td_action.textContent = response["action"];
+  const td_comment = document.createElement("td");
+  td_comment.innerHTML = response["parsed_comment"];
+  const td_edit = document.createElement("td");
+  const td_delete = document.createElement("td");
+  if (response["can_edit"]) {
+    td_edit.innerHTML = `<a href="#" data-id="${parseInt(response["id"])}" class="edit-comment"><i class="bi bi-pencil"></i></a>`;
+    td_delete.innerHTML = `<a href="#" data-id="${parseInt(response["id"])}" class="delete-comment"><i class="bi bi-x-circle"></i></a>`;
+  }
+  tr.appendChild(td_date);
+  tr.appendChild(td_user);
+  tr.appendChild(td_comment);
+  tr.appendChild(td_action);
+  tr.appendChild(td_edit);
+  tr.appendChild(td_delete);
+
+  const comment_table = document.querySelector("#tab_comments table tbody");
+  comment_table.appendChild(tr);
+
+  // reorganize the table
+  var rows = [].slice.call(comment_table.querySelectorAll("tr"));
+  rows.sort(function (a, b) {
+    return (
+      moment(b.cells[0].textContent).unix() -
+      moment(a.cells[0].textContent).unix()
+    );
+  });
+  rows.forEach(function (v) {
+    comment_table.appendChild(v);
+  });
+
+  // delete button comment
+  for (let delete_comment_button of document.querySelectorAll(
+    ".delete-comment",
+  )) {
+    delete_comment_button.addEventListener("click", function (event) {
+      event.preventDefault();
+      delete_comment(delete_comment_button.dataset.id);
+      delete_comment_button.parentElement.parentElement.remove();
+    });
+  }
+
+  // edit button comment
+  for (let edit_comment_button of document.querySelectorAll(".edit-comment")) {
+    edit_comment_button.addEventListener("click", function (event) {
+      event.preventDefault();
+      display_comment_form(edit_comment_button.dataset.id);
+    });
+  }
 }

@@ -1,4 +1,5 @@
 from django import forms
+from incidents.models import Label
 from django.utils.translation import gettext_lazy as _
 
 
@@ -24,3 +25,13 @@ class DateTimeLocalField(forms.DateTimeField):
 class TranslatedModelChoiceField(forms.ModelChoiceField):
     def label_from_instance(self, obj):
         return _(obj.name)
+
+
+class LabelModelChoiceField(forms.ModelChoiceField):
+    def label_from_instance(self, obj):
+        return obj.name
+
+    def prepare_value(self, value):
+        if isinstance(value, Label):
+            return value.name
+        return value

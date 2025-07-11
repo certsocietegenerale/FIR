@@ -18,9 +18,6 @@ urlpatterns = [
         include(("incidents.custom_urls.events", "url_events"), namespace="events"),
     ),
     re_path(
-        r"^ajax/", include(("incidents.custom_urls.ajax", "ajax"), namespace="ajax")
-    ),
-    re_path(
         r"^user/", include(("incidents.custom_urls.user", "user"), namespace="user")
     ),
     re_path(

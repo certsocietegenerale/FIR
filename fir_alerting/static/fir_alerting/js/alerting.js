@@ -26,45 +26,53 @@ $(function () {
   }
 
   function add_auto_comment(type, bl) {
-    date = new Date();
-    // date format 1899-12-06 07:15
-    date = date.getFullYear() + "-" + (date.getMonth()+1) +"-" + date.getDate() + " " + date.getHours() + ":" + date.getMinutes()
+    const date = new Date(
+      new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000,
+    )
+    .toISOString()
+    .slice(0, 16);
+    let csrftoken = document.querySelector("[name=csrfmiddlewaretoken]");
 
-    comment_ = ''
-    action_ = ''
+    comment_ = "";
+    action_ = "";
 
-    if (type == 'takedown') {
-      comment_ = 'Takedown started'
-      action_ = $("#id_action option:contains('Takedown')").attr('value')
+    if (type == "takedown") {
+      comment_ = "Takedown started";
+      action_ = $("#id_action option:contains('Takedown')").attr("value");
     }
 
-    if (type == 'alerting') {
-      comment_ = 'Alert sent'
+    if (type == "alerting") {
+      comment_ = "Alert sent";
       if (bl != undefined) {
-        comment_ += ' to ' + bl;
+        comment_ += " to " + bl;
       }
-      console.log(comment_)
-      action_ = $("#id_action option:contains('Alerting')").attr('value')
+      console.log(comment_);
+      action_ = $("#id_action option:contains('Alerting')").attr("value");
     }
 
-  if (action_ != '') {
-    $.ajax({
-        type: 'POST',
-        url: $('#comment_form').data('new-comment-url'),
-        data: {
+    if (action_ != "") {
+      $.ajax({
+        type: "POST",
+        url: "/api/comments",
+        dataType: "json",
+        headers: {
+          Accept: "application/json",
+          "X-CSRFToken": csrftoken.value,
+          "Content-type": "application/json",
+        },
+        data: JSON.stringify({
           comment: comment_,
           action: action_,
           date: date,
-          csrfmiddlewaretoken: getCookie('csrftoken'),
-        },
-        success: function(data) {
-          $('#tab_comments tbody').prepend(data);
+          incident: $("#details-container").data("event-id"),
+        }),
+        success: function (data) {
           // Update comment count
-          count = parseInt($('#comment-count').text());
-          $('#comment-count').text(count + 1);
-        }
+          count = parseInt($("#comment-count").text());
+          $("#comment-count").text(count + 1);
+          add_comment_to_dom(data);
+        },
       });
-
     }
   }
 
@@ -124,7 +132,7 @@ $(function () {
     // Add form to the page
     $('#addComment').after(data);
 
-    editors["id_body"] = init_easymde($("#id_body"));
+    editors["id_body"] = init_easymde(document.getElementById("id_body"));
 
     // Activate 'Send Email' button
     $('#send_email').click(function (event) {

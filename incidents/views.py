@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.models import User
-from django.views.decorators.http import require_POST
 
 from incidents.models import Incident, Comments, model_status_changed
 from incidents.models import Label, Log, IncidentStatus
@@ -15,12 +14,10 @@ import importlib
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import user_passes_test
 from fir.decorators import fir_auth_required
-from django.core import serializers
 
-from django.http import HttpResponse, HttpResponseServerError, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import get_object_or_404, render, redirect, resolve_url
 from django.template import RequestContext
-from json import dumps
 from django.template import Template
 
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
@@ -31,7 +28,7 @@ from django.utils.http import url_has_allowed_host_and_scheme
 from django.conf import settings
 from django.contrib import messages
 
-import re, datetime, copy
+import copy
 
 from fir_artifacts import artifacts as libartifacts
 
@@ -331,105 +328,6 @@ def delete_incident(request, incident_id, authorization_target=None):
         return redirect("incidents:index")
 
 
-# comments ==================================================================
-
-
-@fir_auth_required
-def edit_comment(request, incident_id, comment_id):
-    c = get_object_or_404(Comments, pk=comment_id, incident_id=incident_id)
-    i = c.incident
-    incident_handler = False
-    if not request.user.has_perm("incidents.handle_incidents", obj=i):
-        if c.opened_by != request.user:
-            raise PermissionDenied()
-    else:
-        incident_handler = True
-
-    if request.method == "POST":
-        form = CommentForm(request.POST, instance=c)
-        if not incident_handler:
-            form.fields["action"].queryset = Label.objects.filter(
-                group__name="action"
-            ).exclude(name__in=["Closed", "Opened", "Blocked"])
-        if form.is_valid():
-            form.save()
-            return redirect("incidents:details", incident_id=c.incident_id)
-    else:
-        form = CommentForm(instance=c)
-        if not incident_handler:
-            form.fields["action"].queryset = Label.objects.filter(
-                group__name="action"
-            ).exclude(name__in=["Closed", "Opened", "Blocked"])
-
-    return render(request, "events/edit_comment.html", {"c": c, "form": form})
-
-
-@fir_auth_required
-def delete_comment(request, incident_id, comment_id):
-    c = get_object_or_404(Comments, pk=comment_id, incident_id=incident_id)
-    i = c.incident
-    if (
-        not request.user.has_perm("incidents.handle_incidents", obj=i)
-        and not c.opened_by == request.user
-    ):
-        raise PermissionDenied()
-    if request.method == "POST":
-        c.delete()
-        return redirect("incidents:details", incident_id=c.incident_id)
-    else:
-        return redirect("incidents:details", incident_id=c.incident_id)
-
-
-@fir_auth_required
-def update_comment(request, comment_id):
-    c = get_object_or_404(Comments, pk=comment_id)
-    i = c.incident
-    if request.method == "GET":
-        if not request.user.has_perm("incidents.view_incidents", obj=i):
-            ret = {
-                "status": "error",
-                "errors": [
-                    "Permission denied",
-                ],
-            }
-            return HttpResponseServerError(dumps(ret), content_type="application/json")
-        serialized = serializers.serialize(
-            "json",
-            [
-                c,
-            ],
-        )
-        return HttpResponse(dumps(serialized), content_type="application/json")
-    else:
-        comment_form = CommentForm(request.POST, instance=c)
-        if not request.user.has_perm("incidents.handle_incidents", obj=i):
-            comment_form.fields["action"].queryset = Label.objects.filter(
-                group__name="action"
-            ).exclude(name__in=["Closed", "Opened", "Blocked"])
-
-        if comment_form.is_valid():
-
-            c = comment_form.save()
-
-            if c.action.name in ["Closed", "Opened", "Blocked"]:
-                if c.action.name[0] != c.incident.status:
-                    previous_status = c.incident.status
-                    c.incident.status = c.action.name[0]
-                    c.incident.save()
-                    model_status_changed.send(
-                        sender=Incident,
-                        instance=c.incident,
-                        previous_status=previous_status,
-                    )
-
-            i.refresh_artifacts(c.comment)
-
-            return render(request, "events/_comment.html", {"comment": c, "event": i})
-        else:
-            ret = {"status": "error", "errors": comment_form.errors}
-            return HttpResponseServerError(dumps(ret), content_type="application/json")
-
-
 # events ====================================================================
 
 
@@ -437,54 +335,6 @@ def update_comment(request, comment_id):
 @user_passes_test(is_incident_viewer)
 def event_index(request):
     return index(request, False)
-
-
-# ajax ======================================================================
-
-
-@fir_auth_required
-@authorization_required(comment_permissions, Incident, view_arg="incident_id")
-def comment(request, incident_id, authorization_target=None):
-    if authorization_target is None:
-        i = get_object_or_404(
-            Incident.authorization.for_user(request.user, comment_permissions),
-            pk=incident_id,
-        )
-    else:
-        i = authorization_target
-
-    if request.method == "POST":
-        comment_form = CommentForm(request.POST)
-        if not request.user.has_perm("incidents.handle_incidents"):
-            comment_form.fields["action"].queryset = Label.objects.filter(
-                group__name="action"
-            ).exclude(name__in=["Closed", "Opened", "Blocked"])
-        if comment_form.is_valid():
-            com = comment_form.save(commit=False)
-            com.incident = i
-            com.opened_by = request.user
-            com.save()
-            i.refresh_artifacts(com.comment)
-
-            if (
-                com.action.name in ["Closed", "Opened", "Blocked"]
-                and com.incident.status != com.action.name[0]
-            ):
-                previous_status = com.incident.status
-                com.incident.status = com.action.name[0]
-                com.incident.save()
-                model_status_changed.send(
-                    sender=Incident,
-                    instance=com.incident,
-                    previous_status=previous_status,
-                )
-
-            return render(request, "events/_comment.html", {"event": i, "comment": com})
-        else:
-            ret = {"status": "error", "errors": comment_form.errors}
-            return HttpResponseServerError(dumps(ret), content_type="application/json")
-
-    return redirect("incidents:details", incident_id=incident_id)
 
 
 # Dashboard =======================================================

@@ -7,9 +7,14 @@ from incidents.models import (
     Comments,
     BusinessLine,
     IncidentStatus,
+    Label,
     get_initial_status,
 )
-from incidents.fields import DateTimeLocalField, TranslatedModelChoiceField
+from incidents.fields import (
+    DateTimeLocalField,
+    TranslatedModelChoiceField,
+    LabelModelChoiceField,
+)
 from django.contrib.auth.forms import AuthenticationForm
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist
@@ -149,17 +154,14 @@ class IncidentForm(ModelForm):
 
 
 class CommentForm(ModelForm):
-    def __init__(self, *args, **kwargs):
-        super(ModelForm, self).__init__(*args, **kwargs)
-        self.fields["comment"].error_messages["required"] = _("This field is required.")
-        self.fields["action"].error_messages["required"] = _("This field is required.")
+    action = LabelModelChoiceField(
+        queryset=Label.objects.filter(group__name="action"),
+        widget=forms.Select(attrs={"required": True, "class": "form-select"}),
+    )
 
     class Meta:
         model = Comments
         exclude = ["incident", "opened_by"]
-        widgets = {
-            "action": forms.Select(attrs={"required": True, "class": "form-control"})
-        }
 
 
 class UploadFileForm(forms.Form):
