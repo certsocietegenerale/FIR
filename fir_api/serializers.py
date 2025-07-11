@@ -64,6 +64,7 @@ class CommentsSerializer(serializers.ModelSerializer):
         queryset=Label.objects.filter(group__name="action"), slug_field="name"
     )
     parsed_comment = serializers.SerializerMethodField()
+    can_edit = serializers.SerializerMethodField()
 
     def get_parsed_comment(self, obj):
         return render_markdown(obj.comment)
@@ -96,6 +97,16 @@ class CommentsSerializer(serializers.ModelSerializer):
                 return True
         return False
 
+    def get_can_edit(self, obj):
+        try:
+            has_permission = Incident.authorization.for_user(
+                self._context["request"].user,
+                ["incidents.report_events", "incidents.handle_incidents"],
+            ).get(pk=obj.incident.id)
+            return True
+        except Incident.DoesNotExist:
+            return False
+
     class Meta:
         model = Comments
         fields = [
@@ -106,8 +117,9 @@ class CommentsSerializer(serializers.ModelSerializer):
             "date",
             "action",
             "parsed_comment",
+            "can_edit",
         ]
-        read_only_fields = ["id", "opened_by"]
+        read_only_fields = ["id", "opened_by", "can_edit"]
 
 
 class StatusSlugField(serializers.SlugRelatedField):
@@ -336,7 +348,8 @@ class IncidentSerializer(serializers.ModelSerializer):
     def get_can_edit(self, obj):
         try:
             has_permission = Incident.authorization.for_user(
-                self._context["request"].user, "incidents.handle_incidents"
+                self._context["request"].user,
+                ["incidents.report_events", "incidents.handle_incidents"],
             ).get(pk=obj.id)
             return True
         except Incident.DoesNotExist:
