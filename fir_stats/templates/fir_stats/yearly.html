@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load authorization %}
+{% load static %}
+
+{% block header %}
+{% has_perm "incidents.view_statistics" as is_global_statistics_viewer %}
+  {% if not is_global_statistics_viewer %}
+  <div class="alert alert-primary text-center" role="alert">
+    {%trans "Warning: You are not authorized to display statistics on all perimeters. The below graphs may be incomplete (They are only based on data from the perimeters to which you have permission)" %}
+  </div>
+{% endif %}
+<h1>{% trans "Yearly stats" %}</h1>
+{%endblock%}
+
+{% block custom_js_top %}
+<script src="{% static "vendor/d3/d3.min.js" %}"></script>
+<script src="{% static "fir_stats/stats.js" %}"></script>
+{%endblock%}
+
+{% block custom_css %}
+<link href="{% static "fir_stats/stats.css" %}" rel="stylesheet">
+{%endblock%}
+
+{% block content %}
+<div class="row">
+  <h4>{% trans "Yearly incidents" %}</h4>
+  <div class="d3-lines-chart" data-url="/api/stats?aggregation=date&is_incident=true" data-days="yearly" data-width="1000" data-height="300"></div>
+</div>
+
+<div class="row mt-5">
+  <div class="col-sm">
+    <h4>{% trans "Entire Group - by category" %}</h4>
+    <div class="d3-donut-chart" data-url="/api/stats?aggregation=category&is_incident=true" data-days="yearly" data-size="450" data-radius="200"></div>
+  </div>
+  <div class="col-sm">
+    <h4>{% trans "Entire Group - by severity" %}</h4>
+    <div class="d3-donut-chart" data-url="/api/stats?aggregation=severity&is_incident=true" data-days="yearly" data-size="450" data-radius="200"></div>
+  </div>
+</div>
+
+<div class="row mt-5">
+  <div class="col-sm">
+    <h4>{% trans "Business Line by detection" %}</h4>
+    <div class="d3-bars-chart" data-url="/api/stats?aggregation=entity,detection&is_incident=true" data-days="yearly" data-width="500" data-height="400"></div>
+  </div>
+  <div class="col-sm">
+    <h4>{% trans "Incidents by business line" %}</h4>
+    <div class="d3-donut-chart" data-url="/api/stats?aggregation=entity&is_incident=true" data-days="yearly" data-size="450" data-radius="200"></div>
+  </div>
+</div>
+
+<div class="row mt-5">
+  <div class="col-sm">
+    <h4>{% trans "Business Line by incident severity" %}</h4>
+    <div class="d3-bars-chart" data-url="/api/stats?aggregation=entity,severity&is_incident=true" data-days="yearly" data-width="500" data-height="400"></div>
+    <div class="d3-multiple-donut-chart" data-url="/api/stats?aggregation=entity,severity&is_incident=true" data-days="yearly" data-inner-radius="50" data-outer-radius="100"></div>
+  </div>
+  <div class="col-sm">
+    <h4>{% trans "Business Line incident category" %}</h4>
+    <div class="d3-bars-chart" data-url="/api/stats?aggregation=entity,category&is_incident=true" data-days="yearly" data-width="500" data-height="400"></div>
+    <div class="d3-multiple-donut-chart" data-url="/api/stats?aggregation=entity,category&is_incident=true" data-days="yearly" data-inner-radius="50" data-outer-radius="100"></div>
+  </div>
+</div>
+{% endblock %}

@@ -5,26 +5,28 @@
 {% load fir_plugins %}
 
 {% block custom_css %}
-<link href="{% static "vendor/select/select2.css" %}" rel="stylesheet"/>
-<link href="{% static "vendor/select/select2-bootstrap.css" %}" rel="stylesheet"/>
+<link href="{% static "vendor/select/select2.css" %}" rel="stylesheet">
+<link href="{% static "vendor/select/select2-bootstrap.css" %}" rel="stylesheet">
 {% endblock %}
 
 {% block custom_js %}
 <script src="{% static "vendor/select/select2.min.js" %}"></script>
+<script src="{% static "custom_js/select2_propagate_events.js" %}"></script>
+<script src="{% static "custom_js/change_password.js" %}"></script>
 {% endblock %}
 
 {% block content %}
-    <div id='details-actions-all'>
+    <div id="details-actions-all">
         <div id="details-actions" class="bg-primary-subtle">
             <ul class="list-unstyled">
                 {% if password_form %}
-                    <li><a href="#" id="user_change_password" data-bs-toggle='modal' data-bs-target='#changePassword'><i class="bi bi-lock"></i>{%  trans "Change password" %}</a></li>
+                    <li><a href="#" id="user_change_password" data-bs-toggle="modal" data-bs-target="#changePassword"><i class="bi bi-lock"></i>{% trans "Change password" %}</a></li>
                 {% endif %}
                 {% plugin_point "user_profile_actions" %}
             </ul>
         </div>
     </div>
-    <div class="container-fluid " id="details-container">
+    <div class="container-fluid" id="details-container">
             <div class="row justify-content-md-center">
                     {% csrf_token %}
                     <div class="col-sm-8 col-sm-offset-2">
@@ -36,14 +38,15 @@
                           </div>
                           <div id="passwordNotChangedAlert" class="alert alert-danger visually-hidden alert-dismissible" role="alert">
                               {% trans "Error: password not changed." %}
+                              <span id="passwordNotChangedErrorMsg"></span>
                               <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{% trans "Close" %}"><span aria-hidden="true"></span></button>
                           </div>
                       </div>
 
                       {% if messages %}
                         {% for message in messages %}
-                          <div class="alert alert-{% if message.tags %}{{message.tags}}{%else%}{{"info"}}{%endif%} alert-dismissible" role="alert">
-                            <strong>{{message}}</strong>
+                          <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}{{ "info" }}{% endif %} alert-dismissible" role="alert">
+                            <strong>{{ message }}</strong>
                           </div>
                         {% endfor %}
                       {% endif %}
@@ -54,17 +57,17 @@
                         </h5>
                         <div class="card-body">
 
-                          <form action="{% url 'user:profile' %}" method="post">
+                          <form action="{% url "user:profile" %}" method="post">
                           <fieldset>
                               <div class="row">
                                   <div class="col-sm-6 form-group mb-3">
-                                      <h3>{% trans "Username" %}:<code>{{ user.username }}</code></h3>
+                                      <h3>{% trans "Username" %}: <code>{{ user.username }}</code></h3>
                                   </div>
-                                  <div class="col-sm-6 form-group mb-3 {% if user_form.email and user_form.email.errors%} has-error{%endif%}">
+                                  <div class="col-sm-6 form-group mb-3 {% if user_form.email and user_form.email.errors %} has-error{% endif %}">
                                       <label for="id_email">{% trans "Email" %}</label>
                                       {% if user_form.email %}
                                           {{ user_form.email|add_css_class:"form-control" }}
-                                          {% include 'events/_form_errors.html' with errors=user_form.email.errors %}
+                                          {% include "events/_form_errors.html" with errors=user_form.email.errors %}
                                       {% else %}
                                           <p id="id_email" class="form-control-static form-control">{{ user.email }}</p>
                                       {% endif %}
@@ -72,20 +75,20 @@
                               </div>
 
                               <div class="row">
-                                  <div class="col-sm-6 form-group mb-3{% if user_form.first_name and user_form.first_name.errors%} has-error{%endif%}">
+                                  <div class="col-sm-6 form-group mb-3{% if user_form.first_name and user_form.first_name.errors %} has-error{% endif %}">
                                       <label for="id_first_name">{% trans "First name" %}</label>
                                           {% if user_form.first_name %}
                                           {{ user_form.first_name|add_css_class:"form-control" }}
-                                          {% include 'events/_form_errors.html' with errors=user_form.first_name.errors %}
+                                          {% include "events/_form_errors.html" with errors=user_form.first_name.errors %}
                                       {% else %}
                                           <p id="id_first_name" class="form-control-static form-control">{{ user.first_name }}</p>
                                       {% endif %}
                                   </div>
-                                  <div class="col-sm-6 form-group mb-3 {% if user_form.last_name and user_form.last_name.errors%} has-error{%endif%}">
+                                  <div class="col-sm-6 form-group mb-3 {% if user_form.last_name and user_form.last_name.errors %} has-error{% endif %}">
                                       <label for="id_last_name">{% trans "Last name" %}</label>
                                       {% if user_form.last_name %}
                                           {{ user_form.last_name|add_css_class:"form-control" }}
-                                          {% include 'events/_form_errors.html' with errors=user_form.last_name.errors %}
+                                          {% include "events/_form_errors.html" with errors=user_form.last_name.errors %}
                                       {% else %}
                                           <p id="id_last_name" class="form-control-static form-control">{{ user.last_name }}</p>
                                       {% endif %}
@@ -94,33 +97,33 @@
                           </fieldset>
                           <fieldset>
                               <div class="row">
-                                  <div class="col-sm-6 form-group mb-3{% if profile_form.incident_number.errors%} has-error{%endif%}">
+                                  <div class="col-sm-6 form-group mb-3{% if profile_form.incident_number.errors %} has-error{% endif %}">
                                       <label for="id_incident_number">{% trans "Number of incidents per page" %}</label>
                                       {% if profile_form.incident_number %}
                                           {{ profile_form.incident_number|add_css_class:"form-control" }}
-                                          {% include 'events/_form_errors.html' with errors=profile_form.incident_number.errors %}
+                                          {% include "events/_form_errors.html" with errors=profile_form.incident_number.errors %}
                                       {% else %}
                                           <p id="id_incident_number" class="form-control-static form-control">{{ user.profile.incident_number }}</p>
                                       {% endif %}
                                   </div>
-                                  <div class="col-sm-6 checkbox aligned-with-stack{% if profile_form.hide_closed.errors%} has-error{%endif%}">
+                                  <div class="col-sm-6 checkbox aligned-with-stack{% if profile_form.hide_closed.errors %} has-error{% endif %}">
                                       {% if profile_form.hide_closed %}
                                           <label>{{ profile_form.hide_closed }} {% trans "Hide closed events?" %}</label>
-                                          {% include 'events/_form_errors.html' with errors=profile_form.hide_closed.errors %}
+                                          {% include "events/_form_errors.html" with errors=profile_form.hide_closed.errors %}
                                       {% else %}
                                           <label><input type="checkbox" disabled {% if user.profile.hide_closed %}checked{% endif %}> {% trans "Hide closed events?" %}</label>
                                       {% endif %}
-                                      {% include 'events/_form_errors.html' with errors=profile_form.hide_closed.errors %}
+                                      {% include "events/_form_errors.html" with errors=profile_form.hide_closed.errors %}
                                   </div>
                               </div>
                           </fieldset>
                           <fieldset>
                             <div class="row">
-                                <div class="col-sm-6 form-group mb-3{% if profile_form.light_mode.errors%} has-error{%endif%}">
+                                <div class="col-sm-6 form-group mb-3{% if profile_form.light_mode.errors %} has-error{% endif %}">
                                     <label for="id_light_mode">{% trans "Preferred light mode" %}</label>
                                     {% if profile_form.light_mode %}
-                                        {{ profile_form.light_mode|add_css_class:"form-control" }}
-                                        {% include 'events/_form_errors.html' with errors=profile_form.light_mode.errors %}
+                                        {{ profile_form.light_mode|add_css_class:"form-select" }}
+                                        {% include "events/_form_errors.html" with errors=profile_form.light_mode.errors %}
                                     {% else %}
                                         <p id="id_light_mode" class="form-control-static form-control">{{ user.profile.light_mode }}</p>
                                     {% endif %}
@@ -141,7 +144,7 @@
 		<div id="changePassword" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="changePasswordLabel" aria-hidden="true">
 			<div class="modal-dialog">
 				<div class="modal-content">
-					<form id="password_form" method="POST" data-ajaxform action="{% url 'user:change_password' %}">
+					<form id="password_form" method="POST" data-ajaxform action="/api/users/change_password">
 					 	<div class="modal-header">
 							<h4 id="changePasswordLabel" class="modal-title">{% trans "Change password" %}</h4>
 					    	<button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
@@ -155,9 +158,9 @@
 									</div>
 									<div class="col-sm-8">
 										{{ password_form.old_password|add_css_class:"form-control" }}
-										<span class='help-block'>
+										<span class="help-block">
 											{% for error in password_form.old_password.errors %}
-												{{error}}
+												{{ error }}
 											{% endfor %}
 										</span>
 									</div>
@@ -168,9 +171,9 @@
 									</div>
 									<div class="col-sm-8">
 										{{ password_form.new_password1|add_css_class:"form-control" }}
-										<span class='help-block'>
+										<span class="help-block">
 											{% for error in password_form.new_password1.errors %}
-												{{error}}
+												{{ error }}
 											{% endfor %}
 										</span>
 									</div>
@@ -181,9 +184,9 @@
 									</div>
 									<div class="col-sm-8">
 										{{ password_form.new_password2|add_css_class:"form-control" }}
-										<span class='help-block'>
+										<span class="help-block">
 											{% for error in password_form.new_password2.errors %}
-												{{error}}
+												{{ error }}
 											{% endfor %}
 										</span>
 									</div>
@@ -192,26 +195,12 @@
 					  	</div>
 
 						<div class="modal-footer">
-							<button type="button" class="btn btn-default" data-bs-dismiss="modal" aria-hidden="true">{%  trans "Cancel" %}</button>
-							<button type="submit" class="btn btn-primary">{%  trans "Change password" %}</button>
+							<button type="button" class="btn btn-default" data-bs-dismiss="modal" aria-hidden="true">{% trans "Cancel" %}</button>
+							<button type="submit" class="btn btn-primary">{% trans "Change password" %}</button>
 					  	</div>
 					</form>
 				</div>
 			</div>
 		</div>
         {% endif %}
-    <script>
-        window.onload = function(){
-            $('#password_form').on('fir.form.success', function (event) {
-                $('#changePassword').modal('hide');
-                $('#passwordChangedAlert').removeClass('visually-hidden');
-                event.stopPropagation();
-            });
-            $('#password_form').on('fir.form.error', function (event) {
-                $('#changePassword').modal('hide');
-                $('#passwordNotChangedAlert').removeClass('visually-hidden');
-                event.stopPropagation();
-            });
-        };
-    </script>
 {% endblock %}

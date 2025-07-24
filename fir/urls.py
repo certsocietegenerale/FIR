@@ -12,16 +12,10 @@ urlpatterns = [
     re_path(
         r"^incidents/", include(("incidents.urls", "incidents"), namespace="incidents")
     ),
-    re_path(r"^search/$", views.search, name="search"),
+    re_path(r"^search/$", views.incident_display, {"is_search": True}, name="search"),
     re_path(
         r"^events/",
         include(("incidents.custom_urls.events", "url_events"), namespace="events"),
-    ),
-    re_path(
-        r"^stats/", include(("incidents.custom_urls.stats", "stats"), namespace="stats")
-    ),
-    re_path(
-        r"^ajax/", include(("incidents.custom_urls.ajax", "ajax"), namespace="ajax")
     ),
     re_path(
         r"^user/", include(("incidents.custom_urls.user", "user"), namespace="user")

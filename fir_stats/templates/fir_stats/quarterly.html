@@ -1,0 +1,144 @@
+{% extends "base.html" %}
+{% load i18n %}
+{% load static %}
+{% load authorization %}
+
+{% block title %}
+{% trans "Quarterly statistics" %} - {{ bl.name }} - {% now "Y-m" %}
+{% endblock %}
+
+{% block header %}
+{% has_perm "incidents.view_statistics" as is_global_statistics_viewer %}
+{% if not is_global_statistics_viewer %}
+  <div class="alert alert-primary text-center" role="alert">
+    {%trans "Warning: You are not authorized to display statistics on all perimeters. The below graphs may be incomplete (They are only based on data from the perimeters to which you have permission)" %}
+  </div>
+{% endif %}
+<h1>{% blocktrans with bl_name=bl.name %}Incidents quarterly statistics for<br />{{ bl_name }}{% endblocktrans %}</h1>
+<div>
+  <select id="bl-select">
+    {% for b in bls %}
+      <option value="{{ b.name }}" {% if b.name == bl.name %} selected="selected"{% endif %}>{{ b }}</option>
+    {% endfor %}
+  </select>
+</div>
+{% endblock %}
+
+{% block custom_js_top %}
+<script src="{% static "vendor/d3/d3.min.js" %}"></script>
+<script src="{% static "vendor/xlsx/xlsx.full.min.js" %}"></script>
+<script src="{% static "fir_stats/stats.js" %}"></script>
+<script src="{% static "custom_js/incident_display.js" %}"></script>
+{% endblock %}
+
+{% block custom_js %}
+<script src="{% static "vendor/select/select2.min.js" %}"></script>
+<script src="{% static "custom_js/select2_propagate_events.js" %}"></script>
+
+<script>
+$(document).ready(function() {
+  $('#bl-select').select2({minimumResultsForSearch: -1, theme: "bootstrap-5"});
+});
+</script>
+{% endblock %}
+
+{% block custom_css %}
+<link href="{% static "vendor/select/select2.css" %}" rel="stylesheet"/>
+<link href="{% static "vendor/select/select2-bootstrap.css" %}" rel="stylesheet"/>
+<link href="{% static "fir_stats/stats.css" %}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+{% has_perm "incidents.handle_incidents" as can_handle_incident %}
+{% if can_handle_incident %}
+<a href="{% url "stats:close_old" %}">{% trans "Close old incidents for all BLs" %}</a>
+{% endif %}
+
+<h2 class="mt-4">{% trans "Monthly forecast" %}</h2>
+
+<div class="row mt-3">
+  <h4>{% trans "Total incidents on your Business Line" %}</h4>
+  <div id="quarterly-total-incidents">
+    <div class="d3-bars-chart" data-url="/api/stats?aggregation=date&is_incident=true" data-days="quarterly" data-width="300" data-height="250"></div>
+  </div>
+  <div class="col-sm">
+    <table class="table table-condensed" id="variation-table" data-url="/api/stats?aggregation=category&is_incident=true" data-days="quarterly"></table>
+  </div>
+</div>
+
+<div class="row mt-4">
+  <h4>{% trans "Incident breakdown by severity" %}</h4>
+  <div class="col-sm">
+    <div class="d3-multiple-donut-chart" data-url="/api/stats?aggregation=date,severity&is_incident=true" data-days="quarterly" data-inner-radius="50" data-outer-radius="80"></div>
+  </div>
+  <div class="col-sm">
+    <div class="d3-bars-chart" data-url="/api/stats?aggregation=date,severity&is_incident=true" data-days="quarterly" data-width="300" data-height="200"></div>
+  </div>
+</div>
+
+<div class="row mt-4">
+  <h4>{% trans "Incident breakdown by entity" %}</h4>
+  <div class="col-sm">
+    <div class="d3-multiple-donut-chart" data-url="/api/stats?aggregation=date,entity&is_incident=true" data-days="quarterly" data-inner-radius="50" data-outer-radius="80"></div>
+  </div>
+  <div class="col-sm">
+    <div class="d3-bars-chart" data-url="/api/stats?aggregation=date,entity&is_incident=true" data-days="quarterly" data-width="300" data-height="200"></div>
+  </div>
+</div>
+
+<div class="row mt-4">
+  <h4>{% trans "Incident breakdown by category" %}</h4>
+  <div class="col-sm">
+    <div class="d3-multiple-donut-chart" data-url="/api/stats?aggregation=date,category&is_incident=true" data-days="quarterly" data-inner-radius="50" data-outer-radius="80"></div>
+  </div>
+  <div class="col-sm">
+    <div class="d3-bars-chart" data-url="/api/stats?aggregation=date,category&is_incident=true" data-days="quarterly" data-width="300" data-height="200"></div>
+  </div>
+</div>
+
+<h2>{% trans "Incident Management" %}</h2>
+<div class="row mt-4">
+  <h4>{% trans "Incident Management by incident leader (Business Line or CERT)" %}</h4>
+  <div class="col-sm">
+    <div class="d3-multiple-donut-chart" data-url="/api/stats?aggregation=date,actor&is_incident=true" data-days="quarterly" data-inner-radius="50" data-outer-radius="80"></div>
+  </div>
+  <div class="col-sm">
+    <div class="d3-bars-chart" data-url="/api/stats?aggregation=date,actor&is_incident=true" data-days="quarterly" data-width="300" data-height="200"></div>
+  </div>
+</div>
+
+<div class="row mt-4">
+  {% for s in status %}
+    {% if s.flag != "final" %}
+      <div class="col-sm">
+	{% with status_title=s.name|add:" incidents" %}
+        <h4>{% trans status_title %}</h4>
+	{% endwith %}
+	<div class="d3-bars-chart" data-url="/api/stats?status={{ s.name }}&aggregation=date&is_incident=true" data-days="quarterly" data-width="300" data-height="200"></div>
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>
+
+<div class="row mt-3">
+  <h2 >{% trans "Matching incidents" %}</h2>
+  <div class="container">
+    <a href="#" class="load_all_incidents">{%trans "Load matching incidents (may take some time)" %}</a>
+  </div>
+
+  <div class="container d-none export_links">
+    {% blocktrans %}
+      Export to <a data-filename="incidents.xlsx" class="export-link" href="#">XLSX</a> or <a data-filename="incidents.csv" class="export-link" href="#">CSV</a>
+    {% endblocktrans %}
+  </div>
+</div>
+
+<table id="incident-list-template" class="table table-hover d-none">
+  {% include "events/table.html" %}
+</table>
+<div id="all_incidents" class="stats_incident_display" data-nopage="true" data-url="/api/incidents?is_incident=true" data-days="quarterly">
+    <p class="loading d-none">{% trans "Loading ..." %}<span class="d-none loading_count"> {% trans "(${page} of ${total_pages})" %}</span></p>
+    <p class="nothing_to_show d-none">{% trans "No incident found." %}</p>
+</div>
+{% csrf_token %}
+{% endblock %}

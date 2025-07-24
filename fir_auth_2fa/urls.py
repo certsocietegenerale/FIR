@@ -14,15 +14,22 @@ fir_urls.urlpatterns = [
 
 custom_urls = []
 for tf_url in tf_urls[0]:
-    if getattr(tf_url, "name", "") != "login":
+    if getattr(tf_url, "name", "") not in ["login", "backup_tokens"]:
         custom_urls.append(tf_url)
 
-custom_urls.append(
-    re_path(
-        r"^account/login/$",
-        view=views.CustomLoginView.as_view(),
-        name="login",
-    )
+custom_urls.extend(
+    [
+        re_path(
+            r"^account/login/$",
+            view=views.CustomLoginView.as_view(),
+            name="login",
+        ),
+        re_path(
+            r"^account/two_factor/backup/tokens/$",
+            view=views.CustomBackupTokensView.as_view(),
+            name="backup_tokens",
+        ),
+    ]
 )
 
 fir_urls.urlpatterns.append(re_path(r"", include((custom_urls, "two_factor"))))

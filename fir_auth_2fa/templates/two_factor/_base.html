@@ -2,12 +2,16 @@
 {% load i18n %}
 {% load static %}
 
+{% block custom_js %}
+  {% block extra_media %}{% endblock %}
+{% endblock %}
+
 {% block content_wrapper %}
   <div class="container">
     <div class="row justify-content-md-center">
-	    <div class="col-sm-8 col-sm-offset-4 col-xs-12 col-xs-offset-0">
-      {% block content %}{% endblock %}
-	    </div>
+      <div class="col-sm-8 col-sm-offset-4 col-xs-12 col-xs-offset-0">
+        {% block content %}{% endblock %}
+      </div>
     </div>
   </div>
 {% endblock %}

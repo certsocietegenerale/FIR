@@ -1,26 +1,21 @@
-var editors = {}
+var editors = {};
 
-$(function () {
-
-  $('.markdown').each(function (index) {
-    editors[$(this).attr("id")] = init_easymde($(this));
+document.addEventListener("DOMContentLoaded", function () {
+  document.querySelectorAll(".markdown").forEach(function (el) {
+    editors[el.id] = init_easymde(el);
   });
 
-  $('.markdown-text').each(function (index) {
-    var elt = $(this);
-
-    md = elt.text();
-    elt.html(marked(md));
-    elt.removeClass('hide');
+  document.querySelectorAll(".markdown-text").forEach(function (elt) {
+    elt.innerHTML = marked(elt.textContent);
+    elt.classList.remove("hide");
   });
-
 });
 
-function init_easymde(textarea, initial_text) {
+function init_easymde(textarea) {
   var easymde = new EasyMDE({
-    element: textarea[0],
+    element: textarea,
     renderingConfig: {
-      codeSyntaxHighlighting: true
+      codeSyntaxHighlighting: true,
     },
     forceSync: true,
     spellChecker: false,
@@ -40,8 +35,8 @@ function init_easymde(textarea, initial_text) {
       "|",
       "preview",
       "guide",
-    ]
+    ],
   });
 
-  return easymde
+  return easymde;
 }

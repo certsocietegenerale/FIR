@@ -10,7 +10,7 @@ from django_filters.rest_framework import (
     NumberFilter,
 )
 
-from fir_api.permissions import IsIncidentHandler
+from fir_api.permissions import CanViewIncident, CanWriteIncident
 from fir_nuggets.models import Nugget
 from incidents.models import Incident
 
@@ -63,7 +63,7 @@ class NuggetViewSet(viewsets.ModelViewSet):
 
     queryset = Nugget.objects.all()
     serializer_class = NuggetSerializer
-    permission_classes = (IsAuthenticated, IsIncidentHandler)
+    permission_classes = [IsAuthenticated, CanViewIncident | CanWriteIncident]
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = [
         "id",

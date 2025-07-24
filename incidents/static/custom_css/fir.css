@@ -81,7 +81,7 @@
 		width:200px!important;
 	}
 
-	.C, .C a {
+	.dynamic-status-final, .dynamic-status-final a {
 		opacity: 1.0!important;
 		color:#ddd!important;
 	}
@@ -486,7 +486,6 @@ div#main_tabs {
 }
 
 .details-actions-supmenu {
-	display: none;
 	border-bottom: 1px solid #337ab7;
 	background-color: #98DFFB;
 }
@@ -545,17 +544,17 @@ tr .icon-star-empty {
 	border-top:0;
 }
 
-tr.C {
+tr.dynamic-status-final {
 	opacity: 0.3
 }
 
-#all_incidents tr.B td  {
+.incident_display tr.dynamic-status td  {
 	color: #f00;
 	background-color:#fdd;
 	font-weight:bold;
 }
 
-#all_incidents tr.B td a {
+.incident_display tr.dynamic-status td a {
 	color: rgb(31, 105, 121)!important;
 }
 

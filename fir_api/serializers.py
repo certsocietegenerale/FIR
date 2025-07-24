@@ -2,24 +2,30 @@ import importlib
 from django.apps import apps
 from django.contrib.auth.models import User, Group
 from rest_framework import serializers
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import (
+    ObjectDoesNotExist,
+    MultipleObjectsReturned,
+    ValidationError,
+)
+from django.utils.translation import gettext_lazy as _
 from collections import OrderedDict
 from copy import deepcopy
 
 from incidents.models import (
     Incident,
-    Artifact,
     Label,
-    File,
     IncidentCategory,
     BusinessLine,
     Comments,
     Attribute,
     ValidAttribute,
     SeverityChoice,
-    STATUS_CHOICES,
+    BaleCategory,
+    IncidentStatus,
+    get_initial_status,
     CONFIDENTIALITY_LEVEL,
 )
+from fir_plugins.templatetags.markdown import render_markdown
 from fir.config.base import INSTALLED_APPS
 
 
@@ -32,32 +38,6 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ("id", "url", "username", "email", "groups")
-        read_only_fields = ("id",)
-
-
-class ArtifactSerializer(serializers.ModelSerializer):
-    incidents_count = serializers.IntegerField(source="incidents.count", read_only=True)
-
-    def __init__(self, *args, **kwargs):
-        if "context" in kwargs and kwargs["context"]["view"].action != "retrieve":
-            del self.fields["incidents"]
-        super().__init__(*args, **kwargs)
-
-    class Meta:
-        model = Artifact
-        fields = ("id", "type", "value", "incidents_count", "incidents")
-        read_only_fields = ("id", "type", "value", "incidents_count")
-
-
-class FileSerializer(serializers.ModelSerializer):
-    incident = serializers.HyperlinkedRelatedField(
-        read_only=True, view_name="api:incidents-detail"
-    )
-    url = serializers.HyperlinkedIdentityField(view_name="api:files-detail")
-
-    class Meta:
-        model = File
-        fields = ("id", "description", "url", "incident")
         read_only_fields = ("id",)
 
 
@@ -83,6 +63,11 @@ class CommentsSerializer(serializers.ModelSerializer):
     action = serializers.SlugRelatedField(
         queryset=Label.objects.filter(group__name="action"), slug_field="name"
     )
+    parsed_comment = serializers.SerializerMethodField()
+    can_edit = serializers.SerializerMethodField()
+
+    def get_parsed_comment(self, obj):
+        return render_markdown(obj.comment)
 
     def get_fields(self, *args, **kwargs):
         fields = super().get_fields(*args, **kwargs)
@@ -91,10 +76,67 @@ class CommentsSerializer(serializers.ModelSerializer):
         )
         return fields
 
+    def to_representation(self, value):
+        # Remove some fields unless we are viewing a specific comment
+        if not self.is_details():
+            if "parsed_comment" in self.fields:
+                del self.fields["parsed_comment"]
+
+        return super().to_representation(value)
+
+    def is_details(self):
+        if self._kwargs.get("context"):
+            context = self._kwargs.get("context")
+            if (
+                context.get("request")
+                and context["request"].method != "DELETE"
+                and context["request"].META["PATH_INFO"].endswith("{id}")
+            ):
+                return True
+            if context.get("view") and context["view"].action not in ["list", "delete"]:
+                return True
+        return False
+
+    def get_can_edit(self, obj):
+        try:
+            has_permission = Incident.authorization.for_user(
+                self._context["request"].user,
+                ["incidents.report_events", "incidents.handle_incidents"],
+            ).get(pk=obj.incident.id)
+            return True
+        except Incident.DoesNotExist:
+            return False
+
     class Meta:
         model = Comments
-        fields = ("id", "comment", "incident", "opened_by", "date", "action")
-        read_only_fields = ("id", "opened_by")
+        fields = [
+            "id",
+            "comment",
+            "incident",
+            "opened_by",
+            "date",
+            "action",
+            "parsed_comment",
+            "can_edit",
+        ]
+        read_only_fields = ["id", "opened_by", "can_edit"]
+
+
+class StatusSlugField(serializers.SlugRelatedField):
+    def to_representation(self, instance):
+        return _(super().to_representation(instance))
+
+    def to_internal_value(self, data):
+        queryset = self.get_queryset()
+        reverse_map = {
+            _(getattr(obj, self.slug_field)): getattr(obj, self.slug_field)
+            for obj in queryset
+        }
+        original_value = reverse_map.get(data, data)
+        try:
+            return queryset.get(**{self.slug_field: original_value})
+        except ObjectDoesNotExist:
+            raise serializers.ValidationError(f"Status '{data}' does not exist")
 
 
 class BusinessLineSlugField(serializers.SlugRelatedField):
@@ -182,7 +224,12 @@ class IncidentSerializer(serializers.ModelSerializer):
         queryset=IncidentCategory.objects.all(),
         required=True,
     )
-    status = ValueChoiceField(choices=STATUS_CHOICES, default="O")
+    status = StatusSlugField(
+        many=False,
+        slug_field="name",
+        queryset=IncidentStatus.objects.all(),
+        default=get_initial_status,
+    )
     concerned_business_lines = BusinessLineSlugField(
         many=True,
         slug_field="name",
@@ -194,14 +241,15 @@ class IncidentSerializer(serializers.ModelSerializer):
         many=False, read_only=True, slug_field="username"
     )
 
-    artifacts = ArtifactSerializer(many=True, read_only=True)
     attribute_set = AttributeSerializer(many=True, read_only=True)
-    file_set = FileSerializer(many=True, read_only=True)
     comments_set = CommentsSerializer(many=True, read_only=True)
     description = serializers.CharField(
         style={"base_template": "textarea.html"}, required=False
     )
     last_comment_date = serializers.DateTimeField(read_only=True)
+    last_comment_action = serializers.CharField(read_only=True)
+
+    can_edit = serializers.SerializerMethodField()
 
     _additional_fields = {}
 
@@ -225,20 +273,36 @@ class IncidentSerializer(serializers.ModelSerializer):
                     continue
 
                 for field in h.hooks.get("incident_fields", []):
-                    if field[2] is not None and (
-                        not field[0].endswith("_set")
-                        or kwargs["context"]["view"].action == "retrieve"
-                    ):
+                    if field[2] is not None:
                         instance._declared_fields.update({field[0]: field[2]})
                         instance._additional_fields.update({field[0]: field[2]})
 
-        if kwargs["context"]["view"].action != "retrieve":
-            del instance.fields["artifacts"]
-            del instance.fields["comments_set"]
-            del instance.fields["file_set"]
-            del instance.fields["attribute_set"]
-
         return instance
+
+    def is_retrieve(self):
+        if self._kwargs.get("context"):
+            context = self._kwargs.get("context")
+            if (
+                context.get("request")
+                and context["request"].method == "GET"
+                and context["request"].META["PATH_INFO"].endswith("{id}")
+            ):
+                return True
+            if context.get("view") and context["view"].action == "retrieve":
+                return True
+        return False
+
+    def to_representation(self, value):
+        to_remove = [f for f in self.fields if f.endswith("_set")]
+        to_remove.extend(["artifacts"])
+
+        # Remove some fields unless we are getting details of a specific incident
+        if not self.is_retrieve():
+            for elem in to_remove:
+                if elem in self.fields:
+                    del self.fields[elem]
+
+        return super().to_representation(value)
 
     def validate_owner(self, owner):
         try:
@@ -252,7 +316,7 @@ class IncidentSerializer(serializers.ModelSerializer):
         field_to_create = {}
         for f in self._additional_fields:
             field_data = validated_data.pop(f, {})
-            if f.endswith("_set"):
+            if f.endswith("_set") or f == "artifacts":
                 # OneToMany creation is not supported
                 continue
             field_serializer = deepcopy(self._additional_fields[f])
@@ -270,7 +334,7 @@ class IncidentSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         for f in self._additional_fields:
             field_data = validated_data.pop(f, {})
-            if f.endswith("_set"):
+            if f.endswith("_set") or f == "artifacts":
                 # OneToMany update is not supported
                 continue
             field_serializer = deepcopy(self._additional_fields[f])
@@ -281,9 +345,18 @@ class IncidentSerializer(serializers.ModelSerializer):
 
         return super().update(instance, validated_data)
 
+    def get_can_edit(self, obj):
+        try:
+            has_permission = Incident.authorization.for_user(
+                self._context["request"].user,
+                ["incidents.report_events", "incidents.handle_incidents"],
+            ).get(pk=obj.id)
+            return True
+        except Incident.DoesNotExist:
+            return False
+
 
 class ValidAttributeSerializer(serializers.ModelSerializer):
-
     categories = serializers.SlugRelatedField(
         many=True, queryset=IncidentCategory.objects.all(), slug_field="name"
     )
@@ -294,8 +367,77 @@ class ValidAttributeSerializer(serializers.ModelSerializer):
         read_only_fields = ["id"]
 
 
-class IncidentCategoriesSerializer(serializers.ModelSerializer):
+class BaselCategoryField(serializers.SlugRelatedField):
+    def to_internal_value(self, data):
+        if "(" in data and ")" in data:
+            category = data.split("(")[1].split(")")[0]
+            name = data.split(")", 1)[1]
+            if ">" in category:
+                category = category.split(">").pop()
+            try:
+                return BaleCategory.objects.get(
+                    category_number=category.strip(), name=name.strip()
+                )
+            except (MultipleObjectsReturned, ObjectDoesNotExist):
+                print("Unable to create", flush=True)
+                print(category.strip(), flush=True)
+                pass
+        return super().to_internal_value(data)
+
+    def to_representation(self, instance):
+        if isinstance(instance, str):
+            try:
+                instance = BaleCategory.objects.get(name=instance)
+            except (MultipleObjectsReturned, ObjectDoesNotExist):
+                pass
+        return str(instance)
+
+
+class CategorySerializer(serializers.ModelSerializer):
+    bale_subcategory = BaselCategoryField(
+        many=False,
+        read_only=False,
+        slug_field="name",
+        queryset=BaleCategory.objects.all(),
+    )
+
     class Meta:
         model = IncidentCategory
-        fields = ("id", "name", "is_major")
-        read_only_fields = ("id", "name", "is_major")
+        fields = ["id", "name", "is_major", "bale_subcategory"]
+        read_only_fields = ["id"]
+
+
+class SeveritySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SeverityChoice
+        fields = ["id", "name", "color"]
+        read_only_fields = ["id"]
+
+
+class StatusSerializer(serializers.ModelSerializer):
+    def to_representation(self, instance):
+        representation = super().to_representation(instance)
+        representation["name"] = _(instance.name)
+        return representation
+
+    def to_internal_value(self, data):
+        if "name" in data:
+            reverse_map = {
+                _(obj.name): obj.name for obj in IncidentStatus.objects.all()
+            }
+            _mutable = data._mutable
+            data._mutable = True
+            data["name"] = reverse_map.get(data["name"], data["name"])
+            data._mutable = _mutable
+        return super().to_internal_value(data)
+
+    def save(self, *args, **kwargs):
+        try:
+            super().save(*args, **kwargs)
+        except ValidationError as e:
+            raise serializers.ValidationError("; ".join(e.messages))
+
+    class Meta:
+        model = IncidentStatus
+        fields = ["id", "name", "icon", "flag"]
+        read_only_fields = ["id"]

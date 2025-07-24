@@ -1,11 +1,15 @@
-from __future__ import absolute_import, unicode_literals
-
 import os
 from celery import Celery
+from celery.signals import setup_logging
+from django.conf import settings
+from logging.config import dictConfig
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "fir.settings")
 
-from django.conf import settings
+
+@setup_logging.connect
+def config_loggers(*args, **kwargs):
+    dictConfig(settings.LOGGING)
 
 
 celery_app = Celery(

@@ -1,8 +1,11 @@
 # -*- coding: utf-8 -*-
 import datetime
+import logging
 
 from colorfield.fields import ColorField
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, post_delete
+from django.core.validators import RegexValidator
+from django.core.exceptions import ValidationError
 from django.dispatch import Signal, receiver
 from django.db import models
 from django.contrib.auth.models import User
@@ -16,19 +19,6 @@ from fir_artifacts.models import Artifact, File
 from fir_plugins.models import link_to
 from incidents.authorization import tree_authorization, AuthorizationModelMixin
 
-STATUS_CHOICES = (
-    ("O", _("Open")),
-    ("C", _("Closed")),
-    ("B", _("Blocked")),
-)
-
-LOG_ACTIONS = (
-    ("D", "Deleted"),
-    ("C", "Created"),
-    ("U", "Update"),
-    ("LI", "Logged in"),
-    ("LO", "Logged out"),
-)
 
 CONFIDENTIALITY_LEVEL = (
     (0, "C0"),
@@ -37,10 +27,7 @@ CONFIDENTIALITY_LEVEL = (
     (3, "C3"),
 )
 
-LIGHT_MODE_CHOICES = (
-    ("light", "light"),
-    ("dark", "dark")
-)
+LIGHT_MODE_CHOICES = (("light", "light"), ("dark", "dark"))
 
 # Special Model class that handles signals
 
@@ -65,29 +52,80 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     incident_number = models.IntegerField(default=50)
     hide_closed = models.BooleanField(default=False)
-    light_mode = models.CharField(max_length=10, choices=LIGHT_MODE_CHOICES, default="light")
+    light_mode = models.CharField(
+        max_length=10, choices=LIGHT_MODE_CHOICES, default="light"
+    )
 
     def __str__(self):
-        return u"Profile for user '{}'".format(self.user)
+        return "Profile for user '{}'".format(self.user)
 
 
 # Audit trail ================================================================
 
 
 class Log(models.Model):
-    who = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
-    what = models.CharField(max_length=100, choices=STATUS_CHOICES)
+    who = models.ForeignKey(
+        User, on_delete=models.DO_NOTHING, null=True, blank=True, db_constraint=False
+    )
+    what = models.CharField(max_length=100)
     when = models.DateTimeField(auto_now_add=True)
-    incident = models.ForeignKey('Incident', on_delete=models.CASCADE, null=True, blank=True)
-    comment = models.ForeignKey('Comments', on_delete=models.CASCADE, null=True, blank=True)
+    incident = models.ForeignKey(
+        "Incident",
+        on_delete=models.DO_NOTHING,
+        null=True,
+        blank=True,
+        db_constraint=False,
+    )
+    comment = models.ForeignKey(
+        "Comments",
+        on_delete=models.DO_NOTHING,
+        null=True,
+        blank=True,
+        db_constraint=False,
+    )
+    inst_type = None
 
     def __str__(self):
-        if self.incident:
-            return u"[%s] %s %s (%s)" % (self.when, self.what, self.incident, self.who)
-        elif self.comment:
-            return u"[%s] %s comment on %s (%s)" % (self.when, self.what, self.comment.incident, self.who)
+        if self.inst_type == Incident:
+            incident_id = self.incident.id
+            if getattr(settings, "INCIDENT_SHOW_ID", False):
+                incident_id = getattr(settings, "INCIDENT_ID_PREFIX", "") + str(
+                    self.incident.id
+                )
+            return "[%s] %s: %s (%s)" % (self.when, self.what, incident_id, self.who)
+        elif self.inst_type == Comments:
+            incident_id = self.comment.incident.id
+            if getattr(settings, "INCIDENT_SHOW_ID", False):
+                incident_id = getattr(settings, "INCIDENT_ID_PREFIX", "") + str(
+                    self.comment.incident.id
+                )
+            inc_str = "event"
+            if self.comment.incident.is_incident:
+                inc_str = "incident"
+
+            return "[%s] %s on %s %s (%s)" % (
+                self.when,
+                self.what,
+                inc_str,
+                incident_id,
+                self.who,
+            )
         else:
-            return u"[%s] %s (%s)" % (self.when, self.what, self.who)
+            return "[%s] %s (%s)" % (self.when, self.what, self.who)
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        logging.getLogger("FIR").info(str(self).split("] ", 1)[1])
+
+    @staticmethod
+    def log(what, user, incident=None, comment=None, inst_type=None):
+        log = Log()
+        log.what = what
+        log.who = user
+        log.incident = incident
+        log.comment = comment
+        log.inst_type = inst_type
+        log.save()
 
 
 class LabelGroup(models.Model):
@@ -111,43 +149,62 @@ class BusinessLine(MP_Node, AuthorizationModelMixin):
     def __str__(self):
         parents = list(self.get_ancestors())
         parents.append(self)
-        return u" > ".join([bl.name for bl in parents])
+        return " > ".join([bl.name for bl in parents])
 
     class Meta:
-        verbose_name = _('business line')
+        verbose_name = _("business line")
 
     def get_incident_count(self, query):
         incident_count = self.incident_set.filter(query).distinct().count()
-        incident_count += Incident.objects.filter(query).filter(
-            concerned_business_lines__in=self.get_descendants()).distinct().count()
+        incident_count += (
+            Incident.objects.filter(query)
+            .filter(concerned_business_lines__in=self.get_descendants())
+            .distinct()
+            .count()
+        )
         return incident_count
 
 
 class AccessControlEntry(models.Model):
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name=_('user'))
-    business_line = models.ForeignKey(BusinessLine, on_delete=models.CASCADE, verbose_name=_('business line'), related_name='acl')
-    role = models.ForeignKey('auth.Group', on_delete=models.CASCADE, verbose_name=_('role'))
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, verbose_name=_("user")
+    )
+    business_line = models.ForeignKey(
+        BusinessLine,
+        on_delete=models.CASCADE,
+        verbose_name=_("business line"),
+        related_name="acl",
+    )
+    role = models.ForeignKey(
+        "auth.Group", on_delete=models.CASCADE, verbose_name=_("role")
+    )
 
     def __str__(self):
         return _("{} is {} on {}").format(self.user, self.role, self.business_line)
 
     class Meta:
-        verbose_name = _('access control entry')
-        verbose_name_plural = _('access control entries')
+        verbose_name = _("access control entry")
+        verbose_name_plural = _("access control entries")
 
 
 class BaleCategory(models.Model):
     name = models.CharField(max_length=200)
     description = models.TextField(blank=True, null=True)
     category_number = models.IntegerField()
-    parent_category = models.ForeignKey('BaleCategory', on_delete=models.CASCADE, null=True, blank=True)
+    parent_category = models.ForeignKey(
+        "BaleCategory", on_delete=models.CASCADE, null=True, blank=True
+    )
 
     class Meta:
         verbose_name_plural = "Bale categories"
 
     def __str__(self):
         if self.parent_category:
-            return "(%s > %s) %s" % (self.parent_category.category_number, self.category_number, self.name)
+            return "(%s > %s) %s" % (
+                self.parent_category.category_number,
+                self.category_number,
+                self.name,
+            )
         else:
             return "(%s) %s" % (self.category_number, self.name)
 
@@ -166,68 +223,134 @@ class IncidentCategory(models.Model):
 
 # Core models ================================================================
 
-@tree_authorization(fields=['concerned_business_lines', ], tree_model='incidents.BusinessLine',
-                    owner_field='opened_by', owner_permission=settings.INCIDENT_CREATOR_PERMISSION)
+
+def datetimenow():
+    return datetime.datetime.now().replace(second=0, microsecond=0)
+
+
+class IncidentStatus(models.Model):
+    name = models.CharField(
+        max_length=50,
+        validators=[RegexValidator('"', inverse_match=True)],
+    )
+    icon = models.CharField(
+        max_length=50,
+        validators=[RegexValidator("^[-_A-Za-z0-9]*$")],
+    )
+    associated_action = models.ForeignKey(
+        Label,
+        on_delete=models.SET_NULL,
+        limit_choices_to={"group__name": "action"},
+        related_name="status_action_label",
+        blank=True,
+        null=True,
+    )
+    flag = models.CharField(
+        max_length=50,
+        choices=(
+            ("initial", "Initial status"),
+            ("final", "Final status"),
+        ),
+        null=True,
+        blank=True,
+    )
+
+    def __str__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        if self.flag == "initial":
+            if (
+                IncidentStatus.objects.exclude(pk=self.pk)
+                .filter(flag="initial")
+                .exists()
+            ):
+                raise ValidationError(_("There can only be one initial status."))
+        super().save(*args, **kwargs)
+
+    class Meta:
+        verbose_name_plural = _("Incident statuses")
+
+
+def get_initial_status():
+    return IncidentStatus.objects.get(flag="initial")
+
+
+@tree_authorization(
+    fields=[
+        "concerned_business_lines",
+    ],
+    tree_model="incidents.BusinessLine",
+    owner_field="opened_by",
+    owner_permission=settings.INCIDENT_CREATOR_PERMISSION,
+)
 @link_to(File)
 @link_to(Artifact)
 class Incident(FIRModel, models.Model):
-    date = models.DateTimeField(default=datetime.datetime.now, blank=True)
+    date = models.DateTimeField(default=datetimenow, blank=True)
     is_starred = models.BooleanField(default=False)
     subject = models.CharField(max_length=256)
     description = models.TextField()
     category = models.ForeignKey(IncidentCategory, on_delete=models.CASCADE)
     concerned_business_lines = models.ManyToManyField(BusinessLine, blank=True)
-    main_business_lines = models.ManyToManyField(BusinessLine, related_name='incidents_affecting_main', blank=True)
-    detection = models.ForeignKey(Label, on_delete=models.CASCADE, limit_choices_to={'group__name': 'detection'}, related_name='detection_label')
+    main_business_lines = models.ManyToManyField(
+        BusinessLine, related_name="incidents_affecting_main", blank=True
+    )
+    detection = models.ForeignKey(
+        Label,
+        on_delete=models.CASCADE,
+        limit_choices_to={"group__name": "detection"},
+        related_name="detection_label",
+    )
     severity = models.ForeignKey(
-        'SeverityChoice', null=True, blank=True, on_delete=models.SET_NULL)
+        "SeverityChoice", null=True, blank=True, on_delete=models.SET_NULL
+    )
     is_incident = models.BooleanField(default=False)
     is_major = models.BooleanField(default=False)
-    actor = models.ForeignKey(Label, on_delete=models.CASCADE, limit_choices_to={'group__name': 'actor'}, related_name='actor_label', blank=True,
-                              null=True)
-    plan = models.ForeignKey(Label, on_delete=models.CASCADE, limit_choices_to={'group__name': 'plan'}, related_name='plan_label', blank=True,
-                             null=True)
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=_("Open"))
+    actor = models.ForeignKey(
+        Label,
+        on_delete=models.CASCADE,
+        limit_choices_to={"group__name": "actor"},
+        related_name="actor_label",
+        blank=True,
+        null=True,
+    )
+    plan = models.ForeignKey(
+        Label,
+        on_delete=models.CASCADE,
+        limit_choices_to={"group__name": "plan"},
+        related_name="plan_label",
+        blank=True,
+        null=True,
+    )
+    status = models.ForeignKey(
+        "IncidentStatus",
+        on_delete=models.CASCADE,
+        default=get_initial_status,
+        null=False,
+        blank=False,
+    )
     opened_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    confidentiality = models.IntegerField(choices=CONFIDENTIALITY_LEVEL, default='1')
+    confidentiality = models.IntegerField(choices=CONFIDENTIALITY_LEVEL, default="1")
 
     def __str__(self):
         return self.subject
 
-    def is_open(self):
-        return self.get_last_action != "Closed"
-
-    def close_timeout(self, username='cert'):
+    def close_timeout(self, username="cert"):
         previous_status = self.status
-        self.status = 'C'
+        self.status = IncidentStatus.objects.filter(flag="final").first()
         self.save()
-        model_status_changed.send(sender=Incident, instance=self, previous_status=previous_status)
+        model_status_changed.send(
+            sender=Incident, instance=self, previous_status=previous_status
+        )
 
         c = Comments()
         c.comment = "Incident closed (timeout)"
         c.date = datetime.datetime.now()
-        c.action = Label.objects.get(name='Closed', group__name='action')
+        c.action = IncidentStatus.objects.filter(flag="final").first().associated_action
         c.incident = self
-        c.opened_by = User.objects.get(username= username)
+        c.opened_by = User.objects.get(username=username)
         c.save()
-
-    def get_last_comment(self):
-        return self.comments_set.order_by('-date')[0]
-
-    def get_last_action(self):
-        c = self.comments_set.order_by('-date')[0]
-
-        action = "%s (%s)" % (c.action, c.date.strftime("%Y %d %b %H:%M:%S"))
-
-        return action
-
-    def concerns_business_line(self, bl_string):
-        for bl in self.concerned_business_lines.all():
-            if bl.name == bl_string:
-                return bl.name
-            if bl.get_ancestors().filter(name=bl_string).count():
-                return bl.name
-        return False
 
     def get_business_lines_names(self):
         return ", ".join([b.name for b in self.concerned_business_lines.all()])
@@ -275,70 +398,45 @@ class Incident(FIRModel, models.Model):
 
     class Meta:
         permissions = (
-            ('handle_incidents', 'Can handle incidents'),
-            ('report_events', 'Can report events'),
-            ('view_incidents', 'Can view incidents'),
-            ('view_statistics', 'Can view statistics'),
+            ("handle_incidents", "Can handle incidents"),
+            ("report_events", "Can report events"),
+            ("view_incidents", "Can view incidents"),
+            ("view_statistics", "Can view statistics"),
         )
 
 
 class Comments(models.Model):
     date = models.DateTimeField(default=datetime.datetime.now, blank=True)
     comment = models.TextField()
-    action = models.ForeignKey(Label, on_delete=models.CASCADE, limit_choices_to={'group__name': 'action'}, related_name='action_label')
+    action = models.ForeignKey(
+        Label,
+        on_delete=models.CASCADE,
+        limit_choices_to={"group__name": "action"},
+        related_name="action_label",
+    )
     incident = models.ForeignKey(Incident, on_delete=models.CASCADE)
     opened_by = models.ForeignKey(User, on_delete=models.CASCADE)
 
     class Meta:
-        verbose_name_plural = 'comments'
+        verbose_name_plural = "comments"
 
     def __str__(self):
-        return u"Comment for incident %s" % self.incident.id
+        return "Comment for incident %s" % self.incident.id
 
     @classmethod
     def create_diff_comment(cls, incident, data, user):
-        comments = ''
-        for key in data:
-            # skip the following fields from diff
-            if key in ['description', 'concerned_business_lines', 'main_business_lines']:
-                continue
+        if isinstance(data, Incident):
+            new = getattr(data, "status", None)
+        else:
+            new = data.get("status", None)
+        old = getattr(incident, "status", None)
 
-            new = data[key]
-            old = getattr(incident, key, None)
-
-            if new != old:
-                label = key
-
-                if key == 'is_major':
-                    label = 'major'
-                if key == 'concerned_business_lines':
-                    label = "business lines"
-                if key == 'main_business_line':
-                    label = "main business line"
-                if key == 'is_incident':
-                    label = 'incident'
-
-                if old == "O":
-                    old = 'Open'
-                if old == "C":
-                    old = 'Closed'
-                if old == "B":
-                    old = 'Blocked'
-                if new == "O":
-                    new = 'Open'
-                if new == "C":
-                    new = 'Closed'
-                if new == "B":
-                    new = 'Blocked'
-
-                comments += u'Changed "%s" from "%s" to "%s"; ' % (label, old, new)
-
-        if comments:
+        if new is not None and new != old:
             Comments.objects.create(
-                comment=comments,
-                action=Label.objects.get(name='Info'),
+                comment="Status changed to '%s'" % new,
+                action=Label.objects.get(name="Info"),
                 incident=incident,
-                opened_by=user
+                opened_by=user,
             )
 
 
@@ -362,8 +460,11 @@ class ValidAttribute(models.Model):
 
 
 class SeverityChoice(models.Model):
-    name = models.CharField(max_length=50)
-    color = ColorField(default='#777')
+    name = models.CharField(
+        max_length=50,
+        validators=[RegexValidator("[a-zA-Z0-9]+")],
+    )
+    color = ColorField(default="#777")
 
     def __str__(self):
         return self.name
@@ -371,18 +472,42 @@ class SeverityChoice(models.Model):
 
 # Templating =================================================================
 
+
 class IncidentTemplate(models.Model):
     name = models.CharField(max_length=100)
     subject = models.CharField(max_length=256, null=True, blank=True)
     description = models.TextField(null=True, blank=True)
-    category = models.ForeignKey(IncidentCategory, on_delete=models.CASCADE, null=True, blank=True)
+    category = models.ForeignKey(
+        IncidentCategory, on_delete=models.CASCADE, null=True, blank=True
+    )
     concerned_business_lines = models.ManyToManyField(BusinessLine, blank=True)
-    detection = models.ForeignKey(Label, on_delete=models.CASCADE, limit_choices_to={'group__name': 'detection'}, null=True, blank=True)
+    detection = models.ForeignKey(
+        Label,
+        on_delete=models.CASCADE,
+        limit_choices_to={"group__name": "detection"},
+        null=True,
+        blank=True,
+    )
     severity = models.ForeignKey(
-        'SeverityChoice', null=True, blank=True, on_delete=models.SET_NULL)
+        "SeverityChoice", null=True, blank=True, on_delete=models.SET_NULL
+    )
     is_incident = models.BooleanField(default=False)
-    actor = models.ForeignKey(Label, on_delete=models.CASCADE, limit_choices_to={'group__name': 'actor'}, related_name='+', blank=True, null=True)
-    plan = models.ForeignKey(Label, on_delete=models.CASCADE, limit_choices_to={'group__name': 'plan'}, related_name='+', blank=True, null=True)
+    actor = models.ForeignKey(
+        Label,
+        on_delete=models.CASCADE,
+        limit_choices_to={"group__name": "actor"},
+        related_name="+",
+        blank=True,
+        null=True,
+    )
+    plan = models.ForeignKey(
+        Label,
+        on_delete=models.CASCADE,
+        limit_choices_to={"group__name": "plan"},
+        related_name="+",
+        blank=True,
+        null=True,
+    )
 
     def __str__(self):
         return self.name
@@ -405,9 +530,11 @@ def refresh_incident(sender, instance, **kwargs):
 @receiver(post_save, sender=Incident)
 def comment_new_incident(sender, instance, created, **kwargs):
     if created:
+        status = IncidentStatus.objects.get(flag="initial")
+
         Comments.objects.create(
-            comment='Incident opened',
-            action=Label.objects.get(name='Opened'),
+            comment="Incident opened",
+            action=status.associated_action,
             incident=instance,
             opened_by=instance.opened_by,
             date=instance.date,
@@ -419,9 +546,51 @@ def comment_new_incident(sender, instance, created, **kwargs):
 
 @receiver(post_save, sender=Incident)
 def log_new_incident(sender, instance, created, **kwargs):
+    obj = "Event"
+    action = "edited"
+    if instance.is_incident:
+        obj = "Incident"
     if created:
-        what = 'Created incident'
-    else:
-        what = 'Edit incident'
+        action = "created"
+    Log.log(
+        f"{obj} {action}",
+        instance.opened_by,
+        incident=instance,
+        inst_type=type(instance),
+    )
 
-    Log.objects.create(who=instance.opened_by, what=what, incident=instance)
+
+@receiver(post_delete, sender=Incident)
+def log_delete_incident(sender, instance, *args, **kwargs):
+    obj = "event"
+    if instance.is_incident:
+        obj = "incident"
+    Log.log(
+        f"{obj} deleted",
+        instance.opened_by,
+        incident=instance,
+        inst_type=type(instance),
+    )
+
+
+@receiver(post_save, sender=Comments)
+def log_new_comment(sender, instance, created, **kwargs):
+    action = "edited"
+    if created:
+        action = "created"
+    Log.log(
+        f"Comment {instance.id} {action}",
+        instance.opened_by,
+        comment=instance,
+        inst_type=type(instance),
+    )
+
+
+@receiver(post_delete, sender=Comments)
+def log_delete_comment(sender, instance, *args, **kwargs):
+    Log.log(
+        f"Comment {instance.id} deleted",
+        instance.opened_by,
+        comment=instance,
+        inst_type=type(instance),
+    )

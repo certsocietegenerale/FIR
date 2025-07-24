@@ -1,4 +1,5 @@
 from incidents.models import *
+from incidents.forms import IncidentStatusAdminForm
 from django.contrib import admin
 from django.contrib.auth import admin as auth_admin, get_user_model
 from treebeard.admin import TreeAdmin
@@ -12,17 +13,31 @@ class ACENestedAdmin(admin.TabularInline):
 
 
 class UserAdmin(auth_admin.UserAdmin):
-    inlines = [ACENestedAdmin, ]
-    list_display = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active')
+    inlines = [
+        ACENestedAdmin,
+    ]
+    list_display = (
+        "username",
+        "email",
+        "first_name",
+        "last_name",
+        "is_staff",
+        "is_active",
+    )
 
 
 class BusinessLineAdmin(TreeAdmin):
-    search_fields = ('name', )
+    search_fields = ("name",)
     form = movenodeform_factory(BusinessLine)
 
 
 class IncidentAdmin(admin.ModelAdmin):
-    exclude = ("artifacts", )
+    exclude = ("artifacts",)
+
+
+class IncidentStatusAdmin(admin.ModelAdmin):
+    form = IncidentStatusAdminForm
+
 
 admin.site.register(Incident, IncidentAdmin)
 admin.site.register(BusinessLine, BusinessLineAdmin)
@@ -31,6 +46,7 @@ admin.site.register(Comments)
 admin.site.register(LabelGroup)
 admin.site.register(Label)
 admin.site.register(IncidentCategory)
+admin.site.register(IncidentStatus, IncidentStatusAdmin)
 admin.site.register(Log)
 admin.site.register(Profile)
 admin.site.register(IncidentTemplate)

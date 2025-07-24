@@ -5,29 +5,31 @@ from fir.config.base import *
 from environs import Env
 
 env = Env()
-env.read_env(env.str('ENV_PATH', '.env'), recurse=False)
+env.read_env(env.str("ENV_PATH", ".env"), recurse=False)
 
 ################################################################
 ##### Change these values
 ################################################################
 
-ALLOWED_HOSTS = ['FIR.DOMAIN.COM']
-CSRF_TRUSTED_ORIGINS = ['http://' + h for h in ALLOWED_HOSTS] + ['https://' + h for h in ALLOWED_HOSTS]
+ALLOWED_HOSTS = ["FIR.DOMAIN.COM"]
+CSRF_TRUSTED_ORIGINS = ["http://" + h for h in ALLOWED_HOSTS] + [
+    "https://" + h for h in ALLOWED_HOSTS
+]
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'fir',
-        'USER': 'fir',
-        'PASSWORD': '',
-        'HOST': '',
-        'PORT': '',
+    "default": {
+        "ENGINE": "django.db.backends.mysql",
+        "NAME": "fir",
+        "USER": "fir",
+        "PASSWORD": "",
+        "HOST": "",
+        "PORT": "",
     }
 }
 
 # SMTP SETTINGS
-EMAIL_HOST = env.str('EMAIL_HOST', 'SMTP.DOMAIN.COM')
-EMAIL_PORT = env.int('EMAIL_PORT', 25)
+EMAIL_HOST = env.str("EMAIL_HOST", "SMTP.DOMAIN.COM")
+EMAIL_PORT = env.int("EMAIL_PORT", 25)
 
 # Uncomment this line to set a different reply-to address when sending alerts
 # REPLY_TO = other@address.com
@@ -38,54 +40,95 @@ EMAIL_FROM = '"NAME" <address@email>'
 # EMAIL_BCC = ['address@email']
 
 # SECRET KEY
-SECRET_KEY = 'CHANGE_DUMMY_KEY_PLEASE'
+SECRET_KEY = "CHANGE_DUMMY_KEY_PLEASE"
 
 ################################################################
 
 DEBUG = False
-TEMPLATES[0]['OPTIONS']['debug'] = DEBUG
+TEMPLATES[0]["OPTIONS"]["debug"] = DEBUG
 
 # List of callables that know how to import templates from various sources.
 # In production, we want to cache templates in memory
-TEMPLATES[0]['OPTIONS']['loaders'] = (
-    ('django.template.loaders.cached.Loader', (
-        'django.template.loaders.filesystem.Loader',
-        'django.template.loaders.app_directories.Loader',
-    )),
+TEMPLATES[0]["OPTIONS"]["loaders"] = (
+    (
+        "django.template.loaders.cached.Loader",
+        (
+            "django.template.loaders.filesystem.Loader",
+            "django.template.loaders.app_directories.Loader",
+        ),
+    ),
 )
 
 LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'verbose': {
-            'format': '%(asctime)s: %(module)s %(filename)s:%(lineno)d(%(funcName)s)\n%(message)s'
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "verbose": {
+            "format": "%(asctime)s: %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
+        },
+        "verbose_celery": {
+            "format": "%(asctime)s: [%(levelname)s/%(processName)s] %(message)s",
+            "datefmt": "%Y-%m-%d %H:%M:%S",
         },
     },
-    'handlers': {
-        'console': {
-            'level': 'DEBUG',
-            'class': 'logging.StreamHandler',
-            'formatter': 'verbose',
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+        "console_celery": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose_celery",
         },
     },
-    'loggers': {
-        'django.request': {
-            'handlers': ['console'],
-            'level': 'ERROR',
-            'propagate': True,
+    "loggers": {
+        "celery": {
+            # Logs of the celery worker
+            "handlers": ["console_celery"],
+            "level": "INFO",
+            "propagate": True,
+        },
+        "django.request": {
+            # Logs related to python errors
+            "handlers": ["console"],
+            "level": "ERROR",
+            "propagate": True,
+        },
+        "django.server": {
+            # Logs related to HTTP requests
+            # when using python manage.py runserver
+            # (This setting is not used when using uwsgi)
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": True,
+        },
+        "FIR": {
+            # Logs related to applicative actions
+            # (Incident created, etc)
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": True,
+            "formatter": "verbose",
+        },
+        "axes": {
+            # Logs related to login/logout
+            "handlers": ["console"],
+            "level": "INFO",
+            "propagate": True,
+            "formatter": "verbose",
         },
     },
 }
 
 # External URL of your FIR application (used in fir_notification to render full URIs in templates)
-EXTERNAL_URL = 'http://fir.example.com'
+EXTERNAL_URL = "http://fir.example.com"
 
 # Show incident IDs in views?
-INCIDENT_SHOW_ID = env.bool('INCIDENT_SHOW_ID', default=False)
+INCIDENT_SHOW_ID = env.bool("INCIDENT_SHOW_ID", default=False)
 
 # Incident ID prefix in views and links
-INCIDENT_ID_PREFIX = env('INCIDENT_ID_PREFIX', "FIR-")
+INCIDENT_ID_PREFIX = env("INCIDENT_ID_PREFIX", "FIR-")
 
 # Some modules use celery, which require a redis host
 REDIS_HOST = "localhost"

@@ -1,17 +1,56 @@
 {% extends "base.html" %}
 {% load i18n %}
 {% load static %}
+{% load fir_plugins %}
 
 {% block custom_js %}
 <script src="{% static "custom_js/incident_display.js" %}"></script>
 {% endblock %}
 
+{% block header %}
+  {% if query_string %}
+    <h4 class="search-results">
+      <i class="bi bi-search"></i> {% trans "Search results for:" %} <em>{{ query_string }}</em>
+    </h4>
+  {% endif %}
+{% endblock %}
+
+
+
 {% block content %}
-	{% if incident_view %}
-		<div id='all_incidents' class='incident_display' data-url="{% url 'incidents:all' %}">
-	{% else %}
-		<div id='all_incidents' class='incident_display' data-url="{% url 'events:all' %}">
-	{% endif %}
-			{% trans "Loading ..." %}
-		</div>
+<table id="incident-list-template" class="table table-hover d-none">
+{% include "events/table.html" %}
+</table>
+
+<span id="pagination-template" class="step-links d-none">
+  <a class="paginate" href="${previous}">
+    <i class="bi bi-rewind"></i>
+    {% trans "previous" %}
+  </a>
+  <span class="current">
+    {% blocktrans %}(page ${current_page} of ${total_pages}){% endblocktrans %}
+  </span>
+  <a class="paginate" href="${next}">
+    {% trans "next" %}
+    <i class="bi bi-fast-forward"></i>
+  </a>
+</span>
+
+
+{% if query_string %}
+  <div id="all_incidents" class="incident_display" data-url="/api/incidents?{% if request.user.profile.hide_closed %}{% for s in final_status %}&status__not={{ s.name }}{% endfor %}{% endif %}">
+{% elif incident_view %}
+  <div id="all_incidents" class="incident_display" data-url="/api/incidents?is_incident=true{% if request.user.profile.hide_closed %}{% for s in final_status %}&status__not={{ s.name }}{% endfor %}{% endif %}">
+{% else %}
+  <div id="all_incidents" class="incident_display" data-url="/api/incidents?is_incident=false{% if request.user.profile.hide_closed %}{% for s in final_status %}&status__not={{ s.name }}{% endfor %}{% endif %}">
+{% endif %}
+  <div class="loading">{% trans "Loading ..." %}</div>
+  {% if incident_view %}
+    <p class="nothing_to_show d-none">{% trans "No incident found." %}</p>
+  {% else %}
+    <p class="nothing_to_show d-none">{% trans "No event found." %}</p>
+  {% endif %}
+  <p class="error_message"></p>
+  </div>
+{% csrf_token %}
 {% endblock %}

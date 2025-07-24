@@ -3,7 +3,7 @@ from django.apps import apps
 from rest_framework.exceptions import ParseError
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
-from django.db.models import Q
+from django.db.models import Q, Subquery
 from django.apps import apps
 from django_filters.rest_framework import (
     FilterSet,
@@ -21,33 +21,52 @@ from incidents.models import (
     Incident,
     Label,
     IncidentCategory,
+    BusinessLine,
     ValidAttribute,
     Comments,
-    File,
-    STATUS_CHOICES,
+    SeverityChoice,
+    IncidentStatus,
     CONFIDENTIALITY_LEVEL,
 )
-from fir_artifacts.models import File, Artifact
 from fir_api.lexer import SearchParser
 from fir.config.base import INSTALLED_APPS
 
 
-class AllValuesMultipleFilterAllAllowed(MultipleChoiceFilter):
+class BLChoiceFilter(ModelMultipleChoiceFilter):
+    def __init__(self, *args, **kwargs):
+        kwargs["method"] = self.filter_bl
+        super().__init__(*args, **kwargs)
 
-    @property
-    def field(self):
-        if "__" in self.field_name:
-            field_name, field_attribute = tuple(self.field_name.split("__"))
-            field_model = self.model._meta.get_field(field_name)
-            choices = field_model.related_model.objects.all().values_list(
-                field_attribute, flat=True
-            )
-            self.extra["choices"] = [(choice, choice) for choice in choices]
-        else:
-            self.extra["choices"] = self.model._meta.get_field(
-                self.field_name
-            ).get_choices()
-        return super().field
+    @staticmethod
+    def get_incidents_q(bls):
+        """
+        Function to filter incidents based on businessLine
+        Use a subquery for optimization
+        """
+        if not bls:
+            return Q()
+
+        ids = Subquery(
+            Incident.objects.filter(concerned_business_lines__in=bls)
+            .values("id")
+            .distinct()
+        )
+        return Q(id__in=ids)
+
+    def filter_bl(self, queryset, name, value):
+        """
+        Custom handling to also retrieve children BLs
+        """
+        bls = []
+        for v in value:
+            bls.append(v)
+            bls.extend(v.get_descendants())
+        if self.model == Incident:
+            queryset = queryset.filter(self.get_incidents_q(bls))
+        elif bls:
+            filter_dict = {name + "__in": [b.name for b in bls]}
+            queryset = queryset.filter(**filter_dict)
+        return queryset
 
 
 class ValueChoiceFilter(ChoiceFilter):
@@ -74,15 +93,24 @@ class IncidentFilter(FilterSet):
     """
 
     id = NumberFilter(field_name="id")
-    severity = NumberFilter(field_name="severity")
+    severity = ModelMultipleChoiceFilter(
+        to_field_name="name",
+        field_name="severity__name",
+        queryset=SeverityChoice.objects.all(),
+    )
     created_before = DateTimeFilter(field_name="date", lookup_expr="lte")
     created_after = DateTimeFilter(field_name="date", lookup_expr="gte")
     subject = CharFilter(field_name="subject", lookup_expr="icontains")
     description = CharFilter(field_name="description", lookup_expr="icontains")
-    status = ValueChoiceFilter(field_name="status", choices=STATUS_CHOICES)
-    status__not = ValueChoiceFilter(
-        field_name="status",
-        choices=STATUS_CHOICES,
+    status = ModelChoiceFilter(
+        field_name="status__name",
+        to_field_name="name",
+        queryset=IncidentStatus.objects.all(),
+    )
+    status__not = ModelMultipleChoiceFilter(
+        field_name="status__name",
+        to_field_name="name",
+        queryset=IncidentStatus.objects.all(),
         exclude=True,
         label=_("Status is not"),
     )
@@ -90,10 +118,12 @@ class IncidentFilter(FilterSet):
         field_name="confidentiality", choices=CONFIDENTIALITY_LEVEL
     )
     is_starred = BooleanFilter(field_name="is_starred")
-    concerned_business_lines = AllValuesMultipleFilterAllAllowed(
-        field_name="concerned_business_lines__name", lookup_expr="icontains"
+    concerned_business_lines = BLChoiceFilter(
+        to_field_name="name",
+        field_name="concerned_business_lines__name",
+        queryset=BusinessLine.objects.all(),
     )
-    category = ModelChoiceFilter(
+    category = ModelMultipleChoiceFilter(
         to_field_name="name",
         field_name="category__name",
         queryset=IncidentCategory.objects.all(),
@@ -127,6 +157,40 @@ class IncidentFilter(FilterSet):
     search_filters = []
     keyword_filters = {}
 
+    # BL search: search in selected BL and childrens
+    @staticmethod
+    def search_bl(x):
+        bls = []
+        for bl in BusinessLine.objects.filter(name__iexact=x):
+            bls.append(bl)
+            bls.extend(bl.get_descendants())
+        q = BLChoiceFilter.get_incidents_q(bls)
+        if not q:
+            q = Q(concerned_business_lines__name__iexact=x)
+        return q
+
+    # Comment search: use a subquery for performance
+    @staticmethod
+    def comment_contains(x):
+        comments = Subquery(
+            Comments.objects.filter(
+                comment__icontains=x,
+            )
+            .values("incident_id")
+            .distinct()
+        )
+        return Q(id__in=comments)
+
+    # Status search: handle translations
+    @staticmethod
+    def status_iexact(x):
+        reverse_map = {
+            _(obj.name).lower(): obj.name.lower()
+            for obj in IncidentStatus.objects.all()
+        }
+        x = reverse_map.get(x.lower(), x)
+        return Q(status__name__iexact=x)
+
     def search_query(self, queryset, name, search_query):
         # Build possible fields list
         possible_fields = {}
@@ -140,22 +204,27 @@ class IncidentFilter(FilterSet):
         # Define custom mapping for specific fields
         possible_fields.update(
             {
-                "bl": "concerned_business_lines__in",
-                "plan": "plan__name",
+                "bl": self.search_bl,
+                "plan": "plan__name__iexact",
                 "id": lambda x: Q(
                     id=(
-                        x.removesuffix(settings.INCIDENT_ID_PREFIX)
-                        if settings.INCIDENT_SHOW_ID
-                        else x
+                        x.lower().removeprefix(settings.INCIDENT_ID_PREFIX.lower())
+                        if (
+                            settings.INCIDENT_SHOW_ID
+                            and x.lower()
+                            .removeprefix(settings.INCIDENT_ID_PREFIX.lower())
+                            .isnumeric()
+                        )
+                        else (x if x.isnumeric() else 0)
                     )
                 ),
                 "starred": lambda x: Q(
                     is_starred=True if x.lower() in ["true", 1, "yes", "y"] else False
                 ),
-                "opened_by": "opened_by__username",
+                "opened_by": "opened_by__username__iexact",
                 "category": "category__name__icontains",
-                "status": "status",
-                "severity": "severity__name",
+                "status": self.status_iexact,
+                "severity": "severity__name__iexact",
             }
         )
         # Custom fields added by plugins
@@ -164,9 +233,8 @@ class IncidentFilter(FilterSet):
         # Text entered without "field:"
         # Searching in subject description and comments by default
         default_fields = [
-            lambda x: Q(subject__icontains=x)
-            | Q(description__icontains=x)
-            | Q(comments__comment__icontains=x)
+            lambda x: Q(subject__icontains=x) | Q(description__icontains=x),
+            self.comment_contains,
         ]
         # default field added by plugins
         default_fields.extend(self.search_filters)
@@ -180,6 +248,8 @@ class IncidentFilter(FilterSet):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        # Reset search_filter to accommodate object reuse
+        self.search_filters = []
 
         # Load Additional incident filters defined in plugins via a hook
         for app in INSTALLED_APPS:
@@ -219,21 +289,6 @@ class IncidentFilter(FilterSet):
         ]
 
 
-class ArtifactFilter(FilterSet):
-    """
-    A custom filter class for artifacts filtering
-    """
-
-    id = NumberFilter(field_name="id")
-    type = CharFilter(field_name="type")
-    value = CharFilter(field_name="value", lookup_expr="icontains")
-    incidents = NumberFilter(field_name="incidents__id")
-
-    class Meta:
-        model = Artifact
-        fields = ["id", "type", "incidents", "value"]
-
-
 class LabelFilter(FilterSet):
     """
     A custom filter class for Label filtering
@@ -259,7 +314,7 @@ class ValidAttributeFilter(FilterSet):
     )
 
 
-class IncidentCategoriesFilter(FilterSet):
+class CategoryFilter(FilterSet):
     """
     Custom filtering for incidents categories
     """
@@ -269,6 +324,25 @@ class IncidentCategoriesFilter(FilterSet):
     is_major = BooleanFilter(field_name="is_major")
 
 
+class SeverityFilter(FilterSet):
+    """
+    Custom filtering for incidents severities
+    """
+
+    name = CharFilter(field_name="name")
+    color = CharFilter(field_name="color")
+
+
+class StatusFilter(FilterSet):
+    """
+    Custom filtering for incidents statuses
+    """
+
+    name = CharFilter(field_name="name", lookup_expr="iequals")
+    icon = CharFilter(field_name="icon", lookup_expr="iequals")
+    flag = CharFilter(field_name="flag", lookup_expr="iequals")
+
+
 class AttributeFilter(FilterSet):
     id = NumberFilter(field_name="id")
     name = CharFilter(field_name="name")
@@ -276,53 +350,17 @@ class AttributeFilter(FilterSet):
     incident = NumberFilter(field_name="incident")
 
 
-class FileFilter(FilterSet):
-    """
-    Custom filtering so we can partially match on name
-    """
-
-    id = NumberFilter(field_name="id")
-    description = CharFilter(field_name="description", lookup_expr="icontains")
-    uploaded_before = DateTimeFilter(field_name="date", lookup_expr="lte")
-    uploaded_after = DateTimeFilter(field_name="date", lookup_expr="gte")
-    incident = NumberFilter(field_name="incident__id")
-
-    class Meta:
-        model = File
-        fields = ["id", "description", "incident"]
-
-
 class BLFilter(FilterSet):
     """
-    Custom filtering so we can partially match on name
+    Custom filtering class for BL Filtering
     """
 
     id = NumberFilter(field_name="id")
-    name = CharFilter(field_name="name", lookup_expr="icontains", method="filter_name")
-
-    def filter_name(self, queryset, name, value):
-        """
-        And custom handling that we do return children
-        of the searched name
-        """
-        split_values = []
-        if " > " in value:
-            split_values = value.split(" > ")
-            lookup = {name + "__icontains": split_values[-1]}
-        else:
-            lookup = {name + "__icontains": value}
-        filtered_queryset = queryset.filter(**lookup)
-        if split_values:
-            for node in filtered_queryset:
-                ancestors = node.get_ancestors()
-                for value in split_values[:-1]:
-                    if not ancestors.filter(name=value):
-                        filtered_queryset = filtered_queryset.exclude(pk=node.pk)
-                        break
-        for node in filtered_queryset:
-            if node.numchild > 0:
-                filtered_queryset = filtered_queryset.union(node.get_descendants())
-        return filtered_queryset
+    name = BLChoiceFilter(
+        to_field_name="name",
+        field_name="name",
+        queryset=BusinessLine.objects.all(),
+    )
 
 
 class CommentFilter(FilterSet):

@@ -17,8 +17,6 @@ router.get_api_root_view().cls.__doc__ = _("FIR API endpoints")
 
 router.register(r"users", views.UserViewSet, basename="users")
 router.register(r"incidents", views.IncidentViewSet, basename="incidents")
-router.register(r"artifacts", views.ArtifactViewSet, basename="artifacts")
-router.register(r"files", views.FileViewSet, basename="files")
 router.register(r"comments", views.CommentViewSet, basename="comments")
 router.register(r"labels", views.LabelViewSet, basename="labels")
 router.register(r"attributes", views.AttributeViewSet, basename="attributes")
@@ -26,11 +24,9 @@ router.register(
     r"validattributes", views.ValidAttributeViewSet, basename="validattributes"
 )
 router.register(r"businesslines", views.BusinessLinesViewSet, basename="businesslines")
-router.register(
-    r"incident_categories",
-    views.IncidentCategoriesViewSet,
-    basename="incident_categories",
-)
+router.register(r"severities", views.SeverityViewSet, basename="severities")
+router.register(r"categories", views.CategoryViewSet, basename="categories")
+router.register(r"statuses", views.StatusViewSet, basename="statuses")
 
 # Load plugin API URLs
 for app in INSTALLED_APPS:

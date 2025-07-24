@@ -26,14 +26,19 @@ def find(data):
 
     result = dict()
     for key in INSTALLED_ARTIFACTS:
-        blacklist = ArtifactBlacklistItem.objects.filter(type=key).values_list('value', flat=True)
+        blacklist = ArtifactBlacklistItem.objects.filter(type=key).values_list(
+            "value", flat=True
+        )
         values = INSTALLED_ARTIFACTS[key].find(data)
         if key == "url":
-            blacklist_hostname = ArtifactBlacklistItem.objects.filter(type="hostname").values_list(
-                'value', flat=True
-            )
+            blacklist_hostname = ArtifactBlacklistItem.objects.filter(
+                type="hostname"
+            ).values_list("value", flat=True)
             values = [
-                v for v in values if v not in blacklist and _hostname_from_url(v) not in blacklist_hostname
+                v
+                for v in values
+                if v not in blacklist
+                and _hostname_from_url(v) not in blacklist_hostname
             ]
         else:
             values = [v for v in values if v not in blacklist]
@@ -45,8 +50,10 @@ def find(data):
 def after_save(type, value, event):
     return INSTALLED_ARTIFACTS[type].after_save(value, event)
 
+
 def incs_for_art(art_string):
     from fir_artifacts.models import Artifact
+
     artifacts = Artifact.objects.filter(value__contains=art_string)
     incs = []
     for a in artifacts:
@@ -74,16 +81,16 @@ def all_for_object(obj, raw=False, user=None):
 
 class AbstractArtifact:
     case_sensitive = False
-    template = 'fir_artifacts/default.html'
+    template = "fir_artifacts/default.html"
 
     @classmethod
     def find(cls, data):
         results = []
         for i in re.finditer(cls.regex, data):
             if cls.case_sensitive:
-                results.append(i.group('search'))
+                results.append(i.group("search"))
             else:
-                results.append(i.group('search').lower())
+                results.append(i.group("search").lower())
 
         return results
 
@@ -128,13 +135,13 @@ class AbstractArtifact:
     def display(self, request, correlated=False, json=False):
         context = RequestContext(request)
         template = get_template(self.__class__.template)
-        context['artifact_name'] = self.__class__.display_name
+        context["artifact_name"] = self.__class__.display_name
         if correlated:
-            context['artifact_values'] = self._correlated
+            context["artifact_values"] = self._correlated
         else:
-            context['artifact_values'] = self._artifacts
+            context["artifact_values"] = self._artifacts
 
-        context['event'] = self._event
+        context["event"] = self._event
 
         if not json:
             return template.render(context.flatten(), request)

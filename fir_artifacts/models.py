@@ -29,7 +29,7 @@ def upload_path(instance, filename):
 
 class File(OneLinkableModel):
 
-    hashes = models.ManyToManyField('fir_artifacts.Artifact', blank=True)
+    hashes = models.ManyToManyField("fir_artifacts.Artifact", blank=True)
     description = models.CharField(max_length=256)
     file = models.FileField(upload_to=upload_path)
     date = models.DateTimeField(auto_now_add=True)
@@ -41,7 +41,7 @@ class File(OneLinkableModel):
         return os.path.basename(self.file.name)
 
     def get_hashes(self):
-        hashes = dict((k, None) for k in ['md5', 'sha1', 'sha256'])
+        hashes = dict((k, None) for k in ["md5", "sha1", "sha256"])
         content = self.file.read()
         for algo in hashes:
             m = hashlib.new(algo)

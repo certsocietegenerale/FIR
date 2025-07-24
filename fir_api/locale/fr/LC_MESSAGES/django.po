@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-02-08 16:30+0000\n"
+"POT-Creation-Date: 2025-05-12 11:05+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,73 +18,86 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: filters.py:87
+#: filters.py:115
 msgid "Status is not"
 msgstr "Status n'est pas"
 
-#: filters.py:111
+#: filters.py:141
 msgid "Last comment date is less than or equal to"
 msgstr "Date du dernier commentaire est inférieure ou égale à"
 
-#: filters.py:116
+#: filters.py:146
 msgid "Last comment date is greater than or equal to"
 msgstr "Date du dernier commentaire est supérieure ou égale à"
 
-#: filters.py:119
+#: filters.py:149
 msgid "Custom search query (DSL syntax)"
 msgstr "Recherche textuelle (syntaxe LD)"
 
-#: filters.py:125
+#: filters.py:155
 msgid "Has attribute"
 msgstr "Possède l'attribut"
 
-#: filters.py:178
+#: filters.py:246
 #, python-format
 msgid "Query DSL is not valid: %s"
 msgstr "La requête LD n'est pas valide : %s"
 
 #: lexer.py:79
-#, fuzzy, python-format
-#| msgid "Field '%s' does not exist. Valid fields are: %s."
+#, python-format
 msgid "Field '%s' does not exist. Valid fields are: %s."
-msgstr "Le champ '%s' n'est pas valide. Les champs valides sont : "
+msgstr "Le champ '%s' n'est pas valide. Les champs valides sont : %s."
 
-#: pagination.py:57
-msgid "'query' and 'last_comment_date' parameters are mutually exclusive"
-msgstr "Les paramètres 'query' et 'last_comment_date'sont mutuellement exclusifs"
-
-#: templates/fir_api/plugins/user_profile.html:7
+#: templates/fir_api/plugins/user_profile.html:6
 msgid "API Access"
 msgstr "Accès à l'API"
 
 #: templates/fir_api/plugins/user_profile.html:9
 msgid ""
-"You need to be authenticated in order to use the API. It will accept session "
-"or token based authentication."
+"\n"
+"\t    You need to be authenticated in order to use the API. It will accept "
+"session or token based authentication.\n"
+"\t    Tokens can be managed in the administration interface and should be "
+"specified as a <strong>request header</strong>.</p>\n"
+"\t    Example:\n"
+"\t  "
 msgstr ""
-"Vous devez être authentifié pour utiliser l'API, à l'aide d'un jeton ou "
-"d'une session."
+"\n"
+"\t   Vous devez être authentifié pour utiliser l'API, à l'aide d'un jeton ou "
+"d'une session.\n"
+"\t   Les jetons peuvent être gérés dans l'interface d'administration et doivent "
+"être spécifiés dans les <strong>en-têtes des requêtes</strong>.</p>\n"
+"\t   Exemple :"
+"\t  "
 
-#: templates/fir_api/plugins/user_profile.html:10
-msgid ""
-"Tokens can be managed in the administration interface and should be "
-"specified as a <strong>request header</strong>.</p>"
-msgstr ""
-"Les jetons peuvent être gérés dans l'interface d'administration et doivent "
-"être spécifiés dans les <strong>en-têtes des requêtes</strong>.</p>"
-
-#: templates/fir_api/plugins/user_profile.html:11
-msgid "Example:"
-msgstr "Exemple :"
-
-#: templates/fir_api/plugins/user_profile.html:15
+#: templates/fir_api/plugins/user_profile.html:18
 msgid "Token"
 msgstr "Jeton"
 
-#: templates/fir_api/plugins/user_profile.html:16
+#: templates/fir_api/plugins/user_profile.html:19
 msgid "Created"
 msgstr "Création"
 
 #: urls.py:16
 msgid "FIR API endpoints"
 msgstr "Points de terminaison de l'API FIR"
+
+#: views.py:103
+msgid "Current password is invalid."
+msgstr "Le mot de passe actuel est invalide."
+
+#: views.py:108
+msgid "New password does not match its confirmation."
+msgstr "Le nouveau mot de passe ne correspond pas à sa confirmation."
+
+#: views.py:115
+msgid "New password is too weak."
+msgstr "Le nouveau mot de passe est trop faible."
+
+#: views.py:122
+msgid "Password changed."
+msgstr "Mot de passe modifié."
+
+#: views.py:456
+msgid "Too many failed login attempts"
+msgstr "Trop de tentatives de connexion échouées"

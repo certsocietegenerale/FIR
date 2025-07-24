@@ -4,6 +4,7 @@ networks:
 volumes:
   static-content:
   mariadb-data:
+  uploads:
 
 services:
   fir:
@@ -22,12 +23,10 @@ services:
       - fir.env
     networks:
       backend.fir:
-#    ports:
-#      - 8000:8000
     expose:
       - 8000
     volumes:
-      - /tmp/uploads:/app/uploads
+      - uploads:/app/uploads
       - static-content:/var/www/static
 
   fir_db:
@@ -58,7 +57,7 @@ services:
   fir_celery_worker:
     image: fir:latest
     entrypoint: /bin/sh
-    command: -c "wait-for -t 20 fir_redis:6379 && wait-for -t 40 fir:8000 -- celery -A fir_celery.celeryconf.celery_app worker -l debug"
+    command: -c "wait-for -t 20 fir_redis:6379 && wait-for -t 40 fir:8000 -- celery -A fir_celery.celeryconf.celery_app worker -l info"
     container_name: fir_celery_worker
     hostname: fir_celery_worker
     depends_on:
@@ -73,7 +72,7 @@ services:
   fir_celery_beat:
     image: fir:latest
     entrypoint: /bin/sh
-    command: -c "wait-for -t 20 fir_redis:6379 && wait-for -t 40 fir:8000 -- celery -A fir_celery.celeryconf.celery_app beat -l debug"
+    command: -c "wait-for -t 20 fir_redis:6379 && wait-for -t 40 fir:8000 -- celery -A fir_celery.celeryconf.celery_app beat -l info"
     container_name: fir_celery_beat
     hostname: fir_celery_beat
     depends_on:
@@ -93,7 +92,7 @@ services:
       - fir
     volumes:
       - ./nginx.conf:/etc/nginx/nginx.conf:ro
-      - static-content:/usr/share/nginx/html:ro
+      - static-content:/usr/share/nginx/static:ro
     ports:
       - 80:80
     networks:

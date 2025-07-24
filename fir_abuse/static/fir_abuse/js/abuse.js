@@ -113,7 +113,7 @@ $(function () {
     $('#addComment').after(data);
 
 
-    editors["abuse_body"] = init_easymde($("#abuse_body"));
+    editors["abuse_body"] = init_easymde(document.getElementById("abuse_body"));
     // Activate 'Send Email' button
     $('#send_abuse_email').click(function (event) {
       send_email();

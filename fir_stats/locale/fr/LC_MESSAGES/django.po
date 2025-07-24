@@ -1,0 +1,382 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-03-28 16:45+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: api.py:49
+msgid "Aggregate by"
+msgstr "Agréger par"
+
+#: api.py:50
+msgid "Perform stats on"
+msgstr "Effectuer des statistiques sur"
+
+#: api.py:66
+#, python-brace-format
+msgid "'{unit}' is not part of {valid_unit}"
+msgstr "'{unit}' ne fait pas partie de {valid_unit}"
+
+#: api.py:83
+#, python-brace-format
+msgid "'{elem}' is not part of {valid_aggregations}"
+msgstr "'{elem}' ne fait pas partie de {valid_aggregations}"
+
+#: templates/fir_stats/attributes.html:10 templates/fir_stats/compare.html:10
+#: templates/fir_stats/major.html:21 templates/fir_stats/quarterly.html:14
+#: templates/fir_stats/yearly.html:10
+msgid ""
+"Warning: You are not authorized to display statistics on all perimeters. The "
+"below graphs may be incomplete (They are only based on data from the "
+"perimeters to which you have permission)"
+msgstr ""
+"Attention : Vous n'êtes pas autorisé à afficher des statistiques sur tous "
+"les périmètres. Les graphiques ci-dessous peuvent être incomplets (Ils sont "
+"uniquement basés sur les données des périmètres pour lesquels vous avez la "
+"permission)"
+
+#: templates/fir_stats/attributes.html:13
+#: templates/fir_stats/attributes.html:117
+#: templates/fir_stats/plugins/base_navbar.html:15
+msgid "Attributes"
+msgstr "Attributs"
+
+#: templates/fir_stats/attributes.html:52 templates/fir_stats/sandbox.html:51
+msgid "From"
+msgstr "De"
+
+#: templates/fir_stats/attributes.html:56 templates/fir_stats/sandbox.html:55
+msgid "To"
+msgstr "À"
+
+#: templates/fir_stats/attributes.html:60 templates/fir_stats/sandbox.html:60
+msgid "Detection"
+msgstr "Détection"
+
+#: templates/fir_stats/attributes.html:64 templates/fir_stats/sandbox.html:64
+msgid "Severity"
+msgstr "Sévérité"
+
+#: templates/fir_stats/attributes.html:81 templates/fir_stats/major.html:31
+#: templates/fir_stats/sandbox.html:81
+msgid "Categories"
+msgstr "Catégories"
+
+#: templates/fir_stats/attributes.html:94 templates/fir_stats/sandbox.html:94
+msgid "Business lines"
+msgstr "Parties prenantes"
+
+#: templates/fir_stats/attributes.html:99 templates/fir_stats/sandbox.html:99
+msgid "Incidents only"
+msgstr "Incidents seulement"
+
+#: templates/fir_stats/attributes.html:102 templates/fir_stats/sandbox.html:102
+msgid "Major incidents only"
+msgstr "Incidents majeurs seulement"
+
+#: templates/fir_stats/attributes.html:105 templates/fir_stats/sandbox.html:105
+msgid "Go"
+msgstr "Go"
+
+#: templates/fir_stats/attributes.html:110
+msgid "The graph's Y axis should be"
+msgstr "L'axe Y du graphique doit être"
+
+#: templates/fir_stats/attributes.html:112
+msgid "Incidents count"
+msgstr "Nombre d'incidents"
+
+#: templates/fir_stats/attributes.html:113
+msgid "Selected attributes count (in their unit)"
+msgstr "Nombre d'attributs (dans leur unité)"
+
+#: templates/fir_stats/attributes.html:130
+msgid ""
+"\n"
+"    Incidents count: <span data-url=\"/api/stats?\" id=\"inc_count\">0</"
+"span> / With attribute set: <span data-url=\"/api/stats?\" "
+"id=\"inc_with_attribute_count\">0</span><br />\n"
+"    Total of selected attributes: <span data-url=\"/api/stats?\" "
+"id=\"attributes_count\">N/A</span>\n"
+"    "
+msgstr ""
+"\n"
+"Nombre d'incidents : <span data-url=\"/api/stats?\" id=\"inc_count\">0</"
+"span> / Avec un jeu d'attributs : <span data-url=\"/api/stats?\" "
+"id=\"inc_with_attribute_count\">0</span>\n"
+"    Total des attributs sélectionnés : <span data-url=\"/api/stats?\" "
+"id=\"attributes_count\">N/A</span>\n"
+"    "
+
+#: templates/fir_stats/attributes.html:135
+msgid "Over time"
+msgstr "En fonction du temps"
+
+#: templates/fir_stats/attributes.html:140
+#: templates/fir_stats/quarterly.html:122 templates/fir_stats/sandbox.html:177
+msgid "Matching incidents"
+msgstr "Incidents correspondants"
+
+#: templates/fir_stats/attributes.html:142 templates/fir_stats/sandbox.html:179
+msgid "Load selected incidents (may take some time)"
+msgstr "Charger les incidents sélectionnés (peut prendre un certain temps)"
+
+#: templates/fir_stats/attributes.html:146 templates/fir_stats/major.html:46
+#: templates/fir_stats/quarterly.html:128 templates/fir_stats/sandbox.html:183
+msgid ""
+"\n"
+"      Export to <a data-filename=\"incidents.xlsx\" class=\"export-link\" "
+"href=\"#\">XLSX</a> or <a data-filename=\"incidents.csv\" "
+"class=\"export-link\" href=\"#\">CSV</a>\n"
+"    "
+msgstr ""
+"\n"
+"      Exporter au format <a data-filename=\"incidents.xlsx\" class=\"export-"
+"link\" href=\"#\">XLSX</a> ou <a data-filename=\"incidents."
+"csv\" class=\"export-link\" href=\"#\">CSV</a>\n"
+"    "
+
+#: templates/fir_stats/attributes.html:156 templates/fir_stats/major.html:56
+#: templates/fir_stats/quarterly.html:138 templates/fir_stats/sandbox.html:193
+msgid "Loading ..."
+msgstr "Chargement ..."
+
+#: templates/fir_stats/attributes.html:156 templates/fir_stats/major.html:56
+#: templates/fir_stats/quarterly.html:138 templates/fir_stats/sandbox.html:193
+#, python-brace-format
+msgid "(${page} of ${total_pages})"
+msgstr "(${page} sur ${total_pages})"
+
+#: templates/fir_stats/attributes.html:157 templates/fir_stats/major.html:57
+#: templates/fir_stats/quarterly.html:139 templates/fir_stats/sandbox.html:194
+msgid "No incident found."
+msgstr "Aucun incident trouvé."
+
+#: templates/fir_stats/compare.html:13
+#, python-format
+msgid "Comparison for %(current_year)s - %(previous_year)s"
+msgstr "Comparaison entre %(current_year)s et %(previous_year)s"
+
+#: templates/fir_stats/compare.html:29
+msgid "Global activity volume (incidents+events)"
+msgstr "Volume d'activité globale (incidents + évènements)"
+
+#: templates/fir_stats/compare.html:34
+msgid "Category incident+events evolution"
+msgstr "Évolution des catégories des incidents + évènements"
+
+#: templates/fir_stats/compare.html:38
+msgid "Incidents+events by category"
+msgstr "incidents + évènements par catégorie"
+
+#: templates/fir_stats/compare.html:44 templates/fir_stats/yearly.html:27
+msgid "Yearly incidents"
+msgstr "Incidents de l'année"
+
+#: templates/fir_stats/compare.html:49
+msgid "Business Line incident evolution"
+msgstr "Évolution des parties prenantes des incidents"
+
+#: templates/fir_stats/compare.html:53 templates/fir_stats/yearly.html:48
+msgid "Incidents by business line"
+msgstr "Incidents par partie prenante"
+
+#: templates/fir_stats/compare.html:59
+msgid "Yearly events"
+msgstr "Évènements de l'année"
+
+#: templates/fir_stats/compare.html:64
+msgid "Business Line event evolution"
+msgstr "Incidents par partie prenante"
+
+#: templates/fir_stats/compare.html:68
+msgid "Events by business line"
+msgstr "Évènements par partie prenante"
+
+#: templates/fir_stats/major.html:7
+msgid "Major incidents in last quarter"
+msgstr "Incidents majeurs du dernier trimestre"
+
+#: templates/fir_stats/major.html:26
+msgid "Basel categories"
+msgstr "Catégories Bâloises"
+
+#: templates/fir_stats/major.html:27
+msgid "Basel category"
+msgstr "Catégorie Bâloise"
+
+#: templates/fir_stats/major.html:32
+msgid "Category"
+msgstr "Catégorie"
+
+#: templates/fir_stats/major.html:36
+msgid "Business line ventilation"
+msgstr "Répartition par partie prenante"
+
+#: templates/fir_stats/major.html:37
+msgid "Business line"
+msgstr "Parties prenante"
+
+#: templates/fir_stats/major.html:40
+msgid "Major Incidents"
+msgstr "Incidents majeurs"
+
+#: templates/fir_stats/major.html:42 templates/fir_stats/quarterly.html:124
+msgid "Load matching incidents (may take some time)"
+msgstr "Charger les incidents sélectionnés (peut prendre un certain temps)"
+
+#: templates/fir_stats/plugins/base_navbar.html:8
+msgid "Stats"
+msgstr "Stats"
+
+#: templates/fir_stats/plugins/base_navbar.html:10
+msgid "Yearly"
+msgstr "Par an"
+
+#: templates/fir_stats/plugins/base_navbar.html:11
+msgid "Quarterly"
+msgstr "Par trimestre"
+
+#: templates/fir_stats/plugins/base_navbar.html:12
+msgid "Compare with previous year"
+msgstr "Comparer avec l'année précédente"
+
+#: templates/fir_stats/plugins/base_navbar.html:13
+msgid "Major incidents"
+msgstr "Incidents majeurs"
+
+#: templates/fir_stats/plugins/base_navbar.html:14
+#: templates/fir_stats/sandbox.html:13
+msgid "Sandbox"
+msgstr "Bac à sable"
+
+#: templates/fir_stats/quarterly.html:7
+msgid "Quarterly statistics"
+msgstr "Statistiques par trimestre"
+
+#: templates/fir_stats/quarterly.html:17
+#, python-format
+msgid "Incidents quarterly statistics for<br />%(bl_name)s"
+msgstr "Statistiques d'incidents trimestrielles pour<br />%(bl_name)s"
+
+#: templates/fir_stats/quarterly.html:54
+msgid "Close old incidents for all BLs"
+msgstr "Fermer les incidents anciens de toutes les P/P"
+
+#: templates/fir_stats/quarterly.html:57
+msgid "Monthly forecast"
+msgstr "Prévision mensuelle"
+
+#: templates/fir_stats/quarterly.html:60
+msgid "Total incidents on your Business Line"
+msgstr "Total des incidents de votre Partie prenante"
+
+#: templates/fir_stats/quarterly.html:70
+msgid "Incident breakdown by severity"
+msgstr "Décomposition des incidents par sévérité"
+
+#: templates/fir_stats/quarterly.html:80
+msgid "Incident breakdown by entity"
+msgstr "Décomposition des incidents par entité"
+
+#: templates/fir_stats/quarterly.html:90
+msgid "Incident breakdown by category"
+msgstr "Décomposition des incidents par catégorie"
+
+#: templates/fir_stats/quarterly.html:99
+msgid "Incident Management"
+msgstr "Gestion d'incident"
+
+#: templates/fir_stats/quarterly.html:101
+msgid "Incident Management by incident leader (Business Line or CERT)"
+msgstr ""
+"Gestion d'incident par responsable d'incident (Partie prenante ou CERT)"
+
+#: templates/fir_stats/quarterly.html:112
+msgid "Open incidents"
+msgstr "Incidents ouverts"
+
+#: templates/fir_stats/quarterly.html:116
+msgid "Blocked incidents"
+msgstr "Incidents bloqués"
+
+#: templates/fir_stats/sandbox.html:10
+msgid ""
+"Warning: You are not authorized to display statistics on all perimeters. The "
+"below graphs may be incomplete (they are only based on data from the "
+"perimeters to which you have permission)"
+msgstr ""
+"Attention : Vous n'êtes pas autorisé à afficher des statistiques sur tous "
+"les périmètres. Les graphiques ci-dessous peuvent être incomplets (ils sont "
+"uniquement basés sur les données des périmètres pour lesquels vous avez la "
+"permission)"
+
+#: templates/fir_stats/sandbox.html:110
+msgid "Overlapping years"
+msgstr "Années superposées"
+
+#: templates/fir_stats/sandbox.html:115 templates/fir_stats/sandbox.html:120
+msgid "By category"
+msgstr "Par catégorie"
+
+#: templates/fir_stats/sandbox.html:130
+msgid "By date"
+msgstr "par date"
+
+#: templates/fir_stats/sandbox.html:137
+msgid "By entity"
+msgstr "Par entité"
+
+#: templates/fir_stats/sandbox.html:146
+msgid "By severity"
+msgstr "Par sévérité"
+
+#: templates/fir_stats/sandbox.html:156
+msgid "By actor"
+msgstr "Par acteur"
+
+#: templates/fir_stats/sandbox.html:167
+msgid "Open tickets"
+msgstr "Tickets ouverts"
+
+#: templates/fir_stats/sandbox.html:171
+msgid "Blocked tickets"
+msgstr "Bloqués ouverts"
+
+#: templates/fir_stats/yearly.html:13
+msgid "Yearly stats"
+msgstr "Statistiques annuelles"
+
+#: templates/fir_stats/yearly.html:33
+msgid "Entire Group - by category"
+msgstr "Décomposition des incidents par catégorie"
+
+#: templates/fir_stats/yearly.html:37
+msgid "Entire Group - by severity"
+msgstr "Décomposition des incidents par sévérité"
+
+#: templates/fir_stats/yearly.html:44
+msgid "Business Line by detection"
+msgstr "Partie prenante par détection"
+
+#: templates/fir_stats/yearly.html:55
+msgid "Business Line by incident severity"
+msgstr "Partie prenante par sévérité d'incident"
+
+#: templates/fir_stats/yearly.html:60
+msgid "Business Line incident category"
+msgstr "Partie prenante par catégorie d'incident"
