@@ -1,0 +1,163 @@
+{% load static %}
+{% load i18n %}
+
+{% load fir_plugins %}
+{% load fir_misp %}
+
+{% for artifact_type in artifacts %}
+	{% with artifact_type|artifact_json:request as art %}
+		{% for aval in art.artifact_values %}
+		<input type="hidden" name="artifacts_misp" value="{{ aval.value }}" art_type="{{artifact_type}}" />
+		{% endfor %}
+	{% endwith %}
+{% endfor %}
+<input type="hidden" name="inc_id_misp" value="{{ event.id }}"/>
+
+<div class='tab-pane' data-query-endpoint="" data-observable-post="" id='tab_misp'>
+	No intelligence available for this incident. Please check your configuration settings.
+</div>
+
+{% verbatim %}
+<!-- Start Handlebar templates -->
+
+<script id="misp-error-message-template" type="text/x-handlebars-template">
+	{{#if error_message}}
+	<div class="alert alert-danger mt-2 mb-2" role="alert">
+		{{error_message}}
+	</div>
+	{{/if}}
+</script>
+
+<script id="misp-tab-data-template" type="text/x-handlebars-template">
+	<span class="known">Known: {{known.length}}</span>
+</script>
+
+<script id="misp-observables-template" type="text/x-handlebars-template">
+	<div class="col-sm-12 widget order border-info-subtle misp-related-events">
+		<div class="read">
+			<h4 class='widget text-info-emphasis bg-info-subtle border border-info-subtle'>MISP related events (with tag fir-{% endverbatim %}{{event.id}}{% verbatim %})</h4>
+			<table class="table table-condensed misp-read">
+				<tbody class="known">
+					{{#if related_events}}
+					<tr><th class="narrow"></th><th>Event name</th><th>Event tags</th><th>Org name</th><th>Date</th></tr>
+					{{#each related_events}}
+					<tr><td><a href="{{url}}" target="_blank"><span class="bi bi-box-arrow-up-right" aria-hidden="true"></span></a></td><td>{{info}}</td><td>{{#each event_tags}}<span class="badge badge-primary me-1">{{this}}</span>{{/each}}</td><td>{{org_name}}</td><td>{{date}}</td></tr>
+					{{/each}}
+					{{/if}}
+				</tbody>
+			</table>
+		</div>
+		<div class="send">
+			<h4 class='widget text-info-emphasis bg-info-subtle border border-info-subtle'>Choose your MISP events to link to the observables</h4>
+			<div class="alert alert-warning mt-3" role="alert">
+				<i class="bi bi-exclamation-diamond"></i> If no one is checked, a new MISP event will be created with the tags fir-incident and fir-{% endverbatim %}{{event.id}}{% verbatim %}.
+			</div>
+			<table class="table table-condensed misp-send">
+				<tbody class="known">
+					{{#if related_events}}
+					<tr><th></th><th class="narrow"></th><th>Event id</th><th>Event name</th><th>Event tags</th><th>Org name</th><th>Date</th></tr>
+					{{#each related_events}}
+					<tr class="misp_event"><td><input type="checkbox" name="name" value=""></td><td><a href="{{url}}" target="_blank"><span class="bi bi-box-arrow-up-right" aria-hidden="true"></span></a></td><th class="value">{{event_id}}</th><td>{{info}}</td><td>{{#each event_tags}}<span class="badge badge-primary me-1">{{this}}</span>{{/each}}</td><td>{{org_name}}</td><td>{{date}}</td></tr>
+					{{/each}}
+					{{/if}}
+				</tbody>
+			</table>
+		</div>
+	</div>
+<div class="col-sm-12 widget order border-info-subtle misp-matches">
+	<h4 class='widget text-info-emphasis bg-info-subtle border border-info-subtle'>Observables <i class="tooltip-info bi bi-info-circle text-muted" data-bs-toggle="tooltip" data-placement="top" title="If an artifact is related to several misp event, only the most recent one is displayed."></i> </h4>
+	<div class="read">
+		<table class="table table-condensed misp-read">
+			<tbody class="known">
+				{{#if known}}
+				<tr><th class="narrow"></th><th>Observable</th><th>Tags</th><th>MISP Context</th></tr>
+				{{#each known}}
+				<tr><td><a href="{{url}}" target="_blank"><span class="bi bi-box-arrow-up-right" aria-hidden="true"></span></a></td><td><code>{{value}}</code></td><td>{{#each tags}}<span class="badge badge-primary me-1">{{this}}</span>{{/each}}</td><td>{{info}}</td></tr>
+				{{/each}}
+				{{/if}}
+			</tbody>
+			<tbody class="unknown">
+				{{#if unknown}}
+				<tr><th></th><th>Unknown observables</th><th></th><th></th></tr>
+				{{#each unknown}}
+				<tr><td></td><td><code>{{value}}</code></td><td>N/A</td><td>N/A</td></tr>
+				{{/each}}
+				{{/if}}
+			</tbody>
+
+		</table>
+	</div>
+
+	<div class="send">
+	<table class="table table-condensed misp-send">
+		<tr><th></th><th>Observable</th><th>Tags to add <i class="tooltip-info bi bi-info-circle text-muted" data-bs-toggle="tooltip" data-placement="top" title="Already existing tags on MISP side will not be deleted."></i></th><th>MISP Context</th></tr>
+		<tbody class="known">
+			{{#if known}}
+			{{#each known}}
+			<tr class="observable"><td><input type="checkbox" name="name" value=""></td>
+				<td class="value"><code>{{value}}</code></td>
+				<td class="tags">
+					<div class="d-flex">
+						<button class="btn btn-sm btn-link bi bi-tags-fill show_tag_suggestions tooltip-info" data-bs-toggle="tooltip" data-bs-trigger="hover" data-placement="top" title="Tags suggestions"></button>
+						<input type="text" class="tagsinput tag-azure-misp" value="">
+					</div>
+					<ul class="tag_suggestions d-none">
+						{{#each tags}}
+						<li class="tag_suggestion" data-value="{{this}}">{{this}}</li>
+						{{/each}}
+						{{#each basic_tags}}
+						<li class="tag_suggestion" data-value="{{this}}">{{this}}</li>
+						{{/each}}
+					</ul>
+				</td>
+				<td class="context">{{info}}</td>
+			</tr>
+			{{/each}}
+			{{/if}}
+		</tbody>
+
+		<tbody class="unknown">
+			{{#if unknown}}
+			<tr><th></th><th>Unknown observables</th><th></th><th></th></tr>
+			{{#each unknown}}
+			<tr class="observable">
+				<td><input type="checkbox" name="name" value=""></td>
+				<td class="value"><code>{{value}}</code></td>
+				<td class="tags">
+					<div class="d-flex">
+						<button class="btn btn-sm btn-link bi bi-tags-fill show_tag_suggestions tooltip-info" data-bs-toggle="tooltip" data-bs-trigger="hover" data-placement="top" title="Tags suggestions"></button>
+						<input type="text" class="tagsinput tag-azure-misp" value="">
+					</div>
+					<ul class="tag_suggestions d-none">
+						{{#each basic_tags}}
+						<li class="tag_suggestion" data-value="{{this}}">{{this}}</li>
+						{{/each}}
+					</ul>
+				</td>
+				<td class="context">N/A</td></tr>
+			{{/each}}
+			{{/if}}
+		</tbody>
+		<tbody>
+			<tr>
+				<td><input id="check-all" data-target="observable" class="check-all" type="checkbox" name="name" value=""></td>
+				<td>&nbsp;<strong><label for="check-all">Select all / tags for all observables</label></strong></td>
+				<td class="tags"><input type="text" class="tagsinput tag-azure-misp all-tags" value=""></td>
+				<td></td>
+			</tr>
+		</tbody>
+	</table>
+		<button class="btn btn-outline-danger mt-2 me-2" id="send-to-misp" href="#" role="button">Send it! <span class="bi bi-cloud-upload" aria-hidden="true"></span></button>
+		{% endverbatim %}
+			<strong>Note</strong>: Observables added this way will have the following context: <code id="fid" data-fid="{{ event|object_id }}">{{ event|object_id }}</code>
+		{% verbatim %}
+		<div id="waitingMessage" style="display: none;">Please wait...</div>
+	</div>
+
+	<a class="btn btn-default btn-sm mb-2 mt-2" id="toggle-send" href="#" role="button">Send to MISP...</a>
+
+</div>
+</script>
+
+<!-- End Handlebar templates -->
+{% endverbatim %}
