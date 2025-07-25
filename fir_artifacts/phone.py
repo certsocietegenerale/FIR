@@ -27,5 +27,8 @@ class Phone(AbstractArtifact):
             # 00 -> +
             if cleaned.startswith("00"):
                 cleaned = "+" + cleaned[2:]
+            digits_only = re.sub(r"\D", "", cleaned)
+            if len(digits_only) < 9 or len(digits_only) > 15:
+              continue
             results.append(cleaned)
         return results
