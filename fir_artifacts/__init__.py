@@ -4,9 +4,12 @@ from fir_artifacts.url import URL
 from fir_artifacts.hostname import Hostname
 from fir_artifacts.hash import Hash
 from fir_artifacts.email import Email
+from fir_artifacts.phone import Phone
+
 
 artifacts.install(IP)
 artifacts.install(URL)
 artifacts.install(Hostname)
 artifacts.install(Hash)
 artifacts.install(Email)
+artifacts.install(Phone)
