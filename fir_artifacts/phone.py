@@ -6,7 +6,7 @@ class Phone(AbstractArtifact):
     key = "phone"
     display_name = "Phone Numbers"
     regex = r"""(?P<search>
-        (?:(?:\+|00)\d{1,3})?                      # optional country code
+        (?:(?:\+|00)\d{1,3}|0)                     # country code or "0"
         [ \t.\-()]*                                # optional separators (no newlines)
         (?:\(?\d{1,4}\)?[ \t.\-()]*)?              # optional area code
         \d{1,4}                                    # main number start
