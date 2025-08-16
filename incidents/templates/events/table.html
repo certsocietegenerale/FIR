@@ -1,48 +1,70 @@
 {% load i18n %}
 {% load fir_plugins %}
-<thead>
-    <tr>
-      {% if incident_show_id %}
-      <th><a href="#" data-sort="id">ID</a></th>
-      {% endif %}
-      <th><a href="#" data-sort="date">{% trans "Date" %}</a></th>
-      <th></th>
-      <th><a href="#" data-sort="category">{% trans "Category" %}</a></th>
-      <th><a href="#" data-sort="subject">{% trans "Subject" %}</a></th>
-      <th>{% trans "Business Lines" %}</th>
-      <th><a href="#" data-sort="severity">{% trans "Severity" %}</a></th>
-      <th><a href="#" data-sort="status">{% trans "Status" %}</a></th>
-      {% if incident_view %}
-        <th><a href="#" data-sort="detection">{% trans "Detection" %}</a></th>
-        <th><a href="#" data-sort="actor">{% trans "Leader" %}</a></th>
-      {% endif %}
-      <th><a href="#" data-sort="last_comment_date">{% trans "Last Action" %}</a></th>
-      <th><a href="#" data-sort="confidentiality">{% trans "Lvl" %}</a></th>
-      <th><a href="#" data-sort="opened_by">{% trans "Ih" %}</a></th>
-      {% plugin_point "additional_fields_table_title" %}
-      <th>{% trans "Edit" %}</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr{% if is_dashboard != True %} class="dynamic-status${status|flag}"{% endif %}>
-      {% if incident_show_id %}
-        <td>{{ incident_id_prefix }}${id}</td>
-      {% endif %}
-      <td>${date}</td>
-      <td><a href="#" data-id="${id}"><i class="hide-if-viewer bi bi-star${is_starred?-fill:} star"></i></a></td>
-      <td>${category}</td>
-      <td class="text-break"><a class="add-link">${subject}</a></td>
-      <td>${concerned_business_lines}</td>
-      <td class="incident-severity"><span class="badge dynamic-severity-${severity}">${severity}</span></td>
-      <td>${status}</td>
-      {% if incident_view %}
-        <td>${detection}</td>
-        <td>${actor}</td>
-      {% endif %}
-      <td>${last_comment_action} <small>${last_comment_date}</small></td>
-      <td>${confidentiality}</td>
-      <td>${opened_by}</td>
-      {% plugin_point "additional_fields_table_content" %}
-      <td><a class="hide-if-viewer edit-button"><span class="bi bi-pencil"></span></a></td>
-    </tr>
-  </tbody>
+{% load i18n %}
+{% load fir_plugins %}
+<script id="incident-list-template" type="text/x-handlebars-template">
+  <table class="table table-hover">
+    <thead>
+      <tr>
+        {% if incident_show_id %}
+          <th><a href="#" data-sort="id">ID</a></th>
+        {% endif %}
+        <th><a href="#" data-sort="date">{% trans "Date" %}</a></th>
+        <th></th>
+        <th><a href="#" data-sort="category">{% trans "Category" %}</a></th>
+        <th><a href="#" data-sort="subject">{% trans "Subject" %}</a></th>
+        <th>{% trans "Business Lines" %}</th>
+        <th><a href="#" data-sort="severity">{% trans "Severity" %}</a></th>
+        <th><a href="#" data-sort="status">{% trans "Status" %}</a></th>
+        {% if incident_view %}
+          <th><a href="#" data-sort="detection">{% trans "Detection" %}</a></th>
+          <th><a href="#" data-sort="actor">{% trans "Leader" %}</a></th>
+        {% endif %}
+        <th><a href="#" data-sort="last_comment_date">{% trans "Last Action" %}</a></th>
+        <th><a href="#" data-sort="confidentiality">{% trans "Lvl" %}</a></th>
+        <th><a href="#" data-sort="opened_by">{% trans "Ih" %}</a></th>
+        {% plugin_point "additional_fields_table_title" %}
+        <th>{% trans "Edit" %}</th>
+      </tr>
+    </thead>
+    <tbody>
+      ${#each results}
+        <tr{% if is_dashboard != True %} class="dynamic-status${status_flag}"{% endif %}>
+          {% if incident_show_id %}
+            <td>{{ incident_id_prefix }}${id}</td>
+          {% endif %}
+          <td>${date}</td>
+          <td>
+            <a href="#" data-id="${id}">
+	      ${#if can_edit}
+                <i class="bi bi-star${#if is_starred}-fill${/if} star"></i>
+	      ${/if}
+            </a>
+          </td>
+          <td>${category}</td>
+          <td class="text-break"><a href="/${#if is_incident}incidents${else}events${/if}/${id}">${subject}</a></td>
+          <td>${business_lines_joined}</td>
+          <td class="incident-severity">
+            <span class="badge dynamic-severity-${severityClass}">${severity}</span>
+          </td>
+          <td>${status}</td>
+          {% if incident_view %}
+            <td>${detection}</td>
+            <td>${actor}</td>
+          {% endif %}
+          <td>${last_comment_action} <small>${last_comment_date}</small></td>
+          <td>${confidentiality}</td>
+          <td>${opened_by}</td>
+          {% plugin_point "additional_fields_table_content" %}
+          <td>
+	    ${#if can_edit}
+              <a class="edit-button" href="/${#if is_incident}incidents${else}events${/if}/${id}/edit">
+                <span class="bi bi-pencil"></span>
+              </a>
+	    ${/if}
+          </td>
+        </tr>
+      ${/each}
+    </tbody>
+  </table>
+</script>

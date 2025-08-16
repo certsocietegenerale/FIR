@@ -61,23 +61,31 @@ document.addEventListener("DOMContentLoaded", function () {
       display_comment_form();
     });
   }
-  // delete button comment
-  for (let delete_comment_button of document.querySelectorAll(
-    ".delete-comment",
-  )) {
-    delete_comment_button.addEventListener("click", function (event) {
-      event.preventDefault();
-      delete_comment(delete_comment_button.dataset.id);
-      delete_comment_button.parentElement.parentElement.remove();
+
+  // edit/delete comment
+  const commentsTbody = document.querySelector("#tab_comments table tbody");
+  if (commentsTbody) {
+    commentsTbody.addEventListener("click", function (event) {
+      const editBtn = event.target.closest(".edit-comment");
+      const delBtn = event.target.closest(".delete-comment");
+
+      if (editBtn) {
+        event.preventDefault();
+        const id = editBtn.dataset.id;
+        display_comment_form(id);
+        return;
+      }
+      if (delBtn) {
+        event.preventDefault();
+        const id = delBtn.dataset.id;
+        delete_comment(id);
+        // remove row immediately (optimistic UI):
+        delBtn.closest("tr")?.remove();
+        return;
+      }
     });
   }
-  // edit button comment
-  for (let edit_comment_button of document.querySelectorAll(".edit-comment")) {
-    edit_comment_button.addEventListener("click", function (event) {
-      event.preventDefault();
-      display_comment_form(edit_comment_button.dataset.id);
-    });
-  }
+
   // Submit comment
   const comment_form = document.getElementById("comment_form");
   if (comment_form) {
@@ -285,22 +293,24 @@ async function display_comment_form(id) {
 
 async function delete_comment(id) {
   id = parseInt(id);
-  if (isNaN(id)) {
-    return;
-  }
+  if (isNaN(id)) return;
+
   const csrftoken = document.querySelector("[name=csrfmiddlewaretoken]");
   const query = await fetch(`/api/comments/${id}`, {
     method: "DELETE",
-    headers: {
-      "X-CSRFToken": csrftoken.value,
-    },
+    headers: { "X-CSRFToken": csrftoken.value },
   });
 
   if (query.status != 204) {
     console.error(await query.json());
   } else {
     const count = document.getElementById("comment-count");
-    count.textContent = parseInt(count.textContent) - 1;
+    if (count)
+      count.textContent = (
+        parseInt(count.textContent || "0", 10) - 1
+      ).toString();
+    // row already removed by delegation; if not:
+    document.getElementById(`comment_id_${id}`)?.remove();
   }
 }
 
@@ -309,8 +319,8 @@ async function submit_comment_form(form) {
   const csrftoken = document.querySelector("[name=csrfmiddlewaretoken]");
   const existing_id = document.querySelector("#addComment form").dataset.id;
 
-  var url = "/api/comments";
-  var method = "POST";
+  let url = "/api/comments";
+  let method = "POST";
   if (existing_id) {
     url = `/api/comments/${existing_id}`;
     method = "PUT";
@@ -324,79 +334,68 @@ async function submit_comment_form(form) {
     },
     body: data,
   });
-  const response = await query.json();
 
-  if (existing_id) {
-    document.getElementById(`comment_id_${existing_id}`).remove();
-  } else {
-    const count = document.getElementById("comment-count");
-    count.textContent = parseInt(count.textContent) + 1;
+  const response = await query.json();
+  if (!query.ok) {
+    console.error(response);
+    return;
   }
 
-  add_comment_to_dom(response);
+  // update count
+  const countEl = document.getElementById("comment-count");
+  if (countEl) {
+    const delta = existing_id ? 0 : 1;
+    countEl.textContent = (
+      parseInt(countEl.textContent || "0", 10) + delta
+    ).toString();
+  }
+
+  // Insert/replace row with template
+  add_or_replace_comment_row(response);
+
   // hide modal
-  const main_div = document.getElementById("addComment");
   const comment_modal = bootstrap.Modal.getOrCreateInstance("#addComment");
   comment_modal.hide();
 }
 
-function add_comment_to_dom(response) {
-  // create the new comment and add it to DOM
-  const tr = document.createElement("tr");
-  tr.id = `comment_id_${parseInt(response["id"])}`;
-  const td_date = document.createElement("td");
-  td_date.classList.add("comment-date");
-  td_date.textContent = moment(response["date"]).format("YYYY-MM-DD HH:mm");
-  const td_user = document.createElement("td");
-  td_user.textContent = response["opened_by"];
-  const td_action = document.createElement("td");
-  td_action.textContent = response["action"];
-  const td_comment = document.createElement("td");
-  td_comment.innerHTML = response["parsed_comment"];
-  const td_edit = document.createElement("td");
-  const td_delete = document.createElement("td");
-  if (response["can_edit"]) {
-    td_edit.innerHTML = `<a href="#" data-id="${parseInt(response["id"])}" class="edit-comment"><i class="bi bi-pencil"></i></a>`;
-    td_delete.innerHTML = `<a href="#" data-id="${parseInt(response["id"])}" class="delete-comment"><i class="bi bi-x-circle"></i></a>`;
+// Cache comment_row_template for performance
+let comment_row_template = null;
+function render_comment_row(model) {
+  if (!comment_row_template) {
+    const src = document.getElementById("comment-row-template").innerHTML;
+    comment_row_template = Handlebars.compile(src);
   }
-  tr.appendChild(td_date);
-  tr.appendChild(td_user);
-  tr.appendChild(td_comment);
-  tr.appendChild(td_action);
-  tr.appendChild(td_edit);
-  tr.appendChild(td_delete);
+  return comment_row_template(model);
+}
 
-  const comment_table = document.querySelector("#tab_comments table tbody");
-  comment_table.appendChild(tr);
+function add_or_replace_comment_row(response) {
+  const tbody = document.querySelector("#tab_comments table tbody");
+  if (!tbody) return;
 
-  // reorganize the table
-  var rows = [].slice.call(comment_table.querySelectorAll("tr"));
-  rows.sort(function (a, b) {
+  response["date_formatted"] = moment(response["date"]).format(
+    "YYYY-MM-DD HH:mm",
+  );
+
+  // Remove existing row if present (edit case)
+  const existing = document.getElementById(`comment_id_${response.id}`);
+  if (existing) existing.remove();
+
+  // Render & insert
+  const html = render_comment_row(response);
+  const tmp = document.createElement("tbody");
+  tmp.innerHTML = html.trim();
+  const row = tmp.firstElementChild;
+  tbody.appendChild(row);
+
+  // Resort by date (descending)
+  const rows = Array.from(tbody.querySelectorAll("tr"));
+  rows.sort((a, b) => {
+    const ad = a.querySelector(".comment-date")?.textContent?.trim() || "";
+    const bd = b.querySelector(".comment-date")?.textContent?.trim() || "";
     return (
-      moment(b.cells[0].textContent).unix() -
-      moment(a.cells[0].textContent).unix()
+      moment(bd, "YYYY-MM-DD HH:mm").valueOf() -
+      moment(ad, "YYYY-MM-DD HH:mm").valueOf()
     );
   });
-  rows.forEach(function (v) {
-    comment_table.appendChild(v);
-  });
-
-  // delete button comment
-  for (let delete_comment_button of document.querySelectorAll(
-    ".delete-comment",
-  )) {
-    delete_comment_button.addEventListener("click", function (event) {
-      event.preventDefault();
-      delete_comment(delete_comment_button.dataset.id);
-      delete_comment_button.parentElement.parentElement.remove();
-    });
-  }
-
-  // edit button comment
-  for (let edit_comment_button of document.querySelectorAll(".edit-comment")) {
-    edit_comment_button.addEventListener("click", function (event) {
-      event.preventDefault();
-      display_comment_form(edit_comment_button.dataset.id);
-    });
-  }
+  rows.forEach((r) => tbody.appendChild(r));
 }
