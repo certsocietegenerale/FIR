@@ -170,6 +170,25 @@
     </ul>
   </div>
 
+  <script id="comment-row-template" type="text/x-handlebars-template">
+    <tr id="comment_id_${id}">
+      <td class="comment-date">${date_formatted}</td>
+      <td>${opened_by}</td>
+      <td class="text-break">${& parsed_comment}</td>
+      <td>${action}</td>
+      <td>
+        ${#if can_edit}
+          <a href="#" data-id="${id}" class="edit-comment"><i class="bi bi-pencil"></i></a>
+        ${/if}
+      </td>
+      <td>
+        ${#if can_edit}
+          <a href="#" data-id="${id}" class="delete-comment"><i class="bi bi-x-circle"></i></a>
+        ${/if}
+      </td>
+    </tr>
+  </script>
+
   <div class="tab-content tabs table-responsive">
     <div class="tab-pane active" id="tab_comments">
       <table class="table table-hover table-condensed">

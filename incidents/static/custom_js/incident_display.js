@@ -7,7 +7,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (document.querySelectorAll(".incident_display").length === 1) {
       updateUrlFromGetParams(div);
     }
-
     refresh_display(div);
   }
 });
@@ -134,80 +133,12 @@ async function getStatusMap() {
     // Convert array to map for fast lookup
     statusMap = {};
     for (const item of entries) {
-      console.log(item.flag);
       statusMap[item.name] = (item.flag || "")
         .replace(/[^a-zA-Z0-9_-]+/g, "")
         .replace(/(.+)/g, "-$1");
     }
   }
   return statusMap;
-}
-
-// parse a templated string without allowing arbitrary code execution
-// Inspired from https://stackoverflow.com/a/59084440
-async function parseStringTemplate(str, obj) {
-  if (!str) {
-    return str;
-  }
-  let parts = str.split(/\$\{(?!\d)[\w\?\:_\|-]*\}/); // static text
-  let args = str.match(/[^{\}]+(?=})/g) || []; // parts to replace
-
-  // perform replacement
-  let parameters = await Promise.all(
-    args.map(async (argument_with_params) => {
-      argument = argument_with_params.split("?")[0].split("|")[0]; // allow custom-made strings manipulation: lower, upper, etc
-
-      if (obj[argument] === undefined) {
-        return "";
-      } else if (Array.isArray(obj[argument])) {
-        // arrays: join values with ", "
-        return escapeHtml(obj[argument].join(", "));
-      } else if (
-        typeof obj[argument] == "boolean" &&
-        // booleans: allow to display specific texts depending on the boolean value.
-        argument_with_params.split("?").length == 2
-      ) {
-        let iftrue = argument_with_params.split("?")[1].split(":")[0];
-        let iffalse = argument_with_params.split(":")[1];
-        return escapeHtml(obj[argument] ? iftrue : iffalse);
-      } else {
-        // strings: allow custom-made text manipulation
-        if (
-          typeof obj[argument] == "string" &&
-          argument_with_params.split("|").length == 2
-        ) {
-          let op = argument_with_params.split("|")[1];
-          if (op == "lower") {
-            return escapeHtml(obj[argument].toLowerCase());
-          } else if (op == "upper") {
-            return escapeHtml(obj[argument].toUpperCase());
-          } else if (op == "flag") {
-            const map = await getStatusMap();
-            return escapeHtml(map[obj[argument]] || "");
-          }
-        }
-        return escapeHtml(obj[argument]);
-      }
-    }),
-  );
-
-  // reassemble strings
-  return String.raw({ raw: parts }, ...parameters);
-}
-
-// create an HTML element and add classes of to it based on a template
-function createElementFromTemplate(elemToCreate, template) {
-  const elem = document.createElement(elemToCreate);
-  if (typeof template == "string") {
-    template = document.querySelector(template);
-  }
-  for (let c of template.classList) {
-    if (c != "d-none") {
-      elem.classList.add(c);
-    }
-  }
-
-  return elem;
 }
 
 async function loadDynamicCSS() {
@@ -224,10 +155,14 @@ async function loadDynamicCSS() {
   }
 
   const sheet = document.querySelector("link[rel=stylesheet]").sheet;
-  for (elem of entries) {
-    let name = elem["name"].toLowerCase().replace(/[^a-z0-9]+/g, "");
-    let color = elem["color"].toLowerCase().replace(/[^a-z0-9#]+/g, "");
-    sheet.insertRule(`.dynamic-severity-${name} {background-color: ${color}}`);
+  for (const elem of entries) {
+    let name = (elem["name"] || "").toLowerCase().replace(/[^a-z0-9]+/g, "");
+    let color = (elem["color"] || "").toLowerCase().replace(/[^a-z0-9#]+/g, "");
+    if (name && color) {
+      sheet.insertRule(
+        `.dynamic-severity-${name} {background-color: ${color}}`,
+      );
+    }
   }
 }
 
@@ -255,7 +190,7 @@ async function toggle_star(target) {
     console.error(await response.json());
   } else {
     let inc_id = parseInt(target.dataset.id);
-    for (toedit of document.querySelectorAll(`[data-id="${inc_id}"]`)) {
+    for (const toedit of document.querySelectorAll(`[data-id="${inc_id}"]`)) {
       if (classes.contains("bi-star-fill")) {
         toedit.querySelector("i.star").classList.remove("bi-star-fill");
         toedit.querySelector("i.star").classList.add("bi-star");
@@ -270,195 +205,190 @@ async function toggle_star(target) {
   }
 }
 
+// Small helper: render "${key}" placeholders in a plain string (for loading_count)
+function renderPlainTemplate(str, ctx) {
+  return str.replace(/\$\{(\w+)\}/g, (_, k) => (k in ctx ? ctx[k] : ""));
+}
+
+async function fetchAllPages(firstUrl, showLoadingFn) {
+  let url = firstUrl;
+  let allResults = [];
+  let lastResponseMeta = null;
+
+  while (url != null) {
+    const req = await fetch(url, { headers: { Accept: "application/json" } });
+    const res = await req.json();
+    if (!req.ok) throw res;
+
+    allResults = allResults.concat(res.results || []);
+    lastResponseMeta = res;
+
+    // progress callback, if any
+    if (showLoadingFn && res.next) {
+      const curr_page =
+        new URL(res.next, window.location.origin).searchParams.get("page") ||
+        "1";
+      showLoadingFn({
+        page: curr_page,
+        total_pages: res.total_pages || "?",
+      });
+    }
+
+    url = res.next;
+  }
+
+  return { results: allResults, meta: lastResponseMeta };
+}
+
 async function refresh_display(div) {
   const loading = div.querySelector(".loading");
   const error_p = div.querySelector(".error_message");
+  const nts = div.querySelector(".nothing_to_show");
 
-  if (loading) {
-    loading.classList.remove("d-none");
-  }
-  if (error_p) {
-    error_p.textContent = "";
-  }
-  var url = div.dataset.url;
-  var request = await fetch(url, {
-    headers: { Accept: "application/json" },
-  });
-  var response = await request.json();
-  if (request.status != 200) {
-    console.error(response);
-    if (loading) {
-      loading.classList.add("d-none");
+  if (loading) loading.classList.remove("d-none");
+  if (error_p) error_p.textContent = "";
+
+  try {
+    // 1) Fetch data (single page or all pages)
+    let apiUrl = div.dataset.url;
+    let data, meta;
+
+    const loading_count = document.querySelector(".loading_count");
+    if (loading_count && !loading_count.dataset.template) {
+      loading_count.dataset.template = loading_count.textContent;
     }
-    if (error_p) {
-      if ("detail" in response) {
-        error_p.textContent = response["detail"];
+
+    if (div.dataset.nopage) {
+      const { results, meta: m } = await fetchAllPages(apiUrl, (ctx) => {
+        if (loading_count) {
+          loading_count.textContent = renderPlainTemplate(
+            loading_count.dataset.template,
+            ctx,
+          );
+          loading_count.classList.remove("d-none");
+        }
+      });
+      data = { results };
+      meta = m || { total_pages: 1 };
+    } else {
+      const req = await fetch(apiUrl, {
+        headers: { Accept: "application/json" },
+      });
+      const res = await req.json();
+      if (!req.ok) throw res;
+      data = res;
+      meta = res;
+    }
+
+    if (!data.results || data.results.length === 0) {
+      // Nothing to show
+
+      if (nts) {
+        nts.classList.remove("d-none");
+        div.textContent = "";
+        div.appendChild(nts);
       } else {
-        error_p.textContent = response;
+        div.textContent = "";
+      }
+      return;
+    }
+
+    // 2) Preprocess incidents
+    const statusMap = await getStatusMap();
+    moment.locale(navigator.language);
+
+    const normalized = data.results.map((incident) => {
+      const blJoined = (incident.concerned_business_lines || [])
+        .map((bl) => String(bl).split(" > ").pop())
+        .join(", ");
+      const severityClass = String(incident.severity || "")
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, "");
+      const date = (incident.date || "").split("T")[0] || "";
+      const last_comment_date = incident.last_comment_date
+        ? moment(incident.last_comment_date, "YYYY-MM-DDTHH:mm").fromNow()
+        : "";
+
+      return {
+        ...incident,
+        business_lines_joined: escapeHtml(blJoined),
+        severityClass: escapeHtml(severityClass),
+        date: escapeHtml(date),
+        last_comment_date: escapeHtml(last_comment_date),
+        status_flag: escapeHtml(statusMap[incident.status] || ""),
+      };
+    });
+
+    // 3) Render with Handlebars
+    const templateSource = document.querySelector(
+      "#incident-list-template",
+    ).innerHTML;
+    const template = Handlebars.compile(templateSource);
+    const html = template({ results: normalized });
+
+    // Rebuild container: table + optional pagination
+    div.innerHTML = html;
+    if (error_p) div.appendChild(error_p);
+    if (nts) div.appendChild(nts);
+
+    // 4) Add sort chevrons
+    let ordering =
+      new URL(window.location.href, window.location.origin).searchParams.get(
+        "ordering",
+      ) || "";
+    let order = "up";
+    if (ordering.charAt(0) === "-") {
+      order = "down";
+      ordering = ordering.substring(1);
+    }
+    for (const elem of div.querySelectorAll("thead a[data-sort]")) {
+      if (elem.dataset.sort === ordering) {
+        elem.innerHTML += ` <span class="bi bi-chevron-${order}"></span>`;
       }
     }
-    return;
-  }
 
-  if (response["results"].length === 0) {
-    let nts = div.querySelector(".nothing_to_show");
-    nts.classList.remove("d-none");
-    div.textContent = "";
-    div.appendChild(nts);
+    // 5) Pagination (if present and not nopage)
+    const pagination_template = document.querySelector("#pagination-template");
+    if (
+      meta &&
+      meta.total_pages &&
+      meta.total_pages != 1 &&
+      pagination_template &&
+      !div.dataset.nopage
+    ) {
+      const ctx = {
+        ...meta,
+        current_page:
+          new URL(div.dataset.url, window.location.origin).searchParams.get(
+            "page",
+          ) || "1",
+      };
+      // Use Handlebars for the pagination template too
+      const pagTpl = Handlebars.compile(pagination_template.innerHTML);
+      const pagHtml = pagTpl(ctx);
+      const wrapper = document.createElement("div");
+      wrapper.innerHTML = pagHtml;
+      div.appendChild(wrapper);
+
+      for (let sub of div.querySelectorAll("a[href='null'], a[href='']")) {
+        sub.classList.add("d-none");
+      }
+    }
+
+    // 6) Re-bind events
+    addTableEventListners(div);
+  } catch (error) {
+    console.error(error);
+    if (error_p) {
+      error_p.textContent =
+        error?.detail || (typeof error === "string" ? error : "Error");
+    }
+  } finally {
     if (loading) {
       loading.classList.add("d-none");
       div.appendChild(loading);
     }
-    return;
+    const loading_count = document.querySelector(".loading_count");
+    if (loading_count) loading_count.classList.add("d-none");
   }
-
-  const thead_template = document.querySelector(
-    "#incident-list-template thead",
-  );
-  const tbody_template = document.querySelector(
-    "#incident-list-template tbody tr",
-  );
-
-  const thead = thead_template.cloneNode(true);
-  const table = createElementFromTemplate("table", "#incident-list-template");
-  const tbody = createElementFromTemplate(
-    "tbody",
-    "#incident-list-template tbody",
-  );
-  var loading_count = document.querySelector(".loading_count");
-  if (loading_count && !loading_count.dataset.template) {
-    loading_count.dataset.template = loading_count.textContent;
-  }
-
-  while (url != null) {
-    for (let entry of response["results"]) {
-      const tr = createElementFromTemplate(
-        "tr",
-        "#incident-list-template tbody tr",
-      );
-
-      // remove path from business lines
-      for (i in entry["concerned_business_lines"]) {
-        entry["concerned_business_lines"][i] = entry[
-          "concerned_business_lines"
-        ][i]
-          .split(" > ")
-          .pop();
-      }
-      // format incident date
-      entry["date"] = entry["date"].split("T")[0];
-
-      // format last action date
-      moment.locale(navigator.language);
-      entry["last_comment_date"] = moment(
-        entry["last_comment_date"],
-        "YYYY-MM-DD HH:mm",
-      ).fromNow();
-
-      // parse string templates in td class
-      if (tr.getAttribute("class")) {
-        tr.setAttribute(
-          "class",
-          await parseStringTemplate(tr.getAttribute("class"), entry),
-        );
-      }
-
-      for (let td_template of tbody_template.children) {
-        const td = createElementFromTemplate("td", td_template);
-        // parse string template
-        td.innerHTML = await parseStringTemplate(td_template.innerHTML, entry);
-
-        // hide elements if user is viewer
-        if (td.querySelector(".hide-if-viewer") && !entry["can_edit"]) {
-          td.querySelector(".hide-if-viewer").classList.add("d-none");
-        }
-        // add link to the incident/event if requested
-        if (td.querySelector(".edit-button") || td.querySelector(".add-link")) {
-          if (entry["is_incident"]) {
-            td.querySelector("a").href = "/incidents/" + entry["id"];
-          } else {
-            td.querySelector("a").href = "/events/" + entry["id"];
-          }
-          if (td.querySelector(".edit-button")) {
-            td.querySelector("a").href += "/edit";
-          }
-        }
-        tr.appendChild(td);
-      }
-      tbody.appendChild(tr);
-    }
-    if (div.dataset.nopage && response["next"]) {
-      url = response["next"];
-      request = await fetch(url, {
-        headers: { Accept: "application/json" },
-      });
-      response = await request.json();
-      if (request.status != 200) {
-        console.error(response);
-        return;
-      }
-
-      // Loading indicator
-      if (loading_count) {
-        let curr_page = new URL(url).searchParams.get("page") || "1";
-        loading_count.textContent = await parseStringTemplate(
-          loading_count.dataset.template,
-          { page: curr_page, total_pages: response["total_pages"] },
-        );
-        loading_count.classList.remove("d-none");
-      }
-    } else {
-      url = null;
-    }
-  }
-
-  let ordering =
-    new URL(window.location.href, window.location.origin).searchParams.get(
-      "ordering",
-    ) || "";
-  let order = "up";
-  if (ordering.charAt(0) == "-") {
-    order = "down";
-    ordering = ordering.substring(1);
-  }
-  for (elem of thead.querySelectorAll("a[data-sort]")) {
-    if (elem.dataset.sort == ordering) {
-      elem.innerHTML += ` <span class="bi bi-chevron-${order}"></i>`;
-    }
-  }
-  table.appendChild(thead);
-  table.appendChild(tbody);
-
-  let nts = div.querySelector(".nothing_to_show"); // preserve div "nothing to show" when rebuilding table
-  if (!nts.classList.contains("d-none")) {
-    nts.classList.add("d-none");
-  }
-  div.innerHTML = "";
-  div.appendChild(table);
-  div.appendChild(nts);
-  if (loading) {
-    loading.classList.add("d-none");
-    div.appendChild(loading);
-  }
-  const pagination_template = document.querySelector("#pagination-template");
-  if (
-    response["total_pages"] != 1 &&
-    pagination_template &&
-    !div.dataset.nopage
-  ) {
-    response["current_page"] =
-      new URL(div.dataset.url, window.location.origin).searchParams.get(
-        "page",
-      ) || "1";
-    const pagination = document.createElement("div");
-    pagination.innerHTML += await parseStringTemplate(
-      pagination_template.innerHTML,
-      response,
-    );
-    div.appendChild(pagination);
-    for (let sub of div.querySelectorAll("a[href=null]")) {
-      sub.classList.add("d-none");
-    }
-  }
-  addTableEventListners(div);
 }

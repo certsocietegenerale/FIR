@@ -48,9 +48,8 @@
     {% endblocktrans %}
   </div>
 </div>
-<table id="incident-list-template" class="table table-hover d-none">
-  {% include "events/table.html" %}
-</table>
+
+{% include "events/table.html" %}
 
 <div id="all_incidents" class="stats_incident_display" data-nopage="true" data-url="/api/incidents?is_major=true&is_incident=true" data-days="quarterly">
     <p class="loading d-none">{% trans "Loading ..." %}<span class="d-none loading_count"> {% trans "(${page} of ${total_pages})" %}</span></p>
