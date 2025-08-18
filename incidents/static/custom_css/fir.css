@@ -335,6 +335,11 @@ button.nav-link:hover,
 	padding: 1px 3px
 }
 
+#tab_comments p {
+	overflow-wrap: anywhere;
+	white-space: pre-wrap;
+}
+
 /* Email Modal */
 
 #sendEmail input {
