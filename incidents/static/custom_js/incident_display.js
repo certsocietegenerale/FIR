@@ -387,7 +387,8 @@ async function refresh_display(div) {
       }
       tbody.appendChild(tr);
     }
-    if (div.dataset.nopage) {
+    if (div.dataset.nopage && response["next"]) {
+      url = response["next"];
       request = await fetch(url, {
         headers: { Accept: "application/json" },
       });
@@ -396,10 +397,9 @@ async function refresh_display(div) {
         console.error(response);
         return;
       }
-      url = response["next"];
 
       // Loading indicator
-      if (loading_count && url != null) {
+      if (loading_count) {
         let curr_page = new URL(url).searchParams.get("page") || "1";
         loading_count.textContent = await parseStringTemplate(
           loading_count.dataset.template,
