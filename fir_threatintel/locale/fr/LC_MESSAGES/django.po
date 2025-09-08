@@ -1,0 +1,132 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2025-09-08 22:08+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+
+#: api.py:19
+msgid "observable"
+msgstr ""
+
+#: api.py:58
+msgid ""
+"Yeti URL or API key missing. Please set them on your profile page or in FIR "
+"config."
+msgstr ""
+"URL ou clé API de Yeti manquante. Veuillez les définir sur votre page de "
+"profil ou dans la configuration de FIR."
+
+#: api.py:77
+msgid ""
+"No observable provided. Please provide one or multiple observable as GET "
+"parameter."
+msgstr ""
+"Aucun observable fourni. Veuillez fournir un ou plusieurs observables en "
+"paramètre GET."
+
+#: api.py:104 api.py:168
+msgid "Unable to retrieve content from Yeti"
+msgstr "Impossible de récupérer le contenu de Yeti"
+
+#: api.py:173
+msgid "Invalid request"
+msgstr "Demande invalide"
+
+#: templates/fir_threatintel/plugins/details_tab.html:5
+msgid "Threat Intel"
+msgstr ""
+
+#: templates/fir_threatintel/plugins/details_tab_content.html:5
+msgid ""
+"No intelligence available for this incident. Please check your configuration "
+"settings."
+msgstr "Aucun renseignement disponible pour cet incident. Veuillez vérifier "
+"vos paramètres de configuration"
+
+#: templates/fir_threatintel/plugins/details_tab_content.html:9
+msgid "Known: "
+msgstr "Connus : "
+
+#: templates/fir_threatintel/plugins/details_tab_content.html:14
+msgid "Observables"
+msgstr ""
+
+#: templates/fir_threatintel/plugins/details_tab_content.html:21
+#: templates/fir_threatintel/plugins/details_tab_content.html:61
+msgid "Observable"
+msgstr ""
+
+#: templates/fir_threatintel/plugins/details_tab_content.html:22
+#: templates/fir_threatintel/plugins/details_tab_content.html:62
+msgid "Tags"
+msgstr ""
+
+#: templates/fir_threatintel/plugins/details_tab_content.html:23
+#: templates/fir_threatintel/plugins/details_tab_content.html:63
+msgid "YETI Context"
+msgstr "Contexte YETI"
+
+#: templates/fir_threatintel/plugins/details_tab_content.html:39
+#: templates/fir_threatintel/plugins/details_tab_content.html:88
+msgid "Unknown observables"
+msgstr "Observables inconnus"
+
+#: templates/fir_threatintel/plugins/details_tab_content.html:54
+msgid "Send to Yeti..."
+msgstr "Envoyer à Yeti..."
+
+#: templates/fir_threatintel/plugins/details_tab_content.html:111
+msgid "Select all / tags for all observables"
+msgstr "Tout séléctionner / Tags pour tout les observables"
+
+#: templates/fir_threatintel/plugins/details_tab_content.html:117
+msgid "Send it!"
+msgstr "Envoyer !"
+
+#: templates/fir_threatintel/plugins/details_tab_content.html:118
+#, fuzzy
+msgid ""
+"\n"
+"        <strong>Note</strong>: Observables will be added with the following "
+"context:\n"
+"      "
+msgstr ""
+"\n"
+"      <strong>Note</strong> : Les observables seront ajoutés avec le "
+"contexte suivant : \n"
+"    "
+
+#: templates/fir_threatintel/plugins/details_tab_content.html:122
+msgid "Cancel"
+msgstr "Annuler"
+
+#: templates/fir_threatintel/plugins/user_profile.html:6
+msgid "Yeti API configuration"
+msgstr "Configuration de l'API Yeti"
+
+#: templates/fir_threatintel/plugins/user_profile.html:8
+msgid "You need an API key for the FIR ThreatIntel plugin to work."
+msgstr ""
+"Vous avez besoin d’une clé API pour que le plugin FIR ThreatIntel fonctionne."
+
+#: templates/fir_threatintel/plugins/user_profile.html:11
+msgid "Yeti API key"
+msgstr "Clé API"
+
+#: templates/fir_threatintel/plugins/user_profile.html:17
+msgid "Save"
+msgstr "Sauvegarder"
