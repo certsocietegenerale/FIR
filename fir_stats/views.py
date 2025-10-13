@@ -59,7 +59,7 @@ def quarterly_stats(request):
 def close_old(request):
     now = datetime.now()
     query = Q(date__lt=datetime(now.year, now.month, 1) - relativedelta(month=3)) & ~Q(
-        status__flag="Final status"
+        status__flag="final"
     )
     old = Incident.authorization.for_user(
         request.user, "incidents.handle_incidents"
