@@ -9,7 +9,7 @@ hooks = {
             "artifacts",  # name of the new field
             None,  # Django ModelForm.
             IncidentArtifactSerializer(many=True, read_only=True),  # Serializer
-            {"artifact": CharFilter(field_name="artifacts__value__iexact")},  # Filters
+            {"artifact": CharFilter(field_name="artifacts__value")},  # Filters
         ),
         (
             "file_set",
