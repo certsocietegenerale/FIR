@@ -66,8 +66,7 @@ def close_old(request):
     ).filter(query)
 
     for i in old:
-        if i.status != "C":
-            i.close_timeout(username=request.user.username)
+        i.close_timeout(username=request.user.username)
 
     return redirect("stats:quarterly")
 
