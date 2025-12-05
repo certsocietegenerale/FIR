@@ -100,7 +100,7 @@ class CommentsSerializer(serializers.ModelSerializer):
     def get_can_edit(self, obj):
         try:
             has_permission = Incident.authorization.for_user(
-                self._context["request"].user,
+                self.context["request"].user,
                 ["incidents.report_events", "incidents.handle_incidents"],
             ).get(pk=obj.incident.id)
             return True
@@ -348,7 +348,7 @@ class IncidentSerializer(serializers.ModelSerializer):
     def get_can_edit(self, obj):
         try:
             has_permission = Incident.authorization.for_user(
-                self._context["request"].user,
+                self.context["request"].user,
                 ["incidents.report_events", "incidents.handle_incidents"],
             ).get(pk=obj.id)
             return True
@@ -379,8 +379,6 @@ class BaselCategoryField(serializers.SlugRelatedField):
                     category_number=category.strip(), name=name.strip()
                 )
             except (MultipleObjectsReturned, ObjectDoesNotExist):
-                print("Unable to create", flush=True)
-                print(category.strip(), flush=True)
                 pass
         return super().to_internal_value(data)
 
