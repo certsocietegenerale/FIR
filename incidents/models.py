@@ -13,6 +13,7 @@ from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 
 from treebeard.mp_tree import MP_Node
+from crum import get_current_user
 
 from fir_artifacts import artifacts
 from fir_artifacts.models import Artifact, File
@@ -554,7 +555,7 @@ def log_new_incident(sender, instance, created, **kwargs):
         action = "created"
     Log.log(
         f"{obj} {action}",
-        instance.opened_by,
+        get_current_user(),
         incident=instance,
         inst_type=type(instance),
     )
@@ -567,7 +568,7 @@ def log_delete_incident(sender, instance, *args, **kwargs):
         obj = "incident"
     Log.log(
         f"{obj} deleted",
-        instance.opened_by,
+        get_current_user(),
         incident=instance,
         inst_type=type(instance),
     )
@@ -580,7 +581,7 @@ def log_new_comment(sender, instance, created, **kwargs):
         action = "created"
     Log.log(
         f"Comment {instance.id} {action}",
-        instance.opened_by,
+        get_current_user(),
         comment=instance,
         inst_type=type(instance),
     )
@@ -590,7 +591,7 @@ def log_new_comment(sender, instance, created, **kwargs):
 def log_delete_comment(sender, instance, *args, **kwargs):
     Log.log(
         f"Comment {instance.id} deleted",
-        instance.opened_by,
+        get_current_user(),
         comment=instance,
         inst_type=type(instance),
     )

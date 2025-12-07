@@ -62,6 +62,7 @@ MIDDLEWARE = (
     "django.middleware.locale.LocaleMiddleware",
     "axes.middleware.AxesMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    "crum.CurrentRequestUserMiddleware",
 )
 
 
