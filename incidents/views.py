@@ -158,7 +158,7 @@ def followup(request, incident_id, authorization_target=None):
         {
             "incident": i,
             "comments": comments,
-            "incident_show_id": settings.INCIDENT_SHOW_ID,
+            "incident_show_id": getattr(settings, "INCIDENT_SHOW_ID", False),
         },
     )
 
@@ -219,7 +219,7 @@ def details(request, incident_id, authorization_target=None):
             "attributes": attributes,
             "valid_attributes": valid_attributes,
             "comments": comments,
-            "incident_show_id": settings.INCIDENT_SHOW_ID,
+            "incident_show_id": getattr(settings, "INCIDENT_SHOW_ID", False),
             "status": IncidentStatus.objects.all(),
         },
     )

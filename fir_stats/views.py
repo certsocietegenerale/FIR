@@ -1,6 +1,7 @@
 from datetime import datetime
 from dateutil.relativedelta import relativedelta
 
+from django.conf import settings
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import user_passes_test
 from django.db.models import Q
@@ -51,6 +52,8 @@ def quarterly_stats(request):
             "bl": selected_bl,
             "bls": bls,
             "status": status,
+            "incident_show_id": getattr(settings, "INCIDENT_SHOW_ID", False),
+            "incident_id_prefix": getattr(settings, "INCIDENT_ID_PREFIX", ""),
         },
     )
 
@@ -96,6 +99,8 @@ def sandbox(request):
             "categories": categories,
             "display_severity_op": display_severity_op,
             "status": status,
+            "incident_show_id": getattr(settings, "INCIDENT_SHOW_ID", False),
+            "incident_id_prefix": getattr(settings, "INCIDENT_ID_PREFIX", ""),
         },
     )
 
@@ -118,6 +123,8 @@ def attributes(request):
             "categories": categories,
             "attributes": attributes,
             "display_severity_op": display_severity_op,
+            "incident_show_id": getattr(settings, "INCIDENT_SHOW_ID", False),
+            "incident_id_prefix": getattr(settings, "INCIDENT_ID_PREFIX", ""),
         },
     )
 
@@ -128,4 +135,8 @@ def major(request):
     return render(
         request,
         "fir_stats/major.html",
+        {
+            "incident_show_id": getattr(settings, "INCIDENT_SHOW_ID", False),
+            "incident_id_prefix": getattr(settings, "INCIDENT_ID_PREFIX", ""),
+        }
     )
