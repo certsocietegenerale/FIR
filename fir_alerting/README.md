@@ -20,5 +20,8 @@ The email form is pre-filled with templates, which you can define from the FIR a
   * `subject`: name of the incident
   * `bl`: name of concerned business line
   * `artifacts`: dictionary of artifacts
+  * `category`: category's name
+  * `severity`: incident severity
+  * `incident_id`: ID of the incident
 
 You should define your recipient and category templates by connecting to FIR admin and adding objects to the "Recipient templates" and "Category templates" tables.

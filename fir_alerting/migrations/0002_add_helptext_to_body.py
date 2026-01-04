@@ -7,13 +7,15 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('fir_alerting', '0001_initial'),
+        ("fir_alerting", "0001_initial"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='categorytemplate',
-            name='body',
-            field=models.TextField(help_text=b'This is a Markdown field. You can use django templating language.'),
+            model_name="categorytemplate",
+            name="body",
+            field=models.TextField(
+                help_text=b"This is a Markdown field. You can use django templating language."
+            ),
         ),
     ]
