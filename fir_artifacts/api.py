@@ -2,6 +2,7 @@ from django.core.files import File as FileWrapper
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers, viewsets, status
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.decorators import action
 from rest_framework.filters import OrderingFilter
 from rest_framework.response import Response
@@ -196,7 +197,7 @@ class ArtifactViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSe
         artifact = self.get_queryset().get(pk=self.kwargs.get("pk"))
         correlations = artifact.relations_for_user(user=None).group()
         if all([not link_type.objects.exists() for link_type in correlations.values()]):
-            raise PermissionError
+            raise PermissionDenied()
         serializer = self.get_serializer(artifact)
         return Response(serializer.data)
 
