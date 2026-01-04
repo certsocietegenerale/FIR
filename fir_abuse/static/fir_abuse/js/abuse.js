@@ -1,186 +1,270 @@
-$(function () {
+document.addEventListener("DOMContentLoaded", () => {
+  const editors = {};
 
-  // Contextmenu on ROW
-  // Trigger action when the contextual menu is about to be shown
-  $(document).ready(function() { $(".artifacts-table a").bind("contextmenu", function (e) {
+  // Context menu on artifact rows
+  document.querySelectorAll(".artifacts-table a").forEach((anchor) => {
+    anchor.addEventListener("contextmenu", async (e) => {
+      e.preventDefault();
 
-    artifact_id = $(this).data('id')
-    abuse_link = $("#send_abuse_link").data('urltemplate')
+      const artifact = anchor.innerText;
+      const url = `/api/artifacts_enrichment/${artifact}/status`;
 
-    $("#send_abuse_link").data('url', abuse_link.replace(/0\/$/, artifact_id + '/'))
-    url = "/abuse/task/" + artifact_id + "/";
+      const state = {
+        SUCCESS: '"bi bi-check-circle text-success"',
+        FAILURE: '"bi bi-x-circle text-danger"',
+        PENDING: '"bi bi-clock"',
+        UNKNOWN: '"bi bi-question-circle"',
+        ERROR: '"bi bi-exclamation-triangle text-primary"',
+      };
 
-    state = {
-      SUCCESS: '"bi bi-check-circle" style="color:#00FF00;"',
-      FAILURE: '"bi bi-x-circle" style="color:#FF0000;"',
-      PENDING: '"bi bi-clock"',
-      UNKNOWN: '"bi bi-question-circle"',
-      ERROR: '"bi bi-exclamation-triangle" style="color:#FF0000"'
-    }
+      const customMenu = document.querySelector(".custom-menu");
 
-    if ($(".custom-menu #visualIndicator")) {
-      $(".custom-menu #visualIndicator").remove();
-    }
+      // Remove old indicator
+      const oldIndicator = customMenu.querySelector("#visualIndicator");
+      if (oldIndicator) oldIndicator.remove();
 
-    $.ajax({
-      method: "GET",
-      url: url,
-      headers: {'X-CSRFToken': getCookie('csrftoken')},
-      success: function (response) {
-        visualIndicator = '<span id="visualIndicator" class=' + state[response.state] + '></span>';
-        $(".custom-menu li a").prepend(visualIndicator);
-      },
-      error: function (response) {
-        visualIndicator = '<span id="visualIndicator" class=' + state['ERROR'] + '></span>';
-        $(".custom-menu li a").prepend(visualIndicator);
+      try {
+        const response = await fetch(url);
+
+        if (!response.ok) throw new Error("Request failed");
+        const data = await response.json();
+        const visualIndicator = `<span id="visualIndicator" class=${state[data.state]}></span>`;
+        customMenu
+          .querySelector("li a")
+          .insertAdjacentHTML("afterbegin", visualIndicator);
+      } catch {
+        const visualIndicator = `<span id="visualIndicator" class=${state.ERROR}></span>`;
+        customMenu
+          .querySelector("li a")
+          .insertAdjacentHTML("afterbegin", visualIndicator);
       }
+
+      // Show context menu
+      customMenu.style.display = "block";
+      customMenu.style.top = `${e.pageY}px`;
+      customMenu.style.left = `${e.pageX}px`;
+
+      customMenu.dataset.artifact = artifact;
     });
+  });
 
-    // Avoid showing the real one
-    e.preventDefault();
+  // Context Menu: Hide menu when clicking elsewhere
+  document.addEventListener("mousedown", (e) => {
+    const customMenu = document.querySelector(".custom-menu");
+    if (!e.target.closest(".custom-menu")) {
+      customMenu.style.display = "none";
+    }
+  });
 
-    // Display contextual menu
-    $(".custom-menu")
-      .finish()
-      .toggle(100)
-      .css({
-        top: e.pageY + "px",
-        left: e.pageX + "px"
+  // Context Menu: handle click on "Send abuse"
+  document.querySelectorAll(".custom-menu li").forEach((item) => {
+    item.addEventListener("click", (e) => {
+      e.preventDefault();
+      const artifact = item.parentElement.dataset.artifact;
+      getEmailTemplate(artifact);
+      document.querySelector(".custom-menu").style.display = "none";
+    });
+  });
+
+  function addInputListeners() {
+    document
+      .querySelectorAll("#sendAbuseEmail :is(input, textarea)")
+      .forEach((item) => {
+        item.addEventListener("input", (e) => {
+          if (item.type == "email") {
+            if (
+              areEmailsValid(item.value) &&
+              item.getAttribute("trust") == "analyze"
+            ) {
+              item.setAttribute("trust", "");
+            } else if (!areEmailsValid(item.value)) {
+              if (item.id == "abuse_to") {
+                item.setAttribute("trust", "analyze");
+              } else if (item.value.length != 0) {
+                item.setAttribute("trust", "analyze");
+              } else {
+                item.setAttribute("trust", "");
+              }
+            }
+          }
+
+          const sendButton = document.querySelector("#send_abuse_email");
+          sendButton.disabled = false;
+          sendButton.textContent = sendButton.dataset.origText;
+        });
       });
-  });});
-
-  // Discard contextual menu if click happen else where
-  $(document).bind("mousedown", function (e) {
-
-    if (!$(e.target).parents(".custom-menu").length > 0) {
-
-      $(".custom-menu").hide(100);
-    }
-  });
-
-  // When the contextual menu element is clicked this displays available actions
-  $(".custom-menu li").click(function (){
-
-    switch($(this).attr("data-action")) {
-      case "first": get_email_template($(this)); break;
-    }
-
-    // Hide the contextual menu after an action was selected
-    $(".custom-menu").hide(100);
-  });
-
-  // Event handler for "Send Abuse"
-  function get_email_template(button) {
-    url = $("#send_abuse_link").data('url')
-
-    $('#send_abuse_email').button('reset')
-
-    $.ajax({
-      type: "GET",
-      url: url,
-      success: function(msg) {
-        $('#sendAbuseEmail #abuse_to').val(msg.to)
-        $('#sendAbuseEmail #abuse_cc').val(msg.cc)
-        $('#sendAbuseEmail #abuse_bcc').val(msg.bcc)
-        $('#sendAbuseEmail #abuse_subject').val(msg.subject)
-        $('#sendAbuseEmail #abuse_body').val(msg.body)
-
-        trustLevel = ((msg.trust == 1) ? 'knowledge' : 'analyze')
-        $('#sendAbuseEmail #abuse_to').attr('trust', trustLevel)
-
-        $('#sendAbuseEmail').data('artifact', msg.artifact)
-
-        editors["abuse_body"].value(msg.body)
-        $("#sendAbuseEmail").modal('show')
-
-        if ('enrichment_raw' in msg) {
-          $("#abuse_enrichment_names").text(msg.enrichment_names.join(' | '))
-          $("#abuse_enrichment_emails").text(msg.enrichment_emails)
-          $("#abuse_enrichment_raw").text(msg.enrichment_raw)
-          $("#abuse_tab_enrichment_link").removeClass('hide');
-        } else {
-          $("#abuse_tab_enrichment_link").addClass('hide');
-        }
-      }
-    });
-
   }
 
-  // Fetch the EmailForm
-  emailform_url = $('#details-actions-abuse').data('url');
-  $.get(emailform_url, function (data) {
-    // Add form to the page
-    $('#addComment').after(data);
+  function areEmailsValid(value) {
+    if (!value) return false;
 
+    // Split on comma or semicolon
+    const parts = value
+      .split(",")
+      .flatMap((part) => part.split(";"))
+      .map((e) => e.trim())
+      .filter(Boolean);
 
-    editors["abuse_body"] = init_easymde(document.getElementById("abuse_body"));
-    // Activate 'Send Email' button
-    $('#send_abuse_email').click(function (event) {
-      send_email();
+    const validator = document.createElement("input");
+    validator.type = "email";
+
+    return parts.every((part) => {
+      let email = part;
+
+      // If the email is in quotes with <>, extract the part inside <>
+      const match = part.match(/<(.+)>/);
+      if (match) {
+        email = match[1].trim();
+      }
+
+      validator.value = email;
+      return validator.checkValidity();
     });
-    $('#sendAbuseEmail').on('shown.bs.modal', function (e) {
-      editors["abuse_body"].codemirror.refresh()
-    })
-  });
+  }
 
-  function add_auto_comment() {
-    date = new Date();
-    // date format 1899-12-06 07:15
-    date = date.getFullYear() + "-" + (date.getMonth()+1)
-      + "-" + date.getDate() + " " + date.getHours()
-      + ":" + date.getMinutes()
+  async function getEmailTemplate(artifact) {
+    const inc = document.getElementById("details-container").dataset.eventId;
+    const sendButton = document.querySelector("#send_abuse_email");
+    sendButton.disabled = false;
+    sendButton.textContent = sendButton.dataset.origText;
 
-    comment_ = 'Abuse email sent to ' + $('#sendAbuseEmail #abuse_to').val()
-    action_ = $("#id_action option:contains('Abuse')").attr('value')
+    try {
+      const response = await fetch(`/api/abuse/${inc}?artifact=${artifact}`);
+      const msg = await response.json();
 
-    $.ajax({
-        type: 'POST',
-        url: $('#comment_form').data('new-comment-url'),
-        data: {
-          comment: comment_,
-          action: action_,
-          date: date,
-          csrfmiddlewaretoken: getCookie('csrftoken'),
+      document.querySelector("#sendAbuseEmail #abuse_to").value = msg.to || "";
+      document.querySelector("#sendAbuseEmail #abuse_cc").value = msg.cc || "";
+      document.querySelector("#sendAbuseEmail #abuse_bcc").value =
+        msg.bcc || "";
+      document.querySelector("#sendAbuseEmail #abuse_subject").value =
+        msg.subject || "";
+      document.querySelector("#sendAbuseEmail #abuse_body").value =
+        msg.body || "";
+
+      const trustLevel = msg.trust === 1 ? "knowledge" : "analyze";
+      document
+        .querySelector("#sendAbuseEmail #abuse_to")
+        .setAttribute("trust", trustLevel);
+
+      document.querySelector("#sendAbuseEmail").dataset.artifact =
+        msg.artifact || "";
+      editors["abuse_body"].value(msg.body || "");
+
+      // Show modal
+      const abuseModal = new bootstrap.Modal(
+        document.getElementById("sendAbuseEmail"),
+      );
+      abuseModal.show();
+      addInputListeners();
+
+      if ("enrichment_raw" in msg) {
+        document.querySelector("#abuse_enrichment_names").textContent = (
+          msg.enrichment_names || ""
+        ).join(" | ");
+        document.querySelector("#abuse_enrichment_emails").textContent =
+          msg.enrichment_emails || "";
+        document.querySelector("#abuse_enrichment_raw").textContent =
+          msg.enrichment_raw || "";
+        document
+          .querySelector("#abuse_tab_enrichment_link")
+          .classList.remove("hide");
+      } else {
+        document
+          .querySelector("#abuse_tab_enrichment_link")
+          .classList.add("hide");
+      }
+    } catch (err) {
+      console.error("Error fetching email template", err);
+    }
+  }
+
+  // Fetch EmailForm
+  async function fetchEmailForm() {
+    const emailFormUrl = document.querySelector("#details-actions-abuse")
+      .dataset.url;
+    try {
+      const response = await fetch(emailFormUrl);
+      const data = await response.text();
+      document
+        .querySelector("#addComment")
+        .insertAdjacentHTML("afterend", data);
+
+      editors["abuse_body"] = init_easymde(
+        document.getElementById("abuse_body"),
+      );
+
+      const abuseModalEl = document.getElementById("sendAbuseEmail");
+      const abuseForm = document.getElementById("abuse_email_form");
+      const inc = document.getElementById("details-container").dataset.eventId;
+      const submit = document.getElementById("send_abuse_email");
+
+      abuseForm.action = `/api/abuse/${inc}`;
+      submit.addEventListener("click", () => {
+        sendEmail();
+      });
+
+      abuseModalEl.addEventListener("shown.bs.modal", () => {
+        editors["abuse_body"].codemirror.refresh();
+      });
+    } catch (err) {
+      console.error("Error loading email form", err);
+    }
+  }
+  fetchEmailForm();
+
+  async function addAutoComment() {
+    const form = new FormData();
+    const email = document.querySelector("#sendAbuseEmail #abuse_to");
+    const main_container = document.getElementById("details-container");
+
+    form.append("comment", `Abuse email sent to ${email.value}`);
+    form.append("action", "Abuse");
+    form.append("incident", main_container.dataset.eventId);
+
+    await add_comment(form);
+  }
+
+  async function sendEmail() {
+    const inc = document.getElementById("details-container").dataset.eventId;
+    const csrftoken = document.querySelector(
+      "[name=csrfmiddlewaretoken]",
+    ).value;
+    const sendButton = document.querySelector("#send_abuse_email");
+    sendButton.disabled = true;
+    sendButton.textContent = sendButton.dataset.loadingText;
+
+    document.querySelector("#abuse_body").value = editors["abuse_body"].value();
+    const form = document.querySelector("#abuse_email_form");
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch(`/api/abuse/${inc}`, {
+        method: "PUT",
+        body: formData,
+        headers: {
+          "X-CSRFToken": csrftoken,
         },
-        success: function(data) {
-          $('#tab_comments tbody').prepend(data);
-          // Update comment count
-          count = parseInt($('#comment-count').text());
-          $('#comment-count').text(count + 1);
-        }
-    });
-  }
+      });
+      const msg = await response.json();
 
-  function send_email() {
-    $('#send_abuse_email').button('loading')
-
-    $("#abuse_body").val(editors["abuse_body"].value());
-    data = $("#abuse_email_form").serialize()
-
-    $.ajax({
-      type: 'POST',
-      url: $("#abuse_email_form").attr('action'),
-      data: data,
-      success: function(msg) {
-
-        if (msg.status == 'ok') {
-          b = $('#send_abuse_email')
-          b.text('Sent')
-          b.prop('disabled', true)
-          $("#sendAbuseEmail").modal('hide')
-          add_auto_comment()
-        }
-        if (msg.status == 'ko') {
-          b = $('#send_abuse_email')
-          b.text('ERROR')
-          b.prop('disabled', true)
-          alert("Something went terribly, terribly wrong:\n"+msg.error)
-          $("#sendAbuseEmail").modal('hide')
-        }
+      if (msg.status === "ok") {
+        const abuseModal = bootstrap.Modal.getInstance(
+          document.getElementById("sendAbuseEmail"),
+        );
+        abuseModal.hide();
+        addAutoComment();
+        sendButton.textContent = sendButton.dataset.origText;
+        sendButton.disabled = false;
+      } else {
+        sendButton.textContent = sendButton.dataset.errorText;
+        console.error(msg.detail);
+        const abuseModal = bootstrap.Modal.getInstance(
+          document.getElementById("sendAbuseEmail"),
+        );
       }
-    });
+    } catch (err) {
+      console.error("Error sending email", err);
+      sendButton.textContent = sendButton.dataset.errorText;
+    }
   }
-
-
-
 });
