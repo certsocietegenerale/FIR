@@ -7,15 +7,15 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('fir_abuse', '0005_auto_20170102_1416'),
+        ("fir_abuse", "0005_auto_20170102_1416"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='artifactenrichment',
-            name='artifact',
+            model_name="artifactenrichment",
+            name="artifact",
         ),
         migrations.DeleteModel(
-            name='ArtifactEnrichment',
+            name="ArtifactEnrichment",
         ),
     ]

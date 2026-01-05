@@ -1,27 +1,29 @@
 {% load i18n %}
 {% load authorization %}
 {% if event.concerned_business_lines.count == 1 %}
-	{% with event.concerned_business_lines.all|first as bl %}
-        {% has_perm 'incidents.handle_incidents' obj=bl as can_handle_incident %}
-        {% if can_handle_incident %}
-		<li>
-			<a href='#' id='details-actions-alert' data-type='alerting' data-url="{% url 'alerting:get_template' event.id 'alerting' bl.id %}">
-				<i class="bi bi-send"></i> {% trans "Alert" %}
-			</a>
-		</li>
-        {% endif %}
-	{% endwith %}
+  {% with event.concerned_business_lines.all|first as bl %}
+    {% has_perm "incidents.handle_incidents" obj=bl as can_handle_incident %}
+    {% if can_handle_incident %}
+      <li>
+        <a href="#" id="details-actions-alert" data-type="alerting" data-bl="{{ bl.name }}">
+          <i class="bi bi-send"></i> {% trans "Alert" %}
+        </a>
+      </li>
+    {% endif %}
+  {% endwith %}
 {% else %}
-	{% has_perm 'incidents.handle_incidents' obj=event as can_handle_incident %}
-	{% if can_handle_incident %}
-		<li>
-			<a href="#" id='details-actions-alert' data-type='alerting'>
-				<i class="bi bi-send"></i> {% trans "Alert" %}
-			</a>
-		</li>
-	{% endif %}
+  {% has_perm "incidents.handle_incidents" obj=event as can_handle_incident %}
+  {% if can_handle_incident %}
+    <li>
+      <a href="#" id="details-actions-alert" data-type="alerting">
+        <i class="bi bi-send"></i> {% trans "Alert" %}
+      </a>
+    </li>
+  {% endif %}
 {% endif %}
-{% has_perm 'incidents.handle_incidents' obj=event as can_handle_incident %}
+{% has_perm "incidents.handle_incidents" obj=event as can_handle_incident %}
 {% if can_handle_incident %}
-<li><a href="#" class='details-alert-bl' data-type='takedown' data-url="{% url 'alerting:get_template' event.id 'takedown' %}"><i class="bi bi-bullseye"></i> {% trans "Takedown" %}</a></li>
+  <li>
+    <a href="#" class="details-alert-bl" data-type="takedown"><i class="bi bi-bullseye"></i> {% trans "Takedown" %}</a>
+  </li>
 {% endif %}

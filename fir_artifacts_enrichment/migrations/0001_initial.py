@@ -10,18 +10,32 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('fir_artifacts', '0005_delete_artifactwhitelistitem'),
+        ("fir_artifacts", "0005_delete_artifactwhitelistitem"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ArtifactEnrichment',
+            name="ArtifactEnrichment",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('email', models.CharField(max_length=100, null=True)),
-                ('name', models.CharField(max_length=100)),
-                ('raw', models.TextField()),
-                ('artifact', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='fir_artifacts.Artifact')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("email", models.CharField(max_length=100, null=True)),
+                ("name", models.CharField(max_length=100)),
+                ("raw", models.TextField()),
+                (
+                    "artifact",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="fir_artifacts.Artifact",
+                    ),
+                ),
             ],
         ),
     ]

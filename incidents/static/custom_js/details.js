@@ -316,8 +316,18 @@ async function delete_comment(id) {
 
 async function submit_comment_form(form) {
   const data = new FormData(form);
-  const csrftoken = document.querySelector("[name=csrfmiddlewaretoken]");
   const existing_id = document.querySelector("#addComment form").dataset.id;
+
+  await add_comment(data, existing_id);
+
+  // hide modal
+  const comment_modal = bootstrap.Modal.getOrCreateInstance("#addComment");
+  comment_modal.hide();
+}
+
+// add (or edit) comment
+async function add_comment(data, existing_id=null) {
+  const csrftoken = document.querySelector("[name=csrfmiddlewaretoken]");
 
   let url = "/api/comments";
   let method = "POST";
@@ -352,10 +362,6 @@ async function submit_comment_form(form) {
 
   // Insert/replace row with template
   add_or_replace_comment_row(response);
-
-  // hide modal
-  const comment_modal = bootstrap.Modal.getOrCreateInstance("#addComment");
-  comment_modal.hide();
 }
 
 // Cache comment_row_template for performance

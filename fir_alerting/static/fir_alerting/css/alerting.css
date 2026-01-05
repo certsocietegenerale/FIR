@@ -9,3 +9,7 @@ div#fir_alerting_buttons {
 #email_form .nomargin {
 	margin-bottom:0px;
 }
+
+#email_form .invalid-input {
+  border:2px solid #ff3333;
+}

@@ -1,9 +1,9 @@
 {% load i18n %}
-<div id="details-actions-abuse" data-url="{% url 'abuse:emailform' %}">
+<div id="details-actions-abuse" data-url="{% url "abuse:emailform" %}">
 </div>
-<ul class='custom-menu'>
+<ul class="custom-menu">
   <li data-action="first">
-    <a id="send_abuse_link" href="#" data-urltemplate="{% url 'abuse:get_template' event.id 0 %}">
+    <a id="send_abuse_link" href="#">
     <span class="bi bi-eye" aria-hidden="true"></span> {% trans "Send Abuse" %}
     </a>
   </li>

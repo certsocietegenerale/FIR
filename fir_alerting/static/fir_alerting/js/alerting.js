@@ -1,142 +1,210 @@
-$(function () {
-  function get_template(button) {
-    url = $(button).data('url')
-    $('#send_email').button('reset')
+document.addEventListener("DOMContentLoaded", () => {
+  const editors = {};
 
-    type = $(button).data('type')
+  async function getTemplate(button) {
+    const inc = document.getElementById("details-container").dataset.eventId;
+    const bl = button.dataset.bl || "";
+    const type = button.dataset.type;
+    const sendButton = document.querySelector("#send_email");
 
-    $.ajax({
-      type: "GET",
-      url: url,
-      success: function(msg) {
-        $("#sendEmail").modal('show');
+    try {
+      const response = await fetch(
+        `/api/alerting/${inc}?type=${type}&bl=${bl}`,
+      );
+      if (!response.ok) throw new Error("Failed to fetch template");
+      const msg = await response.json();
 
-        $('#sendEmail #id_behalf').val(msg.behalf)
-        $('#sendEmail #id_to').val(msg.to)
-        $('#sendEmail #id_cc').val(msg.cc)
-        $('#sendEmail #id_bcc').val(msg.bcc)
-        $('#sendEmail #id_subject').val(msg.subject)
-        editors["id_body"].value(msg.body)
+      // Show Bootstrap modal
+      const modalEl = document.getElementById("sendEmail");
+      const sendEmailModal = new bootstrap.Modal(modalEl);
+      sendEmailModal.show();
+      addInputListeners();
 
-        $('#sendEmail').data('type', type)
+      modalEl.querySelector("#id_behalf").value = msg.behalf || "";
+      modalEl.querySelector("#id_to").value = msg.to || "";
+      modalEl.querySelector("#id_cc").value = msg.cc || "";
+      modalEl.querySelector("#id_bcc").value = msg.bcc || "";
+      modalEl.querySelector("#id_subject").value = msg.subject || "";
+      editors["id_body"].value(msg.body || "");
 
-        $('#sendEmail').data('bl', msg.bl)
+      modalEl.dataset.type = type;
+      modalEl.dataset.bl = bl;
+    } catch (err) {
+      console.error("Error loading template:", err);
+    }
+  }
+
+  function addInputListeners() {
+    document
+      .querySelectorAll("#email_form :is(input, textarea)")
+      .forEach((item) => {
+        item.addEventListener("input", (e) => {
+          if (item.type == "email") {
+            if (areEmailsValid(item.value)) {
+              item.classList.remove("invalid-input");
+            } else {
+              if (["id_behalf", "id_to"].includes(item.id)) {
+                item.classList.add("invalid-input");
+              } else if (item.value.length != 0) {
+                item.classList.add("invalid-input");
+              } else {
+                item.classList.remove("invalid-input");
+              }
+            }
+          }
+
+          const sendButton = document.querySelector("#send_email");
+          sendButton.disabled = false;
+          sendButton.textContent = sendButton.dataset.origText;
+        });
+      });
+  }
+
+  function areEmailsValid(value) {
+    if (!value) return false;
+
+    // Split on comma or semicolon
+    const parts = value
+      .split(",")
+      .flatMap((part) => part.split(";"))
+      .map((e) => e.trim())
+      .filter(Boolean);
+
+    const validator = document.createElement("input");
+    validator.type = "email";
+
+    return parts.every((part) => {
+      let email = part;
+
+      // If the email is in quotes with <>, extract the part inside <>
+      const match = part.match(/<(.+)>/);
+      if (match) {
+        email = match[1].trim();
       }
+
+      validator.value = email;
+      return validator.checkValidity();
     });
   }
 
-  function add_auto_comment(type, bl) {
-    const date = new Date(
-      new Date().getTime() - new Date().getTimezoneOffset() * 60 * 1000,
-    )
-    .toISOString()
-    .slice(0, 16);
-    let csrftoken = document.querySelector("[name=csrfmiddlewaretoken]");
+  async function addAutoComment(type, bl) {
+    const form = new FormData();
+    const main_container = document.getElementById("details-container");
 
-    comment_ = "";
-    action_ = "";
-
-    if (type == "takedown") {
-      comment_ = "Takedown started";
-      action_ = $("#id_action option:contains('Takedown')").attr("value");
-    }
+    var comment = "Takedown started";
 
     if (type == "alerting") {
-      comment_ = "Alert sent";
-      if (bl != undefined) {
-        comment_ += " to " + bl;
+      comment = "Alert sent";
+      if (bl) {
+        comment += ` to ${bl}`;
       }
-      console.log(comment_);
-      action_ = $("#id_action option:contains('Alerting')").attr("value");
     }
+    comment += ".";
+    form.append("comment", comment);
+    form.append("action", type);
+    form.append("incident", main_container.dataset.eventId);
 
-    if (action_ != "") {
-      $.ajax({
-        type: "POST",
-        url: "/api/comments",
-        dataType: "json",
+    await add_comment(form);
+  }
+
+  async function sendEmail() {
+    const inc = document.getElementById("details-container").dataset.eventId;
+    const csrftoken = document.querySelector(
+      "[name=csrfmiddlewaretoken]",
+    ).value;
+    const sendButton = document.querySelector("#send_email");
+    sendButton.disabled = true;
+    sendButton.textContent = sendButton.dataset.loadingText;
+
+    const modalEl = document.getElementById("sendEmail");
+    const type = modalEl.dataset.type;
+    const bl = modalEl.dataset.bl;
+
+    document.querySelector("#id_body").value = editors["id_body"].value();
+
+    const form = document.querySelector("#email_form");
+    const formData = new FormData(form);
+
+    try {
+      const response = await fetch(`/api/alerting/${inc}`, {
+        method: "PUT",
+        body: formData,
         headers: {
-          Accept: "application/json",
-          "X-CSRFToken": csrftoken.value,
-          "Content-type": "application/json",
-        },
-        data: JSON.stringify({
-          comment: comment_,
-          action: action_,
-          date: date,
-          incident: $("#details-container").data("event-id"),
-        }),
-        success: function (data) {
-          // Update comment count
-          count = parseInt($("#comment-count").text());
-          $("#comment-count").text(count + 1);
-          add_comment_to_dom(data);
+          "X-CSRFToken": csrftoken,
         },
       });
+
+      const msg = await response.json();
+
+      if (msg.status === "ok") {
+        bootstrap.Modal.getInstance(modalEl).hide();
+        addAutoComment(type, bl);
+        sendButton.textContent = sendButton.dataset.origText;
+        sendButton.disabled = false;
+      } else if (msg.status === "ko") {
+        sendButton.textContent = sendButton.dataset.errorText;
+        console.error(msg.detail);
+      }
+    } catch (err) {
+      console.error("Error sending email:", err);
+      sendButton.textContent = sendButton.dataset.errorText;
     }
   }
 
-  function send_email() {
-    $('#send_email').button('loading')
-
-    type = $('#sendEmail').data('type')
-    bl = $('#sendEmail').data('bl')
-
-    $("#id_body").val(editors["id_body"].value());
-    data = $("#email_form").serialize()
-
-    $.ajax({
-      type: 'POST',
-      url: $("#email_form").attr('action'),
-      data: data,
-      success: function(msg) {
-
-        if (msg.status == 'ok') {
-              b = $('#send_email')
-              b.text('Sent')
-              b.prop('disabled', true)
-              $("#sendEmail").modal('hide')
-              add_auto_comment(type, bl)
-            }
-        if (msg.status == 'ko') {
-              b = $('#send_email')
-              b.text('ERROR')
-              b.prop('disabled', true)
-              alert("Something went terribly, terribly wrong:\n"+msg.error)
-              $("#sendEmail").modal('hide')
-        }
+  // Main button click handler
+  const alertButton = document.querySelector("#details-actions-alert");
+  if (alertButton) {
+    alertButton.addEventListener("click", (event) => {
+      event.preventDefault();
+      if (
+        alertButton.dataset.type == "alerting" &&
+        !alertButton.dataset.bl &&
+        document.querySelectorAll("#details-actions-alert-bls a").length != 0
+      ) {
+        document
+          .querySelector(".details-actions-supmenu")
+          ?.classList.add("visually-hidden");
+        document
+          .querySelector("#details-actions-alert-bls")
+          ?.classList.remove("visually-hidden");
+      } else {
+        getTemplate(alertButton);
       }
     });
   }
 
-  // When you click on 'alert', display submenu or modal
-  $('#details-actions-alert').click(function (event) {
-    if ($(this).data('url') == undefined) {
-      $(".details-actions-supmenu").addClass("visually-hidden");
-      $('#details-actions-alert-bls').removeClass("visually-hidden");
+  // Submenu click handler
+  document.querySelectorAll(".details-alert-bl").forEach((el) => {
+    el.addEventListener("click", () => {
       event.preventDefault();
-    }
-    else {
-      get_template($(this));
-    }
-  });
-
-  // A click on a submenu displays the modal
-  $('.details-alert-bl').click(function (event) {
-    get_template($(this));
-  });
-
-  // Fetch the EmailForm
-  emailform_url = $('#details-actions-alert-bls').data('url');
-  $.get(emailform_url, function (data) {
-    // Add form to the page
-    $('#addComment').after(data);
-
-    editors["id_body"] = init_easymde(document.getElementById("id_body"));
-
-    // Activate 'Send Email' button
-    $('#send_email').click(function (event) {
-      send_email();
+      document
+        .querySelector("#details-actions-alert-bls")
+        ?.classList.add("visually-hidden");
+      getTemplate(el);
     });
   });
+
+  // Fetch the email form
+  async function fetchEmailForm() {
+    const emailformUrl = document.querySelector("#details-actions-alert-bls")
+      ?.dataset.url;
+    if (!emailformUrl) return;
+
+    try {
+      const response = await fetch(emailformUrl);
+      const data = await response.text();
+
+      document
+        .querySelector("#addComment")
+        .insertAdjacentHTML("afterend", data);
+      editors["id_body"] = init_easymde(document.getElementById("id_body"));
+
+      document.querySelector("#send_email").addEventListener("click", () => {
+        sendEmail();
+      });
+    } catch (err) {
+      console.error("Error fetching email form:", err);
+    }
+  }
+  fetchEmailForm();
 });

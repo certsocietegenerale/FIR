@@ -10,38 +10,68 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('incidents', '0003_auto_20160119_1021'),
+        ("incidents", "0003_auto_20160119_1021"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='CategoryTemplate',
+            name="CategoryTemplate",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('type', models.CharField(max_length=100)),
-                ('body', models.TextField()),
-                ('subject', models.TextField()),
-                ('incident_category', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='incidents.IncidentCategory')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("type", models.CharField(max_length=100)),
+                ("body", models.TextField()),
+                ("subject", models.TextField()),
+                (
+                    "incident_category",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="incidents.IncidentCategory",
+                    ),
+                ),
             ],
             options={
-                'db_table': 'incidents_categorytemplate',
+                "db_table": "incidents_categorytemplate",
             },
         ),
         migrations.CreateModel(
-            name='RecipientTemplate',
+            name="RecipientTemplate",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100)),
-                ('type', models.CharField(max_length=100)),
-                ('behalf', models.CharField(max_length=100)),
-                ('recipient_to', models.TextField()),
-                ('recipient_cc', models.TextField()),
-                ('recipient_bcc', models.TextField(blank=True, null=True)),
-                ('business_line', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='incidents.BusinessLine')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("type", models.CharField(max_length=100)),
+                ("behalf", models.CharField(max_length=100)),
+                ("recipient_to", models.TextField()),
+                ("recipient_cc", models.TextField()),
+                ("recipient_bcc", models.TextField(blank=True, null=True)),
+                (
+                    "business_line",
+                    models.ForeignKey(
+                        blank=True,
+                        null=True,
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="incidents.BusinessLine",
+                    ),
+                ),
             ],
             options={
-                'db_table': 'incidents_recipienttemplate',
+                "db_table": "incidents_recipienttemplate",
             },
         ),
     ]

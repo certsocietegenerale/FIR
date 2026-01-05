@@ -8,18 +8,23 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('fir_abuse', '0004_auto_20170102_1357'),
+        ("fir_abuse", "0004_auto_20170102_1357"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='abusecontact',
-            name='incident_category',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to='incidents.IncidentCategory'),
+            model_name="abusecontact",
+            name="incident_category",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="incidents.IncidentCategory",
+            ),
         ),
         migrations.AlterField(
-            model_name='abusecontact',
-            name='type',
+            model_name="abusecontact",
+            name="type",
             field=models.CharField(blank=True, max_length=100),
         ),
     ]

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: FIR master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-29 05:46-0500\n"
+"POT-Creation-Date: 2026-01-04 14:57+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: CERT SG <cert.sg@socgen.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -64,6 +64,14 @@ msgstr "Fermer"
 #: templates/fir_abuse/emailform.html:62
 msgid "Send email"
 msgstr "Envoyer"
+
+#: templates/fir_abuse/emailform.html:62
+msgid "Sending..."
+msgstr "Envoi..."
+
+#: templates/fir_abuse/emailform.html:62
+msgid "ERROR"
+msgstr "ERREUR"
 
 #: templates/fir_abuse/plugins/details_tab_content.html:7
 msgid "Send Abuse"
