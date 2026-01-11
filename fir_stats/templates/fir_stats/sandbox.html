@@ -166,7 +166,9 @@ $(document).ready(function() {
   {% for s in status %}
     {% if s.flag != "final" %}
       <div class="col-sm">
-        <h4>{% trans s.name|add:" tickets" %}</h4>
+	{% with status_title=s.name|add:" tickets" %}
+        <h4>{% trans status_title %}</h4>
+	{% endwith %}
 	<div class="d3-bars-chart" data-url="/api/stats?status={{ s.name }}&aggregation=date" data-width="500" data-height="500"></div>
       </div>
     {% endif %}

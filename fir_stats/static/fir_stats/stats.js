@@ -383,15 +383,8 @@ async function generate_variation_table(div) {
     response = fillGapsIfKeyIsDate(response, div);
   }
 
-  const tblBody = document.createElement("tbody");
-  const trHeaders = document.createElement("tr");
-  const trNew = document.createElement("tr");
-  const trVar = document.createElement("tr");
-  const trIcon = document.createElement("tr");
-
   // Get all categories present in response OR compare_response
-  keys = Object.assign({}, response);
-  keys = Object.keys(Object.assign(keys, compare_response));
+  let keys = Object.keys(Object.assign({}, response, compare_response));
   keys.push("Total");
   response["Total"] = Object.values(response).reduce((p, a) => p + a, 0);
   compare_response["Total"] = Object.values(compare_response).reduce(
@@ -408,57 +401,31 @@ async function generate_variation_table(div) {
   const quarter = Math.floor((end_date.getMonth() - 1) / 3) + 1;
   const compare_quarter = Math.floor((compare_end_date.getMonth() - 1) / 3) + 1;
 
-  // Add legends on the left
-  trHeaders.appendChild(document.createElement("th"));
-  trIcon.appendChild(document.createElement("th"));
+  // get handlebars template
+  const templateSrc = document.getElementById(
+    "variation-table-template",
+  ).innerHTML;
+  const template = Handlebars.compile(templateSrc);
 
-  newDescription = document.createElement("th");
-  newDescription.textContent = `Last quarter (Q${quarter}-${end_date.getFullYear()})`;
-  newDescription.classList.add("text-end");
-  trNew.appendChild(newDescription);
-
-  varDescription = document.createElement("th");
-  varDescription.textContent = `Variation from Q${compare_quarter}-${compare_end_date.getFullYear()}`;
-  varDescription.classList.add("text-end");
-  trVar.appendChild(varDescription);
-
-  for (k of keys) {
-    var cur = response[k] || 0;
-    var prev = compare_response[k] || 0;
-    var diff = cur - prev;
-
-    let cellHeader = document.createElement("th");
-    cellHeader.textContent = k;
-    cellHeader.classList.add("text-center");
-    trHeaders.appendChild(cellHeader);
-
-    let cellNew = document.createElement("td");
-    cellNew.textContent = cur;
-    cellNew.classList.add("text-center");
-    trNew.appendChild(cellNew);
-
-    let cellVar = document.createElement("td");
-    cellVar.textContent = diff;
-    cellVar.classList.add("text-center");
-    trVar.appendChild(cellVar);
-
-    let cellIcon = document.createElement("td");
-    cellIcon.classList.add("text-center");
-    if (diff < 0) {
-      cellIcon.innerHTML = '<i class="bi bi-dash"></i>';
-    } else if (diff > 0) {
-      cellIcon.innerHTML = '<i class="bi bi-plus"></i>';
-    } else {
-      cellIcon.textContent = "=";
-    }
-    trIcon.appendChild(cellIcon);
-  }
-
-  tblBody.appendChild(trHeaders);
-  tblBody.appendChild(trNew);
-  tblBody.appendChild(trVar);
-  tblBody.appendChild(trIcon);
-  div.appendChild(tblBody);
+  div.innerHTML = template({
+    lastQuarter: `Q${quarter}-${end_date.getFullYear()}`,
+    variationQuarter: `Q${compare_quarter}-${compare_end_date.getFullYear()}`,
+    rows: keys.map((k) => {
+      const cur = response[k] || 0;
+      const prev = compare_response[k] || 0;
+      return {
+        category: k,
+        current: cur,
+        diff: cur - prev,
+        icon:
+          cur - prev > 0
+            ? '<i class="bi bi-plus"></i>'
+            : cur - prev < 0
+              ? '<i class="bi bi-dash"></i>'
+              : "=",
+      };
+    }),
+  });
 }
 
 async function generate_multiple_donut_chart(div) {
@@ -1577,7 +1544,9 @@ function getOtherFiltersArg(force_unit = false, with_attribute_only = false) {
 
     let bls = document.getElementById("id_concerned_business_lines");
     if (form.get("concerned_business_lines") && bls) {
-      options = Array.from(bls.selectedOptions).map(({ text }) => text.split(" > ").at(-1));
+      options = Array.from(bls.selectedOptions).map(({ text }) =>
+        text.split(" > ").at(-1),
+      );
       for (let o of options) {
         filters += `&concerned_business_lines=${encodeURIComponent(o)}`;
       }

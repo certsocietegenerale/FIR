@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-03-28 16:45+0000\n"
+"POT-Creation-Date: 2026-01-11 13:37+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,20 +18,20 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: api.py:49
+#: api.py:50
 msgid "Aggregate by"
 msgstr "Agréger par"
 
-#: api.py:50
+#: api.py:51
 msgid "Perform stats on"
 msgstr "Effectuer des statistiques sur"
 
-#: api.py:66
+#: api.py:67
 #, python-brace-format
 msgid "'{unit}' is not part of {valid_unit}"
 msgstr "'{unit}' ne fait pas partie de {valid_unit}"
 
-#: api.py:83
+#: api.py:84
 #, python-brace-format
 msgid "'{elem}' is not part of {valid_aggregations}"
 msgstr "'{elem}' ne fait pas partie de {valid_aggregations}"
@@ -127,42 +127,42 @@ msgid "Over time"
 msgstr "En fonction du temps"
 
 #: templates/fir_stats/attributes.html:140
-#: templates/fir_stats/quarterly.html:122 templates/fir_stats/sandbox.html:177
+#: templates/fir_stats/quarterly.html:152 templates/fir_stats/sandbox.html:179
 msgid "Matching incidents"
 msgstr "Incidents correspondants"
 
-#: templates/fir_stats/attributes.html:142 templates/fir_stats/sandbox.html:179
+#: templates/fir_stats/attributes.html:142 templates/fir_stats/sandbox.html:181
 msgid "Load selected incidents (may take some time)"
 msgstr "Charger les incidents sélectionnés (peut prendre un certain temps)"
 
 #: templates/fir_stats/attributes.html:146 templates/fir_stats/major.html:46
-#: templates/fir_stats/quarterly.html:128 templates/fir_stats/sandbox.html:183
+#: templates/fir_stats/quarterly.html:158 templates/fir_stats/sandbox.html:185
 msgid ""
 "\n"
 "      Export to <a data-filename=\"incidents.xlsx\" class=\"export-link\" "
-"href=\"#\">XLSX</a> or <a data-filename=\"incidents.csv\" "
-"class=\"export-link\" href=\"#\">CSV</a>\n"
+"href=\"#\">XLSX</a> or <a data-filename=\"incidents.csv\" class=\"export-"
+"link\" href=\"#\">CSV</a>\n"
 "    "
 msgstr ""
 "\n"
 "      Exporter au format <a data-filename=\"incidents.xlsx\" class=\"export-"
-"link\" href=\"#\">XLSX</a> ou <a data-filename=\"incidents."
-"csv\" class=\"export-link\" href=\"#\">CSV</a>\n"
+"link\" href=\"#\">XLSX</a> ou <a data-filename=\"incidents.csv\" "
+"class=\"export-link\" href=\"#\">CSV</a>\n"
 "    "
 
-#: templates/fir_stats/attributes.html:156 templates/fir_stats/major.html:56
-#: templates/fir_stats/quarterly.html:138 templates/fir_stats/sandbox.html:193
+#: templates/fir_stats/attributes.html:155 templates/fir_stats/major.html:55
+#: templates/fir_stats/quarterly.html:167 templates/fir_stats/sandbox.html:194
 msgid "Loading ..."
 msgstr "Chargement ..."
 
-#: templates/fir_stats/attributes.html:156 templates/fir_stats/major.html:56
-#: templates/fir_stats/quarterly.html:138 templates/fir_stats/sandbox.html:193
+#: templates/fir_stats/attributes.html:155 templates/fir_stats/major.html:55
+#: templates/fir_stats/quarterly.html:167 templates/fir_stats/sandbox.html:194
 #, python-brace-format
 msgid "(${page} of ${total_pages})"
 msgstr "(${page} sur ${total_pages})"
 
-#: templates/fir_stats/attributes.html:157 templates/fir_stats/major.html:57
-#: templates/fir_stats/quarterly.html:139 templates/fir_stats/sandbox.html:194
+#: templates/fir_stats/attributes.html:156 templates/fir_stats/major.html:56
+#: templates/fir_stats/quarterly.html:168 templates/fir_stats/sandbox.html:195
 msgid "No incident found."
 msgstr "Aucun incident trouvé."
 
@@ -235,7 +235,7 @@ msgstr "Parties prenante"
 msgid "Major Incidents"
 msgstr "Incidents majeurs"
 
-#: templates/fir_stats/major.html:42 templates/fir_stats/quarterly.html:124
+#: templates/fir_stats/major.html:42 templates/fir_stats/quarterly.html:154
 msgid "Load matching incidents (may take some time)"
 msgstr "Charger les incidents sélectionnés (peut prendre un certain temps)"
 
@@ -285,32 +285,42 @@ msgstr "Prévision mensuelle"
 msgid "Total incidents on your Business Line"
 msgstr "Total des incidents de votre Partie prenante"
 
-#: templates/fir_stats/quarterly.html:70
+#: templates/fir_stats/quarterly.html:75
+#, python-brace-format
+msgid "Last quarter (${lastQuarter})"
+msgstr "Dernier trimestre (${lastQuarter})"
+
+#: templates/fir_stats/quarterly.html:81
+#, python-brace-format
+msgid "Variation from ${variationQuarter}"
+msgstr "Variation depuis ${variationQuarter}"
+
+#: templates/fir_stats/quarterly.html:98
 msgid "Incident breakdown by severity"
 msgstr "Décomposition des incidents par sévérité"
 
-#: templates/fir_stats/quarterly.html:80
+#: templates/fir_stats/quarterly.html:108
 msgid "Incident breakdown by entity"
 msgstr "Décomposition des incidents par entité"
 
-#: templates/fir_stats/quarterly.html:90
+#: templates/fir_stats/quarterly.html:118
 msgid "Incident breakdown by category"
 msgstr "Décomposition des incidents par catégorie"
 
-#: templates/fir_stats/quarterly.html:99
+#: templates/fir_stats/quarterly.html:127
 msgid "Incident Management"
 msgstr "Gestion d'incident"
 
-#: templates/fir_stats/quarterly.html:101
+#: templates/fir_stats/quarterly.html:129
 msgid "Incident Management by incident leader (Business Line or CERT)"
 msgstr ""
 "Gestion d'incident par responsable d'incident (Partie prenante ou CERT)"
 
-#: templates/fir_stats/quarterly.html:112
+#: templates/fir_stats/quarterly.html:143
 msgid "Open incidents"
 msgstr "Incidents ouverts"
 
-#: templates/fir_stats/quarterly.html:116
+#: templates/fir_stats/quarterly.html:143
 msgid "Blocked incidents"
 msgstr "Incidents bloqués"
 
@@ -349,13 +359,13 @@ msgstr "Par sévérité"
 msgid "By actor"
 msgstr "Par acteur"
 
-#: templates/fir_stats/sandbox.html:167
+#: templates/fir_stats/sandbox.html:170
 msgid "Open tickets"
 msgstr "Tickets ouverts"
 
-#: templates/fir_stats/sandbox.html:171
+#: templates/fir_stats/sandbox.html:170
 msgid "Blocked tickets"
-msgstr "Bloqués ouverts"
+msgstr "Tickets bloqués"
 
 #: templates/fir_stats/yearly.html:13
 msgid "Yearly stats"

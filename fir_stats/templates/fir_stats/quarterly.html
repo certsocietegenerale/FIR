@@ -63,6 +63,34 @@ $(document).ready(function() {
   </div>
   <div class="col-sm">
     <table class="table table-condensed" id="variation-table" data-url="/api/stats?aggregation=category&is_incident=true" data-days="quarterly"></table>
+    <script id="variation-table-template" type="text/x-handlebars-template">
+      <tbody>
+        <tr>
+          <th></th>
+          ${#each rows}
+            <th class="text-center">${category}</th>
+          ${/each}
+        </tr>
+        <tr>
+          <th>{% trans "Last quarter (${lastQuarter})" %}</th>
+          ${#each rows}
+            <td class="text-center">${current}</td>
+          ${/each}
+        </tr>
+        <tr>
+          <th>{% trans "Variation from ${variationQuarter}" %}</th>
+          ${#each rows}
+            <td class="text-center">${diff}</td>
+          ${/each}
+        </tr>
+        <tr>
+          <th></th>
+          ${#each rows}
+	    <td class="text-center">${& icon}</td>
+          ${/each}
+        </tr>
+      </tbody>
+    </script>
   </div>
 </div>
 
