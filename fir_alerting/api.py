@@ -1,3 +1,4 @@
+import logging
 from smtplib import SMTPException
 from django.template import Template, Context
 from django.shortcuts import get_object_or_404
@@ -145,6 +146,11 @@ class AlertingViewSet(
             )
             return Response({"status": "ok"})
         except (SMTPException, ValueError, OSError) as e:
+            logging.getLogger("FIR").error("Error while sending alerting email", exc_info=True)
             return Response(
-                {"status": "ko", "detail": str(e)}, status=status.HTTP_502_BAD_GATEWAY
+                {
+                    "status": "ko",
+                    "detail": "Unable to send email. Please check server logs for details",
+                },
+                status=status.HTTP_502_BAD_GATEWAY,
             )

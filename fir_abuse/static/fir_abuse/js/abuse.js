@@ -257,13 +257,8 @@ document.addEventListener("DOMContentLoaded", () => {
         sendButton.disabled = false;
       } else {
         sendButton.textContent = sendButton.dataset.errorText;
-        console.error(msg.detail);
-        const abuseModal = bootstrap.Modal.getInstance(
-          document.getElementById("sendAbuseEmail"),
-        );
       }
     } catch (err) {
-      console.error("Error sending email", err);
       sendButton.textContent = sendButton.dataset.errorText;
     }
   }
