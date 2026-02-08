@@ -61,7 +61,7 @@
         "event": "incident:created",
         "subject": "Incident {{instance.id}} created: {{instance.subject}}",
         "short_description": "",
-        "description": "{{instance.description}}",
+        "description": "Incident {{instance.id}} has been created:\n\n{{instance.description}}",
         "business_lines": [
             5,
             1,

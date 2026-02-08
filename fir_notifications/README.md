@@ -6,35 +6,9 @@ This plugins allows you to send notifications to users.
 
 ## Installation
 
-This plugin need redis to work. You can install it using `sudo apt install redis`.
+This plugin need `fir_celery` to work.
 
-In your FIR virtualenv, launch:
-
-```bash
-(env-FIR)$ pip install -r fir_notifications/requirements.txt
-
-```
-In *$FIR_HOME/fir/config/production.py*, add:
-
-```
-REDIS_HOST = "localhost"
-REDIS_PORT = 6379
-REDIS_DB = 0
-```
-
-In *$FIR_HOME/fir/config/installed_app.txt*, add:
-
-```
-fir_notifications
-```
-
-In your *$FIR_HOME*, launch:
-
-```bash
-(env-FIR)$ ./manage.py migrate fir_notifications
-```
-
-You should configure fir_celery (broker and result backend).
+Please install `fir_celery` and `fir_notifications` using the generic plugin installation instructions in [the FIR wiki](https://github.com/certsocietegenerale/FIR/wiki/Plugins).
 
 ## Usage
 
@@ -57,10 +31,10 @@ Core FIR notifications:
 You can disable notification events in the settings using the key `NOTIFICATIONS_DISABLED_EVENTS`:
 
 ```python
-NOTIFICATIONS_DISABLED_EVENTS = ('event:created', 'incident:created')
+NOTIFICATIONS_DISABLED_EVENTS = ("event:created", "incident:created")
 ```
 
-If you don't want to send different notification events for Incidents and Events, you  should enable this setting:
+If you don't want to send different notification events for Incidents and Events, you should enable this setting:
 
 ```python
 # Send 'incident:*' notification events for both Event and Incident if True
@@ -78,6 +52,16 @@ To generate correct URL in notification, `fir_notifications` needs to know the e
 ``` python
 EXTERNAL_URL = 'https://fir.example.com'
 ```
+
+### Methods
+
+You can enable or disable notification methods the settings using the key `NOTIFICATION_ENABLED_METHODS`:
+
+```python
+NOTIFICATIONS_ENABLED_METHODS = ("email", "xmpp")
+```
+
+In additon, custom notifications methods can be developped in the folder `methods`.
 
 ### Email notifications
 
@@ -107,24 +91,21 @@ To render notifications, each notification method can use the fields `subject`, 
 - Email uses `subject` and `description`.
 - XMPP uses `subject` and `short_description`.
 
-These fields will accept Markdown formatted text and Django template language markups. The Django template context will contain an `instance`object, the instance of the object that fired the notification event.
+These fields will accept Markdown formatted text and Django template language markups. The Django template context will contain an `instance` object, the instance of the object that fired the notification event.
 
 The Email `description` will generate a multipart message: a plain text part in Markdown and a HTML part rendered from this Markdown. The XMPP `short_description` will be rendered as HTML from Markdown.
 
 The template used to send the notification to the user will be chosen from the templates available to this user:
 - For a user with global permissions (permission from a Django group), global templates (templates with no nusiness line attached to it) will be preferred. 
 - For a user with no global permission, the nearest business line template will be preferred, global templates will be used as a fallback.
-## Hacking
+
 
 ### Adding notification method
 
-You have to create a subclass of `NotificationMethod` from `fir_notifications.methods` and implement at least the `send` method. You can then register your method with `fir_notification.registry.registry.register_method`.
+You have to create a subclass of `NotificationMethod` from `fir_notifications.methods` and implement at least the `send` method. All methods defined in the `method` folder will be automatically registered.
 
 If your configuration method needs some additional user defined settings, you have to list them in the class property `options`. See `EmailMethod` and `XmppMethod` for details. 
 
 ### Adding notification event
 
 Use the `@notification_event` decorator defined in `fir_notifications.decorators` to decorate a classic Django signal handler function. This handler must return a tuple with an instance of the notification model and a queryset of the concerned business lines.
-
-
-

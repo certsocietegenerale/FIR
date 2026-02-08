@@ -10,23 +10,47 @@ class Migration(migrations.Migration):
 
     dependencies = [
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('incidents', '0009_add_incicent_permissions'),
-        ('fir_notifications', '0001_initial'),
+        ("incidents", "0009_add_incicent_permissions"),
+        ("fir_notifications", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='NotificationPreference',
+            name="NotificationPreference",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('event', models.CharField(max_length=60, verbose_name='event')),
-                ('method', models.CharField(max_length=60, verbose_name='method')),
-                ('business_lines', models.ManyToManyField(blank=True, related_name='_notificationpreference_business_lines_+', to='incidents.BusinessLine', verbose_name='business lines')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='notification_preferences', to=settings.AUTH_USER_MODEL, verbose_name='user')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("event", models.CharField(max_length=60, verbose_name="event")),
+                ("method", models.CharField(max_length=60, verbose_name="method")),
+                (
+                    "business_lines",
+                    models.ManyToManyField(
+                        blank=True,
+                        related_name="_notificationpreference_business_lines_+",
+                        to="incidents.BusinessLine",
+                        verbose_name="business lines",
+                    ),
+                ),
+                (
+                    "user",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        related_name="notification_preferences",
+                        to=settings.AUTH_USER_MODEL,
+                        verbose_name="user",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'notification preference',
-                'verbose_name_plural': 'notification preferences',
+                "verbose_name": "notification preference",
+                "verbose_name_plural": "notification preferences",
             },
         ),
     ]

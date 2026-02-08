@@ -1,0 +1,44 @@
+{% load i18n %}
+{% load static %}
+{% load add_css_class %}
+<div id="subscribe_notifications" class="modal fade" aria-labelledby="subscribe_notifications_label">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="subscribe_notifications_form">
+        <div class="modal-header">
+          <h4 id="subscribe_notifications_label" class="modal-title">{% trans "Notification subscription" %}</h4>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+        </div>
+        <div class="modal-body">
+          <div>
+            {% csrf_token %}
+
+            {% for field in form.visible_fields %}
+              <div class="form-group row mb-3">
+                <div class="col-sm-4">
+                  {{ field.label_tag }}
+                </div>
+                <div class="col-sm-8">
+                  {{ field|add_css_class:"form-select" }}
+                  <span class="help-block">
+                    {% if field.help_text %}
+                      {{ field.help_text }}
+                    {% endif %}
+                  </span>
+                </div>
+              </div>
+            {% endfor %}
+	    <span class="form-errors"></span>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-bs-dismiss="modal" aria-hidden="true">{% trans "Cancel" %}</button>
+          <button type="submit" data-error="{% trans "ERROR" %}" data-save="{% trans "Save" %}" class="btn btn-primary">{% trans "Save" %}</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+

@@ -1,0 +1,46 @@
+{% load i18n %}
+{% load notifications %}
+{% load add_css_class %}
+
+{% for method, method_form in method_configuration_forms.items %}
+  <div id="configure_{{ method }}_notifications" class="modal fade notification-method-form" aria-labelledby="configure_{{ method }}_label">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <form id="configure_{{ method }}_form">
+          <div class="modal-header">
+            <h4 id="configure_{{ method }}_label" class="modal-title">{{ method_form.title }}</h4>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-hidden="true"></button>
+          </div>
+          <div class="modal-body">
+            <div>
+              {% csrf_token %}
+              {% for field in method_form %}
+              <div class="form-group row mb-3">
+                <div class="col-sm-4">
+                  {{ field.label_tag }}
+                </div>
+                <div class="col-sm-8">
+                  {{ field|add_css_class:"form-control" }}
+                  <span class="help-block">
+                    {% if not field.errors and field.help_text %}
+                      {{ field.help_text }}
+                    {% endif %}
+                    {% for error in field.errors %}
+                      {{ error }}
+                    {% endfor %}
+                  </span>
+                </div>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-bs-dismiss="modal" aria-hidden="true">{% trans "Cancel" %}</button>
+            <button type="submit" data-error="{% trans "ERROR" %}" data-save="{% trans "Save" %}" class="btn btn-primary">{% trans "Save" %}</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+{% endfor %}

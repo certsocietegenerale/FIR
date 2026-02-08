@@ -1,2 +1,55 @@
-<div class="fir-async row justify-content-md-center" id="notifications-preferences" data-fetch-url="{% url "notifications:subscriptions" %}">
+{% load i18n %}
+{% load static %}
+{% load notifications %}
+<script id="notification-preference-template" type="text/x-handlebars-template">
+  ${#each preferences}
+    <tr>
+      <td>${section}</td>
+      <td>${action}</td>
+      <td>${method}</td>
+      <td>${business_lines_joined}</td>
+      <td>
+        <a href="#" data-notificationpreference="${event}" data-bs-toggle="modal" data-bs-target="#subscribe_notifications">
+          <span class="bi bi-pencil"> {% trans "Edit" %}</span>
+        </a>
+      </td>
+      <td>
+        <button class="btn btn-sm btn-link icon unsubscribe-notification" data-notificationpreference="${event}">
+          <i class="bi bi-x-circle"> {% trans "Unsubscribe" %}</i>
+        </button>
+      </td>
+    </tr>
+  ${/each}
+</script>
+
+<div class="row justify-content-md-center" id="notifications-preferences">
+  <div class="col-sm-8 col-sm-offset-2">
+    <div class="card mb-3">
+      <h5 class="card-header bg-primary-subtle text-primary-emphasis">{% trans "Notification subscriptions" %}</h5>
+      <div class="card-body">
+        <table class="table table-condensed">
+          <thead>
+            <tr>
+              <th>{% trans "Section" %}</th>
+              <th>{% trans "Event" %}</th>
+              <th>{% trans "Method" %}</th>
+              <th>{% trans "Business lines" %}</th>
+              <th></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody>
+          </tbody>
+        </table>
+        <button class="btn btn-primary pull-right" data-bs-toggle="modal" data-bs-target="#subscribe_notifications">
+          <span class="bi bi-plus-circle" title="{% trans "Subscribe" %}"></span> {% trans "Subscribe" %}
+        </button>
+      </div>
+    </div>
+  </div>
+  <div id="notification_preference_modals"></div>
+  <script src="{% static "fir_notifications/notifications.js" %}" type="module"></script>
 </div>
+
+{% configure_notification_method_modalform %}
+{% configure_notification_subscriptions_modalform %}

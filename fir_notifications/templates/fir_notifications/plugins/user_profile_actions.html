@@ -1,4 +1,11 @@
+{% load i18n %}
 {% load notifications %}
 
-{% notification_forms %}
-{% notification_actions %}
+{% get_configurable_notification_methods as method_names %}
+{% for method, method_name in method_names.items %}
+  <li>
+    <a href="#" data-bs-toggle="modal" data-bs-target="#configure_{{ method }}_notifications" data-method="{{ method }}">
+      <i class="bi bi-chat-left"></i> {% blocktrans %}{{ method_name }} notifications configuration{% endblocktrans %}
+    </a>
+  </li>
+{% endfor %}

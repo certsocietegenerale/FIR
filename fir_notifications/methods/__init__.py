@@ -9,8 +9,9 @@ class NotificationMethod(object):
 
     Subclass this class to create a new notification method
     """
-    name = 'method_template'
-    verbose_name = 'Notification method template'
+
+    name = "method_template"
+    verbose_name = "Notification method template"
     # This notification method uses the template subject
     use_subject = False
     # This notification method uses the template short description
@@ -28,8 +29,11 @@ class NotificationMethod(object):
         Checks if this method is enabled for an event and its business lines in the user preferences
         """
         from fir_notifications.models import NotificationPreference
+
         try:
-            preference = NotificationPreference.objects.get(event=event, method=self.name, user=user)
+            preference = NotificationPreference.objects.get(
+                event=event, method=self.name, user=user
+            )
         except NotificationPreference.DoesNotExist:
             return False
         for bl in preference.business_lines.all():
@@ -45,12 +49,18 @@ class NotificationMethod(object):
         """
         if extra_context is None:
             extra_context = {}
-        extra_context.update({'instance': instance})
+        extra_context.update({"instance": instance})
         context = Context(extra_context)
         return {
-            'subject': Template(getattr(template_object, 'subject', "")).render(context),
-            'short_description': Template(getattr(template_object, 'short_description', "")).render(context),
-            'description': Template(getattr(template_object, 'description', "")).render(context)
+            "subject": Template(getattr(template_object, "subject", "")).render(
+                context
+            ),
+            "short_description": Template(
+                getattr(template_object, "short_description", "")
+            ).render(context),
+            "description": Template(getattr(template_object, "description", "")).render(
+                context
+            ),
         }
 
     def _get_template(self, templates):
@@ -72,8 +82,11 @@ class NotificationMethod(object):
         Retrieve user configuration for this method as a dict
         """
         from fir_notifications.models import MethodConfiguration
+
         try:
-            string_config = MethodConfiguration.objects.get(user=user, key=self.name).value
+            string_config = MethodConfiguration.objects.get(
+                user=user, method=self.name
+            ).value
         except MethodConfiguration.DoesNotExist:
             return {}
         try:
@@ -95,11 +108,12 @@ class NotificationMethod(object):
         Returns this method configuration form
         """
         from fir_notifications.forms import MethodConfigurationForm
+
         if not len(self.options):
             return None
-        user = kwargs.pop('user', None)
+        user = kwargs.pop("user", None)
         if user is not None:
-            kwargs['initial'] = self._get_configuration(user)
-            kwargs['user'] = user
-        kwargs['method'] = self
+            kwargs["initial"] = self._get_configuration(user)
+            kwargs["user"] = user
+        kwargs["method"] = self
         return MethodConfigurationForm(*args, **kwargs)

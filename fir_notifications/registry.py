@@ -3,8 +3,11 @@ from collections import OrderedDict
 from django.apps import apps
 from django.conf import settings
 
-from fir_notifications.methods.email import EmailMethod
-from fir_notifications.methods.jabber import XmppMethod
+import pkgutil
+import importlib
+import inspect
+from fir_notifications.methods import NotificationMethod
+import fir_notifications.methods as methods_pkg
 
 
 class RegisteredEvent(object):
@@ -44,7 +47,9 @@ class Notifications(object):
             method.verbose_name = method.name
         self.methods[method.name] = method
 
-    def register_event(self, name, signal, model, callback, verbose_name=None, section=None):
+    def register_event(
+        self, name, signal, model, callback, verbose_name=None, section=None
+    ):
         """
         Registers a notification event
         Args:
@@ -59,9 +64,11 @@ class Notifications(object):
             return
         if verbose_name is None:
             verbose_name = name
-        self.events[name] = RegisteredEvent(name, model, verbose_name=verbose_name, section=section)
+        self.events[name] = RegisteredEvent(
+            name, model, verbose_name=verbose_name, section=section
+        )
 
-        signal.connect(callback, sender=model, dispatch_uid="fir_notifications.{}".format(name))
+        signal.connect(callback, sender=model, dispatch_uid=f"fir_notifications.{name}")
 
     def get_event_choices(self):
         results = OrderedDict()
@@ -79,5 +86,17 @@ class Notifications(object):
 
 
 registry = Notifications()
-registry.register_method(EmailMethod())
-registry.register_method(XmppMethod())
+
+for finder, module_name, is_pkg in pkgutil.iter_modules(methods_pkg.__path__):
+    full_module_name = f"{methods_pkg.__name__}.{module_name}"
+    module = importlib.import_module(full_module_name)
+
+    # Find all classes in the module that inherit from NotificationMethod
+    for name, obj in inspect.getmembers(module, inspect.isclass):
+        if (
+            issubclass(obj, NotificationMethod)
+            and obj is not NotificationMethod
+            and getattr(obj, "name", "")
+            in list(getattr(settings, "NOTIFICATIONS_ENABLED_METHODS", ()))
+        ):
+            registry.register_method(obj())

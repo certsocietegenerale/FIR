@@ -144,4 +144,4 @@ LOGGING = {
 INCIDENT_SHOW_ID = env.bool("INCIDENT_SHOW_ID", default=False)
 
 # Incident ID prefix in views and links
-INCIDENT_ID_PREFIX = env("INCIDENT_ID_PREFIX", "FIR-")
+INCIDENT_ID_PREFIX = env("INCIDENT_ID_PREFIX", "")
