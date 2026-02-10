@@ -200,7 +200,7 @@ USER_SELF_SERVICE = {
 # Example: NOTIFICATIONS_DISABLED_EVENTS = ('event:created', 'incident:created')
 NOTIFICATIONS_DISABLED_EVENTS = ()
 
-NOTIFICATIONS_ENABLED_METHODS = ("email", "xmpp")
+NOTIFICATIONS_ENABLED_METHODS = ("email", "xmpp", "webhook")
 
 # Send 'incident:*' notification events for both Event and Incident if True
 NOTIFICATIONS_MERGE_INCIDENTS_AND_EVENTS = False

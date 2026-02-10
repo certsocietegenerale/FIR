@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-02-09 22:01+0100\n"
+"POT-Creation-Date: 2026-02-10 12:06+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -44,6 +44,14 @@ msgstr "Méthode"
 #: methods/jabber.py:27
 msgid "Jabber ID"
 msgstr "Identifiant Jabber"
+
+#: methods/webhook.py:22
+msgid "URL"
+msgstr ""
+
+#: methods/webhook.py:23
+msgid "Token"
+msgstr "Jeton"
 
 #: models.py:23 models.py:70
 msgid "user"

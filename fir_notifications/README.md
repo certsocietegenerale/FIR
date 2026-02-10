@@ -58,7 +58,7 @@ EXTERNAL_URL = 'https://fir.example.com'
 You can enable or disable notification methods the settings using the key `NOTIFICATION_ENABLED_METHODS`:
 
 ```python
-NOTIFICATIONS_ENABLED_METHODS = ("email", "xmpp")
+NOTIFICATIONS_ENABLED_METHODS = ("email", "xmpp", "webhook")
 ```
 
 In additon, custom notifications methods can be developped in the folder `methods`.
