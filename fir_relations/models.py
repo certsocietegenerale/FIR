@@ -65,7 +65,7 @@ class TemplateRelation(object):
         return self.object._meta.verbose_name
 
     def __str__(self):
-        return self.object
+        return str(self.object)
 
 
 class RelationQuerySet(models.QuerySet):
