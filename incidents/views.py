@@ -2,7 +2,7 @@
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.models import User
 
-from incidents.models import Incident, Comments, model_status_changed
+from incidents.models import Incident, Comments
 from incidents.models import Label, Log, IncidentStatus
 from incidents.models import Attribute, IncidentTemplate, Profile
 from incidents.forms import IncidentForm, CommentForm
@@ -287,12 +287,6 @@ def edit_incident(request, incident_id, authorization_target=None):
                 previous_incident, form.cleaned_data, request.user
             )
             form.save()
-            if previous_incident.status != form.cleaned_data["status"]:
-                model_status_changed.send(
-                    sender=Incident,
-                    instance=i,
-                    previous_status=previous_incident.status,
-                )
             i.refresh_main_business_lines()
             i.is_starred = starred
             i.save()

@@ -439,6 +439,9 @@ class Comments(models.Model):
                 incident=incident,
                 opened_by=user,
             )
+            model_status_changed.send(
+                sender=Incident, instance=incident, previous_status=old
+            )
 
 
 class Attribute(models.Model):

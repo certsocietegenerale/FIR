@@ -268,6 +268,7 @@ class IncidentViewSet(
         instance.refresh_main_business_lines()
         if "description" in serializer.validated_data:
             instance.refresh_artifacts(serializer.validated_data["description"])
+        instance.done_updating()
 
 
 class CommentViewSet(viewsets.ModelViewSet):

@@ -25,6 +25,8 @@ def notification_event(event, signal, model, verbose_name=None, section=None):
 
     def decorator_func(func):
         def wrapper_func(*args, **kwargs):
+            if not kwargs.get("event_name"):
+                kwargs["event_name"] = wrapper_func._event_name
             instance, business_lines = func(*args, **kwargs)
             if instance is None:
                 return instance, business_lines
@@ -44,22 +46,20 @@ def notification_event(event, signal, model, verbose_name=None, section=None):
             )
             return instance, business_lines
 
+        wrapper_func._event_name = event
         registry.register_event(
             event, signal, model, wrapper_func, _(verbose_name), _(section)
         )
 
         # If merging is disabled, automatically register the "event" version
-        if not hasattr(settings, "NOTIFICATIONS_MERGE_INCIDENTS_AND_EVENTS") or (
-            not settings.NOTIFICATIONS_MERGE_INCIDENTS_AND_EVENTS
-            and event.startswith("incident:")
-        ):
+        if not getattr(
+            settings, "NOTIFICATIONS_MERGE_INCIDENTS_AND_EVENTS", False
+        ) and event.startswith("incident:"):
             event_event_name = event.replace("incident:", "event:")
 
             def event_wrapper(sender, instance, **kwargs):
-                # Skip if this is actually an incident
-                if instance.is_incident:
-                    return None, None
-                return instance, instance.concerned_business_lines
+                kwargs["event_name"] = event_wrapper._event_name
+                return wrapper_func(sender, instance, **kwargs)
 
             # Update verbose_name and section for the event
             event_verbose_name = None
@@ -70,6 +70,7 @@ def notification_event(event, signal, model, verbose_name=None, section=None):
             if section:
                 event_section = _(section.replace("Incident", "Event"))
 
+            event_wrapper._event_name = event_event_name
             registry.register_event(
                 event_event_name,
                 signal,
