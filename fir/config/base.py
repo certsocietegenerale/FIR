@@ -157,6 +157,7 @@ CSRF_TRUSTED_ORIGINS = ["http://" + h for h in ALLOWED_HOSTS] + [
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 SESSION_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = True
 if os.getenv("HTTPS", "False").lower() in ("true", "1", "t"):
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
