@@ -105,7 +105,7 @@ class SearchParser:
         expression = pp.Forward()
 
         valid_word = pp.Regex(
-            r'([+\w*_.{}\[\]^?~-]|\\\\|\\([!()":]|\|\||&&))+'
+            r'([=@%#+\w*_.{}\[\]^?~-]|\\\\|\\([!()":]|\|\||&&))+'
         ).setName("word")
         valid_word.set_parse_action(
             lambda t: t[0]
