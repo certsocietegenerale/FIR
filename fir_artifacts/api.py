@@ -60,11 +60,28 @@ class ArtifactSerializer(serializers.ModelSerializer):
     """
     Serializer for /api/artifacts
     """
+    incidents = serializers.SerializerMethodField()
+
+    def get_incidents(self, obj):
+        request = self.context.get("request")
+        if not request:
+            return []
+
+        allowed_incidents = Incident.authorization.for_user(
+            request.user, "incidents.view_incidents"
+        )
+
+        return list(
+            obj.incidents
+               .filter(id__in=allowed_incidents.values_list("id", flat=True))
+               .values_list("id", flat=True)
+        )
 
     class Meta:
         model = Artifact
-        fields = ("id", "type", "value", "incidents")
-        read_only_fields = ("id", "type", "value")
+        fields = ["id", "type", "value", "incidents"]
+        read_only_fields = ["id", "type", "value"]
+
 
 
 class IncidentArtifactSerializer(serializers.ModelSerializer):
@@ -177,7 +194,7 @@ class ArtifactViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSe
     """
 
     serializer_class = ArtifactSerializer
-    permission_classes = [IsAuthenticated, CanViewIncident | CanWriteIncident]
+    permission_classes = [IsAuthenticated]
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     ordering_fields = ["id", "type", "value"]
     filterset_class = ArtifactFilter
@@ -192,14 +209,6 @@ class ArtifactViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSe
             .order_by("id")
         )
         return queryset
-
-    def retrieve(self, request, *args, **kwargs):
-        artifact = self.get_queryset().get(pk=self.kwargs.get("pk"))
-        correlations = artifact.relations_for_user(user=None).group()
-        if all([not link_type.objects.exists() for link_type in correlations.values()]):
-            raise PermissionDenied()
-        serializer = self.get_serializer(artifact)
-        return Response(serializer.data)
 
     @action(detail=True, methods=["POST"], url_path=r"detach/(?P<incident_id>\d+)")
     def detach(self, request, pk, incident_id):
