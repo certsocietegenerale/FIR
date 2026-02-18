@@ -14,7 +14,6 @@ from django_filters.rest_framework import (
     BooleanFilter,
     ModelChoiceFilter,
     ModelMultipleChoiceFilter,
-    ChoiceFilter,
 )
 
 from incidents.models import (
@@ -25,8 +24,8 @@ from incidents.models import (
     ValidAttribute,
     Comments,
     SeverityChoice,
+    Tlp,
     IncidentStatus,
-    CONFIDENTIALITY_LEVEL,
 )
 from fir_api.lexer import SearchParser
 from fir.config.base import INSTALLED_APPS
@@ -69,24 +68,6 @@ class BLChoiceFilter(ModelMultipleChoiceFilter):
         return queryset
 
 
-class ValueChoiceFilter(ChoiceFilter):
-    def __init__(self, choices, **kwargs):
-        self._choices = choices
-        super(ValueChoiceFilter, self).__init__(choices=choices, **kwargs)
-
-    def filter(self, qs, value):
-        for choice in self._choices:
-            if choice[1] == value:
-                return super().filter(qs, choice[0])
-        return qs
-
-    @property
-    def field(self):
-        fields = super().field
-        fields.choices = [(b[1], b[1]) for b in self._choices]
-        return fields
-
-
 class IncidentFilter(FilterSet):
     """
     A custom filter class for Incidents filtering
@@ -114,8 +95,10 @@ class IncidentFilter(FilterSet):
         exclude=True,
         label=_("Status is not"),
     )
-    confidentiality = ValueChoiceFilter(
-        field_name="confidentiality", choices=CONFIDENTIALITY_LEVEL
+    tlp = ModelMultipleChoiceFilter(
+        to_field_name="name",
+        field_name="tlp__name",
+        queryset=Tlp.objects.all(),
     )
     is_starred = BooleanFilter(field_name="is_starred")
     concerned_business_lines = BLChoiceFilter(
@@ -225,6 +208,7 @@ class IncidentFilter(FilterSet):
                 "category": "category__name__icontains",
                 "status": self.status_iexact,
                 "severity": "severity__name__iexact",
+                "tlp": "tlp__name__iexact",
             }
         )
         # Custom fields added by plugins
@@ -338,9 +322,17 @@ class StatusFilter(FilterSet):
     Custom filtering for incidents statuses
     """
 
-    name = CharFilter(field_name="name", lookup_expr="iequals")
-    icon = CharFilter(field_name="icon", lookup_expr="iequals")
-    flag = CharFilter(field_name="flag", lookup_expr="iequals")
+    name = CharFilter(field_name="name", lookup_expr="iexact")
+    icon = CharFilter(field_name="icon", lookup_expr="iexact")
+    flag = CharFilter(field_name="flag", lookup_expr="iexact")
+
+
+class TlpFilter(FilterSet):
+    """
+    Custom filtering for incidents TLPs
+    """
+
+    name = CharFilter(field_name="name", lookup_expr="iexact")
 
 
 class AttributeFilter(FilterSet):

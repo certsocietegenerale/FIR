@@ -21,13 +21,6 @@ from fir_plugins.models import link_to
 from incidents.authorization import tree_authorization, AuthorizationModelMixin
 
 
-CONFIDENTIALITY_LEVEL = (
-    (0, "C0"),
-    (1, "C1"),
-    (2, "C2"),
-    (3, "C3"),
-)
-
 LIGHT_MODE_CHOICES = (("light", "light"), ("dark", "dark"))
 
 # Special Model class that handles signals
@@ -277,6 +270,10 @@ def get_initial_status():
     return IncidentStatus.objects.get(flag="initial")
 
 
+def get_initial_tlp():
+    return Tlp.objects.get(name="GREEN").pk
+
+
 @tree_authorization(
     fields=[
         "concerned_business_lines",
@@ -332,7 +329,13 @@ class Incident(FIRModel, models.Model):
         blank=False,
     )
     opened_by = models.ForeignKey(User, on_delete=models.CASCADE)
-    confidentiality = models.IntegerField(choices=CONFIDENTIALITY_LEVEL, default="1")
+    tlp = models.ForeignKey(
+        "Tlp",
+        null=False,
+        blank=False,
+        on_delete=models.SET_DEFAULT,
+        default=get_initial_tlp,
+    )
 
     def __str__(self):
         return self.subject
@@ -458,6 +461,13 @@ class ValidAttribute(models.Model):
     unit = models.CharField(max_length=50, null=True, blank=True)
     description = models.CharField(max_length=500, null=True, blank=True)
     categories = models.ManyToManyField(IncidentCategory)
+
+    def __str__(self):
+        return self.name
+
+
+class Tlp(models.Model):
+    name = models.CharField(max_length=50)
 
     def __str__(self):
         return self.name
