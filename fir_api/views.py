@@ -44,6 +44,7 @@ from fir_api.serializers import (
     ValidAttributeSerializer,
     SeveritySerializer,
     StatusSerializer,
+    TlpSerializer,
 )
 from fir_api.filters import (
     IncidentFilter,
@@ -55,6 +56,7 @@ from fir_api.filters import (
     ValidAttributeFilter,
     SeverityFilter,
     StatusFilter,
+    TlpFilter,
 )
 from fir_api.permissions import (
     CanWriteIncident,
@@ -74,6 +76,7 @@ from incidents.models import (
     ValidAttribute,
     SeverityChoice,
     IncidentStatus,
+    Tlp,
 )
 
 
@@ -148,7 +151,7 @@ class IncidentViewSet(
         "last_comment_date",
         "category",
         "severity",
-        "confidentiality",
+        "tlp",
         "actor",
         "detection",
         "opened_by",
@@ -461,6 +464,18 @@ class SeverityViewSet(viewsets.ModelViewSet):
     serializer_class = SeveritySerializer
     permission_classes = [IsAuthenticated, IsAdminUserOrReadOnly]
     filterset_class = SeverityFilter
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+
+
+class TlpViewSet(viewsets.ModelViewSet):
+    """
+    API endpoint for listing Incident TLPs.
+    """
+
+    queryset = Tlp.objects.all().order_by("name")
+    serializer_class = TlpSerializer
+    permission_classes = [IsAuthenticated, IsAdminUserOrReadOnly]
+    filterset_class = TlpFilter
     filter_backends = [DjangoFilterBackend, OrderingFilter]
 
 
