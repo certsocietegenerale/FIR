@@ -4,7 +4,7 @@ import re
 
 class Phone(AbstractArtifact):
     key = "phone"
-    display_name = "Phone Numbers"
+    display_name = "Phones"
     regex = r"""(?P<search>
         \+\d{1,3}                                  # country code
         [ \t.\-()]*                                # optional separators (no newlines)
