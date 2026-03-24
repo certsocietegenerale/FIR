@@ -20,10 +20,10 @@ from incidents.models import (
     Attribute,
     ValidAttribute,
     SeverityChoice,
+    Tlp,
     BaleCategory,
     IncidentStatus,
     get_initial_status,
-    CONFIDENTIALITY_LEVEL,
 )
 from fir_plugins.templatetags.markdown import render_markdown
 from fir.config.base import INSTALLED_APPS
@@ -171,29 +171,6 @@ class BusinessLineSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "name", "path", "depth", "numchild"]
 
 
-class ValueChoiceField(serializers.ChoiceField):
-    """Custom ChoiceField serializer field."""
-
-    def __init__(self, choices, **kwargs):
-        """init."""
-        self._savedchoices = OrderedDict(choices)
-        super(ValueChoiceField, self).__init__(choices=choices, **kwargs)
-        self._set_choices([(v, v) for v in self._savedchoices.values()])
-
-    def to_representation(self, obj):
-        """Used while retrieving value for the field."""
-        return self._savedchoices[obj]
-
-    def to_internal_value(self, data):
-        """Used while storing value for the field."""
-        for i in self._savedchoices:
-            if self._savedchoices[i] == data or i == data:
-                return i
-        raise serializers.ValidationError(
-            "Acceptable values are {0}.".format(list(self._savedchoices.values()))
-        )
-
-
 class IncidentSerializer(serializers.ModelSerializer):
     detection = serializers.SlugRelatedField(
         many=False,
@@ -236,7 +213,11 @@ class IncidentSerializer(serializers.ModelSerializer):
         queryset=BusinessLine.objects.all(),
         required=False,
     )
-    confidentiality = ValueChoiceField(choices=CONFIDENTIALITY_LEVEL, required=True)
+    tlp = serializers.SlugRelatedField(
+        slug_field="name",
+        queryset=Tlp.objects.all(),
+        required=True,
+    )
     opened_by = serializers.SlugRelatedField(
         many=False, read_only=True, slug_field="username"
     )
@@ -402,6 +383,13 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = IncidentCategory
         fields = ["id", "name", "is_major", "bale_subcategory"]
+        read_only_fields = ["id"]
+
+
+class TlpSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tlp
+        fields = ["id", "name"]
         read_only_fields = ["id"]
 
 

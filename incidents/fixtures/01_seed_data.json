@@ -740,5 +740,40 @@
         "icon": "bi-check-circle",
         "flag": "final"
     }
+},
+{
+    "model": "incidents.tlp",
+    "pk": 1,
+    "fields": {
+        "name": "CLEAR"
+    }
+},
+{
+    "model": "incidents.tlp",
+    "pk": 2,
+    "fields": {
+        "name": "GREEN"
+    }
+},
+{
+    "model": "incidents.tlp",
+    "pk": 3,
+    "fields": {
+        "name": "AMBER"
+    }
+},
+{
+    "model": "incidents.tlp",
+    "pk": 4,
+    "fields": {
+        "name": "AMBER+STRICT"
+    }
+},
+{
+    "model": "incidents.tlp",
+    "pk": 5,
+    "fields": {
+        "name": "RED"
+    }
 }
 ]
