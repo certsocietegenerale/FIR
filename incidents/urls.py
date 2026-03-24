@@ -9,5 +9,4 @@ urlpatterns = [
     re_path(r"^(?P<incident_id>\d+)/$", views.details, name="details"),
     re_path(r"^(?P<incident_id>\d+)/followup/$", views.followup, name="followup"),
     re_path(r"^(?P<incident_id>\d+)/edit/$", views.edit_incident, name="edit"),
-    re_path(r"^(?P<incident_id>\d+)/delete/$", views.delete_incident, name="delete"),
 ]

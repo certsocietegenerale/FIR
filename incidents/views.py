@@ -302,26 +302,6 @@ def edit_incident(request, incident_id, authorization_target=None):
     return render(request, "events/new.html", {"i": i, "form": form, "mode": "edit"})
 
 
-@fir_auth_required
-@authorization_required("incidents.handle_incidents", Incident, view_arg="incident_id")
-def delete_incident(request, incident_id, authorization_target=None):
-    if request.method == "POST":
-        if authorization_target is None:
-            i = get_object_or_404(
-                Incident.authorization.for_user(
-                    request.user, "incidents.handle_incidents"
-                ),
-                pk=incident_id,
-            )
-        else:
-            i = authorization_target
-        msg = "Incident '%s' deleted." % i.subject
-        i.delete()
-        return HttpResponse(msg)
-    else:
-        return redirect("incidents:index")
-
-
 # events ====================================================================
 
 
