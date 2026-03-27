@@ -3,8 +3,7 @@
 {% load static %}
 {% load authorization %}
 <!DOCTYPE html>
-{% get_current_language as LANGUAGE_CODE %}
-<html lang="{{ LANGUAGE_CODE }}"{% if LANGUAGE_CODE == "he" %} dir="rtl"{% endif %} data-bs-theme="{{ user.profile.light_mode }}">
+<html lang="{{ LANGUAGE_CODE }}"{% if LANGUAGE_BIDI %} dir="rtl"{% endif %} data-bs-theme="{{ user.profile.light_mode }}">
   <head>
     <meta charset="utf-8">
     <title>{% block title %}FIR{% endblock %}</title>
