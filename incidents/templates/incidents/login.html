@@ -1,7 +1,8 @@
 {% load i18n %}
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+{% get_current_language as LANGUAGE_CODE %}
+<html lang="{{ LANGUAGE_CODE }}"{% if LANGUAGE_CODE == "he" %} dir="rtl"{% endif %}>
   <head>
     <meta charset="utf-8">
     <title>{% trans "Sign in &middot; FIR" %}</title>

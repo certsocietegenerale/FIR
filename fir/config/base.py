@@ -5,6 +5,7 @@ from pkgutil import find_loader
 from importlib import import_module
 
 import bleach
+from django.utils.translation import gettext_lazy as _
 
 BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
@@ -22,6 +23,11 @@ TIME_ZONE = "Europe/Paris"
 # Language code for this installation. All choices can be found here:
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = "en-us"
+LANGUAGES = (
+    ("en-us", _("English")),
+    ("fr", _("French")),
+    ("he", _("Hebrew")),
+)
 
 SITE_ID = 1
 
