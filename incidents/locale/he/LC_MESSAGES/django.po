@@ -1,0 +1,45 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: FIR\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-03-28 00:00+0000\n"
+"PO-Revision-Date: 2026-03-28 00:00+0000\n"
+"Last-Translator: \n"
+"Language-Team: Hebrew\n"
+"Language: he\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: templates/incidents/login.html:7
+msgid "Sign in &middot; FIR"
+msgstr "התחברות &middot; FIR"
+
+#: templates/incidents/login.html:32
+msgid "Sign in to FIR"
+msgstr "התחברות ל-FIR"
+
+#: templates/incidents/login.html:35 templates/user/profile.html:64
+msgid "Username"
+msgstr "שם משתמש"
+
+#: templates/incidents/login.html:38
+msgid "Password"
+msgstr "סיסמה"
+
+#: templates/incidents/login.html:42
+msgid "Remember me"
+msgstr "זכור אותי"
+
+#: templates/incidents/login.html:45
+msgid "Sign in"
+msgstr "התחבר"
+
+#: templates/incidents/login.html:51
+msgid "Wrong username / password combination."
+msgstr "שם משתמש או סיסמה שגויים."
+
+#: templates/incidents/login.html:51
+msgid "I can break the rules, too."
+msgstr "גם אני יכול לשבור את הכללים."
