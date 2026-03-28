@@ -7,6 +7,10 @@ class LoginTemplateLocaleTestCase(TestCase):
         response = self.client.get(reverse("login"), HTTP_ACCEPT_LANGUAGE="he")
         self.assertContains(response, 'lang="he"')
         self.assertContains(response, 'dir="rtl"')
+        self.assertContains(response, "התחברות ל-FIR")
+        self.assertContains(response, "שם משתמש")
+        self.assertContains(response, "זכור אותי")
+        self.assertContains(response, "התחבר")
 
     def test_login_template_does_not_use_rtl_for_english(self):
         response = self.client.get(reverse("login"), HTTP_ACCEPT_LANGUAGE="en-us")
