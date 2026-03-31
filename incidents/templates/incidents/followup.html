@@ -3,7 +3,7 @@
 {% load static %}
 {% load markdown %}
 <!DOCTYPE html>
-<html>
+<html lang="{{ LANGUAGE_CODE }}"{% if LANGUAGE_BIDI %} dir="rtl"{% endif %}>
 <head>
 	<link href="{% static "vendor/bootstrap/bootstrap.min.css" %}" rel="stylesheet">
 	<link href="{% static "vendor/bootstrap-icons/bootstrap-icons.min.css" %}" rel="stylesheet">
