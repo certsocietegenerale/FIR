@@ -30,8 +30,6 @@ from django.contrib import messages
 
 import copy
 
-from fir_artifacts import artifacts as libartifacts
-
 APP_HOOKS = {}
 
 for app in INSTALLED_APPS:
@@ -198,10 +196,6 @@ def details(request, incident_id, authorization_target=None):
             group__name="action"
         ).exclude(name__in=["Closed", "Opened", "Blocked"])
 
-    artifacts, artifacts_count, correlated_count = libartifacts.all_for_object(
-        i, user=request.user
-    )
-
     valid_attributes = i.category.validattribute_set.all()
     attributes = i.attribute_set.all()
 
@@ -213,9 +207,6 @@ def details(request, incident_id, authorization_target=None):
         {
             "event": i,
             "comment_form": form,
-            "correlated_count": correlated_count,
-            "artifacts_count": artifacts_count,
-            "artifacts": artifacts,
             "attributes": attributes,
             "valid_attributes": valid_attributes,
             "comments": comments,

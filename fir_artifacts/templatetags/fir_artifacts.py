@@ -2,6 +2,8 @@ from django import template
 from django.utils.safestring import mark_safe
 import urllib.parse
 
+from fir_artifacts.artifacts import all_for_object
+
 register = template.Library()
 
 
@@ -33,3 +35,41 @@ def correlations_url(artifact):
     quoted_artifact = artifact.replace("\\", "\\\\").replace('"', '\\"')
     query = urllib.parse.quote('artifact:"' + quoted_artifact + '"', safe="")
     return "/search?q=" + query
+
+
+@register.inclusion_tag("fir_artifacts/correlated_artifacts.html", takes_context=True)
+def get_correlated_artifacts(context, obj):
+    request = context["request"]
+
+    artifacts, artifacts_count, correlated_count = all_for_object(
+        obj, user=request.user
+    )
+
+    return {
+        "artifacts": artifacts,
+        "artifacts_count": artifacts_count,
+        "correlated_count": correlated_count,
+        "request": request,
+    }
+
+
+@register.inclusion_tag("fir_artifacts/artifacts_count.html", takes_context=True)
+def get_artifacts_count(context, obj):
+    request = context["request"]
+
+    _, artifacts_count, _ = all_for_object(obj, user=request.user)
+
+    return {
+        "artifacts_count": artifacts_count,
+    }
+
+
+@register.simple_tag(takes_context=True)
+def load_artifacts(context, obj):
+    request = context["request"]
+
+    artifacts, artifacts_count, correlated_count = all_for_object(
+        obj, user=request.user
+    )
+
+    return artifacts

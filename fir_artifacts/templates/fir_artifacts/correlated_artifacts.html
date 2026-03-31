@@ -1,0 +1,24 @@
+{% load i18n %}
+{% load fir_artifacts %}
+
+{% if correlated_count > 0 %}
+  <div class="widget border border-info-subtle">
+    <h4 class="widget text-info-emphasis bg-info-subtle border border-info-subtle">
+      {% trans "Correlated Artifacts" %}
+    </h4>
+
+    <div id="sidebar_artifacts">
+      <table class="table table-condensed artifacts-table artifacts fixed">
+        <thead>
+          <tr>
+            <th class="head">{% trans "Type" %}</th>
+            <th>{% trans "Values" %}</th>
+          </tr>
+        </thead>
+        {% for artifact_type in artifacts %}
+          {{ artifact_type|display_correlated_artifact:request }}
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+{% endif %}

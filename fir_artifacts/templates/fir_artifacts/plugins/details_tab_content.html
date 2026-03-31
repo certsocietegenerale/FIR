@@ -29,6 +29,7 @@
         <th>{% trans "Values" %}</th>
       </tr>
       </thead>
+      {% load_artifacts event as artifacts %}
       {% for artifact_type in artifacts %}
         {{ artifact_type|display_artifact:request }}
       {% endfor %}
