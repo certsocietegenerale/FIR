@@ -2,7 +2,7 @@
 
 Follow the generic plugin installation instructions in [the FIR wiki](https://github.com/certsocietegenerale/FIR/wiki/Plugins).
 
-You should also make sure to configure your FIR instance so that it is able to send emails (see `EMAIL_HOST`, `EMAIL_PORT` and `REPLY_TO` in the configuration file).
+You should also make sure to configure your FIR instance so that it is able to send emails (see `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_FROM` and `REPLY_TO` in the configuration file).
 
 ## Usage
 
@@ -25,3 +25,13 @@ The email form is pre-filled with templates, which you can define from the FIR a
   * `incident_id`: ID of the incident
 
 You should define your recipient and category templates by connecting to FIR admin and adding objects to the "Recipient templates" and "Category templates" tables.
+
+
+## Adding CC and BCC recipients to emails
+
+You can force FIR to add CC and BCC recipients when sending emails by configuring these settings:
+
+```python
+EMAIL_CC = ['cc@example.com',]
+EMAIL_BCC = ['bcc@example.com',]
+```

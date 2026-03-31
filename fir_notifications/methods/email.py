@@ -3,7 +3,7 @@ from django.core import mail
 
 import logging
 
-from fir_email.helpers import prepare_email_message
+from incidents.email_hepers import prepare_email_message
 from fir_notifications.methods import NotificationMethod
 from fir_notifications.methods.utils import request
 

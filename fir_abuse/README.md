@@ -6,7 +6,7 @@ Follow the generic plugin installation instructions in [the FIR wiki](https://gi
 | fir_celery                | [[link]](https://github.com/certsocietegenerale/FIR/tree/master/fir_celery)               |
 | fir_artifacts_enrichement | [[link]](https://github.com/certsocietegenerale/FIR/tree/master/fir_artifacts_enrichment) |
 
-You should also make sure to configure your FIR instance so that it is able to send emails (see `EMAIL_HOST`, `EMAIL_PORT` and `REPLY_TO` in the configuration file).
+You should also make sure to configure your FIR instance so that it is able to send emails (see `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_FROM` and `REPLY_TO` in the configuration file).
 
 
 ## Usage
@@ -38,5 +38,12 @@ If an __Abuse Contact__ exists it's always used to fill the upper part of the fo
 
 You should define your __Abuse Templates__ and qualified __Abuse Contact__ by connecting to FIR admin and adding objects to the "Abuse templates" and "Abuse contact" tables.
 
-### TODO
-Add the possibility to save the abuse email found through the enrichment task to the Abuse contact base
+
+## Adding CC and BCC recipients to emails
+
+You can force FIR to add CC and BCC recipients when sending emails by configuring these settings:
+
+```python
+EMAIL_CC = ['cc@example.com',]
+EMAIL_BCC = ['bcc@example.com',]
+```

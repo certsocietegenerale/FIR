@@ -11,9 +11,9 @@ from rest_framework.response import Response
 
 from fir_api.permissions import CanViewIncident, CanWriteIncident
 from incidents.models import Incident, BusinessLine
+from incidents.email_hepers import send
 from fir_alerting.helpers import get_rec_template, http_to_hxxp
 from fir_alerting.models import CategoryTemplate
-from fir_email.helpers import send
 
 
 class AlertingSerializer(serializers.Serializer):

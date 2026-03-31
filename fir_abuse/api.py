@@ -11,9 +11,9 @@ from fir_api.permissions import CanViewIncident, CanWriteIncident
 from fir_artifacts.models import Artifact
 from fir_artifacts_enrichment.models import ArtifactEnrichment
 from incidents.models import Incident
+from incidents.email_hepers import send
 from fir_abuse.models import AbuseContact, AbuseTemplate
 from fir_abuse.helpers import get_best_record, http_to_hxxp
-from fir_email.helpers import send
 
 
 class AbuseSerializer(serializers.Serializer):

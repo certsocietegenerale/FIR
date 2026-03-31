@@ -65,11 +65,11 @@ In additon, custom notifications methods can be developped in the folder `method
 
 ### Email notifications
 
-Follow the `fir_email` [README](../fir_email/README.md).
+You need to configure the following settings to send notifications via email: `EMAIL_HOST`, `EMAIL_PORT`, `EMAIL_FROM` and `REPLY_TO`.
 
 ### Jabber (XMPP) notifications
 
-Configure `fir_notifications`:
+The following settings need to be configured to send XMPP notifications:
 
 ``` python
 # FIR user JID 

@@ -101,7 +101,6 @@ INSTALLED_APPS = (
     "incidents",
     "fir_artifacts",
     "treebeard",
-    "fir_email",
     "colorfield",
     "fir_api",
     "axes",
