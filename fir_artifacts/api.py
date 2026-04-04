@@ -60,6 +60,7 @@ class ArtifactSerializer(serializers.ModelSerializer):
     """
     Serializer for /api/artifacts
     """
+
     incidents = serializers.SerializerMethodField()
 
     def get_incidents(self, obj):
@@ -72,16 +73,15 @@ class ArtifactSerializer(serializers.ModelSerializer):
         )
 
         return list(
-            obj.incidents
-               .filter(id__in=allowed_incidents.values_list("id", flat=True))
-               .values_list("id", flat=True)
+            obj.incidents.filter(
+                id__in=allowed_incidents.values_list("id", flat=True)
+            ).values_list("id", flat=True)
         )
 
     class Meta:
         model = Artifact
         fields = ["id", "type", "value", "incidents"]
         read_only_fields = ["id", "type", "value"]
-
 
 
 class IncidentArtifactSerializer(serializers.ModelSerializer):

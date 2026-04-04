@@ -1,7 +1,8 @@
 import hashlib
 import os
 from django.db import models
-from fir_plugins.models import ManyLinkableModel, OneLinkableModel
+from django.contrib.contenttypes.fields import GenericForeignKey
+from django.contrib.contenttypes.models import ContentType
 
 
 class ArtifactBlacklistItem(models.Model):
@@ -12,7 +13,7 @@ class ArtifactBlacklistItem(models.Model):
         return self.value
 
 
-class Artifact(ManyLinkableModel):
+class Artifact(models.Model):
     type = models.CharField(max_length=20)
     value = models.TextField()
 
@@ -27,8 +28,10 @@ def upload_path(instance, filename):
     return "%s_%s/%s" % (instance.content_type.model, instance.object_id, filename)
 
 
-class File(OneLinkableModel):
-
+class File(models.Model):
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True)
+    object_id = models.PositiveIntegerField(null=True)
+    content_object = GenericForeignKey("content_type", "object_id")
     hashes = models.ManyToManyField("fir_artifacts.Artifact", blank=True)
     description = models.CharField(max_length=256)
     file = models.FileField(upload_to=upload_path)

@@ -9,9 +9,7 @@ class MarkdownTextarea(Textarea):
         super(MarkdownTextarea, self).__init__(default_attrs)
 
     class Media:
-        css = {
-            'all': ('easymde/easymde.min.css',)
-        }
+        css = {"all": ("easymde/easymde.min.css",)}
         js = (
             "easymde/marked.min.js",
             "easymde/easymde.min.js",

@@ -16,10 +16,8 @@ from treebeard.mp_tree import MP_Node
 from crum import get_current_user
 
 from fir_artifacts import artifacts
-from fir_artifacts.models import Artifact, File
-from fir_plugins.models import link_to
+from fir_artifacts.models import Artifact
 from incidents.authorization import tree_authorization, AuthorizationModelMixin
-
 
 LIGHT_MODE_CHOICES = (("light", "light"), ("dark", "dark"))
 
@@ -282,8 +280,6 @@ def get_initial_tlp():
     owner_field="opened_by",
     owner_permission=settings.INCIDENT_CREATOR_PERMISSION,
 )
-@link_to(File)
-@link_to(Artifact)
 class Incident(FIRModel, models.Model):
     date = models.DateTimeField(default=datetimenow, blank=True)
     is_starred = models.BooleanField(default=False)
@@ -335,6 +331,10 @@ class Incident(FIRModel, models.Model):
         blank=False,
         on_delete=models.SET_DEFAULT,
         default=get_initial_tlp,
+    )
+    artifacts = models.ManyToManyField(
+        "fir_artifacts.Artifact",
+        related_name="incidents",
     )
 
     def __str__(self):

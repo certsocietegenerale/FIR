@@ -6,7 +6,6 @@ from fir_artifacts.hash import Hash
 from fir_artifacts.email import Email
 from fir_artifacts.phone import Phone
 
-
 artifacts.install(IP)
 artifacts.install(URL)
 artifacts.install(Hostname)

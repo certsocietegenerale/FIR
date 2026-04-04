@@ -3,10 +3,6 @@ from django.db import models
 import sys
 import re
 
-if sys.version_info >= (3, 7):
-    re_pattern_type = re.Pattern
-else:
-    re_pattern_type = re._pattern_type
 
 class LinkUrl(object):
     def __init__(self, url, request=None):
@@ -34,7 +30,7 @@ class Links(object):
         :param model: model label (app_label.model_name) or model class (used by fir_relations)
         :param reverse: string template to render object id to text (used by fir_relations)
         """
-        if not isinstance(parser_regex, re_pattern_type):
+        if not isinstance(parser_regex, re.Pattern):
             parser_regex = re.compile(parser_regex)
         self.reverse_links.append((parser_regex, url_name))
         if model is not None:
@@ -48,7 +44,7 @@ class Links(object):
         :param parser_regex: string or regex object
         :param template: template to pass to regex expand
         """
-        if not isinstance(parser_regex, re_pattern_type):
+        if not isinstance(parser_regex, re.Pattern):
             parser_regex = re.compile(parser_regex)
         self.regex_links.append((parser_regex, template))
 
@@ -67,5 +63,6 @@ class Links(object):
         if isinstance(model, models.Model):
             model = model._meta.label
         return self.model_links.get(model, None)
+
 
 registry = Links()
