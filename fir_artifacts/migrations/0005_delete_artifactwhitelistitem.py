@@ -7,11 +7,11 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('fir_artifacts', '0004_merge'),
+        ("fir_artifacts", "0004_merge"),
     ]
 
     operations = [
         migrations.DeleteModel(
-            name='ArtifactWhitelistItem',
+            name="ArtifactWhitelistItem",
         ),
     ]

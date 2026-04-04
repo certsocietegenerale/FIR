@@ -16,13 +16,27 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='YetiProfile',
+            name="YetiProfile",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('api_key', models.TextField(blank=True)),
-                ('user_id', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
-                ('match_endpoint', models.TextField(blank=True)),
-                ('observable_endpoint', models.TextField(blank=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("api_key", models.TextField(blank=True)),
+                (
+                    "user_id",
+                    models.OneToOneField(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to=settings.AUTH_USER_MODEL,
+                    ),
+                ),
+                ("match_endpoint", models.TextField(blank=True)),
+                ("observable_endpoint", models.TextField(blank=True)),
             ],
         ),
     ]

@@ -7,12 +7,19 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('incidents', '0008_add_authz_structure'),
+        ("incidents", "0008_add_authz_structure"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='incident',
-            options={'permissions': (('handle_incidents', 'Can handle incidents'), ('report_events', 'Can report events'), ('view_incidents', 'Can view incidents'), ('view_statistics', 'Can view statistics'))},
+            name="incident",
+            options={
+                "permissions": (
+                    ("handle_incidents", "Can handle incidents"),
+                    ("report_events", "Can report events"),
+                    ("view_incidents", "Can view incidents"),
+                    ("view_statistics", "Can view statistics"),
+                )
+            },
         ),
     ]

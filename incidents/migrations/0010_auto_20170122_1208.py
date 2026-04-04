@@ -9,13 +9,18 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('incidents', '0009_add_incicent_permissions'),
+        ("incidents", "0009_add_incicent_permissions"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='log',
-            name='who',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL),
+            model_name="log",
+            name="who",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to=settings.AUTH_USER_MODEL,
+            ),
         ),
     ]

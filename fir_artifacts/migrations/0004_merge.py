@@ -7,9 +7,8 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('fir_artifacts', '0002_artifactwhitelistitem'),
-        ('fir_artifacts', '0003_auto_20160119_1131'),
+        ("fir_artifacts", "0002_artifactwhitelistitem"),
+        ("fir_artifacts", "0003_auto_20160119_1131"),
     ]
 
-    operations = [
-    ]
+    operations = []

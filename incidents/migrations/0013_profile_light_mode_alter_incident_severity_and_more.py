@@ -7,23 +7,37 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('incidents', '0012_severitychoice_alter_incident_severity_and_more'),
+        ("incidents", "0012_severitychoice_alter_incident_severity_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='profile',
-            name='light_mode',
-            field=models.CharField(choices=[('light', 'light'), ('dark', 'dark')], default='light', max_length=10),
+            model_name="profile",
+            name="light_mode",
+            field=models.CharField(
+                choices=[("light", "light"), ("dark", "dark")],
+                default="light",
+                max_length=10,
+            ),
         ),
         migrations.AlterField(
-            model_name='incident',
-            name='severity',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='incidents.severitychoice'),
+            model_name="incident",
+            name="severity",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="incidents.severitychoice",
+            ),
         ),
         migrations.AlterField(
-            model_name='incidenttemplate',
-            name='severity',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='incidents.severitychoice'),
+            model_name="incidenttemplate",
+            name="severity",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="incidents.severitychoice",
+            ),
         ),
     ]

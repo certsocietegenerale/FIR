@@ -7,13 +7,13 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('fir_artifacts', '0005_delete_artifactwhitelistitem'),
+        ("fir_artifacts", "0005_delete_artifactwhitelistitem"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='artifact',
-            name='value',
+            model_name="artifact",
+            name="value",
             field=models.TextField(),
         ),
     ]

@@ -9,39 +9,60 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('auth', '0007_alter_validators_add_error_messages'),
+        ("auth", "0007_alter_validators_add_error_messages"),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
-        ('incidents', '0007_change_bl_base_class'),
+        ("incidents", "0007_change_bl_base_class"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='AccessControlEntry',
+            name="AccessControlEntry",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'access control entry',
-                'verbose_name_plural': 'access control entries',
+                "verbose_name": "access control entry",
+                "verbose_name_plural": "access control entries",
             },
         ),
         migrations.AlterModelOptions(
-            name='businessline',
-            options={'verbose_name': 'business line'},
+            name="businessline",
+            options={"verbose_name": "business line"},
         ),
         migrations.AddField(
-            model_name='accesscontrolentry',
-            name='business_line',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='acl', to='incidents.BusinessLine', verbose_name='business line'),
+            model_name="accesscontrolentry",
+            name="business_line",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name="acl",
+                to="incidents.BusinessLine",
+                verbose_name="business line",
+            ),
         ),
         migrations.AddField(
-            model_name='accesscontrolentry',
-            name='role',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='auth.Group', verbose_name='role'),
+            model_name="accesscontrolentry",
+            name="role",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to="auth.Group",
+                verbose_name="role",
+            ),
         ),
         migrations.AddField(
-            model_name='accesscontrolentry',
-            name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL, verbose_name='user'),
+            model_name="accesscontrolentry",
+            name="user",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE,
+                to=settings.AUTH_USER_MODEL,
+                verbose_name="user",
+            ),
         ),
     ]

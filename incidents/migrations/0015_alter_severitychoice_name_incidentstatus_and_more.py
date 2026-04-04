@@ -5,6 +5,7 @@ import django.db.models.deletion
 import incidents.models
 from django.db import migrations, models
 
+
 def replace_existing_incidents_status(apps, schema_editon):
     Incident = apps.get_model("incidents", "Incident")
     IncidentStatus = apps.get_model("incidents", "IncidentStatus")
@@ -67,32 +68,86 @@ def replace_existing_incidents_status(apps, schema_editon):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('incidents', '0014_alter_incident_date_alter_log_comment_and_more'),
+        ("incidents", "0014_alter_incident_date_alter_log_comment_and_more"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='severitychoice',
-            name='name',
-            field=models.CharField(max_length=50, validators=[django.core.validators.RegexValidator('[a-zA-Z0-9]+')]),
+            model_name="severitychoice",
+            name="name",
+            field=models.CharField(
+                max_length=50,
+                validators=[django.core.validators.RegexValidator("[a-zA-Z0-9]+")],
+            ),
         ),
         migrations.CreateModel(
-            name='IncidentStatus',
+            name="IncidentStatus",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50, validators=[django.core.validators.RegexValidator('"', inverse_match=True)])),
-                ('icon', models.CharField(max_length=50, validators=[django.core.validators.RegexValidator('^[-_A-Za-z0-9]*$')])),
-                ('flag', models.CharField(blank=True, choices=[('initial', 'Initial status'), ('final', 'Final status')], max_length=50, null=True)),
-                ('associated_action', models.ForeignKey(blank=True, limit_choices_to={'group__name': 'action'}, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='status_action_label', to='incidents.label')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(
+                        max_length=50,
+                        validators=[
+                            django.core.validators.RegexValidator(
+                                '"', inverse_match=True
+                            )
+                        ],
+                    ),
+                ),
+                (
+                    "icon",
+                    models.CharField(
+                        max_length=50,
+                        validators=[
+                            django.core.validators.RegexValidator("^[-_A-Za-z0-9]*$")
+                        ],
+                    ),
+                ),
+                (
+                    "flag",
+                    models.CharField(
+                        blank=True,
+                        choices=[
+                            ("initial", "Initial status"),
+                            ("final", "Final status"),
+                        ],
+                        max_length=50,
+                        null=True,
+                    ),
+                ),
+                (
+                    "associated_action",
+                    models.ForeignKey(
+                        blank=True,
+                        limit_choices_to={"group__name": "action"},
+                        null=True,
+                        on_delete=django.db.models.deletion.SET_NULL,
+                        related_name="status_action_label",
+                        to="incidents.label",
+                    ),
+                ),
             ],
             options={
-                'verbose_name_plural': 'Incident statuses',
+                "verbose_name_plural": "Incident statuses",
             },
         ),
         migrations.RunPython(replace_existing_incidents_status),
         migrations.AlterField(
-            model_name='incident',
-            name='status',
-            field=models.ForeignKey(default=incidents.models.get_initial_status, on_delete=django.db.models.deletion.CASCADE, to='incidents.incidentstatus'),
+            model_name="incident",
+            name="status",
+            field=models.ForeignKey(
+                default=incidents.models.get_initial_status,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="incidents.incidentstatus",
+            ),
         ),
     ]

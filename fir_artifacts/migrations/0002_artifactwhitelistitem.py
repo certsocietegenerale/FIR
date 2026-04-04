@@ -6,19 +6,26 @@ from django.db import models, migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('fir_artifacts', '0001_initial'),
+        ("fir_artifacts", "0001_initial"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='ArtifactWhitelistItem',
+            name="ArtifactWhitelistItem",
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('type', models.CharField(max_length=20)),
-                ('value', models.CharField(max_length=200)),
+                (
+                    "id",
+                    models.AutoField(
+                        verbose_name="ID",
+                        serialize=False,
+                        auto_created=True,
+                        primary_key=True,
+                    ),
+                ),
+                ("type", models.CharField(max_length=20)),
+                ("value", models.CharField(max_length=200)),
             ],
-            options={
-            },
+            options={},
             bases=(models.Model,),
         ),
     ]

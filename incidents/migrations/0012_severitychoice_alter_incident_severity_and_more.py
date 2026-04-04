@@ -8,27 +8,51 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('incidents', '0011_auto_20210208_2156'),
+        ("incidents", "0011_auto_20210208_2156"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SeverityChoice',
+            name="SeverityChoice",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=50)),
-                ('color', colorfield.fields.ColorField(default='#777', image_field=None, max_length=25, samples=None)),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=50)),
+                (
+                    "color",
+                    colorfield.fields.ColorField(
+                        default="#777", image_field=None, max_length=25, samples=None
+                    ),
+                ),
             ],
         ),
         migrations.AlterField(
-            model_name='incident',
-            name='severity',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='incidents.severitychoice', db_constraint=False),
+            model_name="incident",
+            name="severity",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="incidents.severitychoice",
+                db_constraint=False,
+            ),
         ),
         migrations.AlterField(
-            model_name='incidenttemplate',
-            name='severity',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, to='incidents.severitychoice', db_constraint=False),
+            model_name="incidenttemplate",
+            name="severity",
+            field=models.ForeignKey(
+                blank=True,
+                null=True,
+                on_delete=django.db.models.deletion.SET_NULL,
+                to="incidents.severitychoice",
+                db_constraint=False,
+            ),
         ),
     ]
-

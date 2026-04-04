@@ -14,294 +14,555 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Artifact',
+            name="Artifact",
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('type', models.CharField(max_length=20)),
-                ('value', models.CharField(max_length=200)),
+                (
+                    "id",
+                    models.AutoField(
+                        verbose_name="ID",
+                        serialize=False,
+                        auto_created=True,
+                        primary_key=True,
+                    ),
+                ),
+                ("type", models.CharField(max_length=20)),
+                ("value", models.CharField(max_length=200)),
+            ],
+            options={},
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name="Attribute",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(
+                        verbose_name="ID",
+                        serialize=False,
+                        auto_created=True,
+                        primary_key=True,
+                    ),
+                ),
+                ("name", models.CharField(max_length=50)),
+                ("value", models.CharField(max_length=200)),
+            ],
+            options={},
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name="BaleCategory",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(
+                        verbose_name="ID",
+                        serialize=False,
+                        auto_created=True,
+                        primary_key=True,
+                    ),
+                ),
+                ("name", models.CharField(max_length=200)),
+                ("description", models.TextField(null=True, blank=True)),
+                ("category_number", models.IntegerField()),
+                (
+                    "parent_category",
+                    models.ForeignKey(
+                        blank=True,
+                        to="incidents.BaleCategory",
+                        on_delete=models.CASCADE,
+                        null=True,
+                    ),
+                ),
             ],
             options={
+                "verbose_name_plural": "Bale categories",
             },
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='Attribute',
+            name="BusinessLine",
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=50)),
-                ('value', models.CharField(max_length=200)),
+                (
+                    "id",
+                    models.AutoField(
+                        verbose_name="ID",
+                        serialize=False,
+                        auto_created=True,
+                        primary_key=True,
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                (
+                    "parent",
+                    models.ForeignKey(
+                        blank=True,
+                        to="incidents.BusinessLine",
+                        on_delete=models.CASCADE,
+                        null=True,
+                    ),
+                ),
             ],
             options={
+                "ordering": ["parent__name", "name"],
             },
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='BaleCategory',
+            name="Comments",
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=200)),
-                ('description', models.TextField(null=True, blank=True)),
-                ('category_number', models.IntegerField()),
-                ('parent_category', models.ForeignKey(blank=True, to='incidents.BaleCategory', on_delete=models.CASCADE, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        verbose_name="ID",
+                        serialize=False,
+                        auto_created=True,
+                        primary_key=True,
+                    ),
+                ),
+                (
+                    "date",
+                    models.DateTimeField(default=datetime.datetime.now, blank=True),
+                ),
+                ("comment", models.TextField()),
+            ],
+            options={},
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name="File",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(
+                        verbose_name="ID",
+                        serialize=False,
+                        auto_created=True,
+                        primary_key=True,
+                    ),
+                ),
+                ("description", models.CharField(max_length=256)),
+                ("file", models.FileField()),
+                ("date", models.DateTimeField(auto_now_add=True)),
+                (
+                    "hashes",
+                    models.ManyToManyField(
+                        to="incidents.Artifact", null=True, blank=True
+                    ),
+                ),
+            ],
+            options={},
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name="Incident",
+            fields=[
+                (
+                    "id",
+                    models.AutoField(
+                        verbose_name="ID",
+                        serialize=False,
+                        auto_created=True,
+                        primary_key=True,
+                    ),
+                ),
+                (
+                    "date",
+                    models.DateTimeField(default=datetime.datetime.now, blank=True),
+                ),
+                ("is_starred", models.BooleanField(default=False)),
+                ("subject", models.CharField(max_length=256)),
+                ("description", models.TextField()),
+                (
+                    "severity",
+                    models.IntegerField(
+                        choices=[(1, b"1"), (2, b"2"), (3, b"3"), (4, b"4")]
+                    ),
+                ),
+                ("is_incident", models.BooleanField(default=False)),
+                ("is_major", models.BooleanField(default=False)),
+                (
+                    "status",
+                    models.CharField(
+                        default=b"Open",
+                        max_length=20,
+                        choices=[
+                            (b"O", b"Open"),
+                            (b"C", b"Closed"),
+                            (b"B", b"Blocked"),
+                        ],
+                    ),
+                ),
+                (
+                    "confidentiality",
+                    models.IntegerField(
+                        default=b"1",
+                        choices=[(0, b"C0"), (1, b"C1"), (2, b"C2"), (3, b"C3")],
+                    ),
+                ),
             ],
             options={
-                'verbose_name_plural': 'Bale categories',
+                "permissions": (
+                    ("handle_incidents", "Can handle incidents"),
+                    ("view_statistics", "Can view statistics"),
+                ),
             },
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='BusinessLine',
+            name="IncidentCategory",
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=100)),
-                ('parent', models.ForeignKey(blank=True, to='incidents.BusinessLine', on_delete=models.CASCADE, null=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        verbose_name="ID",
+                        serialize=False,
+                        auto_created=True,
+                        primary_key=True,
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("is_major", models.BooleanField(default=False)),
+                (
+                    "bale_subcategory",
+                    models.ForeignKey(
+                        to="incidents.BaleCategory", on_delete=models.CASCADE
+                    ),
+                ),
             ],
             options={
-                'ordering': ['parent__name', 'name'],
+                "verbose_name_plural": "Incident categories",
             },
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='Comments',
+            name="IncidentTemplate",
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('date', models.DateTimeField(default=datetime.datetime.now, blank=True)),
-                ('comment', models.TextField()),
+                (
+                    "id",
+                    models.AutoField(
+                        verbose_name="ID",
+                        serialize=False,
+                        auto_created=True,
+                        primary_key=True,
+                    ),
+                ),
+                ("name", models.CharField(max_length=100)),
+                ("subject", models.CharField(max_length=256, null=True, blank=True)),
+                ("description", models.TextField(null=True, blank=True)),
+                (
+                    "severity",
+                    models.IntegerField(
+                        blank=True,
+                        null=True,
+                        choices=[(1, b"1"), (2, b"2"), (3, b"3"), (4, b"4")],
+                    ),
+                ),
+                ("is_incident", models.BooleanField(default=False)),
             ],
-            options={
-            },
+            options={},
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='File',
+            name="Label",
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('description', models.CharField(max_length=256)),
-                ('file', models.FileField()),
-                ('date', models.DateTimeField(auto_now_add=True)),
-                ('hashes', models.ManyToManyField(to='incidents.Artifact', null=True, blank=True)),
+                (
+                    "id",
+                    models.AutoField(
+                        verbose_name="ID",
+                        serialize=False,
+                        auto_created=True,
+                        primary_key=True,
+                    ),
+                ),
+                ("name", models.CharField(max_length=50)),
             ],
-            options={
-            },
+            options={},
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='Incident',
+            name="LabelGroup",
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('date', models.DateTimeField(default=datetime.datetime.now, blank=True)),
-                ('is_starred', models.BooleanField(default=False)),
-                ('subject', models.CharField(max_length=256)),
-                ('description', models.TextField()),
-                ('severity', models.IntegerField(choices=[(1, b'1'), (2, b'2'), (3, b'3'), (4, b'4')])),
-                ('is_incident', models.BooleanField(default=False)),
-                ('is_major', models.BooleanField(default=False)),
-                ('status', models.CharField(default=b'Open', max_length=20, choices=[(b'O', b'Open'), (b'C', b'Closed'), (b'B', b'Blocked')])),
-                ('confidentiality', models.IntegerField(default=b'1', choices=[(0, b'C0'), (1, b'C1'), (2, b'C2'), (3, b'C3')])),
+                (
+                    "id",
+                    models.AutoField(
+                        verbose_name="ID",
+                        serialize=False,
+                        auto_created=True,
+                        primary_key=True,
+                    ),
+                ),
+                ("name", models.CharField(max_length=50)),
             ],
-            options={
-                'permissions': (('handle_incidents', 'Can handle incidents'), ('view_statistics', 'Can view statistics')),
-            },
+            options={},
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='IncidentCategory',
+            name="Log",
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=100)),
-                ('is_major', models.BooleanField(default=False)),
-                ('bale_subcategory', models.ForeignKey(to='incidents.BaleCategory', on_delete=models.CASCADE)),
+                (
+                    "id",
+                    models.AutoField(
+                        verbose_name="ID",
+                        serialize=False,
+                        auto_created=True,
+                        primary_key=True,
+                    ),
+                ),
+                (
+                    "what",
+                    models.CharField(
+                        max_length=100,
+                        choices=[
+                            (b"O", b"Open"),
+                            (b"C", b"Closed"),
+                            (b"B", b"Blocked"),
+                        ],
+                    ),
+                ),
+                ("when", models.DateTimeField(auto_now_add=True)),
+                (
+                    "comment",
+                    models.ForeignKey(
+                        blank=True,
+                        to="incidents.Comments",
+                        on_delete=models.CASCADE,
+                        null=True,
+                    ),
+                ),
+                (
+                    "incident",
+                    models.ForeignKey(
+                        blank=True,
+                        to="incidents.Incident",
+                        on_delete=models.CASCADE,
+                        null=True,
+                    ),
+                ),
+                (
+                    "who",
+                    models.ForeignKey(
+                        to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE
+                    ),
+                ),
             ],
-            options={
-                'verbose_name_plural': 'Incident categories',
-            },
+            options={},
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='IncidentTemplate',
+            name="Profile",
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=100)),
-                ('subject', models.CharField(max_length=256, null=True, blank=True)),
-                ('description', models.TextField(null=True, blank=True)),
-                ('severity', models.IntegerField(blank=True, null=True, choices=[(1, b'1'), (2, b'2'), (3, b'3'), (4, b'4')])),
-                ('is_incident', models.BooleanField(default=False)),
+                (
+                    "id",
+                    models.AutoField(
+                        verbose_name="ID",
+                        serialize=False,
+                        auto_created=True,
+                        primary_key=True,
+                    ),
+                ),
+                ("incident_number", models.IntegerField(default=50)),
+                ("hide_closed", models.BooleanField(default=False)),
+                (
+                    "user",
+                    models.OneToOneField(
+                        to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE
+                    ),
+                ),
             ],
-            options={
-            },
+            options={},
             bases=(models.Model,),
         ),
         migrations.CreateModel(
-            name='Label',
+            name="ValidAttribute",
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=50)),
+                (
+                    "id",
+                    models.AutoField(
+                        verbose_name="ID",
+                        serialize=False,
+                        auto_created=True,
+                        primary_key=True,
+                    ),
+                ),
+                ("name", models.CharField(max_length=50)),
+                ("unit", models.CharField(max_length=50, null=True, blank=True)),
+                (
+                    "description",
+                    models.CharField(max_length=500, null=True, blank=True),
+                ),
+                ("categories", models.ManyToManyField(to="incidents.IncidentCategory")),
             ],
-            options={
-            },
-            bases=(models.Model,),
-        ),
-        migrations.CreateModel(
-            name='LabelGroup',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=50)),
-            ],
-            options={
-            },
-            bases=(models.Model,),
-        ),
-        migrations.CreateModel(
-            name='Log',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('what', models.CharField(max_length=100, choices=[(b'O', b'Open'), (b'C', b'Closed'), (b'B', b'Blocked')])),
-                ('when', models.DateTimeField(auto_now_add=True)),
-                ('comment', models.ForeignKey(blank=True, to='incidents.Comments', on_delete=models.CASCADE, null=True)),
-                ('incident', models.ForeignKey(blank=True, to='incidents.Incident', on_delete=models.CASCADE, null=True)),
-                ('who', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
-            ],
-            options={
-            },
-            bases=(models.Model,),
-        ),
-        migrations.CreateModel(
-            name='Profile',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('incident_number', models.IntegerField(default=50)),
-                ('hide_closed', models.BooleanField(default=False)),
-                ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
-            ],
-            options={
-            },
-            bases=(models.Model,),
-        ),
-        migrations.CreateModel(
-            name='ValidAttribute',
-            fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('name', models.CharField(max_length=50)),
-                ('unit', models.CharField(max_length=50, null=True, blank=True)),
-                ('description', models.CharField(max_length=500, null=True, blank=True)),
-                ('categories', models.ManyToManyField(to='incidents.IncidentCategory')),
-            ],
-            options={
-            },
+            options={},
             bases=(models.Model,),
         ),
         migrations.AddField(
-            model_name='label',
-            name='group',
-            field=models.ForeignKey(to='incidents.LabelGroup', on_delete=models.CASCADE),
+            model_name="label",
+            name="group",
+            field=models.ForeignKey(
+                to="incidents.LabelGroup", on_delete=models.CASCADE
+            ),
             preserve_default=True,
         ),
         migrations.AddField(
-            model_name='incidenttemplate',
-            name='actor',
-            field=models.ForeignKey(related_name='+', blank=True, to='incidents.Label', on_delete=models.CASCADE, null=True),
+            model_name="incidenttemplate",
+            name="actor",
+            field=models.ForeignKey(
+                related_name="+",
+                blank=True,
+                to="incidents.Label",
+                on_delete=models.CASCADE,
+                null=True,
+            ),
             preserve_default=True,
         ),
         migrations.AddField(
-            model_name='incidenttemplate',
-            name='category',
-            field=models.ForeignKey(blank=True, to='incidents.IncidentCategory', on_delete=models.CASCADE, null=True),
+            model_name="incidenttemplate",
+            name="category",
+            field=models.ForeignKey(
+                blank=True,
+                to="incidents.IncidentCategory",
+                on_delete=models.CASCADE,
+                null=True,
+            ),
             preserve_default=True,
         ),
         migrations.AddField(
-            model_name='incidenttemplate',
-            name='concerned_business_lines',
-            field=models.ManyToManyField(to='incidents.BusinessLine', null=True, blank=True),
+            model_name="incidenttemplate",
+            name="concerned_business_lines",
+            field=models.ManyToManyField(
+                to="incidents.BusinessLine", null=True, blank=True
+            ),
             preserve_default=True,
         ),
         migrations.AddField(
-            model_name='incidenttemplate',
-            name='detection',
-            field=models.ForeignKey(blank=True, to='incidents.Label', on_delete=models.CASCADE, null=True),
+            model_name="incidenttemplate",
+            name="detection",
+            field=models.ForeignKey(
+                blank=True, to="incidents.Label", on_delete=models.CASCADE, null=True
+            ),
             preserve_default=True,
         ),
         migrations.AddField(
-            model_name='incidenttemplate',
-            name='plan',
-            field=models.ForeignKey(related_name='+', blank=True, to='incidents.Label', on_delete=models.CASCADE, null=True),
+            model_name="incidenttemplate",
+            name="plan",
+            field=models.ForeignKey(
+                related_name="+",
+                blank=True,
+                to="incidents.Label",
+                on_delete=models.CASCADE,
+                null=True,
+            ),
             preserve_default=True,
         ),
         migrations.AddField(
-            model_name='incident',
-            name='actor',
-            field=models.ForeignKey(related_name='actor_label', blank=True, to='incidents.Label', on_delete=models.CASCADE, null=True),
+            model_name="incident",
+            name="actor",
+            field=models.ForeignKey(
+                related_name="actor_label",
+                blank=True,
+                to="incidents.Label",
+                on_delete=models.CASCADE,
+                null=True,
+            ),
             preserve_default=True,
         ),
         migrations.AddField(
-            model_name='incident',
-            name='category',
-            field=models.ForeignKey(to='incidents.IncidentCategory', on_delete=models.CASCADE),
+            model_name="incident",
+            name="category",
+            field=models.ForeignKey(
+                to="incidents.IncidentCategory", on_delete=models.CASCADE
+            ),
             preserve_default=True,
         ),
         migrations.AddField(
-            model_name='incident',
-            name='concerned_business_lines',
-            field=models.ManyToManyField(to='incidents.BusinessLine', null=True, blank=True),
+            model_name="incident",
+            name="concerned_business_lines",
+            field=models.ManyToManyField(
+                to="incidents.BusinessLine", null=True, blank=True
+            ),
             preserve_default=True,
         ),
         migrations.AddField(
-            model_name='incident',
-            name='detection',
-            field=models.ForeignKey(related_name='detection_label', to='incidents.Label', on_delete=models.CASCADE),
+            model_name="incident",
+            name="detection",
+            field=models.ForeignKey(
+                related_name="detection_label",
+                to="incidents.Label",
+                on_delete=models.CASCADE,
+            ),
             preserve_default=True,
         ),
         migrations.AddField(
-            model_name='incident',
-            name='main_business_lines',
-            field=models.ManyToManyField(related_name='incidents_affecting_main', null=True, to='incidents.BusinessLine', blank=True),
+            model_name="incident",
+            name="main_business_lines",
+            field=models.ManyToManyField(
+                related_name="incidents_affecting_main",
+                null=True,
+                to="incidents.BusinessLine",
+                blank=True,
+            ),
             preserve_default=True,
         ),
         migrations.AddField(
-            model_name='incident',
-            name='opened_by',
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
+            model_name="incident",
+            name="opened_by",
+            field=models.ForeignKey(
+                to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE
+            ),
             preserve_default=True,
         ),
         migrations.AddField(
-            model_name='incident',
-            name='plan',
-            field=models.ForeignKey(related_name='plan_label', blank=True, to='incidents.Label', on_delete=models.CASCADE, null=True),
+            model_name="incident",
+            name="plan",
+            field=models.ForeignKey(
+                related_name="plan_label",
+                blank=True,
+                to="incidents.Label",
+                on_delete=models.CASCADE,
+                null=True,
+            ),
             preserve_default=True,
         ),
         migrations.AddField(
-            model_name='file',
-            name='incident',
-            field=models.ForeignKey(to='incidents.Incident', on_delete=models.CASCADE),
+            model_name="file",
+            name="incident",
+            field=models.ForeignKey(to="incidents.Incident", on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
-            model_name='comments',
-            name='action',
-            field=models.ForeignKey(related_name='action_label', to='incidents.Label', on_delete=models.CASCADE),
+            model_name="comments",
+            name="action",
+            field=models.ForeignKey(
+                related_name="action_label",
+                to="incidents.Label",
+                on_delete=models.CASCADE,
+            ),
             preserve_default=True,
         ),
         migrations.AddField(
-            model_name='comments',
-            name='incident',
-            field=models.ForeignKey(to='incidents.Incident', on_delete=models.CASCADE),
+            model_name="comments",
+            name="incident",
+            field=models.ForeignKey(to="incidents.Incident", on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
-            model_name='comments',
-            name='opened_by',
-            field=models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE),
+            model_name="comments",
+            name="opened_by",
+            field=models.ForeignKey(
+                to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE
+            ),
             preserve_default=True,
         ),
         migrations.AddField(
-            model_name='attribute',
-            name='incident',
-            field=models.ForeignKey(to='incidents.Incident', on_delete=models.CASCADE),
+            model_name="attribute",
+            name="incident",
+            field=models.ForeignKey(to="incidents.Incident", on_delete=models.CASCADE),
             preserve_default=True,
         ),
         migrations.AddField(
-            model_name='artifact',
-            name='incidents',
-            field=models.ManyToManyField(to='incidents.Incident'),
+            model_name="artifact",
+            name="incidents",
+            field=models.ManyToManyField(to="incidents.Incident"),
             preserve_default=True,
         ),
     ]

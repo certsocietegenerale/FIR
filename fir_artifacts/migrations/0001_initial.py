@@ -5,19 +5,25 @@ from django.db import models, migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='ArtifactBlacklistItem',
+            name="ArtifactBlacklistItem",
             fields=[
-                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('type', models.CharField(max_length=20)),
-                ('value', models.CharField(max_length=200)),
+                (
+                    "id",
+                    models.AutoField(
+                        verbose_name="ID",
+                        serialize=False,
+                        auto_created=True,
+                        primary_key=True,
+                    ),
+                ),
+                ("type", models.CharField(max_length=20)),
+                ("value", models.CharField(max_length=200)),
             ],
-            options={
-            },
+            options={},
             bases=(models.Model,),
         ),
     ]

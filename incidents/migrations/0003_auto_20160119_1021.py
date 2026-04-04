@@ -7,23 +7,27 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('incidents', '0002_auto_20150907_1147'),
+        ("incidents", "0002_auto_20150907_1147"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='incident',
-            name='concerned_business_lines',
-            field=models.ManyToManyField(blank=True, to='incidents.BusinessLine'),
+            model_name="incident",
+            name="concerned_business_lines",
+            field=models.ManyToManyField(blank=True, to="incidents.BusinessLine"),
         ),
         migrations.AlterField(
-            model_name='incident',
-            name='main_business_lines',
-            field=models.ManyToManyField(blank=True, related_name='incidents_affecting_main', to='incidents.BusinessLine'),
+            model_name="incident",
+            name="main_business_lines",
+            field=models.ManyToManyField(
+                blank=True,
+                related_name="incidents_affecting_main",
+                to="incidents.BusinessLine",
+            ),
         ),
         migrations.AlterField(
-            model_name='incidenttemplate',
-            name='concerned_business_lines',
-            field=models.ManyToManyField(blank=True, to='incidents.BusinessLine'),
+            model_name="incidenttemplate",
+            name="concerned_business_lines",
+            field=models.ManyToManyField(blank=True, to="incidents.BusinessLine"),
         ),
     ]

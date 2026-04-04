@@ -7,17 +7,17 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('fir_threatintel', '0001_initial'),
+        ("fir_threatintel", "0001_initial"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='yetiprofile',
-            old_name='match_endpoint',
-            new_name='endpoint',
+            model_name="yetiprofile",
+            old_name="match_endpoint",
+            new_name="endpoint",
         ),
         migrations.RemoveField(
-            model_name='yetiprofile',
-            name='observable_endpoint',
+            model_name="yetiprofile",
+            name="observable_endpoint",
         ),
     ]
