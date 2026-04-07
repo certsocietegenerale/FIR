@@ -31,7 +31,7 @@ def handle_uploaded_file(file, description, obj):
             a.value = hashes[h]
             a.save()
 
-        a.relations.add(obj)
+        a.incidents.add(obj)
         f.hashes.add(a)
     f.save()
     return f

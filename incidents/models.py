@@ -9,6 +9,7 @@ from django.core.exceptions import ValidationError
 from django.dispatch import Signal, receiver
 from django.db import models
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.fields import GenericRelation
 from django.utils.translation import gettext_lazy as _
 from django.conf import settings
 
@@ -336,6 +337,16 @@ class Incident(FIRModel, models.Model):
         "fir_artifacts.Artifact",
         related_name="incidents",
     )
+    file = GenericRelation(
+        "fir_artifacts.File",
+        content_type_field="content_type",
+        object_id_field="object_id",
+        related_query_name="incident",
+    )
+
+    @property
+    def file_set(self):
+        return self.file
 
     def __str__(self):
         return self.subject

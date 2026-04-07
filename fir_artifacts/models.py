@@ -19,8 +19,8 @@ class Artifact(models.Model):
 
     def __str__(self):
         display = self.value
-        if self.relations.count() > 1:
-            display += " (%s)" % self.relations.count()
+        if self.incident.count() > 1:
+            display += " (%s)" % self.incident.count()
         return display
 
 

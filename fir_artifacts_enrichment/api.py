@@ -58,10 +58,8 @@ class ArtifactsEnrichmentViewSet(
     def retrieve(self, request, *args, **kwargs):
         try:
             enrichment = self.get_queryset().get(artifact__value=self.kwargs.get("pk"))
-            correlations = enrichment.artifact.relations_for_user(user=None).group()
-            if all(
-                [not link_type.objects.exists() for link_type in correlations.values()]
-            ):
+            incidents_qs = enrichment.artifact.incidents.all()
+            if not incidents_qs.exists():
                 raise PermissionDenied()
             serializer = self.get_serializer(enrichment)
             return Response(serializer.data)

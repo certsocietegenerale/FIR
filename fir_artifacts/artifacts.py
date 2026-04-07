@@ -1,6 +1,5 @@
 import re
 from urllib.parse import urlparse
-
 from django import template
 from django.template.loader import get_template
 from django.template import RequestContext
@@ -51,16 +50,6 @@ def after_save(type, value, event):
     return INSTALLED_ARTIFACTS[type].after_save(value, event)
 
 
-def incs_for_art(art_string):
-    from fir_artifacts.models import Artifact
-
-    artifacts = Artifact.objects.filter(value__contains=art_string)
-    incs = []
-    for a in artifacts:
-        incs.extend(a.relations.all())
-    return incs
-
-
 def all_for_object(obj, raw=False, user=None):
     result = []
     total_count = 0
@@ -102,8 +91,16 @@ class AbstractArtifact:
     def __init__(self, artifacts, event, user=None):
         class ArtifactDisplay(object):
             def __init__(self, artifact, user):
+                from incidents.models import Incident
+
                 self.artifact = artifact
-                self.correlation_count = self.artifact.relations_for_user(user).count()
+                if user is not None:
+                    qs = Incident.authorization.for_user(
+                        user, "incidents.view_incidents"
+                    ).filter(artifacts=artifact)
+                else:
+                    qs = artifact.incidents.all()
+                self.correlation_count = qs.count()
 
             @property
             def value(self):

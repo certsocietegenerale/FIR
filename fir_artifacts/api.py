@@ -99,7 +99,7 @@ class IncidentArtifactSerializer(serializers.ModelSerializer):
 
 class FileSerializer(serializers.ModelSerializer):
     incident = serializers.HyperlinkedRelatedField(
-        read_only=True, view_name="api:incidents-detail"
+        many=True, read_only=True, view_name="api:incidents-detail"
     )
     url = serializers.HyperlinkedIdentityField(view_name="api:files-detail")
 
@@ -225,8 +225,8 @@ class ArtifactViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSe
         if not request.user.has_perm("incidents.handle_incidents", obj=related):
             raise PermissionDenied()
 
-        artifact.relations.remove(related)
-        if artifact.relations.count() == 0:
+        artifact.incidents.remove(related)
+        if artifact.incidents.count() == 0:
             artifact.delete()
 
         return Response({"detail": "Artifact detached"})

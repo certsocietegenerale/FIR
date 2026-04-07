@@ -1,12 +1,17 @@
 from rest_framework.permissions import BasePermission, IsAdminUser, SAFE_METHODS
 from incidents.models import AccessControlEntry, BusinessLine, Incident
 from django.conf import settings
+from django.db.models.manager import BaseManager
+from django.db.models import QuerySet
 
 
 class BaseIncidentPermission(BasePermission):
     def get_incident_bls(self, obj):
         if hasattr(obj, "incident"):
             obj = obj.incident
+        if isinstance(obj, (BaseManager, QuerySet)):
+            return BusinessLine.objects.filter(incident__in=obj.all()).distinct()
+
         return obj.concerned_business_lines.all()
 
     def has_perm(self, user, perm, bls):

@@ -64,7 +64,7 @@ class AbuseViewSet(
         except Artifact.DoesNotExist:
             raise Http404()
 
-        if inc not in artifact.relations.all():
+        if inc not in artifact.incidents.all():
             raise PermissionDenied()
 
         try:
@@ -134,7 +134,9 @@ class AbuseViewSet(
             )
             return Response({"status": "ok"})
         except (SMTPException, ValueError, OSError) as e:
-            logging.getLogger("FIR").error("Error while sending abuse email", exc_info=True)
+            logging.getLogger("FIR").error(
+                "Error while sending abuse email", exc_info=True
+            )
             return Response(
                 {
                     "status": "ko",
