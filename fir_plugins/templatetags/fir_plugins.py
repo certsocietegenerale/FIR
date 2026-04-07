@@ -14,7 +14,7 @@ apps = settings.INSTALLED_APPS
 
 @register.simple_tag(takes_context=True)
 def plugin_point(context, name):
-    templates = [template_path(app, name) for app in apps]
+    templates = [f"{app}/plugins/{name}.html" for app in apps]
 
     result = ""
     context = context.flatten()
