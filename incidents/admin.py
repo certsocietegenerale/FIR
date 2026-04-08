@@ -14,6 +14,7 @@ from incidents.models import (
     ValidAttribute,
     SeverityChoice,
     Tlp,
+    AccessControlEntry,
 )
 from incidents.forms import IncidentStatusAdminForm
 from django.contrib import admin
