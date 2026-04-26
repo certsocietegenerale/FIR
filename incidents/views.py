@@ -61,13 +61,6 @@ def is_incident_viewer(user):
     )
 
 
-comment_permissions = [
-    "incidents.handle_incidents",
-]
-if getattr(settings, "INCIDENT_VIEWER_CAN_COMMENT", False):
-    comment_permissions.append("incidents.view_incidents")
-
-
 # login / logout =================================================
 
 
@@ -191,10 +184,6 @@ def details(request, incident_id, authorization_target=None):
     else:
         i = authorization_target
     form = CommentForm()
-    if not request.user.has_perm("incidents.handle_incidents", obj=i):
-        form.fields["action"].queryset = Label.objects.filter(
-            group__name="action"
-        ).exclude(name__in=["Closed", "Opened", "Blocked"])
 
     valid_attributes = i.category.validattribute_set.all()
     attributes = i.attribute_set.all()
