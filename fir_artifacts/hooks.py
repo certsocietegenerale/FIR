@@ -12,7 +12,7 @@ hooks = {
             {"artifact": CharFilter(field_name="artifacts__value")},  # Filters
         ),
         (
-            "file_set",
+            "files",
             None,
             FileSerializer(many=True, read_only=True),
             None,

@@ -99,7 +99,7 @@ class IncidentArtifactSerializer(serializers.ModelSerializer):
 
 class FileSerializer(serializers.ModelSerializer):
     incident = serializers.HyperlinkedRelatedField(
-        many=True, read_only=True, view_name="api:incidents-detail"
+        read_only=True, view_name="api:incidents-detail"
     )
     url = serializers.HyperlinkedIdentityField(view_name="api:files-detail")
 
@@ -142,7 +142,7 @@ class FileViewSet(
     def download_all(self, request, pk):
         inc = get_object_or_404(Incident, pk=pk)
         self.check_object_permissions(self.request, Incident.objects.get(pk=pk))
-        if inc.file_set.count() == 0:
+        if inc.files.count() == 0:
             return Response(
                 data={"Error": "Incident does not have any file."},
                 status=status.HTTP_404_NOT_FOUND,

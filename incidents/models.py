@@ -333,20 +333,6 @@ class Incident(FIRModel, models.Model):
         on_delete=models.SET_DEFAULT,
         default=get_initial_tlp,
     )
-    artifacts = models.ManyToManyField(
-        "fir_artifacts.Artifact",
-        related_name="incidents",
-    )
-    file = GenericRelation(
-        "fir_artifacts.File",
-        content_type_field="content_type",
-        object_id_field="object_id",
-        related_query_name="incident",
-    )
-
-    @property
-    def file_set(self):
-        return self.file
 
     def __str__(self):
         return self.subject

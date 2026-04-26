@@ -13,9 +13,29 @@ class ArtifactBlacklistItem(models.Model):
         return self.value
 
 
+class IncidentArtifact(models.Model):
+    incident = models.ForeignKey(
+        "incidents.Incident",
+        on_delete=models.CASCADE,
+    )
+    artifact = models.ForeignKey(
+        "fir_artifacts.Artifact",
+        on_delete=models.CASCADE,
+    )
+
+    class Meta:
+        db_table = "incidents_incident_artifacts"
+        unique_together = ("incident", "artifact")
+
+
 class Artifact(models.Model):
     type = models.CharField(max_length=20)
     value = models.TextField()
+    incidents = models.ManyToManyField(
+        "incidents.Incident",
+        through="fir_artifacts.IncidentArtifact",
+        related_name="artifacts",
+    )
 
     def __str__(self):
         display = self.value
@@ -25,13 +45,17 @@ class Artifact(models.Model):
 
 
 def upload_path(instance, filename):
-    return "%s_%s/%s" % (instance.content_type.model, instance.object_id, filename)
+    return f"{instance._meta.model_name}_{instance.incident_id}/{filename}"
 
 
 class File(models.Model):
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, null=True)
-    object_id = models.PositiveIntegerField(null=True)
-    content_object = GenericForeignKey("content_type", "object_id")
+    incident = models.ForeignKey(
+        "incidents.Incident",
+        on_delete=models.CASCADE,
+        related_name="files",
+        null=True,
+        blank=True,
+    )
     hashes = models.ManyToManyField("fir_artifacts.Artifact", blank=True)
     description = models.CharField(max_length=256)
     file = models.FileField(upload_to=upload_path)

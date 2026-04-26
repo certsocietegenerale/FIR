@@ -99,9 +99,9 @@
 
 			<h2>{% trans "Related files" %}</h2>
 			<br class="separator" />
-			{% if incident.file_set.count > 0 %}
+			{% if incident.files.count > 0 %}
 				<table class="table table-condensed files" style="width:auto">
-					{% for file in incident.file_set.all %}
+					{% for file in incident.files.all %}
 						<tr>
 							<td >{{ file.date|date:"d-m-Y" }}</td>
 							<td>{{ file.getfilename }}</td>
