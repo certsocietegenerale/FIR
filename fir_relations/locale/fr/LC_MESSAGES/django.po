@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-29 05:51-0500\n"
+"POT-Creation-Date: 2026-04-03 11:14+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,11 +18,19 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: models.py:63
+#: api.py:23
+msgid "Source Type"
+msgstr ""
+
+#: api.py:28
+msgid "Target Type"
+msgstr ""
+
+#: models.py:61
 msgid "Incident"
 msgstr ""
 
-#: models.py:64
+#: models.py:62
 msgid "Event"
 msgstr ""
 
@@ -34,18 +42,14 @@ msgstr "Référence"
 msgid "Referenced by"
 msgstr "Référencé par"
 
-#: templates/fir_relations/sidebar.html:8
+#: templates/fir_relations/sidebar.html:9
 msgid "ID"
 msgstr ""
 
-#: templates/fir_relations/sidebar.html:9
+#: templates/fir_relations/sidebar.html:10
 msgid "Type"
 msgstr ""
 
-#: templates/fir_relations/sidebar.html:10
+#: templates/fir_relations/sidebar.html:11
 msgid "Subject"
-msgstr ""
-
-#: templates/fir_relations/sidebar.html:27
-msgid "Remove relation"
-msgstr "Retirer la relation"
+msgstr "Titre"

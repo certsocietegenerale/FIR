@@ -28,13 +28,6 @@ def plugin_point(context, name):
 
 
 @register.filter
-def content_type(obj):
-    if not obj:
-        return False
-    return ContentType.objects.get_for_model(obj).pk
-
-
-@register.filter
 def object_id(obj):
     id_template = registry.model_links.get(obj._meta.label, ["", "", None])[2]
     if not id_template:
