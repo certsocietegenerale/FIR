@@ -55,11 +55,11 @@ def all_for_object(obj, raw=False, user=None):
     total_count = 0
     correlated_count = 0
 
-    if not hasattr(obj, "artifacts"):
+    if not hasattr(obj, "artifact_set"):
         return (result, total_count, correlated_count)
 
     for artifact in INSTALLED_ARTIFACTS:
-        values = obj.artifacts.filter(type=artifact)
+        values = obj.artifact_set.filter(type=artifact)
         artifact_collection = INSTALLED_ARTIFACTS[artifact](values, obj, user=user)
         total_count += values.count()
         correlated_count += artifact_collection.correlated_count()
@@ -97,7 +97,7 @@ class AbstractArtifact:
                 if user is not None:
                     qs = Incident.authorization.for_user(
                         user, "incidents.view_incidents"
-                    ).filter(artifacts=artifact)
+                    ).filter(artifact_set=artifact)
                 else:
                     qs = artifact.incidents.all()
                 self.correlation_count = qs.count()

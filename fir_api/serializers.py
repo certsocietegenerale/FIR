@@ -275,7 +275,6 @@ class IncidentSerializer(serializers.ModelSerializer):
 
     def to_representation(self, value):
         to_remove = [f for f in self.fields if f.endswith("_set")]
-        to_remove.extend(["artifacts"])
 
         # Remove some fields unless we are getting details of a specific incident
         if not self.is_retrieve():
@@ -297,7 +296,7 @@ class IncidentSerializer(serializers.ModelSerializer):
         field_to_create = {}
         for f in self._additional_fields:
             field_data = validated_data.pop(f, {})
-            if f.endswith("_set") or f == "artifacts":
+            if f.endswith("_set"):
                 # OneToMany creation is not supported
                 continue
             field_serializer = deepcopy(self._additional_fields[f])
@@ -315,7 +314,7 @@ class IncidentSerializer(serializers.ModelSerializer):
     def update(self, instance, validated_data):
         for f in self._additional_fields:
             field_data = validated_data.pop(f, {})
-            if f.endswith("_set") or f == "artifacts":
+            if f.endswith("_set"):
                 # OneToMany update is not supported
                 continue
             field_serializer = deepcopy(self._additional_fields[f])

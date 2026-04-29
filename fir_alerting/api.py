@@ -96,7 +96,7 @@ class AlertingViewSet(
 
         artifacts = {}
         main_artifact = None
-        for a in inc.artifacts.all():
+        for a in inc.artifact_set.all():
             if inc.subject.lower() == a.value:
                 main_artifact = a
             if a.type not in artifacts:

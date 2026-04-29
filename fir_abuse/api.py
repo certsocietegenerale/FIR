@@ -86,7 +86,7 @@ class AbuseViewSet(
             abuse_template = None
 
         artifacts = {}
-        for a in inc.artifacts.all():
+        for a in inc.artifact_set.all():
             if a.type not in artifacts:
                 artifacts[a.type] = []
             artifacts[a.type].append(http_to_hxxp(a.value))

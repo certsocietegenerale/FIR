@@ -34,7 +34,7 @@ class Artifact(models.Model):
     incidents = models.ManyToManyField(
         "incidents.Incident",
         through="fir_artifacts.IncidentArtifact",
-        related_name="artifacts",
+        related_name="artifact_set",
     )
 
     def __str__(self):
@@ -52,7 +52,6 @@ class File(models.Model):
     incident = models.ForeignKey(
         "incidents.Incident",
         on_delete=models.CASCADE,
-        related_name="files",
         null=True,
         blank=True,
     )

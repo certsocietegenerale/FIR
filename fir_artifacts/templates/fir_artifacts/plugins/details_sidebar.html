@@ -3,9 +3,9 @@
 {% load fir_artifacts %}
 {% load authorization %}
 {% has_perm "incidents.handle_incidents" obj=event as can_handle_incident %}
-<div class="widget border border-info-subtle {% if event.files.count == 0 %}visually-hidden{% endif %}" id="details-files">
+<div class="widget border border-info-subtle {% if event.file_set.count == 0 %}visually-hidden{% endif %}" id="details-files">
 <h4 class="widget text-info-emphasis bg-info-subtle border border-info-subtle">{% trans "Related files" %}</h4>
-    {% if event.files.count > 0 %}
+    {% if event.file_set.count > 0 %}
         <table class="table table-condensed files fixed">
             <thead>
                 <tr>
@@ -15,7 +15,7 @@
                     <th class="icon-column"></th>
                 </tr>
             </thead>
-            {% for file in event.files.all %}
+            {% for file in event.file_set.all %}
                 <tr>
                     <td>{{ file.date }}</td>
                     <td>
@@ -52,7 +52,7 @@
         <i class="bi bi-upload"></i> {% trans "Upload files" %}
     </a>
     {% endif %}
-    {% if event.files.count > 0 %}
+    {% if event.file_set.count > 0 %}
         <a class="btn btn-sm btn-default" href="/api/files/{{ event.id }}/download-all">
             <i class="bi bi-download"></i> {% trans "Download archive" %}
         </a>

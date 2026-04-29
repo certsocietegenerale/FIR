@@ -52,7 +52,7 @@ def do_download_archive(request, object_id):
     temp = BytesIO()
     with zipfile.ZipFile(temp, "w", zipfile.ZIP_DEFLATED) as archive:
         media_root = settings.MEDIA_ROOT
-        for file in obj.files.all():
+        for file in obj.file_set.all():
             path = os.path.join(media_root, file.file.path)
             archive.write(path, os.path.basename(path))
     file_size = temp.tell()
