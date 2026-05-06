@@ -185,6 +185,15 @@ class FileViewSet(
         ).data
         return Response(resp_data)
 
+    def perform_destroy(self, instance):
+        hashes = instance.get_hashes()
+        for h in hashes:
+            try:
+                a = Artifact.objects.get(value=hashes[h]).delete()
+            except Artifact.NotFound:
+                pass
+        super().perform_destroy(instance)
+
 
 class ArtifactViewSet(ListModelMixin, RetrieveModelMixin, viewsets.GenericViewSet):
     """
