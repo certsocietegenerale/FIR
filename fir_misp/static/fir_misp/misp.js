@@ -21,6 +21,9 @@ function query_misp() {
 }
 
 function misp_query_artifacts(observables, incident_id) {
+  if (observables.length === 0) {
+    return;
+  }
   // extra options are set in ajaxSetup
   url_params = new URLSearchParams(observables.map((v) => ["observable", v]));
   $.ajax({
