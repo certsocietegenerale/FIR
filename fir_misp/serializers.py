@@ -14,9 +14,7 @@ class MISPEventSerializer(serializers.Serializer):
 
 class MISPSerializer(serializers.Serializer):
     observables = ObservableTagSerializer(many=True)
-    misp_events = MISPEventSerializer(
-        many=True, allow_empty=True
-    )
+    misp_events = MISPEventSerializer(many=True, allow_empty=True)
     fir_incident_id = serializers.PrimaryKeyRelatedField(
         queryset=Incident.objects.all(), allow_null=True
     )

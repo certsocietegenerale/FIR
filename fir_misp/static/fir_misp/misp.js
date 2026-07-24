@@ -35,11 +35,7 @@ function misp_query_artifacts(observables, incident_id) {
     error: function (data, status, error) {
       $("#tab_misp").append(
         misp_error_message_template({
-          error_message:
-            "An error happened : " +
-            error +
-            ". Details : " +
-            JSON.stringify(data["responseJSON"]),
+          error_message: `An error happened : ${data["responseJSON"]["detail"]}`,
         }),
       );
     },
@@ -159,11 +155,7 @@ function misp_post_observables(observables, misp_events, row) {
       $("#waitingMessage").hide();
       $("#tab_misp").prepend(
         misp_error_message_template({
-          error_message:
-            "An error happened : " +
-            error +
-            ". Details : " +
-            JSON.stringify(data["responseJSON"]),
+          error_message: `An error happened : ${data["responseJSON"]["detail"]}`,
         }),
       );
     },
