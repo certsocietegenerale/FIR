@@ -85,7 +85,9 @@ class MISPViewSet(
                     related_events.append(entry)
             return related_events
         except PyMISPError as err:
-            logging.error(f"Got PyMISPError into get_misp_related_events: {err}")
+            logging.getLogger("FIR").error(
+                "Got PyMISPError into get_misp_related_events", exc_info=True
+            )
             return []
 
     def list(self, request, *args, **kwargs):
@@ -161,8 +163,12 @@ class MISPViewSet(
             if len(related_events) > 0:
                 results["related_events"] = related_events
         except (ValueError, PyMISPError) as e:
+            logging.getLogger("FIR").error("Error while querying MISP", exc_info=True)
             return Response(
-                {"error": _("Unable to retrieve content from MISP"), "detail": str(e)},
+                {
+                    "error": _("Unable to retrieve content from MISP"),
+                    "detail": "Please check server logs for details",
+                },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
         return Response(results)
@@ -220,8 +226,12 @@ class MISPViewSet(
             PyMISPError,
             KeyError,
         ) as e:
+            logging.getLogger("FIR").error("Error while querying MISP", exc_info=True)
             return Response(
-                {"error": _("Unable to push content to MISP"), "detail": str(e)},
+                {
+                    "error": _("Unable to push content to MISP"),
+                    "detail": "Please check server logs for details",
+                },
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR,
             )
 
