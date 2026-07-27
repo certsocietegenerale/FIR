@@ -1,0 +1,209 @@
+{% load static %}
+{% load i18n %}
+
+{% load fir_plugins %}
+{% load fir_misp %}
+{% load authorization %}
+
+<input type="hidden" name="inc_id_misp" value="{{ event.id }}"/>
+
+<div class="tab-pane" data-query-endpoint="" data-observable-post="" id="tab_misp">
+  {% trans "No intelligence available for this incident. Please check your configuration settings." %}
+</div>
+
+<script id="misp-error-message-template" type="text/x-handlebars-template">
+  ${#if error_message}
+    <div class="alert alert-danger mt-2 mb-2" role="alert">
+      ${error_message}
+    </div>
+  ${/if}
+</script>
+
+<script id="misp-tab-data-template" type="text/x-handlebars-template">
+  <span class="known">{% trans "Known: " %}${known.length}</span>
+</script>
+
+<script id="misp-observables-template" type="text/x-handlebars-template">
+  <div class="col-sm-12 widget order border-info-subtle misp-related-events">
+    <div class="read">
+      <h4 class="widget text-info-emphasis bg-info-subtle border border-info-subtle">{% blocktrans with event_id=event.id|get_inc_id_with_prefix %}MISP related events (with tag {{ event_id }}){% endblocktrans %}</h4>
+      <table class="table table-condensed misp-read">
+        <tbody class="known">
+          ${#if related_events}
+            <tr>
+              <th class="narrow"></th>
+              <th>{% trans "Event name" %}</th>
+              <th>{% trans "Event tags" %}</th>
+              <th>{% trans "Org name" %}</th>
+              <th>{% trans "Date" %}</th>
+            </tr>
+            ${#each related_events}
+              <tr>
+                <td>
+                <a href="${url}" target="_blank"><span class="bi bi-box-arrow-up-right" aria-hidden="true"></span></a></td>
+                <td>${info}</td>
+                <td>${#each event_tags}<span class="badge badge-primary me-1">${this}</span>${/each}</td>
+                <td>${org_name}</td>
+                <td>${date}</td>
+              </tr>
+            ${/each}
+          ${/if}
+        </tbody>
+      </table>
+      </div>
+        <div class="send">
+      <h4 class="widget text-info-emphasis bg-info-subtle border border-info-subtle">{% trans "Choose your MISP events to link to the observables" %}</h4>
+      <div class="alert alert-warning mt-3" role="alert">
+      <i class="bi bi-exclamation-diamond"></i>{% blocktrans with event_id=event.id|get_inc_id_with_prefix %}If no one is checked, a new MISP event will be created with the tags fir-incident and {{ event_id }}.{% endblocktrans %}
+      </div>
+      <table class="table table-condensed misp-send">
+        <tbody class="known">
+          ${#if related_events}
+            <tr>
+              <th></th>
+              <th class="narrow"></th>
+              <th>{% trans "Event id" %}</th>
+              <th>{% trans "Event name" %}</th>
+              <th>{% trans "Event tags" %}</th>
+              <th>{% trans "Org name" %}</th>
+              <th>{% trans "Date" %}</th>
+            </tr>
+            ${#each related_events}
+              <tr class="misp_event">
+                <td><input type="checkbox" name="name" value=""></td>
+                <td><a href="${url}" target="_blank"><span class="bi bi-box-arrow-up-right" aria-hidden="true"></span></a></td>
+                <th class="value">${event_id}</th>
+                <td>${info}</td>
+                <td>${#each event_tags}<span class="badge badge-primary me-1">${this}</span>${/each}</td>
+                <td>${org_name}</td>
+                <td>${date}</td>
+              </tr>
+            ${/each}
+          ${/if}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="col-sm-12 widget order border-info-subtle misp-matches">
+    <h4 class="widget text-info-emphasis bg-info-subtle border border-info-subtle">{% trans "Observables" %} <i class="tooltip-info bi bi-info-circle text-muted" data-bs-toggle="tooltip" data-placement="top" title="{% blocktrans %}If an artifact is related to several misp event, only the most recent one is displayed.{% endblocktrans %}"></i></h4>
+    <div class="read">
+      <table class="table table-condensed misp-read">
+        <tbody class="known">
+        ${#if known}
+          <tr>
+            <th class="narrow"></th>
+            <th>{% trans "Observable" %}</th>
+            <th>{% trans "Tags" %}</th>
+            <th>{% trans "MISP Context" %}</th>
+          </tr>
+          ${#each known}
+            <tr>
+              <td><a href="${url}" target="_blank"><span class="bi bi-box-arrow-up-right" aria-hidden="true"></span></a></td>
+              <td><code>${value}</code></td>
+              <td>${#each tags}<span class="badge badge-primary me-1">${this}</span>${/each}</td>
+              <td>${info}</td>
+            </tr>
+          ${/each}
+        ${/if}
+        </tbody>
+        <tbody class="unknown">
+        ${#if unknown}
+          <tr>
+            <th></th>
+            <th>{% trans "Unknown observables" %}</th>
+            <th></th>
+            <th></th>
+          </tr>
+          ${#each unknown}
+            <tr>
+              <td></td>
+              <td><code>${value}</code></td>
+              <td>N/A</td>
+              <td>N/A</td>
+            </tr>
+          ${/each}
+        ${/if}
+        </tbody>
+      </table>
+    </div>
+
+    <div class="send">
+      <table class="table table-condensed misp-send">
+        <tr>
+          <th></th>
+          <th>{% trans "Observable" %}</th>
+          <th>{% trans "Tags to add" %} <i class="tooltip-info bi bi-info-circle text-muted" data-bs-toggle="tooltip" data-placement="top" title="{% blocktrans %}Already existing tags on MISP side will not be deleted.{% endblocktrans %}"></i></th>
+          <th>{% trans "MISP Context" %}</th>
+        </tr>
+        <tbody class="known">
+          ${#if known}
+            ${#each known}
+              <tr class="observable">
+                <td><input type="checkbox" name="name" value=""></td>
+                <td class="value"><code>${value}</code></td>
+                <td class="tags">
+                  <div class="d-flex">
+                    <button class="btn btn-sm btn-link bi bi-tags-fill show_tag_suggestions tooltip-info" data-bs-toggle="tooltip" data-bs-trigger="hover" data-placement="top" title="{% blocktrans %}Tags suggestions{% endblocktrans %}"></button>
+                    <input type="text" class="tagsinput tag-azure-misp" value="">
+                  </div>
+                  <ul class="tag_suggestions d-none">
+                    ${#each tags}
+                      <li class="tag_suggestion" data-value="${this}">${this}</li>
+                    ${/each}
+                    ${#each basic_tags}
+                      <li class="tag_suggestion" data-value="${this}">${this}</li>
+                    ${/each}
+                  </ul>
+                </td>
+                <td class="context">${info}</td>
+              </tr>
+            ${/each}
+          ${/if}
+        </tbody>
+
+        <tbody class="unknown">
+          ${#if unknown}
+            <tr>
+              <th></th>
+              <th>{% trans "Unknown observables" %}</th>
+              <th></th>
+              <th></th>
+            </tr>
+            ${#each unknown}
+              <tr class="observable">
+                <td><input type="checkbox" name="name" value=""></td>
+                <td class="value"><code>${value}</code></td>
+                <td class="tags">
+                  <div class="d-flex">
+                    <button class="btn btn-sm btn-link bi bi-tags-fill show_tag_suggestions tooltip-info" data-bs-toggle="tooltip" data-bs-trigger="hover" data-placement="top" title="{% blocktrans %}Tags suggestions{% endblocktrans %}"></button>
+                    <input type="text" class="tagsinput tag-azure-misp" value="">
+                  </div>
+                  <ul class="tag_suggestions d-none">
+                  ${#each basic_tags}
+                    <li class="tag_suggestion" data-value="${this}">${this}</li>
+                  ${/each}
+                  </ul>
+                </td>
+                <td class="context">N/A</td>
+              </tr>
+            ${/each}
+          ${/if}
+          <tr>
+            <td><input id="check-all" data-target="observable" class="check-all" type="checkbox" name="name" value=""></td>
+            <td>&nbsp;<strong><label for="check-all">{% trans "Select all / tags for all observables" %}</label></strong></td>
+            <td class="tags"><input type="text" class="tagsinput tag-azure-misp all-tags" value=""></td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+      <button class="btn btn-outline-danger mt-2 me-2" id="send-to-misp" href="#" role="button">{% trans "Send it!" %} <span class="bi bi-cloud-upload" aria-hidden="true"></span></button>
+      {% blocktrans %}<strong>Note</strong>: Observables added this way will have the following context: {% endblocktrans %}<code id="fid" data-fid="{{ event.id }}">{{ event.id|get_inc_id_with_prefix }}</code>
+      <div id="waitingMessage" style="display: none;">{% trans "Please wait..." %}</div>
+    </div>
+    {% has_perm "incidents.handle_incidents" obj=event as can_handle_incident %}
+    {% if can_handle_incident %}
+      <a class="btn btn-default btn-sm mb-2 mt-2" id="toggle-send" href="#" role="button">{% trans "Send to MISP..." %}</a>
+    {% endif %}
+  </div>
+</script>
