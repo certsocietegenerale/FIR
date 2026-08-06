@@ -3,7 +3,7 @@ dj-email-url
 environs
 future
 mysqlclient
-Django
+Django>=6.0.7,<6.1
 pymongo
 python-dateutil
 django-treebeard
