@@ -14,6 +14,7 @@ document.addEventListener("DOMContentLoaded", function () {
 function init_easymde(textarea) {
   var easymde = new EasyMDE({
     element: textarea,
+    autoDownloadFontAwesome: false,
     renderingConfig: {
       codeSyntaxHighlighting: true,
     },
