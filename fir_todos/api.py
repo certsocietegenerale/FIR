@@ -1,5 +1,6 @@
 from rest_framework import serializers, status, viewsets
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.exceptions import PermissionDenied
 from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import (
     DjangoFilterBackend,
@@ -89,9 +90,8 @@ class TodoViewSet(viewsets.ModelViewSet):
                 self.request.user, "incidents.handle_incidents"
             )
             if business_line not in allowed_businesslines:
-                return Response(
-                    data={"Error": "Chosen businessline not allowed for user"},
-                    status=status.HTTP_403_FORBIDDEN,
+                raise PermissionDenied(
+                    detail="Chosen businessline not allowed for user"
                 )
         else:
             request_business_line = None
@@ -111,9 +111,8 @@ class TodoViewSet(viewsets.ModelViewSet):
                 self.request.user, "incidents.handle_incidents"
             )
             if business_line not in allowed_businesslines:
-                return Response(
-                    {"error": "Chosen businessline not allowed for user"},
-                    status=401,
+                raise PermissionDenied(
+                    detail="Chosen businessline not allowed for user"
                 )
         incident_object_id = self.request.data.get("incident")
         incident_object = Incident.objects.get(pk=incident_object_id)
